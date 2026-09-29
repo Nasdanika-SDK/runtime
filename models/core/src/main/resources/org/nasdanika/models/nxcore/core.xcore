@@ -1,0 +1,316 @@
+@Ecore(nsURI="https://runtime.sdk.nasdanika.org/models/core", nsPrefix="org.nasdanika.sdk.runtime.models.core")
+@GenModel(
+    modelDirectory="/org.nasdanika.sdk.runtime.models.core/src-gen",
+    featureDelegation="Dynamic",
+    complianceLevel="25",
+    suppressGenModelAnnotations="false",
+    copyrightFields="false",
+    operationReflection="true",
+    importOrganizing="true"
+)
+package org.nasdanika.sdk.runtime.models.core
+
+import org.eclipse.emf.ecore.EObject
+
+annotation "http://www.eclipse.org/emf/2002/Ecore" as Ecore
+annotation "http://www.eclipse.org/emf/2002/GenModel" as GenModel
+annotation "urn:org.nasdanika" as Nasdanika
+
+type Instant wraps java.time.Instant
+type Duration wraps java.time.Duration 
+
+type Class<T> wraps java.lang.Class
+type Map<K, V> wraps java.util.Map
+type Object wraps java.lang.Object
+
+interface Referrable {
+    
+    op void collect(
+            Object source,
+            org.eclipse.emf.ecore.EReference eReference,
+            EObject[] accumulator) {
+        if (eReference.EContainingClass.isInstance(source)) {
+            val value = (source as org.eclipse.emf.ecore.EObject).eGet(eReference)
+            if (eReference.many) {
+                if ((value as java.util.Collection<?>).contains(this)) {
+                    accumulator.add(source as org.eclipse.emf.ecore.EObject)
+                }
+            } else if (value === this) {
+                accumulator.add(source as org.eclipse.emf.ecore.EObject)
+            }
+        }
+    }    
+    
+    op EObject[] getReferrers(org.eclipse.emf.ecore.EReference eReference) {
+        val ret = new org.eclipse.emf.common.util.BasicEList<EObject>()
+        
+        val org.eclipse.emf.ecore.resource.Resource res = this.eResource()
+        var org.eclipse.emf.common.util.TreeIterator<?> cit = null
+        
+        if (res === null) {
+            var org.eclipse.emf.ecore.EObject root = this
+            var org.eclipse.emf.ecore.EObject rc
+            while ((rc = root.eContainer()) !== null) {
+                root = rc
+            }
+            if (root !== null) {
+                collect(root, eReference, ret)
+                cit = root.eAllContents()
+            }
+        } else {
+            val rSet = res.resourceSet
+            cit = if (rSet === null) res.allContents else rSet.allContents
+        }
+        
+        if (cit !== null) {
+            while (cit.hasNext()) {
+                collect(cit.next(), eReference, ret)
+            }
+        }
+        
+        return ret
+    }    
+    
+}
+
+interface StringIdentity extends Referrable {
+    
+    String ^id
+    
+}
+
+class StringToStringMapEntry wraps java.util.Map$Entry {
+    String key
+    String value
+}
+
+class Marker {
+	
+	String location
+	
+	String position
+	
+	String comment
+	
+	Date date
+	
+	/**
+	 * Feature name for feature markers
+	 */
+	String feature
+	
+	/**
+	 * Optional source hash/digest. 
+	 * E.g. SHA for a text file or Merkle tree hash for models - may exclude some features and may be also computed on graphs including non-containment references, not only on trees
+	 */
+	String digest
+	
+	/**
+	 * Child markers. For example, a feature can be computed from two features with their own markers. In this case those markers may be recorded as 
+	 * children of a parent marker.
+	 */
+	contains Marker[] children
+	
+}
+
+class GitMarker extends Marker {
+
+	/**
+	 * Path in the repository
+	 */
+	String path
+	
+	/**
+	 * A map of remote names to URLs
+	 */
+	contains StringToStringMapEntry[] remotes
+	
+	/**
+	 * Short branch name
+	 */
+	String branch
+	
+	/**
+	 * Commit ID of the head
+	 */
+	String head
+	
+	/**
+	 * Refs on the head commit excluding the head itself. E.g. branch, tags.
+	 */
+	String[] headRefs	
+	
+}
+
+interface Marked {
+	
+	contains Marker[] markers
+	
+}
+
+/**
+ * Section/documentation content
+ */
+class Content {
+		
+	String content
+	
+	String contentRef	
+	
+	String contentType
+	
+}
+
+class SectionReference {
+	
+	String title
+	
+	String ^id
+	
+}
+
+class Section extends SectionReference {
+	
+	contains Section[] children
+	
+	contains Content[] contents
+	
+}
+
+interface Documented {
+	
+	/**
+	 * Inline documentation
+	 */
+    String documentation
+    
+    /**
+     * Documentation resource URI resolved relative to this model element resource URI.
+     * Documentation format is derived from extension if not set.
+     */
+    String docRef
+    
+    /**
+     * Documentation format. If not set, defaults to markdown for inline documentation and is
+     * derived from the documentation resource extension for docRef 
+     */
+    String docFormat	
+	
+	/**
+	 * Documentation contents - follows after the own documentation/docRef
+	 */
+	contains Content[] docContents
+	
+	/**
+	 * Documentation sections, follow after docContents
+	 */
+	contains Section[] docSections
+	
+}
+
+abstract class ModelElement extends StringIdentity, Documented, Marked {
+
+// id, documentation, uris - aliases
+
+    /**
+     * Custom icon - treated as URL if contains / or as a CSS class otherwise.
+     * E.g. fas fa-wrench would be treated as a CSS class.
+     * For URLs the recommended icon size is 20x20 pixels and the recommended format is SVG. 
+     */
+    String icon
+    
+    /**
+     * Alias URIs resolved relative to the parent URIs - can be absolute or opaque - global references. 
+     * For example: actors://john-smith.
+     * For domains URIs can be used as anchors to merge domains from different sources.
+     * For example, several teams may maintain capability domains with URI myorg://capabilities/developer-productivity
+     * When these definitions are assembled into the organization's product management model to generate documentation
+     * all of these domains are merged into a single logical domain.
+     */
+    String[] uris
+    
+    /**
+     * Extension-specific configuration associated with a model element.
+     * For example, geometry and color for a diagram facet,
+     * Weight for a prioritization facet,
+     * Embedding vectors for similarity search.
+     */
+    // contains EObject[] facets
+
+}
+
+abstract class NamedElement extends ModelElement {
+    
+    String name
+    
+}
+
+// --- Evaluators ---
+
+interface Evaluator extends Documented, Marked {
+	/*
+	 * Evaluates this evaluator's expression/script against the provided
+	 * bindings and coerces the result to resultType.
+	 * Analogous to javax.script.CompiledScript.eval(), but the source
+	 * comes from the evaluator instance itself.
+	 */
+	op <T> T evaluate(Class<T> resultType, Map<String, Object> bindings)
+	
+	op <T> T evaluate(Class<T> resultType) {
+		return evaluate(resultType, null)
+	}
+	
+	op Object evaluate(Map<String, Object> bindings) {
+		return evaluate(null, bindings)
+	}
+	
+	op Object evaluate() {
+		return evaluate(null, null)
+	}
+	
+}
+
+/* Carries script source, inline or by reference. Exactly one of
+ * script and scriptRef must be set. */
+abstract class SourceEvaluator extends Evaluator {
+	String script
+	/* URI resolved against eResource().getURI(). */
+	String scriptRef
+}
+
+class ExpressionEvaluator extends Evaluator {
+
+	String expression
+
+}
+
+class SpelEvaluator extends ExpressionEvaluator {
+	
+	@GenModel(body="return org.nasdanika.sdk.runtime.models.core.util.EvaluatorSupport.evaluateSpel(this, resultType, bindings);")
+	op <T> T evaluate(Class<T> resultType, Map<String, Object> bindings)
+	
+}
+
+class XPathEvaluator extends ExpressionEvaluator {
+	
+	@GenModel(body="return org.nasdanika.sdk.runtime.models.core.util.EvaluatorSupport.evaluateXPath(this, resultType, bindings);")
+	op <T> T evaluate(Class<T> resultType, Map<String, Object> bindings)
+	
+}
+
+class ScriptEvaluator extends SourceEvaluator {
+	/* JSR-223 engine short name. Required for script; for scriptRef
+	 * falls back to selection by URI extension. */
+	String language
+	
+	@GenModel(body="return org.nasdanika.sdk.runtime.models.core.util.EvaluatorSupport.evaluateScript(this, resultType, bindings);")
+	op <T> T evaluate(Class<T> resultType, Map<String, Object> bindings)
+	
+}
+
+class GroovyEvaluator extends SourceEvaluator {
+	
+	@GenModel(body="return org.nasdanika.sdk.runtime.models.core.util.EvaluatorSupport.evaluateGroovy(this, resultType, bindings);")
+	op <T> T evaluate(Class<T> resultType, Map<String, Object> bindings)
+	
+}

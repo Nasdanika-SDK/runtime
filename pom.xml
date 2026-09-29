@@ -1,0 +1,462 @@
+﻿<project xmlns="http://maven.apache.org/POM/4.0.0" xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
+	xsi:schemaLocation="http://maven.apache.org/POM/4.0.0 http://maven.apache.org/xsd/maven-4.0.0.xsd">
+	<modelVersion>4.0.0</modelVersion>
+	<groupId>org.nasdanika.sdk.runtime</groupId>
+	<version>2026.10.0</version>
+	<artifactId>parent</artifactId>
+	<packaging>pom</packaging>
+	<name>Nasdanika SDK Runtime</name>
+	<description>Parent pom.</description>
+
+	<url>https://sdk.nasdanika.org/runtime/index.html</url>
+		
+	<licenses>
+		<license>
+			<name>Eclipse Public License 2.0</name>
+			<url>https://nasdanika.org/builds/master/eclipse-public-license-2.0.html</url>
+			<distribution>repo</distribution>
+		</license>
+	</licenses>
+
+	<scm>
+		<url>https://github.com/Nasdanika-SDK/runtime</url>
+	</scm>
+
+	<build>
+	    <extensions>
+	      <extension>
+	        <groupId>org.apache.maven.wagon</groupId>
+	         <artifactId>wagon-ssh</artifactId>
+	         <version>3.5.3</version>
+	      </extension>
+	    </extensions>
+		<pluginManagement>
+			<plugins>
+				<plugin>
+					<groupId>org.antlr</groupId>
+					<artifactId>antlr4-maven-plugin</artifactId>
+					<version>4.13.2</version>
+				</plugin>				
+				<!--
+					Generates Java sources from src/main/resources/**/*.xcore into src-gen.
+
+					This removes the dependency on the Eclipse Xcore builder
+					(org.eclipse.xtext.ui.shared.xtextBuilder) and the Xtext project nature,
+					so the model can be built from the command line, in CI, and in editors
+					that are not Eclipse - VS Code, IntelliJ IDEA, and so on.
+
+					How to run
+					==========
+
+					Full build, from the repository root:
+
+						mvn clean install
+
+					Full build of this module only, from the repository root
+					(-am also builds the modules it depends on):
+
+						mvn -pl model -am clean install
+
+					Generate sources only - no compilation, no tests - from this directory:
+
+						mvn generate-sources
+
+					... or the same thing from the repository root:
+
+						mvn -pl model generate-sources
+
+					Just this plugin, skipping the rest of the generate-sources phase:
+
+						mvn org.eclipse.xtext:xtext-maven-plugin:generate
+
+					Notes
+					=====
+
+					* src-gen is registered as a compile source root by
+					build-helper-maven-plugin below, so "mvn compile" regenerates and
+					compiles in one go.
+
+					* Nothing watches .xcore files outside Eclipse. After editing the model
+					in VS Code run "mvn generate-sources" and then reload the Java
+					projects - "Java: Clean Java Language Server Workspace" from the
+					command palette if the new or renamed types are not picked up.
+
+					* If the project is also open in Eclipse with the Xtext nature enabled,
+					the Eclipse builder and this plugin both write into src-gen. Remove
+					org.eclipse.xtext.ui.shared.xtextNature and the xtextBuilder build
+					command from .project to leave generation to Maven alone.
+
+					* All three <language> entries are required, and the order matters:
+					the Xcore model references Ecore and GenModel resources, so support
+					for those languages has to be registered before the Xcore setup runs.
+
+					* The output directory is NOT configured here. Xcore hands generation
+					over to the EMF GenModel code generator, which writes to the
+					modelDirectory declared in the .xcore file itself:
+
+						@GenModel(modelDirectory="/model/src-gen", ...)
+
+					The plugin's <outputConfiguration> has no effect on it. Without an
+					explicit modelDirectory the build still reports SUCCESS and silently
+					produces nothing, so if src-gen comes up empty, check that annotation
+					first. The leading path segment is this Maven module's directory
+					name, so it has to stay in step with the directory if it is renamed.
+
+					* That modelDirectory is also what the Eclipse Xcore builder obeys, and
+					Eclipse resolves the leading segment against the WORKSPACE PROJECT
+					name rather than the directory name. This project is named
+					org.nasdanika.models.drawio in .project, so with "/model/src-gen"
+					set, generation works under Maven and not under Eclipse. That is the
+					intent - Maven is the generator of record. To go back to generating
+					in Eclipse, drop the modelDirectory annotation, which turns this
+					plugin back into a no-op.
+
+					* The generator resolves imports - presentation, diagram, nxcore - from
+					the project's compile classpath, so the models this one extends have
+					to be resolvable before sources can be generated.
+				-->
+				<plugin>
+					<groupId>org.eclipse.xtext</groupId>
+					<artifactId>xtext-maven-plugin</artifactId>
+					<version>2.42.0</version>
+					<executions>
+						<execution>
+							<id>generate-xcore</id>
+							<phase>generate-sources</phase>
+							<goals>
+								<goal>generate</goal>
+							</goals>
+						</execution>
+					</executions>
+					<configuration>
+						<languages>
+							<language>
+								<setup>org.eclipse.xtext.ecore.EcoreSupport</setup>
+							</language>
+							<language>
+								<setup>org.eclipse.emf.codegen.ecore.xtext.GenModelSupport</setup>
+							</language>
+							<language>
+								<setup>org.eclipse.emf.ecore.xcore.XcoreStandaloneSetup</setup>
+							</language>
+						</languages>
+						<sourceRoots>
+							<root>${project.basedir}/src/main/resources</root>
+						</sourceRoots>
+					</configuration>
+					<dependencies>
+						<dependency>
+							<groupId>org.eclipse.emf</groupId>
+							<artifactId>org.eclipse.emf.ecore.xcore</artifactId>
+							<version>1.36.0</version>
+						</dependency>
+					</dependencies>
+				</plugin>
+				<plugin>
+					<groupId>org.codehaus.mojo</groupId>
+					<artifactId>build-helper-maven-plugin</artifactId>
+					<version>3.4.0</version>
+					<executions>
+						<execution>
+							<id>add-source</id>
+							<phase>generate-sources</phase>
+							<goals>
+								<goal>add-source</goal>
+							</goals>
+							<configuration>
+								<sources>
+									<source>src-gen</source>
+								</sources>
+							</configuration>
+						</execution>
+					</executions>
+				</plugin>
+				<plugin>
+					<groupId>org.apache.maven.plugins</groupId>
+					<artifactId>maven-dependency-plugin</artifactId>
+					<version>3.11.0</version>
+				</plugin>
+				<plugin>
+					<groupId>org.apache.maven.plugins</groupId>
+					<artifactId>maven-failsafe-plugin</artifactId>
+					<version>3.5.6</version>
+				</plugin>			
+			</plugins>
+		</pluginManagement>
+		<plugins>
+			<plugin>
+				<groupId>org.apache.maven.plugins</groupId>
+				<artifactId>maven-enforcer-plugin</artifactId>
+				<version>3.5.0</version>
+				<executions>
+					<execution>
+						<id>enforce-maven</id>
+						<goals>
+							<goal>enforce</goal>
+						</goals>
+						<configuration>
+							<rules>
+								<requireMavenVersion>
+									<version>3.9.16</version>
+								</requireMavenVersion>
+							</rules>
+						</configuration>
+					</execution>
+					<!--
+					<execution>
+						<id>enforce-dependency-convergence</id>
+						<goals>
+							<goal>enforce</goal>
+						</goals>
+						<configuration>
+							<rules>
+								<dependencyConvergence/>
+							</rules>
+						</configuration>
+					</execution>
+					-->
+				</executions>
+			</plugin>
+			<plugin>
+				<groupId>org.apache.maven.plugins</groupId>
+				<artifactId>maven-compiler-plugin</artifactId>
+				<version>3.16.0</version>
+				<configuration>
+					<release>25</release>
+				</configuration>
+			</plugin>
+			<plugin>
+				<groupId>org.apache.maven.plugins</groupId>
+				<artifactId>maven-source-plugin</artifactId>
+				<version>3.4.0</version>
+				<executions>
+					<execution>
+						<id>attach-sources</id>
+						<goals>
+							<goal>jar-no-fork</goal>
+						</goals>
+					</execution>
+				</executions>
+			</plugin>
+		        <plugin>
+		            <groupId>org.apache.maven.plugins</groupId>
+		            <artifactId>maven-surefire-plugin</artifactId>
+		            <version>3.5.4</version>
+		        </plugin>
+			<plugin>
+				<groupId>org.apache.maven.plugins</groupId>
+				<artifactId>maven-javadoc-plugin</artifactId>
+				<version>3.12.0</version>
+			
+				<executions>
+					<execution>
+						<id>aggregate</id>
+						<goals>
+							<goal>aggregate</goal>
+						</goals>
+						<configuration>
+							<failOnError>false</failOnError>
+							<additionalOptions>-Xdoclint:none</additionalOptions>
+							<additionalOptions><![CDATA[--allow-script-in-comments]]></additionalOptions>
+							<linksource>true</linksource>	
+			        			<useStandardDocletOptions>true</useStandardDocletOptions>
+							<links>
+								<link>https://download.eclipse.org/modeling/emf/emf/javadoc/2.11/</link>
+								<link>https://picocli.info/apidocs/</link>
+							</links>
+							<header>
+								<![CDATA[
+								      <script async src="https://www.googletagmanager.com/gtag/js?id=G-9BRJVLK8CC"></script>
+								      <script>
+								        window.dataLayer = window.dataLayer || [];
+								        function gtag(){dataLayer.push(arguments);}
+								        gtag('js', new Date());
+      
+								        gtag('config', 'G-9BRJVLK8CC');
+								      </script>    
+								]]>
+							</header>
+						</configuration>
+					</execution>
+					<execution>
+						<id>attach-javadocs</id>
+						<goals>
+							<goal>jar</goal>
+						</goals>
+						<configuration>
+							<failOnError>false</failOnError>
+							<additionalOptions>-Xdoclint:none</additionalOptions>
+							<additionalOptions><![CDATA[--allow-script-in-comments]]></additionalOptions>
+							<linksource>true</linksource>	
+			        			<useStandardDocletOptions>true</useStandardDocletOptions>
+							<links>
+								<link>https://download.eclipse.org/modeling/emf/emf/javadoc/2.11/</link>
+								<link>https://picocli.info/apidocs/</link>
+							</links>
+							<header>
+								<![CDATA[
+								      <script async src="https://www.googletagmanager.com/gtag/js?id=G-9BRJVLK8CC"></script>
+								      <script>
+								        window.dataLayer = window.dataLayer || [];
+								        function gtag(){dataLayer.push(arguments);}
+								        gtag('js', new Date());
+      
+								        gtag('config', 'G-9BRJVLK8CC');
+								      </script>    
+								]]>
+							</header>
+						</configuration>
+					</execution>
+				</executions>
+			</plugin>
+            <plugin>
+                <groupId>org.jacoco</groupId>
+                <artifactId>jacoco-maven-plugin</artifactId>
+                <version>0.8.15</version>
+                <executions>
+                    <execution>
+                        <id>default-prepare-agent</id>
+                        <goals>
+                            <goal>prepare-agent</goal>
+                        </goals>
+                    </execution>
+                    <execution>
+                        <id>report</id>
+                        <phase>verify</phase>
+                        <goals>
+                            <goal>report</goal>
+                        </goals>
+                    </execution>
+                </executions>
+            </plugin>			
+		</plugins>
+	</build>
+
+	<organization>
+		<name>Nasdanika</name>
+		<url>https://nasdanika.com</url>
+	</organization>
+
+	<developers>
+		<developer>
+			<id>pvlasov</id>
+			<name>Pavel Vlasov</name>
+			<email>Pavel.Vlasov@nasdanika.org</email>
+			<roles>
+				<role>Lead Developer</role>
+			</roles>
+			<timezone>-5</timezone>
+		</developer>
+	</developers>
+
+	<dependencyManagement>
+	    <dependencies>
+			<dependency>
+				<groupId>org.eclipse.emf</groupId>
+				<artifactId>org.eclipse.emf.ecore</artifactId>
+				<version>2.42.0</version>
+			</dependency> 		
+			<dependency>
+				<groupId>org.eclipse.emf</groupId>
+				<artifactId>org.eclipse.emf.ecore.xmi</artifactId>
+				<version>2.40.0</version>
+			</dependency>
+			<dependency>
+				<groupId>org.json</groupId>
+				<artifactId>json</artifactId>
+				<version>20260522</version>
+			</dependency>
+			<dependency>
+				<groupId>org.yaml</groupId>
+				<artifactId>snakeyaml</artifactId>
+				<version>2.6</version>
+			</dependency>		
+			<dependency>
+				<groupId>org.jsoup</groupId>
+				<artifactId>jsoup</artifactId>
+				<version>1.22.2</version>
+			</dependency>
+			<dependency>
+				<groupId>org.eclipse.jgit</groupId>
+				<artifactId>org.eclipse.jgit</artifactId>
+				<version>7.7.0.202606012155-r</version>
+			</dependency>
+			<dependency>
+				<groupId>org.nasdanika</groupId>
+				<artifactId>xtext</artifactId>
+				<version>2.43.0</version>
+			</dependency>
+			<dependency>
+				<groupId>org.eclipse.xtext</groupId>
+				<artifactId>org.eclipse.xtext.xbase.lib</artifactId>
+				<version>2.43.0</version>
+			</dependency>
+			<dependency>
+				<groupId>org.eclipse.emf</groupId>
+				<artifactId>org.eclipse.emf.ecore.xcore.lib</artifactId>
+				<version>1.7.1</version>
+			</dependency>
+	    </dependencies>
+	</dependencyManagement>
+
+	<dependencies>
+		<dependency>
+		    <groupId>org.junit.jupiter</groupId>
+		    <artifactId>junit-jupiter-api</artifactId>
+		    <scope>test</scope>
+			<version>6.1.0</version>
+		</dependency>		
+		<dependency>
+		    <groupId>org.junit.jupiter</groupId>
+		    <artifactId>junit-jupiter-engine</artifactId>
+		    <scope>test</scope>
+			<version>6.1.0</version>
+		</dependency>			
+		<dependency>
+			<groupId>org.assertj</groupId>
+			<artifactId>assertj-core</artifactId>
+			<scope>test</scope>
+			<version>3.24.2</version>
+		</dependency>				
+	</dependencies>
+
+	 <profiles>
+		<profile>
+			<id>central</id>
+			<build>
+				<plugins>
+					<plugin>
+						<groupId>org.apache.maven.plugins</groupId>
+						<artifactId>maven-gpg-plugin</artifactId>
+						<version>3.2.8</version>
+						<executions>
+							<execution>
+								<id>sign-artifacts</id>
+								<phase>verify</phase>
+								<goals>
+									<goal>sign</goal>
+								</goals>
+							</execution>
+						</executions>
+					</plugin>	
+					<plugin>					
+						<groupId>org.sonatype.central</groupId>
+						<artifactId>central-publishing-maven-plugin</artifactId>
+						<version>0.10.0</version>
+						<extensions>true</extensions>
+						<configuration>
+							<publishingServerId>central</publishingServerId>
+							<autoPublish>true</autoPublish>
+						</configuration>
+					</plugin>
+				</plugins>
+			</build>
+		</profile>
+	</profiles>
+
+	
+	<modules>
+		<!--<module>models</module>-->
+		<module>picocli</module>
+	</modules>	
+</project>
