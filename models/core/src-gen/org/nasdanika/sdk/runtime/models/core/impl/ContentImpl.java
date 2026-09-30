@@ -89,6 +89,7 @@ public class ContentImpl extends MinimalEObjectImpl.Container implements Content
 	 * <!-- end-user-doc -->
 	 * @generated
 	 */
+	@Override
 	public String getContent() {
 		return (String)eDynamicGet(CorePackage.CONTENT__CONTENT, CorePackage.Literals.CONTENT__CONTENT, true, true);
 	}
@@ -98,6 +99,7 @@ public class ContentImpl extends MinimalEObjectImpl.Container implements Content
 	 * <!-- end-user-doc -->
 	 * @generated
 	 */
+	@Override
 	public void setContent(String newContent) {
 		eDynamicSet(CorePackage.CONTENT__CONTENT, CorePackage.Literals.CONTENT__CONTENT, newContent);
 	}
@@ -107,6 +109,7 @@ public class ContentImpl extends MinimalEObjectImpl.Container implements Content
 	 * <!-- end-user-doc -->
 	 * @generated
 	 */
+	@Override
 	public String getContentRef() {
 		return (String)eDynamicGet(CorePackage.CONTENT__CONTENT_REF, CorePackage.Literals.CONTENT__CONTENT_REF, true, true);
 	}
@@ -116,6 +119,7 @@ public class ContentImpl extends MinimalEObjectImpl.Container implements Content
 	 * <!-- end-user-doc -->
 	 * @generated
 	 */
+	@Override
 	public void setContentRef(String newContentRef) {
 		eDynamicSet(CorePackage.CONTENT__CONTENT_REF, CorePackage.Literals.CONTENT__CONTENT_REF, newContentRef);
 	}
@@ -125,6 +129,7 @@ public class ContentImpl extends MinimalEObjectImpl.Container implements Content
 	 * <!-- end-user-doc -->
 	 * @generated
 	 */
+	@Override
 	public String getContentType() {
 		return (String)eDynamicGet(CorePackage.CONTENT__CONTENT_TYPE, CorePackage.Literals.CONTENT__CONTENT_TYPE, true, true);
 	}
@@ -134,6 +139,7 @@ public class ContentImpl extends MinimalEObjectImpl.Container implements Content
 	 * <!-- end-user-doc -->
 	 * @generated
 	 */
+	@Override
 	public void setContentType(String newContentType) {
 		eDynamicSet(CorePackage.CONTENT__CONTENT_TYPE, CorePackage.Literals.CONTENT__CONTENT_TYPE, newContentType);
 	}

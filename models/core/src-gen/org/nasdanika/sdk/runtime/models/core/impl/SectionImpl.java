@@ -57,6 +57,7 @@ public class SectionImpl extends SectionReferenceImpl implements Section {
 	 * @generated
 	 */
 	@SuppressWarnings("unchecked")
+	@Override
 	public EList<Section> getChildren() {
 		return (EList<Section>)eDynamicGet(CorePackage.SECTION__CHILDREN, CorePackage.Literals.SECTION__CHILDREN, true, true);
 	}
@@ -67,6 +68,7 @@ public class SectionImpl extends SectionReferenceImpl implements Section {
 	 * @generated
 	 */
 	@SuppressWarnings("unchecked")
+	@Override
 	public EList<Content> getContents() {
 		return (EList<Content>)eDynamicGet(CorePackage.SECTION__CONTENTS, CorePackage.Literals.SECTION__CONTENTS, true, true);
 	}

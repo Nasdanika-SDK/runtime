@@ -456,7 +456,9 @@
 
 	
 	<modules>
-		<!--<module>models</module>-->
+		<module>common</module>
 		<module>picocli</module>
+		<module>models</module>
+		<module>tests</module>
 	</modules>	
 </project>

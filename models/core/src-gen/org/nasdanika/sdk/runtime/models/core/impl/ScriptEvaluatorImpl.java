@@ -61,6 +61,7 @@ public class ScriptEvaluatorImpl extends SourceEvaluatorImpl implements ScriptEv
 	 * <!-- end-user-doc -->
 	 * @generated
 	 */
+	@Override
 	public String getLanguage() {
 		return (String)eDynamicGet(CorePackage.SCRIPT_EVALUATOR__LANGUAGE, CorePackage.Literals.SCRIPT_EVALUATOR__LANGUAGE, true, true);
 	}
@@ -70,6 +71,7 @@ public class ScriptEvaluatorImpl extends SourceEvaluatorImpl implements ScriptEv
 	 * <!-- end-user-doc -->
 	 * @generated
 	 */
+	@Override
 	public void setLanguage(String newLanguage) {
 		eDynamicSet(CorePackage.SCRIPT_EVALUATOR__LANGUAGE, CorePackage.Literals.SCRIPT_EVALUATOR__LANGUAGE, newLanguage);
 	}
@@ -79,6 +81,7 @@ public class ScriptEvaluatorImpl extends SourceEvaluatorImpl implements ScriptEv
 	 * <!-- end-user-doc -->
 	 * @generated
 	 */
+	@Override
 	public <T> T evaluate(final Class<T> resultType, final Map<String, Object> bindings) {
 		return org.nasdanika.sdk.runtime.models.core.util.EvaluatorSupport.evaluateScript(this, resultType, bindings);
 	}

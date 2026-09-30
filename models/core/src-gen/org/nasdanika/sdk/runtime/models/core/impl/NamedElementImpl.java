@@ -55,6 +55,7 @@ public abstract class NamedElementImpl extends ModelElementImpl implements Named
 	 * <!-- end-user-doc -->
 	 * @generated
 	 */
+	@Override
 	public String getName() {
 		return (String)eDynamicGet(CorePackage.NAMED_ELEMENT__NAME, CorePackage.Literals.NAMED_ELEMENT__NAME, true, true);
 	}
@@ -64,6 +65,7 @@ public abstract class NamedElementImpl extends ModelElementImpl implements Named
 	 * <!-- end-user-doc -->
 	 * @generated
 	 */
+	@Override
 	public void setName(String newName) {
 		eDynamicSet(CorePackage.NAMED_ELEMENT__NAME, CorePackage.Literals.NAMED_ELEMENT__NAME, newName);
 	}

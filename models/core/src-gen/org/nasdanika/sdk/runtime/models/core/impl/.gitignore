@@ -1,0 +1,16 @@
+/ContentImpl.java
+/CoreFactoryImpl.java
+/CorePackageImpl.java
+/ExpressionEvaluatorImpl.java
+/GitMarkerImpl.java
+/GroovyEvaluatorImpl.java
+/MarkerImpl.java
+/ModelElementImpl.java
+/NamedElementImpl.java
+/ScriptEvaluatorImpl.java
+/SectionImpl.java
+/SectionReferenceImpl.java
+/SourceEvaluatorImpl.java
+/SpelEvaluatorImpl.java
+/StringToStringMapEntryImpl.java
+/XPathEvaluatorImpl.java

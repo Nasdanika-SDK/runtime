@@ -283,6 +283,7 @@ public class CorePackageImpl extends EPackageImpl implements CorePackage {
 	 * <!-- end-user-doc -->
 	 * @generated
 	 */
+	@Override
 	public EClass getReferrable() {
 		return referrableEClass;
 	}
@@ -292,6 +293,7 @@ public class CorePackageImpl extends EPackageImpl implements CorePackage {
 	 * <!-- end-user-doc -->
 	 * @generated
 	 */
+	@Override
 	public EOperation getReferrable__Collect__Object_EReference_EList() {
 		return referrableEClass.getEOperations().get(0);
 	}
@@ -301,6 +303,7 @@ public class CorePackageImpl extends EPackageImpl implements CorePackage {
 	 * <!-- end-user-doc -->
 	 * @generated
 	 */
+	@Override
 	public EOperation getReferrable__GetReferrers__EReference() {
 		return referrableEClass.getEOperations().get(1);
 	}
@@ -310,6 +313,7 @@ public class CorePackageImpl extends EPackageImpl implements CorePackage {
 	 * <!-- end-user-doc -->
 	 * @generated
 	 */
+	@Override
 	public EClass getStringIdentity() {
 		return stringIdentityEClass;
 	}
@@ -319,6 +323,7 @@ public class CorePackageImpl extends EPackageImpl implements CorePackage {
 	 * <!-- end-user-doc -->
 	 * @generated
 	 */
+	@Override
 	public EAttribute getStringIdentity_Id() {
 		return (EAttribute)stringIdentityEClass.getEStructuralFeatures().get(0);
 	}
@@ -328,6 +333,7 @@ public class CorePackageImpl extends EPackageImpl implements CorePackage {
 	 * <!-- end-user-doc -->
 	 * @generated
 	 */
+	@Override
 	public EClass getStringToStringMapEntry() {
 		return stringToStringMapEntryEClass;
 	}
@@ -337,6 +343,7 @@ public class CorePackageImpl extends EPackageImpl implements CorePackage {
 	 * <!-- end-user-doc -->
 	 * @generated
 	 */
+	@Override
 	public EAttribute getStringToStringMapEntry_Key() {
 		return (EAttribute)stringToStringMapEntryEClass.getEStructuralFeatures().get(0);
 	}
@@ -346,6 +353,7 @@ public class CorePackageImpl extends EPackageImpl implements CorePackage {
 	 * <!-- end-user-doc -->
 	 * @generated
 	 */
+	@Override
 	public EAttribute getStringToStringMapEntry_Value() {
 		return (EAttribute)stringToStringMapEntryEClass.getEStructuralFeatures().get(1);
 	}
@@ -355,6 +363,7 @@ public class CorePackageImpl extends EPackageImpl implements CorePackage {
 	 * <!-- end-user-doc -->
 	 * @generated
 	 */
+	@Override
 	public EClass getMarker() {
 		return markerEClass;
 	}
@@ -364,6 +373,7 @@ public class CorePackageImpl extends EPackageImpl implements CorePackage {
 	 * <!-- end-user-doc -->
 	 * @generated
 	 */
+	@Override
 	public EAttribute getMarker_Location() {
 		return (EAttribute)markerEClass.getEStructuralFeatures().get(0);
 	}
@@ -373,6 +383,7 @@ public class CorePackageImpl extends EPackageImpl implements CorePackage {
 	 * <!-- end-user-doc -->
 	 * @generated
 	 */
+	@Override
 	public EAttribute getMarker_Position() {
 		return (EAttribute)markerEClass.getEStructuralFeatures().get(1);
 	}
@@ -382,6 +393,7 @@ public class CorePackageImpl extends EPackageImpl implements CorePackage {
 	 * <!-- end-user-doc -->
 	 * @generated
 	 */
+	@Override
 	public EAttribute getMarker_Comment() {
 		return (EAttribute)markerEClass.getEStructuralFeatures().get(2);
 	}
@@ -391,6 +403,7 @@ public class CorePackageImpl extends EPackageImpl implements CorePackage {
 	 * <!-- end-user-doc -->
 	 * @generated
 	 */
+	@Override
 	public EAttribute getMarker_Date() {
 		return (EAttribute)markerEClass.getEStructuralFeatures().get(3);
 	}
@@ -400,6 +413,7 @@ public class CorePackageImpl extends EPackageImpl implements CorePackage {
 	 * <!-- end-user-doc -->
 	 * @generated
 	 */
+	@Override
 	public EAttribute getMarker_Feature() {
 		return (EAttribute)markerEClass.getEStructuralFeatures().get(4);
 	}
@@ -409,6 +423,7 @@ public class CorePackageImpl extends EPackageImpl implements CorePackage {
 	 * <!-- end-user-doc -->
 	 * @generated
 	 */
+	@Override
 	public EAttribute getMarker_Digest() {
 		return (EAttribute)markerEClass.getEStructuralFeatures().get(5);
 	}
@@ -418,6 +433,7 @@ public class CorePackageImpl extends EPackageImpl implements CorePackage {
 	 * <!-- end-user-doc -->
 	 * @generated
 	 */
+	@Override
 	public EReference getMarker_Children() {
 		return (EReference)markerEClass.getEStructuralFeatures().get(6);
 	}
@@ -427,6 +443,7 @@ public class CorePackageImpl extends EPackageImpl implements CorePackage {
 	 * <!-- end-user-doc -->
 	 * @generated
 	 */
+	@Override
 	public EClass getGitMarker() {
 		return gitMarkerEClass;
 	}
@@ -436,6 +453,7 @@ public class CorePackageImpl extends EPackageImpl implements CorePackage {
 	 * <!-- end-user-doc -->
 	 * @generated
 	 */
+	@Override
 	public EAttribute getGitMarker_Path() {
 		return (EAttribute)gitMarkerEClass.getEStructuralFeatures().get(0);
 	}
@@ -445,6 +463,7 @@ public class CorePackageImpl extends EPackageImpl implements CorePackage {
 	 * <!-- end-user-doc -->
 	 * @generated
 	 */
+	@Override
 	public EReference getGitMarker_Remotes() {
 		return (EReference)gitMarkerEClass.getEStructuralFeatures().get(1);
 	}
@@ -454,6 +473,7 @@ public class CorePackageImpl extends EPackageImpl implements CorePackage {
 	 * <!-- end-user-doc -->
 	 * @generated
 	 */
+	@Override
 	public EAttribute getGitMarker_Branch() {
 		return (EAttribute)gitMarkerEClass.getEStructuralFeatures().get(2);
 	}
@@ -463,6 +483,7 @@ public class CorePackageImpl extends EPackageImpl implements CorePackage {
 	 * <!-- end-user-doc -->
 	 * @generated
 	 */
+	@Override
 	public EAttribute getGitMarker_Head() {
 		return (EAttribute)gitMarkerEClass.getEStructuralFeatures().get(3);
 	}
@@ -472,6 +493,7 @@ public class CorePackageImpl extends EPackageImpl implements CorePackage {
 	 * <!-- end-user-doc -->
 	 * @generated
 	 */
+	@Override
 	public EAttribute getGitMarker_HeadRefs() {
 		return (EAttribute)gitMarkerEClass.getEStructuralFeatures().get(4);
 	}
@@ -481,6 +503,7 @@ public class CorePackageImpl extends EPackageImpl implements CorePackage {
 	 * <!-- end-user-doc -->
 	 * @generated
 	 */
+	@Override
 	public EClass getMarked() {
 		return markedEClass;
 	}
@@ -490,6 +513,7 @@ public class CorePackageImpl extends EPackageImpl implements CorePackage {
 	 * <!-- end-user-doc -->
 	 * @generated
 	 */
+	@Override
 	public EReference getMarked_Markers() {
 		return (EReference)markedEClass.getEStructuralFeatures().get(0);
 	}
@@ -499,6 +523,7 @@ public class CorePackageImpl extends EPackageImpl implements CorePackage {
 	 * <!-- end-user-doc -->
 	 * @generated
 	 */
+	@Override
 	public EClass getContent() {
 		return contentEClass;
 	}
@@ -508,6 +533,7 @@ public class CorePackageImpl extends EPackageImpl implements CorePackage {
 	 * <!-- end-user-doc -->
 	 * @generated
 	 */
+	@Override
 	public EAttribute getContent_Content() {
 		return (EAttribute)contentEClass.getEStructuralFeatures().get(0);
 	}
@@ -517,6 +543,7 @@ public class CorePackageImpl extends EPackageImpl implements CorePackage {
 	 * <!-- end-user-doc -->
 	 * @generated
 	 */
+	@Override
 	public EAttribute getContent_ContentRef() {
 		return (EAttribute)contentEClass.getEStructuralFeatures().get(1);
 	}
@@ -526,6 +553,7 @@ public class CorePackageImpl extends EPackageImpl implements CorePackage {
 	 * <!-- end-user-doc -->
 	 * @generated
 	 */
+	@Override
 	public EAttribute getContent_ContentType() {
 		return (EAttribute)contentEClass.getEStructuralFeatures().get(2);
 	}
@@ -535,6 +563,7 @@ public class CorePackageImpl extends EPackageImpl implements CorePackage {
 	 * <!-- end-user-doc -->
 	 * @generated
 	 */
+	@Override
 	public EClass getSectionReference() {
 		return sectionReferenceEClass;
 	}
@@ -544,6 +573,7 @@ public class CorePackageImpl extends EPackageImpl implements CorePackage {
 	 * <!-- end-user-doc -->
 	 * @generated
 	 */
+	@Override
 	public EAttribute getSectionReference_Title() {
 		return (EAttribute)sectionReferenceEClass.getEStructuralFeatures().get(0);
 	}
@@ -553,6 +583,7 @@ public class CorePackageImpl extends EPackageImpl implements CorePackage {
 	 * <!-- end-user-doc -->
 	 * @generated
 	 */
+	@Override
 	public EAttribute getSectionReference_Id() {
 		return (EAttribute)sectionReferenceEClass.getEStructuralFeatures().get(1);
 	}
@@ -562,6 +593,7 @@ public class CorePackageImpl extends EPackageImpl implements CorePackage {
 	 * <!-- end-user-doc -->
 	 * @generated
 	 */
+	@Override
 	public EClass getSection() {
 		return sectionEClass;
 	}
@@ -571,6 +603,7 @@ public class CorePackageImpl extends EPackageImpl implements CorePackage {
 	 * <!-- end-user-doc -->
 	 * @generated
 	 */
+	@Override
 	public EReference getSection_Children() {
 		return (EReference)sectionEClass.getEStructuralFeatures().get(0);
 	}
@@ -580,6 +613,7 @@ public class CorePackageImpl extends EPackageImpl implements CorePackage {
 	 * <!-- end-user-doc -->
 	 * @generated
 	 */
+	@Override
 	public EReference getSection_Contents() {
 		return (EReference)sectionEClass.getEStructuralFeatures().get(1);
 	}
@@ -589,6 +623,7 @@ public class CorePackageImpl extends EPackageImpl implements CorePackage {
 	 * <!-- end-user-doc -->
 	 * @generated
 	 */
+	@Override
 	public EClass getDocumented() {
 		return documentedEClass;
 	}
@@ -598,6 +633,7 @@ public class CorePackageImpl extends EPackageImpl implements CorePackage {
 	 * <!-- end-user-doc -->
 	 * @generated
 	 */
+	@Override
 	public EAttribute getDocumented_Documentation() {
 		return (EAttribute)documentedEClass.getEStructuralFeatures().get(0);
 	}
@@ -607,6 +643,7 @@ public class CorePackageImpl extends EPackageImpl implements CorePackage {
 	 * <!-- end-user-doc -->
 	 * @generated
 	 */
+	@Override
 	public EAttribute getDocumented_DocRef() {
 		return (EAttribute)documentedEClass.getEStructuralFeatures().get(1);
 	}
@@ -616,6 +653,7 @@ public class CorePackageImpl extends EPackageImpl implements CorePackage {
 	 * <!-- end-user-doc -->
 	 * @generated
 	 */
+	@Override
 	public EAttribute getDocumented_DocFormat() {
 		return (EAttribute)documentedEClass.getEStructuralFeatures().get(2);
 	}
@@ -625,6 +663,7 @@ public class CorePackageImpl extends EPackageImpl implements CorePackage {
 	 * <!-- end-user-doc -->
 	 * @generated
 	 */
+	@Override
 	public EReference getDocumented_DocContents() {
 		return (EReference)documentedEClass.getEStructuralFeatures().get(3);
 	}
@@ -634,6 +673,7 @@ public class CorePackageImpl extends EPackageImpl implements CorePackage {
 	 * <!-- end-user-doc -->
 	 * @generated
 	 */
+	@Override
 	public EReference getDocumented_DocSections() {
 		return (EReference)documentedEClass.getEStructuralFeatures().get(4);
 	}
@@ -643,6 +683,7 @@ public class CorePackageImpl extends EPackageImpl implements CorePackage {
 	 * <!-- end-user-doc -->
 	 * @generated
 	 */
+	@Override
 	public EClass getModelElement() {
 		return modelElementEClass;
 	}
@@ -652,6 +693,7 @@ public class CorePackageImpl extends EPackageImpl implements CorePackage {
 	 * <!-- end-user-doc -->
 	 * @generated
 	 */
+	@Override
 	public EAttribute getModelElement_Icon() {
 		return (EAttribute)modelElementEClass.getEStructuralFeatures().get(0);
 	}
@@ -661,6 +703,7 @@ public class CorePackageImpl extends EPackageImpl implements CorePackage {
 	 * <!-- end-user-doc -->
 	 * @generated
 	 */
+	@Override
 	public EAttribute getModelElement_Uris() {
 		return (EAttribute)modelElementEClass.getEStructuralFeatures().get(1);
 	}
@@ -670,6 +713,7 @@ public class CorePackageImpl extends EPackageImpl implements CorePackage {
 	 * <!-- end-user-doc -->
 	 * @generated
 	 */
+	@Override
 	public EClass getNamedElement() {
 		return namedElementEClass;
 	}
@@ -679,6 +723,7 @@ public class CorePackageImpl extends EPackageImpl implements CorePackage {
 	 * <!-- end-user-doc -->
 	 * @generated
 	 */
+	@Override
 	public EAttribute getNamedElement_Name() {
 		return (EAttribute)namedElementEClass.getEStructuralFeatures().get(0);
 	}
@@ -688,6 +733,7 @@ public class CorePackageImpl extends EPackageImpl implements CorePackage {
 	 * <!-- end-user-doc -->
 	 * @generated
 	 */
+	@Override
 	public EClass getEvaluator() {
 		return evaluatorEClass;
 	}
@@ -697,6 +743,7 @@ public class CorePackageImpl extends EPackageImpl implements CorePackage {
 	 * <!-- end-user-doc -->
 	 * @generated
 	 */
+	@Override
 	public EOperation getEvaluator__Evaluate__Class_Map() {
 		return evaluatorEClass.getEOperations().get(0);
 	}
@@ -706,6 +753,7 @@ public class CorePackageImpl extends EPackageImpl implements CorePackage {
 	 * <!-- end-user-doc -->
 	 * @generated
 	 */
+	@Override
 	public EOperation getEvaluator__Evaluate__Class() {
 		return evaluatorEClass.getEOperations().get(1);
 	}
@@ -715,6 +763,7 @@ public class CorePackageImpl extends EPackageImpl implements CorePackage {
 	 * <!-- end-user-doc -->
 	 * @generated
 	 */
+	@Override
 	public EOperation getEvaluator__Evaluate__Map() {
 		return evaluatorEClass.getEOperations().get(2);
 	}
@@ -724,6 +773,7 @@ public class CorePackageImpl extends EPackageImpl implements CorePackage {
 	 * <!-- end-user-doc -->
 	 * @generated
 	 */
+	@Override
 	public EOperation getEvaluator__Evaluate() {
 		return evaluatorEClass.getEOperations().get(3);
 	}
@@ -733,6 +783,7 @@ public class CorePackageImpl extends EPackageImpl implements CorePackage {
 	 * <!-- end-user-doc -->
 	 * @generated
 	 */
+	@Override
 	public EClass getSourceEvaluator() {
 		return sourceEvaluatorEClass;
 	}
@@ -742,6 +793,7 @@ public class CorePackageImpl extends EPackageImpl implements CorePackage {
 	 * <!-- end-user-doc -->
 	 * @generated
 	 */
+	@Override
 	public EAttribute getSourceEvaluator_Script() {
 		return (EAttribute)sourceEvaluatorEClass.getEStructuralFeatures().get(0);
 	}
@@ -751,6 +803,7 @@ public class CorePackageImpl extends EPackageImpl implements CorePackage {
 	 * <!-- end-user-doc -->
 	 * @generated
 	 */
+	@Override
 	public EAttribute getSourceEvaluator_ScriptRef() {
 		return (EAttribute)sourceEvaluatorEClass.getEStructuralFeatures().get(1);
 	}
@@ -760,6 +813,7 @@ public class CorePackageImpl extends EPackageImpl implements CorePackage {
 	 * <!-- end-user-doc -->
 	 * @generated
 	 */
+	@Override
 	public EClass getExpressionEvaluator() {
 		return expressionEvaluatorEClass;
 	}
@@ -769,6 +823,7 @@ public class CorePackageImpl extends EPackageImpl implements CorePackage {
 	 * <!-- end-user-doc -->
 	 * @generated
 	 */
+	@Override
 	public EAttribute getExpressionEvaluator_Expression() {
 		return (EAttribute)expressionEvaluatorEClass.getEStructuralFeatures().get(0);
 	}
@@ -778,6 +833,7 @@ public class CorePackageImpl extends EPackageImpl implements CorePackage {
 	 * <!-- end-user-doc -->
 	 * @generated
 	 */
+	@Override
 	public EClass getSpelEvaluator() {
 		return spelEvaluatorEClass;
 	}
@@ -787,6 +843,7 @@ public class CorePackageImpl extends EPackageImpl implements CorePackage {
 	 * <!-- end-user-doc -->
 	 * @generated
 	 */
+	@Override
 	public EOperation getSpelEvaluator__Evaluate__Class_Map() {
 		return spelEvaluatorEClass.getEOperations().get(0);
 	}
@@ -796,6 +853,7 @@ public class CorePackageImpl extends EPackageImpl implements CorePackage {
 	 * <!-- end-user-doc -->
 	 * @generated
 	 */
+	@Override
 	public EClass getXPathEvaluator() {
 		return xPathEvaluatorEClass;
 	}
@@ -805,6 +863,7 @@ public class CorePackageImpl extends EPackageImpl implements CorePackage {
 	 * <!-- end-user-doc -->
 	 * @generated
 	 */
+	@Override
 	public EOperation getXPathEvaluator__Evaluate__Class_Map() {
 		return xPathEvaluatorEClass.getEOperations().get(0);
 	}
@@ -814,6 +873,7 @@ public class CorePackageImpl extends EPackageImpl implements CorePackage {
 	 * <!-- end-user-doc -->
 	 * @generated
 	 */
+	@Override
 	public EClass getScriptEvaluator() {
 		return scriptEvaluatorEClass;
 	}
@@ -823,6 +883,7 @@ public class CorePackageImpl extends EPackageImpl implements CorePackage {
 	 * <!-- end-user-doc -->
 	 * @generated
 	 */
+	@Override
 	public EAttribute getScriptEvaluator_Language() {
 		return (EAttribute)scriptEvaluatorEClass.getEStructuralFeatures().get(0);
 	}
@@ -832,6 +893,7 @@ public class CorePackageImpl extends EPackageImpl implements CorePackage {
 	 * <!-- end-user-doc -->
 	 * @generated
 	 */
+	@Override
 	public EOperation getScriptEvaluator__Evaluate__Class_Map() {
 		return scriptEvaluatorEClass.getEOperations().get(0);
 	}
@@ -841,6 +903,7 @@ public class CorePackageImpl extends EPackageImpl implements CorePackage {
 	 * <!-- end-user-doc -->
 	 * @generated
 	 */
+	@Override
 	public EClass getGroovyEvaluator() {
 		return groovyEvaluatorEClass;
 	}
@@ -850,6 +913,7 @@ public class CorePackageImpl extends EPackageImpl implements CorePackage {
 	 * <!-- end-user-doc -->
 	 * @generated
 	 */
+	@Override
 	public EOperation getGroovyEvaluator__Evaluate__Class_Map() {
 		return groovyEvaluatorEClass.getEOperations().get(0);
 	}
@@ -859,6 +923,7 @@ public class CorePackageImpl extends EPackageImpl implements CorePackage {
 	 * <!-- end-user-doc -->
 	 * @generated
 	 */
+	@Override
 	public EDataType getInstant() {
 		return instantEDataType;
 	}
@@ -868,6 +933,7 @@ public class CorePackageImpl extends EPackageImpl implements CorePackage {
 	 * <!-- end-user-doc -->
 	 * @generated
 	 */
+	@Override
 	public EDataType getDuration() {
 		return durationEDataType;
 	}
@@ -877,6 +943,7 @@ public class CorePackageImpl extends EPackageImpl implements CorePackage {
 	 * <!-- end-user-doc -->
 	 * @generated
 	 */
+	@Override
 	public EDataType getClass_() {
 		return classEDataType;
 	}
@@ -886,6 +953,7 @@ public class CorePackageImpl extends EPackageImpl implements CorePackage {
 	 * <!-- end-user-doc -->
 	 * @generated
 	 */
+	@Override
 	public EDataType getMap() {
 		return mapEDataType;
 	}
@@ -895,6 +963,7 @@ public class CorePackageImpl extends EPackageImpl implements CorePackage {
 	 * <!-- end-user-doc -->
 	 * @generated
 	 */
+	@Override
 	public EDataType getObject() {
 		return objectEDataType;
 	}
@@ -904,6 +973,7 @@ public class CorePackageImpl extends EPackageImpl implements CorePackage {
 	 * <!-- end-user-doc -->
 	 * @generated
 	 */
+	@Override
 	public CoreFactory getCoreFactory() {
 		return (CoreFactory)getEFactoryInstance();
 	}

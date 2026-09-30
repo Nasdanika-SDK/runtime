@@ -45,6 +45,7 @@ public class SpelEvaluatorImpl extends ExpressionEvaluatorImpl implements SpelEv
 	 * <!-- end-user-doc -->
 	 * @generated
 	 */
+	@Override
 	public <T> T evaluate(final Class<T> resultType, final Map<String, Object> bindings) {
 		return org.nasdanika.sdk.runtime.models.core.util.EvaluatorSupport.evaluateSpel(this, resultType, bindings);
 	}

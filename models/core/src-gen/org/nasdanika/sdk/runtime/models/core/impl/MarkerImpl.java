@@ -133,6 +133,7 @@ public class MarkerImpl extends MinimalEObjectImpl.Container implements Marker {
 	 * <!-- end-user-doc -->
 	 * @generated
 	 */
+	@Override
 	public String getLocation() {
 		return (String)eDynamicGet(CorePackage.MARKER__LOCATION, CorePackage.Literals.MARKER__LOCATION, true, true);
 	}
@@ -142,6 +143,7 @@ public class MarkerImpl extends MinimalEObjectImpl.Container implements Marker {
 	 * <!-- end-user-doc -->
 	 * @generated
 	 */
+	@Override
 	public void setLocation(String newLocation) {
 		eDynamicSet(CorePackage.MARKER__LOCATION, CorePackage.Literals.MARKER__LOCATION, newLocation);
 	}
@@ -151,6 +153,7 @@ public class MarkerImpl extends MinimalEObjectImpl.Container implements Marker {
 	 * <!-- end-user-doc -->
 	 * @generated
 	 */
+	@Override
 	public String getPosition() {
 		return (String)eDynamicGet(CorePackage.MARKER__POSITION, CorePackage.Literals.MARKER__POSITION, true, true);
 	}
@@ -160,6 +163,7 @@ public class MarkerImpl extends MinimalEObjectImpl.Container implements Marker {
 	 * <!-- end-user-doc -->
 	 * @generated
 	 */
+	@Override
 	public void setPosition(String newPosition) {
 		eDynamicSet(CorePackage.MARKER__POSITION, CorePackage.Literals.MARKER__POSITION, newPosition);
 	}
@@ -169,6 +173,7 @@ public class MarkerImpl extends MinimalEObjectImpl.Container implements Marker {
 	 * <!-- end-user-doc -->
 	 * @generated
 	 */
+	@Override
 	public String getComment() {
 		return (String)eDynamicGet(CorePackage.MARKER__COMMENT, CorePackage.Literals.MARKER__COMMENT, true, true);
 	}
@@ -178,6 +183,7 @@ public class MarkerImpl extends MinimalEObjectImpl.Container implements Marker {
 	 * <!-- end-user-doc -->
 	 * @generated
 	 */
+	@Override
 	public void setComment(String newComment) {
 		eDynamicSet(CorePackage.MARKER__COMMENT, CorePackage.Literals.MARKER__COMMENT, newComment);
 	}
@@ -187,6 +193,7 @@ public class MarkerImpl extends MinimalEObjectImpl.Container implements Marker {
 	 * <!-- end-user-doc -->
 	 * @generated
 	 */
+	@Override
 	public Date getDate() {
 		return (Date)eDynamicGet(CorePackage.MARKER__DATE, CorePackage.Literals.MARKER__DATE, true, true);
 	}
@@ -196,6 +203,7 @@ public class MarkerImpl extends MinimalEObjectImpl.Container implements Marker {
 	 * <!-- end-user-doc -->
 	 * @generated
 	 */
+	@Override
 	public void setDate(Date newDate) {
 		eDynamicSet(CorePackage.MARKER__DATE, CorePackage.Literals.MARKER__DATE, newDate);
 	}
@@ -205,6 +213,7 @@ public class MarkerImpl extends MinimalEObjectImpl.Container implements Marker {
 	 * <!-- end-user-doc -->
 	 * @generated
 	 */
+	@Override
 	public String getFeature() {
 		return (String)eDynamicGet(CorePackage.MARKER__FEATURE, CorePackage.Literals.MARKER__FEATURE, true, true);
 	}
@@ -214,6 +223,7 @@ public class MarkerImpl extends MinimalEObjectImpl.Container implements Marker {
 	 * <!-- end-user-doc -->
 	 * @generated
 	 */
+	@Override
 	public void setFeature(String newFeature) {
 		eDynamicSet(CorePackage.MARKER__FEATURE, CorePackage.Literals.MARKER__FEATURE, newFeature);
 	}
@@ -223,6 +233,7 @@ public class MarkerImpl extends MinimalEObjectImpl.Container implements Marker {
 	 * <!-- end-user-doc -->
 	 * @generated
 	 */
+	@Override
 	public String getDigest() {
 		return (String)eDynamicGet(CorePackage.MARKER__DIGEST, CorePackage.Literals.MARKER__DIGEST, true, true);
 	}
@@ -232,6 +243,7 @@ public class MarkerImpl extends MinimalEObjectImpl.Container implements Marker {
 	 * <!-- end-user-doc -->
 	 * @generated
 	 */
+	@Override
 	public void setDigest(String newDigest) {
 		eDynamicSet(CorePackage.MARKER__DIGEST, CorePackage.Literals.MARKER__DIGEST, newDigest);
 	}
@@ -242,6 +254,7 @@ public class MarkerImpl extends MinimalEObjectImpl.Container implements Marker {
 	 * @generated
 	 */
 	@SuppressWarnings("unchecked")
+	@Override
 	public EList<Marker> getChildren() {
 		return (EList<Marker>)eDynamicGet(CorePackage.MARKER__CHILDREN, CorePackage.Literals.MARKER__CHILDREN, true, true);
 	}

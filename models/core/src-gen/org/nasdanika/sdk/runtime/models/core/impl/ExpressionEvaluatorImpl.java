@@ -119,6 +119,7 @@ public class ExpressionEvaluatorImpl extends MinimalEObjectImpl.Container implem
 	 * <!-- end-user-doc -->
 	 * @generated
 	 */
+	@Override
 	public String getDocumentation() {
 		return (String)eDynamicGet(CorePackage.EXPRESSION_EVALUATOR__DOCUMENTATION, CorePackage.Literals.DOCUMENTED__DOCUMENTATION, true, true);
 	}
@@ -128,6 +129,7 @@ public class ExpressionEvaluatorImpl extends MinimalEObjectImpl.Container implem
 	 * <!-- end-user-doc -->
 	 * @generated
 	 */
+	@Override
 	public void setDocumentation(String newDocumentation) {
 		eDynamicSet(CorePackage.EXPRESSION_EVALUATOR__DOCUMENTATION, CorePackage.Literals.DOCUMENTED__DOCUMENTATION, newDocumentation);
 	}
@@ -137,6 +139,7 @@ public class ExpressionEvaluatorImpl extends MinimalEObjectImpl.Container implem
 	 * <!-- end-user-doc -->
 	 * @generated
 	 */
+	@Override
 	public String getDocRef() {
 		return (String)eDynamicGet(CorePackage.EXPRESSION_EVALUATOR__DOC_REF, CorePackage.Literals.DOCUMENTED__DOC_REF, true, true);
 	}
@@ -146,6 +149,7 @@ public class ExpressionEvaluatorImpl extends MinimalEObjectImpl.Container implem
 	 * <!-- end-user-doc -->
 	 * @generated
 	 */
+	@Override
 	public void setDocRef(String newDocRef) {
 		eDynamicSet(CorePackage.EXPRESSION_EVALUATOR__DOC_REF, CorePackage.Literals.DOCUMENTED__DOC_REF, newDocRef);
 	}
@@ -155,6 +159,7 @@ public class ExpressionEvaluatorImpl extends MinimalEObjectImpl.Container implem
 	 * <!-- end-user-doc -->
 	 * @generated
 	 */
+	@Override
 	public String getDocFormat() {
 		return (String)eDynamicGet(CorePackage.EXPRESSION_EVALUATOR__DOC_FORMAT, CorePackage.Literals.DOCUMENTED__DOC_FORMAT, true, true);
 	}
@@ -164,6 +169,7 @@ public class ExpressionEvaluatorImpl extends MinimalEObjectImpl.Container implem
 	 * <!-- end-user-doc -->
 	 * @generated
 	 */
+	@Override
 	public void setDocFormat(String newDocFormat) {
 		eDynamicSet(CorePackage.EXPRESSION_EVALUATOR__DOC_FORMAT, CorePackage.Literals.DOCUMENTED__DOC_FORMAT, newDocFormat);
 	}
@@ -174,6 +180,7 @@ public class ExpressionEvaluatorImpl extends MinimalEObjectImpl.Container implem
 	 * @generated
 	 */
 	@SuppressWarnings("unchecked")
+	@Override
 	public EList<Content> getDocContents() {
 		return (EList<Content>)eDynamicGet(CorePackage.EXPRESSION_EVALUATOR__DOC_CONTENTS, CorePackage.Literals.DOCUMENTED__DOC_CONTENTS, true, true);
 	}
@@ -184,6 +191,7 @@ public class ExpressionEvaluatorImpl extends MinimalEObjectImpl.Container implem
 	 * @generated
 	 */
 	@SuppressWarnings("unchecked")
+	@Override
 	public EList<Section> getDocSections() {
 		return (EList<Section>)eDynamicGet(CorePackage.EXPRESSION_EVALUATOR__DOC_SECTIONS, CorePackage.Literals.DOCUMENTED__DOC_SECTIONS, true, true);
 	}
@@ -194,6 +202,7 @@ public class ExpressionEvaluatorImpl extends MinimalEObjectImpl.Container implem
 	 * @generated
 	 */
 	@SuppressWarnings("unchecked")
+	@Override
 	public EList<Marker> getMarkers() {
 		return (EList<Marker>)eDynamicGet(CorePackage.EXPRESSION_EVALUATOR__MARKERS, CorePackage.Literals.MARKED__MARKERS, true, true);
 	}
@@ -203,6 +212,7 @@ public class ExpressionEvaluatorImpl extends MinimalEObjectImpl.Container implem
 	 * <!-- end-user-doc -->
 	 * @generated
 	 */
+	@Override
 	public String getExpression() {
 		return (String)eDynamicGet(CorePackage.EXPRESSION_EVALUATOR__EXPRESSION, CorePackage.Literals.EXPRESSION_EVALUATOR__EXPRESSION, true, true);
 	}
@@ -212,6 +222,7 @@ public class ExpressionEvaluatorImpl extends MinimalEObjectImpl.Container implem
 	 * <!-- end-user-doc -->
 	 * @generated
 	 */
+	@Override
 	public void setExpression(String newExpression) {
 		eDynamicSet(CorePackage.EXPRESSION_EVALUATOR__EXPRESSION, CorePackage.Literals.EXPRESSION_EVALUATOR__EXPRESSION, newExpression);
 	}
@@ -221,6 +232,7 @@ public class ExpressionEvaluatorImpl extends MinimalEObjectImpl.Container implem
 	 * <!-- end-user-doc -->
 	 * @generated
 	 */
+	@Override
 	public <T> T evaluate(Class<T> resultType, Map<String, Object> bindings) {
 		// TODO: implement this method
 		// Ensure that you remove @generated or mark it @generated NOT
@@ -232,6 +244,7 @@ public class ExpressionEvaluatorImpl extends MinimalEObjectImpl.Container implem
 	 * <!-- end-user-doc -->
 	 * @generated
 	 */
+	@Override
 	public <T> T evaluate(final Class<T> resultType) {
 		return this.<T>evaluate(resultType, null);
 	}
@@ -241,6 +254,7 @@ public class ExpressionEvaluatorImpl extends MinimalEObjectImpl.Container implem
 	 * <!-- end-user-doc -->
 	 * @generated
 	 */
+	@Override
 	public Object evaluate(final Map<String, Object> bindings) {
 		return this.<Object>evaluate(null, bindings);
 	}
@@ -250,6 +264,7 @@ public class ExpressionEvaluatorImpl extends MinimalEObjectImpl.Container implem
 	 * <!-- end-user-doc -->
 	 * @generated
 	 */
+	@Override
 	public Object evaluate() {
 		return this.<Object>evaluate(null, null);
 	}
