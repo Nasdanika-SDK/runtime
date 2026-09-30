@@ -90,7 +90,6 @@ public class GitMarkerImpl extends MarkerImpl implements GitMarker {
 	 * <!-- end-user-doc -->
 	 * @generated
 	 */
-	@Override
 	public String getPath() {
 		return (String)eDynamicGet(CorePackage.GIT_MARKER__PATH, CorePackage.Literals.GIT_MARKER__PATH, true, true);
 	}
@@ -100,7 +99,6 @@ public class GitMarkerImpl extends MarkerImpl implements GitMarker {
 	 * <!-- end-user-doc -->
 	 * @generated
 	 */
-	@Override
 	public void setPath(String newPath) {
 		eDynamicSet(CorePackage.GIT_MARKER__PATH, CorePackage.Literals.GIT_MARKER__PATH, newPath);
 	}
@@ -111,7 +109,6 @@ public class GitMarkerImpl extends MarkerImpl implements GitMarker {
 	 * @generated
 	 */
 	@SuppressWarnings("unchecked")
-	@Override
 	public EMap<String, String> getRemotes() {
 		return (EMap<String, String>)eDynamicGet(CorePackage.GIT_MARKER__REMOTES, CorePackage.Literals.GIT_MARKER__REMOTES, true, true);
 	}
@@ -121,7 +118,6 @@ public class GitMarkerImpl extends MarkerImpl implements GitMarker {
 	 * <!-- end-user-doc -->
 	 * @generated
 	 */
-	@Override
 	public String getBranch() {
 		return (String)eDynamicGet(CorePackage.GIT_MARKER__BRANCH, CorePackage.Literals.GIT_MARKER__BRANCH, true, true);
 	}
@@ -131,7 +127,6 @@ public class GitMarkerImpl extends MarkerImpl implements GitMarker {
 	 * <!-- end-user-doc -->
 	 * @generated
 	 */
-	@Override
 	public void setBranch(String newBranch) {
 		eDynamicSet(CorePackage.GIT_MARKER__BRANCH, CorePackage.Literals.GIT_MARKER__BRANCH, newBranch);
 	}
@@ -141,7 +136,6 @@ public class GitMarkerImpl extends MarkerImpl implements GitMarker {
 	 * <!-- end-user-doc -->
 	 * @generated
 	 */
-	@Override
 	public String getHead() {
 		return (String)eDynamicGet(CorePackage.GIT_MARKER__HEAD, CorePackage.Literals.GIT_MARKER__HEAD, true, true);
 	}
@@ -151,7 +145,6 @@ public class GitMarkerImpl extends MarkerImpl implements GitMarker {
 	 * <!-- end-user-doc -->
 	 * @generated
 	 */
-	@Override
 	public void setHead(String newHead) {
 		eDynamicSet(CorePackage.GIT_MARKER__HEAD, CorePackage.Literals.GIT_MARKER__HEAD, newHead);
 	}
@@ -162,7 +155,6 @@ public class GitMarkerImpl extends MarkerImpl implements GitMarker {
 	 * @generated
 	 */
 	@SuppressWarnings("unchecked")
-	@Override
 	public EList<String> getHeadRefs() {
 		return (EList<String>)eDynamicGet(CorePackage.GIT_MARKER__HEAD_REFS, CorePackage.Literals.GIT_MARKER__HEAD_REFS, true, true);
 	}

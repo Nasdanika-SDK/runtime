@@ -139,7 +139,6 @@ public class CoreFactoryImpl extends EFactoryImpl implements CoreFactory {
 	 * <!-- end-user-doc -->
 	 * @generated
 	 */
-	@Override
 	public Marker createMarker() {
 		MarkerImpl marker = new MarkerImpl();
 		return marker;
@@ -150,7 +149,6 @@ public class CoreFactoryImpl extends EFactoryImpl implements CoreFactory {
 	 * <!-- end-user-doc -->
 	 * @generated
 	 */
-	@Override
 	public GitMarker createGitMarker() {
 		GitMarkerImpl gitMarker = new GitMarkerImpl();
 		return gitMarker;
@@ -161,7 +159,6 @@ public class CoreFactoryImpl extends EFactoryImpl implements CoreFactory {
 	 * <!-- end-user-doc -->
 	 * @generated
 	 */
-	@Override
 	public Content createContent() {
 		ContentImpl content = new ContentImpl();
 		return content;
@@ -172,7 +169,6 @@ public class CoreFactoryImpl extends EFactoryImpl implements CoreFactory {
 	 * <!-- end-user-doc -->
 	 * @generated
 	 */
-	@Override
 	public SectionReference createSectionReference() {
 		SectionReferenceImpl sectionReference = new SectionReferenceImpl();
 		return sectionReference;
@@ -183,7 +179,6 @@ public class CoreFactoryImpl extends EFactoryImpl implements CoreFactory {
 	 * <!-- end-user-doc -->
 	 * @generated
 	 */
-	@Override
 	public Section createSection() {
 		SectionImpl section = new SectionImpl();
 		return section;
@@ -194,7 +189,6 @@ public class CoreFactoryImpl extends EFactoryImpl implements CoreFactory {
 	 * <!-- end-user-doc -->
 	 * @generated
 	 */
-	@Override
 	public ExpressionEvaluator createExpressionEvaluator() {
 		ExpressionEvaluatorImpl expressionEvaluator = new ExpressionEvaluatorImpl();
 		return expressionEvaluator;
@@ -205,7 +199,6 @@ public class CoreFactoryImpl extends EFactoryImpl implements CoreFactory {
 	 * <!-- end-user-doc -->
 	 * @generated
 	 */
-	@Override
 	public SpelEvaluator createSpelEvaluator() {
 		SpelEvaluatorImpl spelEvaluator = new SpelEvaluatorImpl();
 		return spelEvaluator;
@@ -216,7 +209,6 @@ public class CoreFactoryImpl extends EFactoryImpl implements CoreFactory {
 	 * <!-- end-user-doc -->
 	 * @generated
 	 */
-	@Override
 	public XPathEvaluator createXPathEvaluator() {
 		XPathEvaluatorImpl xPathEvaluator = new XPathEvaluatorImpl();
 		return xPathEvaluator;
@@ -227,7 +219,6 @@ public class CoreFactoryImpl extends EFactoryImpl implements CoreFactory {
 	 * <!-- end-user-doc -->
 	 * @generated
 	 */
-	@Override
 	public ScriptEvaluator createScriptEvaluator() {
 		ScriptEvaluatorImpl scriptEvaluator = new ScriptEvaluatorImpl();
 		return scriptEvaluator;
@@ -238,7 +229,6 @@ public class CoreFactoryImpl extends EFactoryImpl implements CoreFactory {
 	 * <!-- end-user-doc -->
 	 * @generated
 	 */
-	@Override
 	public GroovyEvaluator createGroovyEvaluator() {
 		GroovyEvaluatorImpl groovyEvaluator = new GroovyEvaluatorImpl();
 		return groovyEvaluator;
@@ -339,7 +329,6 @@ public class CoreFactoryImpl extends EFactoryImpl implements CoreFactory {
 	 * <!-- end-user-doc -->
 	 * @generated
 	 */
-	@Override
 	public CorePackage getCorePackage() {
 		return (CorePackage)getEPackage();
 	}

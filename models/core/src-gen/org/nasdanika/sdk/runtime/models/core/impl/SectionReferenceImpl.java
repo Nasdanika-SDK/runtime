@@ -78,7 +78,6 @@ public class SectionReferenceImpl extends MinimalEObjectImpl.Container implement
 	 * <!-- end-user-doc -->
 	 * @generated
 	 */
-	@Override
 	public String getTitle() {
 		return (String)eDynamicGet(CorePackage.SECTION_REFERENCE__TITLE, CorePackage.Literals.SECTION_REFERENCE__TITLE, true, true);
 	}
@@ -88,7 +87,6 @@ public class SectionReferenceImpl extends MinimalEObjectImpl.Container implement
 	 * <!-- end-user-doc -->
 	 * @generated
 	 */
-	@Override
 	public void setTitle(String newTitle) {
 		eDynamicSet(CorePackage.SECTION_REFERENCE__TITLE, CorePackage.Literals.SECTION_REFERENCE__TITLE, newTitle);
 	}
@@ -98,7 +96,6 @@ public class SectionReferenceImpl extends MinimalEObjectImpl.Container implement
 	 * <!-- end-user-doc -->
 	 * @generated
 	 */
-	@Override
 	public String getId() {
 		return (String)eDynamicGet(CorePackage.SECTION_REFERENCE__ID, CorePackage.Literals.SECTION_REFERENCE__ID, true, true);
 	}
@@ -108,7 +105,6 @@ public class SectionReferenceImpl extends MinimalEObjectImpl.Container implement
 	 * <!-- end-user-doc -->
 	 * @generated
 	 */
-	@Override
 	public void setId(String newId) {
 		eDynamicSet(CorePackage.SECTION_REFERENCE__ID, CorePackage.Literals.SECTION_REFERENCE__ID, newId);
 	}

@@ -45,7 +45,6 @@ public class XPathEvaluatorImpl extends ExpressionEvaluatorImpl implements XPath
 	 * <!-- end-user-doc -->
 	 * @generated
 	 */
-	@Override
 	public <T> T evaluate(final Class<T> resultType, final Map<String, Object> bindings) {
 		return org.nasdanika.sdk.runtime.models.core.util.EvaluatorSupport.evaluateXPath(this, resultType, bindings);
 	}

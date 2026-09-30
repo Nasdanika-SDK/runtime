@@ -139,7 +139,6 @@ public abstract class ModelElementImpl extends MinimalEObjectImpl.Container impl
 	 * <!-- end-user-doc -->
 	 * @generated
 	 */
-	@Override
 	public String getId() {
 		return (String)eDynamicGet(CorePackage.MODEL_ELEMENT__ID, CorePackage.Literals.STRING_IDENTITY__ID, true, true);
 	}
@@ -149,7 +148,6 @@ public abstract class ModelElementImpl extends MinimalEObjectImpl.Container impl
 	 * <!-- end-user-doc -->
 	 * @generated
 	 */
-	@Override
 	public void setId(String newId) {
 		eDynamicSet(CorePackage.MODEL_ELEMENT__ID, CorePackage.Literals.STRING_IDENTITY__ID, newId);
 	}
@@ -159,7 +157,6 @@ public abstract class ModelElementImpl extends MinimalEObjectImpl.Container impl
 	 * <!-- end-user-doc -->
 	 * @generated
 	 */
-	@Override
 	public String getDocumentation() {
 		return (String)eDynamicGet(CorePackage.MODEL_ELEMENT__DOCUMENTATION, CorePackage.Literals.DOCUMENTED__DOCUMENTATION, true, true);
 	}
@@ -169,7 +166,6 @@ public abstract class ModelElementImpl extends MinimalEObjectImpl.Container impl
 	 * <!-- end-user-doc -->
 	 * @generated
 	 */
-	@Override
 	public void setDocumentation(String newDocumentation) {
 		eDynamicSet(CorePackage.MODEL_ELEMENT__DOCUMENTATION, CorePackage.Literals.DOCUMENTED__DOCUMENTATION, newDocumentation);
 	}
@@ -179,7 +175,6 @@ public abstract class ModelElementImpl extends MinimalEObjectImpl.Container impl
 	 * <!-- end-user-doc -->
 	 * @generated
 	 */
-	@Override
 	public String getDocRef() {
 		return (String)eDynamicGet(CorePackage.MODEL_ELEMENT__DOC_REF, CorePackage.Literals.DOCUMENTED__DOC_REF, true, true);
 	}
@@ -189,7 +184,6 @@ public abstract class ModelElementImpl extends MinimalEObjectImpl.Container impl
 	 * <!-- end-user-doc -->
 	 * @generated
 	 */
-	@Override
 	public void setDocRef(String newDocRef) {
 		eDynamicSet(CorePackage.MODEL_ELEMENT__DOC_REF, CorePackage.Literals.DOCUMENTED__DOC_REF, newDocRef);
 	}
@@ -199,7 +193,6 @@ public abstract class ModelElementImpl extends MinimalEObjectImpl.Container impl
 	 * <!-- end-user-doc -->
 	 * @generated
 	 */
-	@Override
 	public String getDocFormat() {
 		return (String)eDynamicGet(CorePackage.MODEL_ELEMENT__DOC_FORMAT, CorePackage.Literals.DOCUMENTED__DOC_FORMAT, true, true);
 	}
@@ -209,7 +202,6 @@ public abstract class ModelElementImpl extends MinimalEObjectImpl.Container impl
 	 * <!-- end-user-doc -->
 	 * @generated
 	 */
-	@Override
 	public void setDocFormat(String newDocFormat) {
 		eDynamicSet(CorePackage.MODEL_ELEMENT__DOC_FORMAT, CorePackage.Literals.DOCUMENTED__DOC_FORMAT, newDocFormat);
 	}
@@ -220,7 +212,6 @@ public abstract class ModelElementImpl extends MinimalEObjectImpl.Container impl
 	 * @generated
 	 */
 	@SuppressWarnings("unchecked")
-	@Override
 	public EList<Content> getDocContents() {
 		return (EList<Content>)eDynamicGet(CorePackage.MODEL_ELEMENT__DOC_CONTENTS, CorePackage.Literals.DOCUMENTED__DOC_CONTENTS, true, true);
 	}
@@ -231,7 +222,6 @@ public abstract class ModelElementImpl extends MinimalEObjectImpl.Container impl
 	 * @generated
 	 */
 	@SuppressWarnings("unchecked")
-	@Override
 	public EList<Section> getDocSections() {
 		return (EList<Section>)eDynamicGet(CorePackage.MODEL_ELEMENT__DOC_SECTIONS, CorePackage.Literals.DOCUMENTED__DOC_SECTIONS, true, true);
 	}
@@ -242,7 +232,6 @@ public abstract class ModelElementImpl extends MinimalEObjectImpl.Container impl
 	 * @generated
 	 */
 	@SuppressWarnings("unchecked")
-	@Override
 	public EList<Marker> getMarkers() {
 		return (EList<Marker>)eDynamicGet(CorePackage.MODEL_ELEMENT__MARKERS, CorePackage.Literals.MARKED__MARKERS, true, true);
 	}
@@ -252,7 +241,6 @@ public abstract class ModelElementImpl extends MinimalEObjectImpl.Container impl
 	 * <!-- end-user-doc -->
 	 * @generated
 	 */
-	@Override
 	public String getIcon() {
 		return (String)eDynamicGet(CorePackage.MODEL_ELEMENT__ICON, CorePackage.Literals.MODEL_ELEMENT__ICON, true, true);
 	}
@@ -262,7 +250,6 @@ public abstract class ModelElementImpl extends MinimalEObjectImpl.Container impl
 	 * <!-- end-user-doc -->
 	 * @generated
 	 */
-	@Override
 	public void setIcon(String newIcon) {
 		eDynamicSet(CorePackage.MODEL_ELEMENT__ICON, CorePackage.Literals.MODEL_ELEMENT__ICON, newIcon);
 	}
@@ -273,7 +260,6 @@ public abstract class ModelElementImpl extends MinimalEObjectImpl.Container impl
 	 * @generated
 	 */
 	@SuppressWarnings("unchecked")
-	@Override
 	public EList<String> getUris() {
 		return (EList<String>)eDynamicGet(CorePackage.MODEL_ELEMENT__URIS, CorePackage.Literals.MODEL_ELEMENT__URIS, true, true);
 	}
@@ -283,7 +269,6 @@ public abstract class ModelElementImpl extends MinimalEObjectImpl.Container impl
 	 * <!-- end-user-doc -->
 	 * @generated
 	 */
-	@Override
 	public void collect(final Object source, final EReference eReference, final EList<EObject> accumulator) {
 		boolean _isInstance = eReference.getEContainingClass().isInstance(source);
 		if (_isInstance) {
@@ -308,7 +293,6 @@ public abstract class ModelElementImpl extends MinimalEObjectImpl.Container impl
 	 * <!-- end-user-doc -->
 	 * @generated
 	 */
-	@Override
 	public EList<EObject> getReferrers(final EReference eReference) {
 		final BasicEList<EObject> ret = new BasicEList<EObject>();
 		final Resource res = this.eResource();

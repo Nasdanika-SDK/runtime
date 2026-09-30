@@ -130,7 +130,6 @@ public abstract class SourceEvaluatorImpl extends MinimalEObjectImpl.Container i
 	 * <!-- end-user-doc -->
 	 * @generated
 	 */
-	@Override
 	public String getDocumentation() {
 		return (String)eDynamicGet(CorePackage.SOURCE_EVALUATOR__DOCUMENTATION, CorePackage.Literals.DOCUMENTED__DOCUMENTATION, true, true);
 	}
@@ -140,7 +139,6 @@ public abstract class SourceEvaluatorImpl extends MinimalEObjectImpl.Container i
 	 * <!-- end-user-doc -->
 	 * @generated
 	 */
-	@Override
 	public void setDocumentation(String newDocumentation) {
 		eDynamicSet(CorePackage.SOURCE_EVALUATOR__DOCUMENTATION, CorePackage.Literals.DOCUMENTED__DOCUMENTATION, newDocumentation);
 	}
@@ -150,7 +148,6 @@ public abstract class SourceEvaluatorImpl extends MinimalEObjectImpl.Container i
 	 * <!-- end-user-doc -->
 	 * @generated
 	 */
-	@Override
 	public String getDocRef() {
 		return (String)eDynamicGet(CorePackage.SOURCE_EVALUATOR__DOC_REF, CorePackage.Literals.DOCUMENTED__DOC_REF, true, true);
 	}
@@ -160,7 +157,6 @@ public abstract class SourceEvaluatorImpl extends MinimalEObjectImpl.Container i
 	 * <!-- end-user-doc -->
 	 * @generated
 	 */
-	@Override
 	public void setDocRef(String newDocRef) {
 		eDynamicSet(CorePackage.SOURCE_EVALUATOR__DOC_REF, CorePackage.Literals.DOCUMENTED__DOC_REF, newDocRef);
 	}
@@ -170,7 +166,6 @@ public abstract class SourceEvaluatorImpl extends MinimalEObjectImpl.Container i
 	 * <!-- end-user-doc -->
 	 * @generated
 	 */
-	@Override
 	public String getDocFormat() {
 		return (String)eDynamicGet(CorePackage.SOURCE_EVALUATOR__DOC_FORMAT, CorePackage.Literals.DOCUMENTED__DOC_FORMAT, true, true);
 	}
@@ -180,7 +175,6 @@ public abstract class SourceEvaluatorImpl extends MinimalEObjectImpl.Container i
 	 * <!-- end-user-doc -->
 	 * @generated
 	 */
-	@Override
 	public void setDocFormat(String newDocFormat) {
 		eDynamicSet(CorePackage.SOURCE_EVALUATOR__DOC_FORMAT, CorePackage.Literals.DOCUMENTED__DOC_FORMAT, newDocFormat);
 	}
@@ -191,7 +185,6 @@ public abstract class SourceEvaluatorImpl extends MinimalEObjectImpl.Container i
 	 * @generated
 	 */
 	@SuppressWarnings("unchecked")
-	@Override
 	public EList<Content> getDocContents() {
 		return (EList<Content>)eDynamicGet(CorePackage.SOURCE_EVALUATOR__DOC_CONTENTS, CorePackage.Literals.DOCUMENTED__DOC_CONTENTS, true, true);
 	}
@@ -202,7 +195,6 @@ public abstract class SourceEvaluatorImpl extends MinimalEObjectImpl.Container i
 	 * @generated
 	 */
 	@SuppressWarnings("unchecked")
-	@Override
 	public EList<Section> getDocSections() {
 		return (EList<Section>)eDynamicGet(CorePackage.SOURCE_EVALUATOR__DOC_SECTIONS, CorePackage.Literals.DOCUMENTED__DOC_SECTIONS, true, true);
 	}
@@ -213,7 +205,6 @@ public abstract class SourceEvaluatorImpl extends MinimalEObjectImpl.Container i
 	 * @generated
 	 */
 	@SuppressWarnings("unchecked")
-	@Override
 	public EList<Marker> getMarkers() {
 		return (EList<Marker>)eDynamicGet(CorePackage.SOURCE_EVALUATOR__MARKERS, CorePackage.Literals.MARKED__MARKERS, true, true);
 	}
@@ -223,7 +214,6 @@ public abstract class SourceEvaluatorImpl extends MinimalEObjectImpl.Container i
 	 * <!-- end-user-doc -->
 	 * @generated
 	 */
-	@Override
 	public String getScript() {
 		return (String)eDynamicGet(CorePackage.SOURCE_EVALUATOR__SCRIPT, CorePackage.Literals.SOURCE_EVALUATOR__SCRIPT, true, true);
 	}
@@ -233,7 +223,6 @@ public abstract class SourceEvaluatorImpl extends MinimalEObjectImpl.Container i
 	 * <!-- end-user-doc -->
 	 * @generated
 	 */
-	@Override
 	public void setScript(String newScript) {
 		eDynamicSet(CorePackage.SOURCE_EVALUATOR__SCRIPT, CorePackage.Literals.SOURCE_EVALUATOR__SCRIPT, newScript);
 	}
@@ -243,7 +232,6 @@ public abstract class SourceEvaluatorImpl extends MinimalEObjectImpl.Container i
 	 * <!-- end-user-doc -->
 	 * @generated
 	 */
-	@Override
 	public String getScriptRef() {
 		return (String)eDynamicGet(CorePackage.SOURCE_EVALUATOR__SCRIPT_REF, CorePackage.Literals.SOURCE_EVALUATOR__SCRIPT_REF, true, true);
 	}
@@ -253,7 +241,6 @@ public abstract class SourceEvaluatorImpl extends MinimalEObjectImpl.Container i
 	 * <!-- end-user-doc -->
 	 * @generated
 	 */
-	@Override
 	public void setScriptRef(String newScriptRef) {
 		eDynamicSet(CorePackage.SOURCE_EVALUATOR__SCRIPT_REF, CorePackage.Literals.SOURCE_EVALUATOR__SCRIPT_REF, newScriptRef);
 	}
@@ -263,7 +250,6 @@ public abstract class SourceEvaluatorImpl extends MinimalEObjectImpl.Container i
 	 * <!-- end-user-doc -->
 	 * @generated
 	 */
-	@Override
 	public <T> T evaluate(Class<T> resultType, Map<String, Object> bindings) {
 		// TODO: implement this method
 		// Ensure that you remove @generated or mark it @generated NOT
@@ -275,7 +261,6 @@ public abstract class SourceEvaluatorImpl extends MinimalEObjectImpl.Container i
 	 * <!-- end-user-doc -->
 	 * @generated
 	 */
-	@Override
 	public <T> T evaluate(final Class<T> resultType) {
 		return this.<T>evaluate(resultType, null);
 	}
@@ -285,7 +270,6 @@ public abstract class SourceEvaluatorImpl extends MinimalEObjectImpl.Container i
 	 * <!-- end-user-doc -->
 	 * @generated
 	 */
-	@Override
 	public Object evaluate(final Map<String, Object> bindings) {
 		return this.<Object>evaluate(null, bindings);
 	}
@@ -295,7 +279,6 @@ public abstract class SourceEvaluatorImpl extends MinimalEObjectImpl.Container i
 	 * <!-- end-user-doc -->
 	 * @generated
 	 */
-	@Override
 	public Object evaluate() {
 		return this.<Object>evaluate(null, null);
 	}
