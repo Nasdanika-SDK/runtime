@@ -7,6 +7,10 @@ module org.nasdanika.sdk.runtime.models.core {
 	exports org.nasdanika.sdk.runtime.models.core.impl;
 	exports org.nasdanika.sdk.runtime.models.core.util;
 	
+	exports org.nasdanika.sdk.runtime.models.core.kind;
+	exports org.nasdanika.sdk.runtime.models.core.kind.impl;
+	exports org.nasdanika.sdk.runtime.models.core.kind.util;
+	
 	requires transitive org.nasdanika.sdk.runtime.common;
 	requires java.scripting;
 	

@@ -3,16 +3,18 @@
 	<modelVersion>4.0.0</modelVersion>
 	  <parent>
 	    <artifactId>parent</artifactId>
-	    <groupId>org.nasdanika.sdk.runtime</groupId>
+	    <groupId>org.nasdanika.sdk.runtime.tests</groupId>
 	    <version>2026.10.0</version>
 	    <relativePath>..</relativePath>
 	  </parent>
-	<groupId>org.nasdanika.sdk.runtime.tests</groupId>
-	<artifactId>parent</artifactId>
-	<packaging>pom</packaging>
-	<name>Tests</name>
-	<description>Tests which require service registration and code in main</description>
-	<properties>
-	    <maven.deploy.skip>true</maven.deploy.skip>
-	</properties>
+	<artifactId>general</artifactId>
+	<packaging>jar</packaging>
+	<name>General</name>
+	<dependencies>
+		<dependency>
+			<groupId>org.nasdanika.sdk.runtime.models</groupId>
+			<artifactId>core</artifactId>
+			<version>${project.version}</version>
+		</dependency>
+	</dependencies>
 </project>

@@ -1,6 +1,6 @@
 <?xml version="1.0" encoding="UTF-8"?>
 <projectDescription>
-	<name>org.nasdanika.sdk.runtime.tests</name>
+	<name>org.nasdanika.sdk.runtime.tests.general</name>
 	<projects>
 	</projects>
 	<buildSpec>
