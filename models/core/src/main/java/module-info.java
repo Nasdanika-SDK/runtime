@@ -1,5 +1,6 @@
-import org.nasdanika.sdk.runtime.common.services.ResourceSetContributor;
-import org.nasdanika.sdk.runtime.models.core.util.CoreEPackageResourceSetConfigurator;
+import org.eclipse.emf.ecore.EPackage;
+import org.nasdanika.sdk.runtime.models.core.util.CoreEPackageProvider;
+import org.nasdanika.sdk.runtime.models.core.util.KindEPackageProvider;
 
 module org.nasdanika.sdk.runtime.models.core {
 	
@@ -11,9 +12,12 @@ module org.nasdanika.sdk.runtime.models.core {
 	exports org.nasdanika.sdk.runtime.models.core.kind.impl;
 	exports org.nasdanika.sdk.runtime.models.core.kind.util;
 	
-	requires transitive org.nasdanika.sdk.runtime.common;
+	requires transitive org.eclipse.emf.common;
+	requires transitive org.eclipse.emf.ecore;
 	requires java.scripting;
 	
-	provides ResourceSetContributor with CoreEPackageResourceSetConfigurator;
+	provides EPackage with 
+		CoreEPackageProvider, 
+		KindEPackageProvider;
 	
 }

@@ -12,6 +12,11 @@
 	<name>General</name>
 	<dependencies>
 		<dependency>
+			<groupId>org.nasdanika.sdk.runtime</groupId>
+			<artifactId>common</artifactId>
+			<version>${project.version}</version>
+		</dependency>
+		<dependency>
 			<groupId>org.nasdanika.sdk.runtime.models</groupId>
 			<artifactId>core</artifactId>
 			<version>${project.version}</version>

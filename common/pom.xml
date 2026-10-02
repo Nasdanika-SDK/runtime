@@ -13,6 +13,11 @@
 
 	<dependencies>
 		<dependency>
+			<groupId>io.opentelemetry</groupId>
+			<artifactId>opentelemetry-api</artifactId>
+			<scope>compile</scope>
+		</dependency>		
+		<dependency>
 		    <groupId>org.eclipse.emf</groupId>
 		    <artifactId>org.eclipse.emf.ecore</artifactId>
 		</dependency> 		

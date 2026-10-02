@@ -17,6 +17,12 @@ public interface ResourceSetContributor {
 		if (resourceSet == null) {
 			throw new IllegalArgumentException("resourceSet must not be null");
 		}
+		
+		ServiceLoader<EPackage> ePackageLoader = ServiceLoader.load(EPackage.class, loader);
+		for (EPackage ePackage : ePackageLoader) {
+			resourceSet.getPackageRegistry().put(ePackage.getNsURI(), ePackage);
+		}
+		
 		ServiceLoader<ResourceSetContributor> sl = ServiceLoader.load(ResourceSetContributor.class, loader);
 		for (ResourceSetContributor contributor : sl) {
 			contributor.contribute(resourceSet);
@@ -27,6 +33,12 @@ public interface ResourceSetContributor {
 		if (resourceSet == null) {
 			throw new IllegalArgumentException("resourceSet must not be null");
 		}
+		
+		ServiceLoader<EPackage> ePackageLoader = ServiceLoader.load(EPackage.class);
+		for (EPackage ePackage : ePackageLoader) {
+			resourceSet.getPackageRegistry().put(ePackage.getNsURI(), ePackage);
+		}
+		
 		ServiceLoader<ResourceSetContributor> sl = ServiceLoader.load(ResourceSetContributor.class);
 		for (ResourceSetContributor contributor : sl) {
 			contributor.contribute(resourceSet);
