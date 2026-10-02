@@ -5,9 +5,12 @@ import java.io.IOException;
 import java.io.InputStream;
 import java.io.OutputStream;
 import java.io.UncheckedIOException;
+import java.net.URI;
+import java.net.http.HttpClient;
 import java.net.http.HttpRequest;
 import java.nio.ByteBuffer;
 import java.nio.charset.Charset;
+import java.util.Objects;
 import java.util.Optional;
 import java.util.OptionalLong;
 import java.util.concurrent.Flow;
@@ -25,6 +28,22 @@ import java.util.concurrent.Flow;
  * Consumers PUSH through {@link #writeTo(OutputStream)} whenever they can (an HTTP response, a
  * local file, a digest, an upload body), and PULL through {@link #openStream()} only when they
  * must have an input stream.
+ *
+ * <h2>Telemetry</h2>
+ *
+ * Transfers that do work report to the unit of work's OpenTelemetry
+ * ({@link org.nasdanika.sdk.runtime.common.telemetry.Telemetry#current()}), with progress log
+ * records at most once a second:
+ *
+ * <ul>
+ * <li>{@link #writeTo(OutputStream)}: a {@code Content.writeTo} span with the byte count, unless
+ * the content is in memory ({@link #of(byte[])}).</li>
+ * <li>Content {@link #of(URI) at a URI}: a span per opened stream, from the request to the close;
+ * an HTTP client span with trace context propagation for {@code http} and {@code https}.</li>
+ * <li>Content {@link #ofWriter(IOConsumer) from a writer}, read as a stream: a
+ * {@code Content.pipe} span from the first read to the end of the writer, which runs in it on its
+ * own thread, so spans the writer starts (saving a resource, say) are its children.</li>
+ * </ul>
  */
 public interface Content {
 
@@ -40,9 +59,11 @@ public interface Content {
 	 * pipe and no thread.
 	 */
 	default void writeTo(OutputStream out) throws IOException {
-		try (InputStream in = openStream()) {
-			in.transferTo(out);
-		}
+		ContentTelemetry.writeTo(this, out, metered -> {
+			try (InputStream in = openStream()) {
+				in.transferTo(metered);
+			}
+		});
 	}
 
 	/**
@@ -111,6 +132,11 @@ public interface Content {
 				return OptionalLong.of(copy.length);
 			}
 
+			@Override
+			public String toString() {
+				return "Content.of(byte[" + copy.length + "])";
+			}
+
 		};
 	}
 
@@ -126,6 +152,23 @@ public interface Content {
 	 */
 	static Content of(IOSupplier<InputStream> supplier) {
 		return supplier::get;
+	}
+
+	/**
+	 * Content at a URI, requested on every {@link #openStream()}: HTTP(S) through the JDK HTTP
+	 * client with a shared client following redirects, other schemes ({@code file}, {@code jar})
+	 * through {@link java.net.URL}. A 404 is a {@code NoSuchFileException}.
+	 */
+	static Content of(URI uri) {
+		return new UriContent(uri, null);
+	}
+
+	/**
+	 * Content at a URI, requested with the given HTTP client, for example one with an
+	 * authenticator or a proxy.
+	 */
+	static Content of(URI uri, HttpClient client) {
+		return new UriContent(uri, Objects.requireNonNull(client, "client"));
 	}
 
 	/**

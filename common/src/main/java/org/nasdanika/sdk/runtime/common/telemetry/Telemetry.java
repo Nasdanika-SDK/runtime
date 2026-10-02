@@ -75,6 +75,16 @@ public final class Telemetry {
 	/**
 	 * The URI handler that served a stream.
 	 */
+	/**
+	 * A {@code Content} of the volume SPI: its description.
+	 */
+	public static final AttributeKey<String> CONTENT = AttributeKey.stringKey("nasdanika.content");
+
+	/**
+	 * Whether the reader of a piped content closed it before the writer finished.
+	 */
+	public static final AttributeKey<Boolean> CONTENT_CANCELLED = AttributeKey.booleanKey("nasdanika.content.cancelled");
+
 	public static final AttributeKey<String> URI_HANDLER = AttributeKey.stringKey("nasdanika.uri.handler");
 
 	/**

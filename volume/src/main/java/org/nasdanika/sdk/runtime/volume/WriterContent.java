@@ -10,6 +10,16 @@ import java.util.Objects;
 import java.util.concurrent.ArrayBlockingQueue;
 import java.util.concurrent.BlockingQueue;
 
+import org.nasdanika.sdk.runtime.common.telemetry.MeteredStreams;
+import org.nasdanika.sdk.runtime.common.telemetry.MeteredStreams.Meter;
+import org.nasdanika.sdk.runtime.common.telemetry.MeteredStreams.MeteredOutputStream;
+import org.nasdanika.sdk.runtime.common.telemetry.Telemetry;
+
+import io.opentelemetry.api.OpenTelemetry;
+import io.opentelemetry.api.common.Attributes;
+import io.opentelemetry.api.trace.Span;
+import io.opentelemetry.context.Context;
+
 /**
  * SKETCH. Belongs to the {@code volume} module, package-private behind
  * {@link Content#ofWriter(Content.IOConsumer)}.
@@ -26,6 +36,14 @@ import java.util.concurrent.BlockingQueue;
  *
  * Deliberately not {@code PipedInputStream}: it detects a dead writer or reader from thread
  * liveness and has a 1 KB default buffer.
+ *
+ * <p>
+ * Telemetry: a push is a {@code Content.writeTo} span. A pipe is a {@code Content.pipe} span,
+ * started at the first read as a child of the span current when the stream was opened, and ended by
+ * the writer thread when the writer finishes, before the reader sees the end of the stream. The
+ * writer runs in that span's context, so the OpenTelemetry instance and the parent span cross to
+ * its virtual thread. A reader closing early is a cancellation ({@code nasdanika.content.cancelled}),
+ * not an error.
  */
 final class WriterContent implements Content {
 
@@ -50,7 +68,7 @@ final class WriterContent implements Content {
 	public void writeTo(OutputStream out) throws IOException {
 		// The consumer owns `out`: the writer may close what it is given, so it gets a view whose
 		// close() only flushes.
-		writer.accept(new FilterOutputStream(out) {
+		ContentTelemetry.writeTo(this, out, metered -> writer.accept(new FilterOutputStream(metered) {
 
 			@Override
 			public void write(byte[] b, int off, int len) throws IOException {
@@ -62,7 +80,12 @@ final class WriterContent implements Content {
 				flush();
 			}
 
-		});
+		}));
+	}
+
+	@Override
+	public String toString() {
+		return "Content.ofWriter(" + writer.getClass().getName() + ")";
 	}
 
 	@Override
@@ -73,6 +96,7 @@ final class WriterContent implements Content {
 	private final class PipeInputStream extends InputStream {
 
 		private final BlockingQueue<byte[]> queue = new ArrayBlockingQueue<>(CAPACITY);
+		private final Context openContext = Context.current();
 		private volatile boolean closed;
 		private volatile Throwable failure;
 		private Thread producer;
@@ -85,12 +109,28 @@ final class WriterContent implements Content {
 			if (producer != null) {
 				return;
 			}
-			producer = Thread.ofVirtual().name("content-writer").start(() -> {
-				try (OutputStream out = new PipeOutputStream()) {
+			OpenTelemetry openTelemetry = Telemetry.get(openContext);
+			Attributes attributes = ContentTelemetry.attributes(WriterContent.this);
+			Span span = Telemetry.tracer(openTelemetry)
+					.spanBuilder("Content.pipe")
+					.setParent(openContext)
+					.setAllAttributes(attributes)
+					.startSpan();
+			Meter meter = MeteredStreams.spanMeter(Telemetry.logger(openTelemetry), span, "Piped", String.valueOf(WriterContent.this), attributes, false);
+			producer = Thread.ofVirtual().name("content-writer").start(openContext.with(span).wrap(() -> {
+				MeteredOutputStream metered = new MeteredOutputStream(new PipeOutputStream(), meter, MeteredStreams.PROGRESS_INTERVAL.toNanos());
+				try (OutputStream out = metered) {
 					writer.accept(out);
 				} catch (Throwable t) {
 					failure = t;
 				} finally {
+					span.setAttribute(Telemetry.IO_BYTES, metered.getCount());
+					if (closed) {
+						span.setAttribute(Telemetry.CONTENT_CANCELLED, true);
+					} else if (failure != null) {
+						Telemetry.recordFailure(span, failure);
+					}
+					span.end();
 					if (!closed) {
 						try {
 							queue.put(EOF);
@@ -99,7 +139,7 @@ final class WriterContent implements Content {
 						}
 					}
 				}
-			});
+			}));
 		}
 
 		@Override

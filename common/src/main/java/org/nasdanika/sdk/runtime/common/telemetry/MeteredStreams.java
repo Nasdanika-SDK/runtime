@@ -5,19 +5,31 @@ import java.io.FilterOutputStream;
 import java.io.IOException;
 import java.io.InputStream;
 import java.io.OutputStream;
+import java.time.Duration;
+
+import io.opentelemetry.api.common.Attributes;
+import io.opentelemetry.api.logs.Logger;
+import io.opentelemetry.api.logs.Severity;
+import io.opentelemetry.api.trace.Span;
+import io.opentelemetry.api.trace.StatusCode;
+import io.opentelemetry.context.Context;
 
 /**
  * Streams that count the bytes passing through them, report progress at most once per interval,
- * and report once when closed.
+ * and report once when closed. {@link #spanMeter(Logger, Span, String, String, Attributes, boolean)}
+ * reports to a span: progress log records correlated with it, and the byte count, status and end
+ * on close.
  */
-final class MeteredStreams {
+public final class MeteredStreams {
+
+	public static final Duration PROGRESS_INTERVAL = Duration.ofSeconds(1);
 
 	private MeteredStreams() {}
 
 	/**
 	 * Receives the byte count.
 	 */
-	interface Meter {
+	public interface Meter {
 
 		/**
 		 * Called from a read or write at most once per interval.
@@ -31,6 +43,49 @@ final class MeteredStreams {
 		 */
 		default void closed(long bytes, Throwable failure) {}
 
+	}
+
+	/**
+	 * A meter reporting to a span, which need not be current: progress log records
+	 * ({@link Telemetry#PROGRESS_EVENT}, with {@link Telemetry#IO_BYTES}) are correlated with it
+	 * explicitly, and on close the byte count is set on it.
+	 *
+	 * @param verb Starts the progress message: "Read", "Written"
+	 * @param subject Ends it: what is being read or written
+	 * @param attributes Added to the progress records. May be null
+	 * @param endOnClose Whether closing the stream sets the status and ends the span. False when the
+	 * span outlives the stream, for example when the caller owns the stream and does not close it
+	 */
+	public static Meter spanMeter(Logger logger, Span span, String verb, String subject, Attributes attributes, boolean endOnClose) {
+		Context spanContext = Context.current().with(span);
+		Attributes base = attributes == null ? Attributes.empty() : attributes;
+		return new Meter() {
+
+			@Override
+			public void progress(long bytes) {
+				Telemetry.log(
+						logger,
+						spanContext,
+						Severity.INFO,
+						Telemetry.PROGRESS_EVENT,
+						verb + " " + bytes + " bytes of " + subject,
+						base.toBuilder().put(Telemetry.IO_BYTES, bytes).build());
+			}
+
+			@Override
+			public void closed(long bytes, Throwable failure) {
+				span.setAttribute(Telemetry.IO_BYTES, bytes);
+				if (endOnClose) {
+					if (failure == null) {
+						span.setStatus(StatusCode.OK);
+					} else {
+						Telemetry.recordFailure(span, failure);
+					}
+					span.end();
+				}
+			}
+
+		};
 	}
 
 	/**
@@ -80,19 +135,19 @@ final class MeteredStreams {
 
 	}
 
-	static class MeteredInputStream extends FilterInputStream {
+	public static class MeteredInputStream extends FilterInputStream {
 
 		private final Counter counter;
 
 		/**
 		 * @param intervalNanos 0 for no progress reports
 		 */
-		MeteredInputStream(InputStream in, Meter meter, long intervalNanos) {
+		public MeteredInputStream(InputStream in, Meter meter, long intervalNanos) {
 			super(in);
 			counter = new Counter(meter, intervalNanos);
 		}
 
-		long getCount() {
+		public long getCount() {
 			return counter.bytes;
 		}
 
@@ -148,19 +203,19 @@ final class MeteredStreams {
 
 	}
 
-	static class MeteredOutputStream extends FilterOutputStream {
+	public static class MeteredOutputStream extends FilterOutputStream {
 
 		private final Counter counter;
 
 		/**
 		 * @param intervalNanos 0 for no progress reports
 		 */
-		MeteredOutputStream(OutputStream out, Meter meter, long intervalNanos) {
+		public MeteredOutputStream(OutputStream out, Meter meter, long intervalNanos) {
 			super(out);
 			counter = new Counter(meter, intervalNanos);
 		}
 
-		long getCount() {
+		public long getCount() {
 			return counter.bytes;
 		}
 

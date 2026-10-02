@@ -18,11 +18,7 @@ import org.nasdanika.sdk.runtime.common.telemetry.MeteredStreams.MeteredOutputSt
 
 import io.opentelemetry.api.OpenTelemetry;
 import io.opentelemetry.api.common.Attributes;
-import io.opentelemetry.api.logs.Logger;
-import io.opentelemetry.api.logs.Severity;
 import io.opentelemetry.api.trace.Span;
-import io.opentelemetry.api.trace.StatusCode;
-import io.opentelemetry.context.Context;
 import io.opentelemetry.context.Scope;
 
 /**
@@ -44,7 +40,7 @@ import io.opentelemetry.context.Scope;
  */
 public class TelemetryURIHandler implements URIHandler {
 
-	public static final Duration PROGRESS_INTERVAL = Duration.ofSeconds(1);
+	public static final Duration PROGRESS_INTERVAL = MeteredStreams.PROGRESS_INTERVAL;
 
 	private final URIHandler delegate;
 	private final Supplier<OpenTelemetry> openTelemetry;
@@ -157,33 +153,13 @@ public class TelemetryURIHandler implements URIHandler {
 	}
 
 	private Meter meter(OpenTelemetry otel, Span span, URI uri, String verb) {
-		Logger logger = Telemetry.logger(otel);
-		Context spanContext = Context.current().with(span);
-		return new Meter() {
-
-			@Override
-			public void progress(long bytes) {
-				Telemetry.log(
-						logger,
-						spanContext,
-						Severity.INFO,
-						Telemetry.PROGRESS_EVENT,
-						verb + " " + bytes + " bytes of " + uri,
-						Attributes.of(Telemetry.RESOURCE_URI, String.valueOf(uri), Telemetry.IO_BYTES, bytes));
-			}
-
-			@Override
-			public void closed(long bytes, Throwable failure) {
-				span.setAttribute(Telemetry.IO_BYTES, bytes);
-				if (failure == null) {
-					span.setStatus(StatusCode.OK);
-				} else {
-					Telemetry.recordFailure(span, failure);
-				}
-				span.end();
-			}
-
-		};
+		return MeteredStreams.spanMeter(
+				Telemetry.logger(otel),
+				span,
+				verb,
+				String.valueOf(uri),
+				Attributes.of(Telemetry.RESOURCE_URI, String.valueOf(uri)),
+				true);
 	}
 
 	@Override

@@ -3,6 +3,8 @@ module org.nasdanika.sdk.runtime.tests.telemetry {
 	requires org.nasdanika.sdk.runtime.models.core;
 	requires org.nasdanika.sdk.runtime.common;
 	requires org.nasdanika.sdk.runtime.emf.json;
+	requires org.nasdanika.sdk.runtime.volume;
+	requires jdk.httpserver;
 	requires io.opentelemetry.sdk;
 	requires io.opentelemetry.sdk.common;
 	requires io.opentelemetry.sdk.trace;
