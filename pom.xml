@@ -491,6 +491,7 @@
 	
 	<modules>
 		<module>common</module>
+		<module>volume</module>
 		<module>emf-json</module>
 		<module>picocli</module>
 		<module>models</module>
