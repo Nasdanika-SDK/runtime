@@ -1,9 +1,14 @@
 package org.nasdanika.sdk.runtime.common.services;
 
+import java.util.List;
+import java.util.ServiceLoader;
+
+import org.eclipse.emf.common.notify.AdapterFactory;
 import org.eclipse.emf.ecore.EPackage;
 import org.eclipse.emf.ecore.resource.Resource;
 import org.eclipse.emf.ecore.resource.ResourceSet;
-import java.util.ServiceLoader;
+import org.eclipse.emf.ecore.resource.URIConverter;
+import org.eclipse.emf.ecore.resource.URIHandler;
 
 /**
  * A service interface for contributing to a resource set.
@@ -34,10 +39,23 @@ public interface ResourceSetContributor {
 			throw new IllegalArgumentException("resourceSet must not be null");
 		}
 		
+		URIConverter uriConverter = resourceSet.getURIConverter();
+		ServiceLoader<URIHandler> uriHandlerLoader = ServiceLoader.load(URIHandler.class);
+		for (URIHandler uriHandler : uriHandlerLoader) {
+			uriConverter.getURIHandlers().add(0, uriHandler);
+		}
+
+		List<AdapterFactory> adapterFactories = resourceSet.getAdapterFactories();
+		ServiceLoader<AdapterFactory> adapterFactoryLoader = ServiceLoader.load(AdapterFactory.class);
+		for (AdapterFactory adapterFactory : adapterFactoryLoader) {
+			adapterFactories.add(adapterFactory);
+		}
+
 		ServiceLoader<EPackage> ePackageLoader = ServiceLoader.load(EPackage.class);
 		for (EPackage ePackage : ePackageLoader) {
 			resourceSet.getPackageRegistry().put(ePackage.getNsURI(), ePackage);
 		}
+		
 		
 		ServiceLoader<ResourceSetContributor> sl = ServiceLoader.load(ResourceSetContributor.class);
 		for (ResourceSetContributor contributor : sl) {
