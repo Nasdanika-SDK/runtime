@@ -7,7 +7,7 @@ import java.util.Optional;
 import java.util.concurrent.Flow;
 
 /**
- * SKETCH. The JDK-only backend SPI of the {@code volume} module: what implementers write (NIO,
+ * The JDK-only backend SPI of the {@code volume} module: what implementers write (NIO,
  * memory, Git over REST, zip, the model volume). Everything else uses the file model on top of
  * it. The HTTP handler reads a volume directly, so serving a file never creates EObjects.
  *
