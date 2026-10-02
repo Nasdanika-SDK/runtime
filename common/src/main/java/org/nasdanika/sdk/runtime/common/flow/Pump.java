@@ -19,6 +19,9 @@ import java.util.concurrent.locks.ReentrantLock;
 import java.util.function.BiConsumer;
 import java.util.function.BooleanSupplier;
 
+import io.opentelemetry.context.Context;
+import io.opentelemetry.context.Scope;
+
 /**
  * A serial work queue drained by one thread at a time, whose terminals ({@link #join(CompletionStage)},
  * {@link #settle()}) <b>block by pumping</b>: the waiting thread runs queued work instead of
@@ -65,6 +68,15 @@ import java.util.function.BooleanSupplier;
  * <li>An exception escaping a task fails the pump: new work is dropped and terminals rethrow it.
  * Operators route user exceptions to {@code onError}, so tasks rarely throw.</li>
  * </ul>
+ *
+ * <h2>Context</h2>
+ *
+ * A task runs in the OpenTelemetry {@link Context} that was current when it was enqueued, and an
+ * action passed to {@link #when(CompletionStage, String, BiConsumer)} or a stage passed to
+ * {@link #track(CompletionStage, String)} completes in the context current at that call. Spans
+ * started by tasks are children of the span that enqueued them, whichever thread drains, and the
+ * unit of work's {@link org.nasdanika.sdk.runtime.common.telemetry.Telemetry#current() OpenTelemetry}
+ * travels with them.
  */
 public class Pump implements Executor {
 
@@ -185,6 +197,7 @@ public class Pump implements Executor {
 		final String description;
 		final Runnable runnable;
 		final BooleanSupplier step;
+		final Context context;
 		long rank;
 		int yields;
 		long progressAtYield = -1;
@@ -194,6 +207,7 @@ public class Pump implements Executor {
 			this.description = description;
 			this.runnable = runnable;
 			this.step = step;
+			this.context = Context.current();
 			this.rank = id;
 		}
 
@@ -282,7 +296,8 @@ public class Pump implements Executor {
 		} finally {
 			lock.unlock();
 		}
-		stage.whenComplete((value, error) -> execute(description, () -> {
+		Context context = Context.current();
+		stage.whenComplete((value, error) -> execute(description, context.wrap(() -> {
 			lock.lock();
 			try {
 				parked.remove(id);
@@ -290,7 +305,7 @@ public class Pump implements Executor {
 				lock.unlock();
 			}
 			action.accept(value, error == null ? null : Flows.unwrap(error));
-		}));
+		})));
 	}
 
 	/**
@@ -303,14 +318,15 @@ public class Pump implements Executor {
 		Objects.requireNonNull(stage, "stage");
 		CompletableFuture<V> result = new CompletableFuture<>();
 		long id = beginInFlight(description);
-		stage.whenComplete((value, error) -> execute(description, () -> {
+		Context context = Context.current();
+		stage.whenComplete((value, error) -> execute(description, context.wrap(() -> {
 			endInFlight(id);
 			if (error == null) {
 				result.complete(value);
 			} else {
 				result.completeExceptionally(Flows.unwrap(error));
 			}
-		}));
+		})));
 		return result;
 	}
 
@@ -496,7 +512,7 @@ public class Pump implements Executor {
 		}
 
 		boolean done;
-		try {
+		try (Scope scope = task.context.makeCurrent()) {
 			if (task.runnable == null) {
 				done = task.step.getAsBoolean();
 			} else {

@@ -20,7 +20,7 @@ import io.opentelemetry.api.trace.Tracer;
  * Span span = tracer.spanBuilder("import").startSpan();
  * try (Scope scope = span.makeCurrent()) {
  *     for (...) {
- *         span.addEvent("progress", Attributes.of(WORKED, i, TOTAL, n));
+ *         Telemetry.log(logger, Severity.INFO, Telemetry.PROGRESS_EVENT, "Imported " + i, Attributes.of(PROGRESS_WORKED, i, PROGRESS_TOTAL, n));
  *     }
  * } finally {
  *     span.end();
@@ -106,10 +106,18 @@ public class PublishingTracer implements Tracer, Flow.Publisher<SpanEvent>, Auto
 	}
 
 	/**
-	 * Events of a span and of the publishing spans started under it.
+	 * Events of a span and of the publishing spans started under it, including the log records
+	 * emitted in them when the tracer was obtained from a {@link PublishingOpenTelemetry}.
 	 */
 	public Flow.Publisher<SpanEvent> within(PublishingSpan span) {
-		return Flows.filter(this, event -> event.span().isWithin(span));
+		return within(this, span);
+	}
+
+	/**
+	 * Events of a span and of the publishing spans started under it.
+	 */
+	public static Flow.Publisher<SpanEvent> within(Flow.Publisher<SpanEvent> events, PublishingSpan span) {
+		return Flows.filter(events, event -> event.span() != null && event.span().isWithin(span));
 	}
 
 	/**

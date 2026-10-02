@@ -1,3 +1,4 @@
+import org.eclipse.emf.common.notify.AdapterFactory;
 import org.eclipse.emf.ecore.EPackage;
 import org.eclipse.emf.ecore.resource.URIHandler;
 import org.nasdanika.sdk.runtime.common.capability.CapabilityFactory;
@@ -15,6 +16,7 @@ module org.nasdanika.sdk.runtime.common {
 	requires transitive io.opentelemetry.api;
 	requires transitive io.opentelemetry.context;
 	requires org.eclipse.emf.ecore.xmi;
+	requires java.xml;
 
 	exports org.nasdanika.sdk.runtime.common.services;
 	exports org.nasdanika.sdk.runtime.common;
@@ -23,6 +25,8 @@ module org.nasdanika.sdk.runtime.common {
 	exports org.nasdanika.sdk.runtime.common.telemetry;
 
 	uses ResourceSetContributor;
+	uses URIHandler;
+	uses AdapterFactory;
 	uses EPackage;
 	uses CapabilityFactory;
 

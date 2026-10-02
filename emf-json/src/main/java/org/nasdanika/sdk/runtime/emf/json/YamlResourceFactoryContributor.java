@@ -2,7 +2,6 @@ package org.nasdanika.sdk.runtime.emf.json;
 
 import org.eclipse.emf.ecore.resource.ResourceSet;
 import org.eclipse.emfcloud.jackson.module.EMFModule;
-import org.eclipse.emfcloud.jackson.resource.JsonResourceFactory;
 import org.nasdanika.sdk.runtime.common.services.ResourceSetContributor;
 
 import com.fasterxml.jackson.databind.ObjectMapper;
@@ -18,7 +17,7 @@ public class YamlResourceFactoryContributor implements ResourceSetContributor {
         yamlMapper.registerModule(new EMFModule());
 		resourceSet.getResourceFactoryRegistry().getExtensionToFactoryMap().put(
 			YAML_RESOURCE_EXTENSION, 
-			new JsonResourceFactory(yamlMapper));
+			new TelemetryJsonResourceFactory(resourceSet, yamlMapper));
 	}
 
 }

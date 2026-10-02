@@ -31,13 +31,17 @@ public class PublishingTracerProvider implements TracerProvider, Flow.Publisher<
 		this(delegate, new SpanEventHub(executor, maxBufferCapacity));
 	}
 
-	private PublishingTracerProvider(TracerProvider delegate, SpanEventHub hub) {
+	PublishingTracerProvider(TracerProvider delegate, SpanEventHub hub) {
 		this.delegate = Objects.requireNonNull(delegate, "delegate");
 		this.hub = hub;
 	}
 
 	public TracerProvider getDelegate() {
 		return delegate;
+	}
+
+	SpanEventHub getHub() {
+		return hub;
 	}
 
 	@Override

@@ -56,6 +56,7 @@ class TestPublishingTracer {
 				case SpanEvent.ExceptionRecorded x -> x.span().getName() + " exception " + x.exception().getMessage();
 				case SpanEvent.Renamed r -> "renamed " + r.name();
 				case SpanEvent.Ended d -> "end " + d.span().getName();
+				case SpanEvent.LogEmitted l -> (l.span() == null ? "-" : l.span().getName()) + " log " + l.record().bodyAsString();
 			}).toList();
 		}
 

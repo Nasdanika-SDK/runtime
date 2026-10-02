@@ -8,6 +8,10 @@ import java.util.Objects;
 import java.util.concurrent.CompletableFuture;
 import java.util.concurrent.Flow;
 
+import org.nasdanika.sdk.runtime.common.telemetry.Telemetry;
+
+import io.opentelemetry.api.common.Attributes;
+
 /**
  * Maps sources to publishers of targets. A source may produce no target, one, or many, and a
  * factory may ask for the targets of other sources while producing its own.
@@ -40,6 +44,13 @@ import java.util.concurrent.Flow;
  * (for example {@code Flows.toList(context.get(other))} into {@code Flows.fromFuture}); if two
  * sources wait on each other, the pump goes idle and the transformation fails both with a
  * {@link StallException} naming the cycle.
+ *
+ * <h2>Telemetry</h2>
+ *
+ * {@link #transform(Collection)} runs in a {@code Transformer.transform} span, and each source is
+ * created in a {@code Transformer.create} span, from the factory call to the completion of its
+ * publisher. A source requested by a factory is created in a child span of the requesting source's
+ * span, so the span tree shows the dependencies.
  *
  * <h2>What changed from the CompletionStage version</h2>
  *
@@ -126,7 +137,15 @@ public class Transformer<S, T> {
 	}
 
 	public Map<S, List<T>> transform(Collection<? extends S> sources, Pump.Options options) {
-		Pump pump = new Pump(options);
+		Attributes attributes = Attributes.of(Telemetry.TRANSFORMER_SOURCES, (long) sources.size());
+		return Telemetry.inSpan(Telemetry.tracer(Telemetry.current()), "Transformer.transform", attributes, span -> {
+			Map<S, List<T>> results = transform(sources, new Pump(options));
+			span.setAttribute(Telemetry.TRANSFORMER_TARGETS, results.values().stream().mapToLong(List::size).sum());
+			return results;
+		});
+	}
+
+	private Map<S, List<T>> transform(Collection<? extends S> sources, Pump pump) {
 		Transformation<S, T> transformation = start(pump);
 		List<CompletableFuture<List<T>>> results = new ArrayList<>();
 		for (S source: sources) {

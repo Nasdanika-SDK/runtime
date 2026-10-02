@@ -11,7 +11,12 @@ import org.eclipse.emf.common.util.URI;
 import org.eclipse.emf.ecore.resource.Resource;
 import org.eclipse.emf.ecore.resource.ResourceSet;
 import org.eclipse.emf.ecore.resource.impl.BinaryResourceImpl;
+import org.nasdanika.sdk.runtime.common.telemetry.ResourceTelemetry;
 
+/**
+ * Gzipped binary resources, with {@link ResourceTelemetry} spans for load, save and unload. The
+ * byte counts are of the compressed stream.
+ */
 public class GzipBinaryResourceFactoryContributor implements ResourceSetContributor {
 
 	public static final String GZIP_BINARY_RESOURCE_EXTENSION = "egz";
@@ -21,23 +26,32 @@ public class GzipBinaryResourceFactoryContributor implements ResourceSetContribu
 		resourceSet.getResourceFactoryRegistry().getExtensionToFactoryMap().put(GZIP_BINARY_RESOURCE_EXTENSION, new Resource.Factory() {
 			@Override
 			public Resource createResource(URI uri) {
-				return new BinaryResourceImpl(uri) {
+				return ResourceTelemetry.created(resourceSet, new BinaryResourceImpl(uri) {
 					
 					@Override
 					protected void doLoad(InputStream inputStream, Map<?, ?> options) throws IOException {
-						try (InputStream gzIn = new GZIPInputStream(inputStream)) {
-							super.doLoad(gzIn, options);
-						}
+						ResourceTelemetry.load(this, inputStream, in -> {
+							try (InputStream gzIn = new GZIPInputStream(in)) {
+								super.doLoad(gzIn, options);
+							}
+						});
 					}
 					
 					@Override
 					protected void doSave(OutputStream outputStream, Map<?, ?> options) throws IOException {
-						try (OutputStream gzOut = new GZIPOutputStream(outputStream)) {
-							super.doSave(gzOut, options);
-						}
+						ResourceTelemetry.save(this, outputStream, out -> {
+							try (OutputStream gzOut = new GZIPOutputStream(out)) {
+								super.doSave(gzOut, options);
+							}
+						});
 					}
 					
-				};
+					@Override
+					protected void doUnload() {
+						ResourceTelemetry.unload(this, super::doUnload);
+					}
+					
+				});
 			}
 		});
 	}

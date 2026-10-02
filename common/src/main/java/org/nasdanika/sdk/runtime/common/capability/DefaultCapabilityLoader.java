@@ -18,6 +18,10 @@ import org.nasdanika.sdk.runtime.common.flow.Flows;
 import org.nasdanika.sdk.runtime.common.flow.Pump;
 import org.nasdanika.sdk.runtime.common.flow.Transformation;
 import org.nasdanika.sdk.runtime.common.flow.Transformer;
+import org.nasdanika.sdk.runtime.common.telemetry.Telemetry;
+
+import io.opentelemetry.api.trace.Span;
+import io.opentelemetry.context.Scope;
 
 /**
  * Resolves requirements against a {@link CapabilityFactorySource}.
@@ -29,6 +33,11 @@ import org.nasdanika.sdk.runtime.common.flow.Transformer;
  * memoization per resolution, a trampoline instead of recursion, and cycle detection, which now
  * reports the cycle's path through the pump's stall detection instead of throwing an
  * {@code IllegalArgumentException} for a direct self-dependency only.
+ *
+ * <p>
+ * Each requirement is resolved in the transformation's {@code Transformer.create} span, and each
+ * capability factory creating providers for it in a {@code CapabilityFactory.create} span under
+ * it, ending when the factory's providers are all emitted.
  */
 public class DefaultCapabilityLoader implements CapabilityLoader {
 
@@ -113,10 +122,17 @@ public class DefaultCapabilityLoader implements CapabilityLoader {
 
 			};
 
+			Span span = Telemetry.tracer(Telemetry.current())
+					.spanBuilder("CapabilityFactory.create")
+					.setAttribute(Telemetry.CAPABILITY_REQUIREMENT, String.valueOf(requirement))
+					.setAttribute(Telemetry.CAPABILITY_FACTORY, factory.getClass().getName())
+					.startSpan();
 			Flow.Publisher<CapabilityProvider<Object>> created;
-			try {
+			try (Scope scope = span.makeCurrent()) {
 				created = factory.create(requirement, loader);
 			} catch (Throwable e) {
+				Telemetry.recordFailure(span, e);
+				span.end();
 				return Flows.error(e);
 			}
 			if (created == null) {
@@ -126,9 +142,13 @@ public class DefaultCapabilityLoader implements CapabilityLoader {
 			return Flows.onTerminate(
 					Flows.peek(created, produced::add),
 					error -> {
+						span.setAttribute(Telemetry.CAPABILITY_PROVIDERS, (long) produced.size());
 						if (error == null) {
 							listener.on(new Resolved(requirement, factory, List.copyOf(produced)));
+						} else {
+							Telemetry.recordFailure(span, error);
 						}
+						span.end();
 					});
 		}
 

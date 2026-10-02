@@ -6,6 +6,9 @@ import java.util.concurrent.Flow;
 import org.nasdanika.sdk.runtime.common.flow.Flows;
 import org.nasdanika.sdk.runtime.common.flow.Pump;
 import org.nasdanika.sdk.runtime.common.flow.Transformer;
+import org.nasdanika.sdk.runtime.common.telemetry.Telemetry;
+
+import io.opentelemetry.api.common.Attributes;
 
 /**
  * Resolves requirements to capability providers.
@@ -61,8 +64,12 @@ public interface CapabilityLoader {
 	 * @throws org.nasdanika.sdk.runtime.common.flow.StallException if resolution stalled, for example on a requirement cycle
 	 */
 	default <T> List<T> loadAll(Object requirement) {
-		Pump pump = new Pump();
-		return pump.join(Flows.toList(capabilities(this.<T>load(requirement, pump), pump, requirement)));
+		return Telemetry.inSpan(Telemetry.tracer(Telemetry.current()), "CapabilityLoader.loadAll", attributes(requirement), span -> {
+			Pump pump = new Pump();
+			List<T> capabilities = pump.join(Flows.toList(capabilities(this.<T>load(requirement, pump), pump, requirement)));
+			span.setAttribute(Telemetry.CAPABILITY_PROVIDERS, (long) capabilities.size());
+			return capabilities;
+		});
 	}
 
 	/**
@@ -70,8 +77,14 @@ public interface CapabilityLoader {
 	 * subscribed to, and resolution work still queued is abandoned with the pump.
 	 */
 	default <T> T loadOne(Object requirement) {
-		Pump pump = new Pump();
-		return pump.join(Flows.first(capabilities(this.<T>load(requirement, pump), pump, requirement))).orElse(null);
+		return Telemetry.inSpan(Telemetry.tracer(Telemetry.current()), "CapabilityLoader.loadOne", attributes(requirement), span -> {
+			Pump pump = new Pump();
+			return pump.join(Flows.first(capabilities(this.<T>load(requirement, pump), pump, requirement))).orElse(null);
+		});
+	}
+
+	private static Attributes attributes(Object requirement) {
+		return Attributes.of(Telemetry.CAPABILITY_REQUIREMENT, String.valueOf(requirement));
 	}
 
 	/**

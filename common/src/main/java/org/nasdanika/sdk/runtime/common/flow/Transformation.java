@@ -11,6 +11,11 @@ import java.util.Set;
 import java.util.concurrent.Flow;
 import java.util.stream.Collectors;
 
+import org.nasdanika.sdk.runtime.common.telemetry.Telemetry;
+
+import io.opentelemetry.api.trace.Span;
+import io.opentelemetry.context.Scope;
+
 /**
  * One resolution of a {@link Transformer} on one {@link Pump}. Each source is resolved once, its
  * targets are cached and replayed to every subscriber, and all state is confined to the pump.
@@ -219,6 +224,7 @@ public class Transformation<S, T> {
 		final List<T> items = new ArrayList<>();
 		final List<Replay> subscribers = new ArrayList<>();
 		Flow.Subscription upstream;
+		Span span;
 		volatile boolean completed;
 		volatile Throwable error;
 
@@ -232,17 +238,23 @@ public class Transformation<S, T> {
 		}
 
 		void start() {
-			Flow.Publisher<? extends T> publisher;
-			try {
-				publisher = factory.canHandle(source) ? factory.create(source, this) : null;
-			} catch (Throwable e) {
-				fail(e);
-				return;
-			}
-			if (publisher == null) {
-				complete();
-			} else {
-				publisher.subscribe(pump.confine(this, "targets of " + source));
+			span = Telemetry.tracer(Telemetry.current())
+					.spanBuilder("Transformer.create")
+					.setAttribute(Telemetry.TRANSFORMER_SOURCE, String.valueOf(source))
+					.startSpan();
+			try (Scope scope = span.makeCurrent()) {
+				Flow.Publisher<? extends T> publisher;
+				try {
+					publisher = factory.canHandle(source) ? factory.create(source, this) : null;
+				} catch (Throwable e) {
+					fail(e);
+					return;
+				}
+				if (publisher == null) {
+					complete();
+				} else {
+					publisher.subscribe(pump.confine(this, "targets of " + source));
+				}
 			}
 		}
 
@@ -316,6 +328,13 @@ public class Transformation<S, T> {
 		}
 
 		private void finish() {
+			if (span != null) {
+				span.setAttribute(Telemetry.TRANSFORMER_TARGETS, (long) items.size());
+				if (error != null) {
+					Telemetry.recordFailure(span, error);
+				}
+				span.end();
+			}
 			if (--incomplete == 0 && waiterRegistration != null) {
 				waiterRegistration.run();
 				waiterRegistration = null;

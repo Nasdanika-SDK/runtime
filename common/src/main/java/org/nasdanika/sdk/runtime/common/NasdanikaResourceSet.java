@@ -8,6 +8,8 @@ import org.eclipse.emf.ecore.EObject;
 import org.eclipse.emf.ecore.resource.impl.ResourceSetImpl;
 import org.nasdanika.sdk.runtime.common.services.ResourceSetContributor;
 
+import io.opentelemetry.api.OpenTelemetry;
+
 /**
  * Supports registration of global objects.
  */
@@ -37,6 +39,24 @@ public class NasdanikaResourceSet extends ResourceSetImpl {
 	public static NasdanikaResourceSet createAndConfigure(ClassLoader loader) {
 		NasdanikaResourceSet ret = new NasdanikaResourceSet();
 		ResourceSetContributor.configure(ret, loader);	
+		return ret;
+	}
+	
+	/**
+	 * @param openTelemetry Attached to the resource set, used when no instance is current
+	 */
+	public static NasdanikaResourceSet createAndConfigure(OpenTelemetry openTelemetry) {
+		NasdanikaResourceSet ret = new NasdanikaResourceSet();
+		ResourceSetContributor.configure(ret, openTelemetry);	
+		return ret;
+	}
+	
+	/**
+	 * @param openTelemetry Attached to the resource set, used when no instance is current
+	 */
+	public static NasdanikaResourceSet createAndConfigure(ClassLoader loader, OpenTelemetry openTelemetry) {
+		NasdanikaResourceSet ret = new NasdanikaResourceSet();
+		ResourceSetContributor.configure(ret, loader, openTelemetry);	
 		return ret;
 	}
 	
