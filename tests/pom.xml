@@ -15,4 +15,8 @@
 	<properties>
 	    <maven.deploy.skip>true</maven.deploy.skip>
 	</properties>
+	<modules>
+		<module>general</module>
+		<module>telemetry</module>
+	</modules>	
 </project>
