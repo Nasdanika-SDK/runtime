@@ -4,8 +4,6 @@ import java.io.IOException;
 import java.io.UncheckedIOException;
 
 /**
- * SKETCH. Belongs to the {@code models/file} module.
- *
  * A typed state of a file, the generalization of {@code IFile}'s get and set symmetry: a text file
  * has a {@code String}, a JSON file a parsed value, a model file a resource's contents. A view is
  * never a second state. It decodes the file's {@link org.nasdanika.sdk.runtime.volume.Content} on

@@ -1,0 +1,94 @@
+@Ecore(
+	nsURI="https://runtime.sdk.nasdanika.org/models/telemetry", 
+	nsPrefix="org.nasdanika.sdk.runtime.models.telemetry"	
+)
+@GenModel(
+    modelDirectory="/org.nasdanika.sdk.runtime.models.telemetry.model/src-gen",
+    featureDelegation="Dynamic",
+    complianceLevel="25",
+    suppressGenModelAnnotations="false",
+    copyrightFields="false",
+    operationReflection="true",
+    importOrganizing="true"
+)
+package org.nasdanika.sdk.runtime.models.telemetry
+
+import org.eclipse.emf.ecore.EByteArray
+
+annotation "http://www.eclipse.org/emf/2002/Ecore" as Ecore
+annotation "http://www.eclipse.org/emf/2002/GenModel" as GenModel
+annotation "urn:org.nasdanika" as Nasdanika
+
+/**
+ * Resource represents the entity producing telemetry as Attributes.
+ * For example, a process producing telemetry that is running in a container on Kubernetes has a Pod name, it is in a namespace and possibly is part of a Deployment which also has a name.
+ * All three of these attributes can be included in the Resource.
+ */
+class Resource {
+	/**
+	 * Set of attributes that describe the resource.
+	 */
+	contains KeyValue[] attributes
+	/**
+	 * droppedAttributesCount is the number of dropped attributes. If the value is 0, then no attributes were dropped.
+	 */
+	int droppedAttributesCount
+	/**
+	 * schema_url contains the URL that describes the semantics of the attributes.
+	 */
+	String schemaUrl
+}
+
+/**
+ * InstrumentationScope is a message representing the instrumentation scope information such as the fully qualified name and version.
+ */
+class InstrumentationScope {
+	/**
+	 * An empty instrumentation scope name means the name is unknown.
+	 */
+	String name
+	String version
+	/**
+	 * Additional attributes that describe the scope. Use of this parameter is optional.
+	 */
+	contains KeyValue[] attributes
+	int droppedAttributesCount
+	/**
+	 * schema_url contains the URL that describes the semantics of the attributes.
+	 */
+	String schemaUrl
+}
+
+/**
+ * KeyValue is a key-value pair that is used to store Span attributes, Link attributes, etc.
+ */
+class KeyValue {
+	
+	String key
+	/**
+	 * The value associated with the key.
+	 */
+	contains AnyValue value
+}
+
+/**
+ * AnyValue is used to represent any type of attribute value. AnyValue may contain a primitive value such as a string or integer or it may contain an arbitrary nested object containing arrays, key-value lists and primitives.
+ */
+class AnyValue {
+	String stringValue
+	Boolean boolValue
+	Long intValue
+	Double doubleValue
+	/**
+	 * Represents an array of any value.
+	 */
+	contains AnyValue[] arrayValue
+	/**
+	 * Represents a list of key-value pairs.
+	 */
+	contains KeyValue[] kvlistValue
+	/**
+	 * Represents raw bytes value.
+	 */
+	EByteArray bytesValue
+}

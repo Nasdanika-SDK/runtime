@@ -2,20 +2,19 @@
 	xsi:schemaLocation="http://maven.apache.org/POM/4.0.0 http://maven.apache.org/xsd/maven-4.0.0.xsd">
 	<modelVersion>4.0.0</modelVersion>
 	<parent>
-		<groupId>org.nasdanika.sdk.runtime</groupId>
+		<groupId>org.nasdanika.sdk.runtime.models</groupId>
 		<artifactId>parent</artifactId>
 		<version>2026.10.0</version>
 		<relativePath>..</relativePath>
 	</parent>
-	<groupId>org.nasdanika.sdk.runtime.models</groupId>
+	<groupId>org.nasdanika.sdk.runtime.models.telemetry</groupId>
 	<artifactId>parent</artifactId>
 	<packaging>pom</packaging>
-	<name>Nasdanika SDK Runtime Models</name>
-	<description>Models, loaders, parsers, handlers</description>
+	<name>Nasdanika SDK Telemetry Model</name>
+	<description>Model, providers</description>
 
 	<modules>
-		<module>core</module>
-		<module>file</module>
-		<module>telemetry</module>
+		<module>model</module>
+		<!--<module>exporter</module>-->
 	</modules>
 </project>

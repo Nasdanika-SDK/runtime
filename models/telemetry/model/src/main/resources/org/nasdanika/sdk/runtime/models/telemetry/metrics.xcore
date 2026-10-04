@@ -1,0 +1,285 @@
+@Ecore(
+	nsURI="https://runtime.sdk.nasdanika.org/models/telemetry/metrics", 
+	nsPrefix="org.nasdanika.sdk.runtime.models.telemetry.metrics"	
+)
+@GenModel(
+    modelDirectory="/org.nasdanika.sdk.runtime.models.telemetry.model/src-gen",
+    featureDelegation="Dynamic",
+    complianceLevel="25",
+    suppressGenModelAnnotations="false",
+    copyrightFields="false",
+    operationReflection="true",
+    importOrganizing="true"
+)
+package org.nasdanika.sdk.runtime.models.telemetry.metrics
+
+import org.nasdanika.sdk.runtime.models.telemetry.Resource
+import org.nasdanika.sdk.runtime.models.telemetry.InstrumentationScope
+import org.nasdanika.sdk.runtime.models.telemetry.KeyValue
+import org.nasdanika.sdk.runtime.models.telemetry.traces.Span
+
+
+annotation "http://www.eclipse.org/emf/2002/Ecore" as Ecore
+annotation "http://www.eclipse.org/emf/2002/GenModel" as GenModel
+annotation "urn:org.nasdanika" as Nasdanika
+
+/**
+ * MetricsData represents the metrics export payload which can be serialized to different formats, e.g., OTLP/gRPC, JSON, and proto.
+ */
+class MetricsData {
+	/**
+	 * An array of ResourceMetrics.
+	 */
+	contains ResourceMetrics[] resourceMetrics
+}
+
+/**
+ * A collection of ScopeMetrics from a Resource.
+ */
+class ResourceMetrics {
+	contains Resource resource
+	contains ScopeMetrics[] scopeMetrics
+	String schemaUrl
+}
+
+/**
+ * A collection of Metrics produced by an Scope.
+ */
+class ScopeMetrics {
+	contains InstrumentationScope scope
+	contains Metric[] metrics
+	String schemaUrl
+}
+
+/**
+ * Defines a Metric which has one or more timeseries. The following is a brief summary of the Metric data model.
+ *
+ * Metric is a named entity with a description and unit.
+ */
+abstract class Metric {
+	/**
+	 * name of the metric, including its DNS name prefix. It must be unique.
+	 */
+	String[1] name
+	/**
+	 * description of the metric, which can be used in documentation.
+	 */
+	String description
+	/**
+	 * unit in which the metric value is reported. Follows the format described by http://unitsofmeasure.org/ucum.html.
+	 */
+	String unit
+	/**
+	 * Additional metadata attributes that describe the metric.
+	 */
+	contains KeyValue[] metadata
+}
+
+/**
+ * Gauge represents the type of a scalar metric that always exports the current value for every data point. It should be used for an unknown aggregation.
+ */
+class Gauge extends Metric {
+	contains NumberDataPoint[] dataPoints
+}
+
+/**
+ * Sum represents the type of a scalar metric that is calculated as a sum of all reported measurements over a time interval.
+ */
+class Sum extends Metric {
+	contains NumberDataPoint[] dataPoints
+	AggregationTemporality aggregationTemporality
+	/**
+	 * If true, the sum is monotonically increasing.
+	 */
+	boolean isMonotonic
+}
+
+/**
+ * Histogram represents the type of a metric that is calculated by aggregating as a Histogram of all reported measurements over a time interval.
+ */
+class Histogram extends Metric {
+	contains HistogramDataPoint[] dataPoints
+	AggregationTemporality aggregationTemporality
+}
+
+/**
+ * ExponentialHistogram represents the type of a metric that is calculated by aggregating as a ExponentialHistogram of all reported double measurements over a time interval.
+ */
+class ExponentialHistogram extends Metric {
+	contains ExponentialHistogramDataPoint[] dataPoints
+	AggregationTemporality aggregationTemporality
+}
+
+/**
+ * Summary metric data are used to convey quantile summaries.
+ */
+class Summary extends Metric {
+	contains SummaryDataPoint[] dataPoints
+}
+
+/**
+ * NumberDataPoint is a single data point in a timeseries that describes the time-varying scalar value of a metric.
+ */
+class NumberDataPoint {
+	contains KeyValue[] attributes
+	long startTimeUnixNano
+	long timeUnixNano
+	/**
+	 * value as a double. Either asDouble or asInt must be set.
+	 */
+	Double asDouble
+	/**
+	 * value as an integer. Either asDouble or asInt must be set.
+	 */
+	Long asInt
+	contains Exemplar[] exemplars
+	/**
+	 * Flags is an optional bit field containing hints for the backends.
+	 */
+	int flags
+}
+
+/**
+ * HistogramDataPoint is a single data point in a timeseries that describes the time-varying values of a Histogram.
+ */
+class HistogramDataPoint {
+	contains KeyValue[] attributes
+	long startTimeUnixNano
+	long timeUnixNano
+	/**
+	 * count is the number of values in the population.
+	 */
+	long count
+	/**
+	 * sum of the values in the population. If count is zero then this field must be zero.
+	 */
+	Double sum
+	/**
+	 * bucket_counts is an optional field contains the count values of histogram for each bucket.
+	 */
+	unique long[] bucketCounts
+	/**
+	 * explicit_bounds specifies buckets with explicitly defined bounds for values.
+	 */
+	unique double[] explicitBounds
+	contains Exemplar[] exemplars
+	int flags
+	/**
+	 * min is the minimum value over (start_time, end_time].
+	 */
+	Double min
+	/**
+	 * max is the maximum value over (start_time, end_time].
+	 */
+	Double max
+}
+
+/**
+ * ExponentialHistogramDataPoint is a single data point in a timeseries that describes the time-varying values of a ExponentialHistogram of double values.
+ */
+class ExponentialHistogramDataPoint {
+	contains KeyValue[] attributes
+	long startTimeUnixNano
+	long timeUnixNano
+	long count
+	Double sum
+	/**
+	 * scale describes the resolution of the histogram. Boundaries are located at powers of the base, where base = (2^(2^-scale))
+	 */
+	int scale
+	/**
+	 * zero_count is the count of values in the zero bucket.
+	 */
+	long zeroCount
+	/**
+	 * positive carries the positive range of exponential bucket counts.
+	 */
+	contains ExponentialHistogramDataPointBuckets positive
+	/**
+	 * negative carries the negative range of exponential bucket counts.
+	 */
+	contains ExponentialHistogramDataPointBuckets negative
+	int flags
+	contains Exemplar[] exemplars
+	Double min
+	Double max
+	double zeroThreshold
+}
+
+/**
+ * Buckets are a set of bucket counts, encoded in a contiguous array of counts.
+ */
+class ExponentialHistogramDataPointBuckets {
+	/**
+	 * Offset is the bucket index of the first entry in the bucket_counts array.
+	 */
+	int offset
+	unique long[] bucketCounts
+}
+
+/**
+ * SummaryDataPoint is a single data point in a timeseries that describes the time-varying values of a Summary metric.
+ */
+class SummaryDataPoint {
+	contains KeyValue[] attributes
+	long startTimeUnixNano
+	long timeUnixNano
+	long count
+	double sum
+	contains SummaryDataPointValueAtQuantile[] quantileValues
+	int flags
+}
+
+/**
+ * Represents the value at a given quantile of a distribution.
+ */
+class SummaryDataPointValueAtQuantile {
+	/**
+	 * The quantile of a distribution. Must be in the interval [0.0, 1.0].
+	 */
+	double quantile
+	/**
+	 * The value at the given quantile of a distribution.
+	 */
+	double value
+}
+
+/**
+ * A representation of an exemplar, which is a sample input measurement. Exemplars also hold information about the environment when the measurement was recorded, for example the span and trace ID of the active span when the exemplar was recorded.
+ */
+class Exemplar {
+	/**
+	 * The set of key/value pairs that were filtered out by the aggregator, but recorded alongside the original measurement.
+	 */
+	contains KeyValue[] filteredAttributes
+	long timeUnixNano
+	Double asDouble
+	Long asInt
+	/**
+	 * (Optional) Span ID of the exemplar trace. span_id may be missing if the measurement is not recorded inside a trace or if the trace is not sampled.
+	 */
+	String spanId
+	/**
+	 * (Optional) Trace ID of the exemplar trace.
+	 */
+	String traceId
+	refers Span span
+}
+
+/**
+ * AggregationTemporality defines how a metric aggregator reports aggregated values. It describes how those values relate to the time interval over which they are aggregated.
+ */
+enum AggregationTemporality {
+	/**
+	 * UNSPECIFIED is the default AggregationTemporality, it MUST not be used.
+	 */
+	AGGREGATION_TEMPORALITY_UNSPECIFIED
+	/**
+	 * DELTA is an AggregationTemporality for a metric aggregator which reports changes since last report time.
+	 */
+	AGGREGATION_TEMPORALITY_DELTA = 1
+	/**
+	 * CUMULATIVE is an AggregationTemporality for a metric aggregator which reports changes since a fixed start time.
+	 */
+	AGGREGATION_TEMPORALITY_CUMULATIVE = 2
+}
