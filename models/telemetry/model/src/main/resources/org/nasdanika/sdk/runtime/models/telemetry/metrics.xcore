@@ -157,7 +157,7 @@ class HistogramDataPoint {
 	/**
 	 * bucket_counts is an optional field contains the count values of histogram for each bucket.
 	 */
-	unique long[] bucketCounts
+	long[] bucketCounts
 	/**
 	 * explicit_bounds specifies buckets with explicitly defined bounds for values.
 	 */
@@ -214,7 +214,7 @@ class ExponentialHistogramDataPointBuckets {
 	 * Offset is the bucket index of the first entry in the bucket_counts array.
 	 */
 	int offset
-	unique long[] bucketCounts
+	long[] bucketCounts
 }
 
 /**

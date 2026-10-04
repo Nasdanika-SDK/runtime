@@ -1242,7 +1242,7 @@ public class MetricsPackageImpl extends EPackageImpl implements MetricsPackage {
 		initEAttribute(getHistogramDataPoint_TimeUnixNano(), theEcorePackage.getELong(), "timeUnixNano", null, 0, 1, HistogramDataPoint.class, !IS_TRANSIENT, !IS_VOLATILE, IS_CHANGEABLE, !IS_UNSETTABLE, !IS_ID, !IS_UNIQUE, !IS_DERIVED, IS_ORDERED);
 		initEAttribute(getHistogramDataPoint_Count(), theEcorePackage.getELong(), "count", null, 0, 1, HistogramDataPoint.class, !IS_TRANSIENT, !IS_VOLATILE, IS_CHANGEABLE, !IS_UNSETTABLE, !IS_ID, !IS_UNIQUE, !IS_DERIVED, IS_ORDERED);
 		initEAttribute(getHistogramDataPoint_Sum(), theEcorePackage.getEDoubleObject(), "sum", null, 0, 1, HistogramDataPoint.class, !IS_TRANSIENT, !IS_VOLATILE, IS_CHANGEABLE, !IS_UNSETTABLE, !IS_ID, !IS_UNIQUE, !IS_DERIVED, IS_ORDERED);
-		initEAttribute(getHistogramDataPoint_BucketCounts(), theEcorePackage.getELong(), "bucketCounts", null, 0, -1, HistogramDataPoint.class, !IS_TRANSIENT, !IS_VOLATILE, IS_CHANGEABLE, !IS_UNSETTABLE, !IS_ID, IS_UNIQUE, !IS_DERIVED, IS_ORDERED);
+		initEAttribute(getHistogramDataPoint_BucketCounts(), theEcorePackage.getELong(), "bucketCounts", null, 0, -1, HistogramDataPoint.class, !IS_TRANSIENT, !IS_VOLATILE, IS_CHANGEABLE, !IS_UNSETTABLE, !IS_ID, !IS_UNIQUE, !IS_DERIVED, IS_ORDERED);
 		initEAttribute(getHistogramDataPoint_ExplicitBounds(), theEcorePackage.getEDouble(), "explicitBounds", null, 0, -1, HistogramDataPoint.class, !IS_TRANSIENT, !IS_VOLATILE, IS_CHANGEABLE, !IS_UNSETTABLE, !IS_ID, IS_UNIQUE, !IS_DERIVED, IS_ORDERED);
 		initEReference(getHistogramDataPoint_Exemplars(), this.getExemplar(), null, "exemplars", null, 0, -1, HistogramDataPoint.class, !IS_TRANSIENT, !IS_VOLATILE, IS_CHANGEABLE, IS_COMPOSITE, !IS_RESOLVE_PROXIES, !IS_UNSETTABLE, IS_UNIQUE, !IS_DERIVED, IS_ORDERED);
 		initEAttribute(getHistogramDataPoint_Flags(), theEcorePackage.getEInt(), "flags", null, 0, 1, HistogramDataPoint.class, !IS_TRANSIENT, !IS_VOLATILE, IS_CHANGEABLE, !IS_UNSETTABLE, !IS_ID, !IS_UNIQUE, !IS_DERIVED, IS_ORDERED);
@@ -1267,7 +1267,7 @@ public class MetricsPackageImpl extends EPackageImpl implements MetricsPackage {
 
 		initEClass(exponentialHistogramDataPointBucketsEClass, ExponentialHistogramDataPointBuckets.class, "ExponentialHistogramDataPointBuckets", !IS_ABSTRACT, !IS_INTERFACE, IS_GENERATED_INSTANCE_CLASS);
 		initEAttribute(getExponentialHistogramDataPointBuckets_Offset(), theEcorePackage.getEInt(), "offset", null, 0, 1, ExponentialHistogramDataPointBuckets.class, !IS_TRANSIENT, !IS_VOLATILE, IS_CHANGEABLE, !IS_UNSETTABLE, !IS_ID, !IS_UNIQUE, !IS_DERIVED, IS_ORDERED);
-		initEAttribute(getExponentialHistogramDataPointBuckets_BucketCounts(), theEcorePackage.getELong(), "bucketCounts", null, 0, -1, ExponentialHistogramDataPointBuckets.class, !IS_TRANSIENT, !IS_VOLATILE, IS_CHANGEABLE, !IS_UNSETTABLE, !IS_ID, IS_UNIQUE, !IS_DERIVED, IS_ORDERED);
+		initEAttribute(getExponentialHistogramDataPointBuckets_BucketCounts(), theEcorePackage.getELong(), "bucketCounts", null, 0, -1, ExponentialHistogramDataPointBuckets.class, !IS_TRANSIENT, !IS_VOLATILE, IS_CHANGEABLE, !IS_UNSETTABLE, !IS_ID, !IS_UNIQUE, !IS_DERIVED, IS_ORDERED);
 
 		initEClass(summaryDataPointEClass, SummaryDataPoint.class, "SummaryDataPoint", !IS_ABSTRACT, !IS_INTERFACE, IS_GENERATED_INSTANCE_CLASS);
 		initEReference(getSummaryDataPoint_Attributes(), theTelemetryPackage.getKeyValue(), null, "attributes", null, 0, -1, SummaryDataPoint.class, !IS_TRANSIENT, !IS_VOLATILE, IS_CHANGEABLE, IS_COMPOSITE, !IS_RESOLVE_PROXIES, !IS_UNSETTABLE, IS_UNIQUE, !IS_DERIVED, IS_ORDERED);

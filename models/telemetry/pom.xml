@@ -15,6 +15,6 @@
 
 	<modules>
 		<module>model</module>
-		<!--<module>exporter</module>-->
+		<module>exporters</module>
 	</modules>
 </project>

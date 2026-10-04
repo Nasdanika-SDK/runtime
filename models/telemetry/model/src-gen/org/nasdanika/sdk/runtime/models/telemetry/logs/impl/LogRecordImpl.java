@@ -40,6 +40,7 @@ import org.nasdanika.sdk.runtime.models.telemetry.logs.SeverityNumber;
  *   <li>{@link org.nasdanika.sdk.runtime.models.telemetry.logs.impl.LogRecordImpl#getFlags <em>Flags</em>}</li>
  *   <li>{@link org.nasdanika.sdk.runtime.models.telemetry.logs.impl.LogRecordImpl#getTraceId <em>Trace Id</em>}</li>
  *   <li>{@link org.nasdanika.sdk.runtime.models.telemetry.logs.impl.LogRecordImpl#getSpanId <em>Span Id</em>}</li>
+ *   <li>{@link org.nasdanika.sdk.runtime.models.telemetry.logs.impl.LogRecordImpl#getEventName <em>Event Name</em>}</li>
  * </ul>
  *
  * @generated
@@ -124,6 +125,16 @@ public class LogRecordImpl extends MinimalEObjectImpl.Container implements LogRe
 	 * @ordered
 	 */
 	protected static final String SPAN_ID_EDEFAULT = null;
+
+	/**
+	 * The default value of the '{@link #getEventName() <em>Event Name</em>}' attribute.
+	 * <!-- begin-user-doc -->
+	 * <!-- end-user-doc -->
+	 * @see #getEventName()
+	 * @generated
+	 * @ordered
+	 */
+	protected static final String EVENT_NAME_EDEFAULT = null;
 
 	/**
 	 * <!-- begin-user-doc -->
@@ -341,6 +352,24 @@ public class LogRecordImpl extends MinimalEObjectImpl.Container implements LogRe
 	 * <!-- end-user-doc -->
 	 * @generated
 	 */
+	public String getEventName() {
+		return (String)eDynamicGet(LogsPackage.LOG_RECORD__EVENT_NAME, LogsPackage.Literals.LOG_RECORD__EVENT_NAME, true, true);
+	}
+
+	/**
+	 * <!-- begin-user-doc -->
+	 * <!-- end-user-doc -->
+	 * @generated
+	 */
+	public void setEventName(String newEventName) {
+		eDynamicSet(LogsPackage.LOG_RECORD__EVENT_NAME, LogsPackage.Literals.LOG_RECORD__EVENT_NAME, newEventName);
+	}
+
+	/**
+	 * <!-- begin-user-doc -->
+	 * <!-- end-user-doc -->
+	 * @generated
+	 */
 	@Override
 	public NotificationChain eInverseRemove(InternalEObject otherEnd, int featureID, NotificationChain msgs) {
 		switch (featureID) {
@@ -380,6 +409,8 @@ public class LogRecordImpl extends MinimalEObjectImpl.Container implements LogRe
 				return getTraceId();
 			case LogsPackage.LOG_RECORD__SPAN_ID:
 				return getSpanId();
+			case LogsPackage.LOG_RECORD__EVENT_NAME:
+				return getEventName();
 		}
 		return super.eGet(featureID, resolve, coreType);
 	}
@@ -424,6 +455,9 @@ public class LogRecordImpl extends MinimalEObjectImpl.Container implements LogRe
 			case LogsPackage.LOG_RECORD__SPAN_ID:
 				setSpanId((String)newValue);
 				return;
+			case LogsPackage.LOG_RECORD__EVENT_NAME:
+				setEventName((String)newValue);
+				return;
 		}
 		super.eSet(featureID, newValue);
 	}
@@ -466,6 +500,9 @@ public class LogRecordImpl extends MinimalEObjectImpl.Container implements LogRe
 			case LogsPackage.LOG_RECORD__SPAN_ID:
 				setSpanId(SPAN_ID_EDEFAULT);
 				return;
+			case LogsPackage.LOG_RECORD__EVENT_NAME:
+				setEventName(EVENT_NAME_EDEFAULT);
+				return;
 		}
 		super.eUnset(featureID);
 	}
@@ -498,6 +535,8 @@ public class LogRecordImpl extends MinimalEObjectImpl.Container implements LogRe
 				return TRACE_ID_EDEFAULT == null ? getTraceId() != null : !TRACE_ID_EDEFAULT.equals(getTraceId());
 			case LogsPackage.LOG_RECORD__SPAN_ID:
 				return SPAN_ID_EDEFAULT == null ? getSpanId() != null : !SPAN_ID_EDEFAULT.equals(getSpanId());
+			case LogsPackage.LOG_RECORD__EVENT_NAME:
+				return EVENT_NAME_EDEFAULT == null ? getEventName() != null : !EVENT_NAME_EDEFAULT.equals(getEventName());
 		}
 		return super.eIsSet(featureID);
 	}

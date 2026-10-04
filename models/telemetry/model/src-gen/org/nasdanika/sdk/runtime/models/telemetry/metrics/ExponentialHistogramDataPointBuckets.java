@@ -62,7 +62,7 @@ public interface ExponentialHistogramDataPointBuckets extends EObject {
 	 * <!-- end-user-doc -->
 	 * @return the value of the '<em>Bucket Counts</em>' attribute list.
 	 * @see org.nasdanika.sdk.runtime.models.telemetry.metrics.MetricsPackage#getExponentialHistogramDataPointBuckets_BucketCounts()
-	 * @model
+	 * @model unique="false"
 	 * @generated
 	 */
 	EList<Long> getBucketCounts();

@@ -159,7 +159,7 @@ public interface HistogramDataPoint extends EObject {
 	 * <!-- end-model-doc -->
 	 * @return the value of the '<em>Bucket Counts</em>' attribute list.
 	 * @see org.nasdanika.sdk.runtime.models.telemetry.metrics.MetricsPackage#getHistogramDataPoint_BucketCounts()
-	 * @model
+	 * @model unique="false"
 	 * @generated
 	 */
 	EList<Long> getBucketCounts();

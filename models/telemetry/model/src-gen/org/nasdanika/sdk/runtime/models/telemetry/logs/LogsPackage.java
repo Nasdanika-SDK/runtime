@@ -307,13 +307,22 @@ public interface LogsPackage extends EPackage {
 	int LOG_RECORD__SPAN_ID = 9;
 
 	/**
+	 * The feature id for the '<em><b>Event Name</b></em>' attribute.
+	 * <!-- begin-user-doc -->
+	 * <!-- end-user-doc -->
+	 * @generated
+	 * @ordered
+	 */
+	int LOG_RECORD__EVENT_NAME = 10;
+
+	/**
 	 * The number of structural features of the '<em>Log Record</em>' class.
 	 * <!-- begin-user-doc -->
 	 * <!-- end-user-doc -->
 	 * @generated
 	 * @ordered
 	 */
-	int LOG_RECORD_FEATURE_COUNT = 10;
+	int LOG_RECORD_FEATURE_COUNT = 11;
 
 	/**
 	 * The number of operations of the '<em>Log Record</em>' class.
@@ -563,6 +572,17 @@ public interface LogsPackage extends EPackage {
 	EAttribute getLogRecord_SpanId();
 
 	/**
+	 * Returns the meta object for the attribute '{@link org.nasdanika.sdk.runtime.models.telemetry.logs.LogRecord#getEventName <em>Event Name</em>}'.
+	 * <!-- begin-user-doc -->
+	 * <!-- end-user-doc -->
+	 * @return the meta object for the attribute '<em>Event Name</em>'.
+	 * @see org.nasdanika.sdk.runtime.models.telemetry.logs.LogRecord#getEventName()
+	 * @see #getLogRecord()
+	 * @generated
+	 */
+	EAttribute getLogRecord_EventName();
+
+	/**
 	 * Returns the meta object for enum '{@link org.nasdanika.sdk.runtime.models.telemetry.logs.SeverityNumber <em>Severity Number</em>}'.
 	 * <!-- begin-user-doc -->
 	 * <!-- end-user-doc -->
@@ -770,6 +790,14 @@ public interface LogsPackage extends EPackage {
 		 * @generated
 		 */
 		EAttribute LOG_RECORD__SPAN_ID = eINSTANCE.getLogRecord_SpanId();
+
+		/**
+		 * The meta object literal for the '<em><b>Event Name</b></em>' attribute feature.
+		 * <!-- begin-user-doc -->
+		 * <!-- end-user-doc -->
+		 * @generated
+		 */
+		EAttribute LOG_RECORD__EVENT_NAME = eINSTANCE.getLogRecord_EventName();
 
 		/**
 		 * The meta object literal for the '{@link org.nasdanika.sdk.runtime.models.telemetry.logs.SeverityNumber <em>Severity Number</em>}' enum.

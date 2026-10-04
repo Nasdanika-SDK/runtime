@@ -321,6 +321,15 @@ public class LogsPackageImpl extends EPackageImpl implements LogsPackage {
 	 * <!-- end-user-doc -->
 	 * @generated
 	 */
+	public EAttribute getLogRecord_EventName() {
+		return (EAttribute)logRecordEClass.getEStructuralFeatures().get(10);
+	}
+
+	/**
+	 * <!-- begin-user-doc -->
+	 * <!-- end-user-doc -->
+	 * @generated
+	 */
 	public EEnum getSeverityNumber() {
 		return severityNumberEEnum;
 	}
@@ -377,6 +386,7 @@ public class LogsPackageImpl extends EPackageImpl implements LogsPackage {
 		createEAttribute(logRecordEClass, LOG_RECORD__FLAGS);
 		createEAttribute(logRecordEClass, LOG_RECORD__TRACE_ID);
 		createEAttribute(logRecordEClass, LOG_RECORD__SPAN_ID);
+		createEAttribute(logRecordEClass, LOG_RECORD__EVENT_NAME);
 
 		// Create enums
 		severityNumberEEnum = createEEnum(SEVERITY_NUMBER);
@@ -440,6 +450,7 @@ public class LogsPackageImpl extends EPackageImpl implements LogsPackage {
 		initEAttribute(getLogRecord_Flags(), theEcorePackage.getEInt(), "flags", null, 0, 1, LogRecord.class, !IS_TRANSIENT, !IS_VOLATILE, IS_CHANGEABLE, !IS_UNSETTABLE, !IS_ID, !IS_UNIQUE, !IS_DERIVED, IS_ORDERED);
 		initEAttribute(getLogRecord_TraceId(), theEcorePackage.getEString(), "traceId", null, 0, 1, LogRecord.class, !IS_TRANSIENT, !IS_VOLATILE, IS_CHANGEABLE, !IS_UNSETTABLE, !IS_ID, !IS_UNIQUE, !IS_DERIVED, IS_ORDERED);
 		initEAttribute(getLogRecord_SpanId(), theEcorePackage.getEString(), "spanId", null, 0, 1, LogRecord.class, !IS_TRANSIENT, !IS_VOLATILE, IS_CHANGEABLE, !IS_UNSETTABLE, !IS_ID, !IS_UNIQUE, !IS_DERIVED, IS_ORDERED);
+		initEAttribute(getLogRecord_EventName(), theEcorePackage.getEString(), "eventName", null, 0, 1, LogRecord.class, !IS_TRANSIENT, !IS_VOLATILE, IS_CHANGEABLE, !IS_UNSETTABLE, !IS_ID, !IS_UNIQUE, !IS_DERIVED, IS_ORDERED);
 
 		// Initialize enums and add enum literals
 		initEEnum(severityNumberEEnum, SeverityNumber.class, "SeverityNumber");
@@ -583,6 +594,12 @@ public class LogsPackageImpl extends EPackageImpl implements LogsPackage {
 		   source,
 		   new String[] {
 			   "documentation", "*\nA unique identifier for a span within a trace. If present, this log record is associated with a specific span."
+		   });
+		addAnnotation
+		  (getLogRecord_EventName(),
+		   source,
+		   new String[] {
+			   "documentation", "*\nA unique identifier of an event. If present, this log record is an event: its attributes and body follow the event\'s semantic conventions."
 		   });
 		addAnnotation
 		  (severityNumberEEnum,

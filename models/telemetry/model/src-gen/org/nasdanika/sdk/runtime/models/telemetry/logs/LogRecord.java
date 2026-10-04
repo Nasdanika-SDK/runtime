@@ -33,6 +33,7 @@ import org.nasdanika.sdk.runtime.models.telemetry.KeyValue;
  *   <li>{@link org.nasdanika.sdk.runtime.models.telemetry.logs.LogRecord#getFlags <em>Flags</em>}</li>
  *   <li>{@link org.nasdanika.sdk.runtime.models.telemetry.logs.LogRecord#getTraceId <em>Trace Id</em>}</li>
  *   <li>{@link org.nasdanika.sdk.runtime.models.telemetry.logs.LogRecord#getSpanId <em>Span Id</em>}</li>
+ *   <li>{@link org.nasdanika.sdk.runtime.models.telemetry.logs.LogRecord#getEventName <em>Event Name</em>}</li>
  * </ul>
  *
  * @see org.nasdanika.sdk.runtime.models.telemetry.logs.LogsPackage#getLogRecord()
@@ -288,5 +289,31 @@ public interface LogRecord extends EObject {
 	 * @generated
 	 */
 	void setSpanId(String value);
+
+	/**
+	 * Returns the value of the '<em><b>Event Name</b></em>' attribute.
+	 * <!-- begin-user-doc -->
+	 * <!-- end-user-doc -->
+	 * <!-- begin-model-doc -->
+	 * *
+	 * A unique identifier of an event. If present, this log record is an event: its attributes and body follow the event's semantic conventions.
+	 * <!-- end-model-doc -->
+	 * @return the value of the '<em>Event Name</em>' attribute.
+	 * @see #setEventName(String)
+	 * @see org.nasdanika.sdk.runtime.models.telemetry.logs.LogsPackage#getLogRecord_EventName()
+	 * @model unique="false"
+	 * @generated
+	 */
+	String getEventName();
+
+	/**
+	 * Sets the value of the '{@link org.nasdanika.sdk.runtime.models.telemetry.logs.LogRecord#getEventName <em>Event Name</em>}' attribute.
+	 * <!-- begin-user-doc -->
+	 * <!-- end-user-doc -->
+	 * @param value the new value of the '<em>Event Name</em>' attribute.
+	 * @see #getEventName()
+	 * @generated
+	 */
+	void setEventName(String value);
 
 } // LogRecord

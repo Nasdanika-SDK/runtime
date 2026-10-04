@@ -91,6 +91,10 @@ class LogRecord {
 	 * A unique identifier for a span within a trace. If present, this log record is associated with a specific span.
 	 */
 	String spanId
+	/**
+	 * A unique identifier of an event. If present, this log record is an event: its attributes and body follow the event's semantic conventions.
+	 */
+	String eventName
 }
 
 /**
