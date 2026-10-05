@@ -17,5 +17,7 @@
 		<module>core</module>
 		<module>file</module>
 		<module>telemetry</module>
+		<module>bom</module>
+		<module>all</module>
 	</modules>
 </project>

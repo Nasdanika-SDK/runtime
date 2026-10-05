@@ -1,0 +1,200 @@
+﻿<project xmlns="http://maven.apache.org/POM/4.0.0" xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
+	xsi:schemaLocation="http://maven.apache.org/POM/4.0.0 http://maven.apache.org/xsd/maven-4.0.0.xsd">
+	<modelVersion>4.0.0</modelVersion>
+	<parent>
+	    <artifactId>parent</artifactId>
+	    <groupId>org.nasdanika.sdk.runtime</groupId>
+	    <version>2026.10.0</version>
+	    <relativePath>..</relativePath>
+	</parent>
+	<artifactId>bom</artifactId>
+	<packaging>pom</packaging>
+	<name>Nasdanika SDK Runtime BOM</name>
+	<description>Bill of Materials (BOM) for Nasdanika SDK Runtime.</description>
+
+	<properties>
+		<project.build.sourceEncoding>UTF-8</project.build.sourceEncoding>
+		<revision>${project.version}</revision>
+	</properties>
+
+	<build>
+		<plugins>
+			<plugin>
+				<groupId>org.codehaus.mojo</groupId>
+				<artifactId>flatten-maven-plugin</artifactId>
+				<version>1.8.0</version>
+				<configuration>
+					<!-- Replaces the original pom.xml with the flattened version during
+					install/deploy -->
+					<updatePomFile>true</updatePomFile>
+
+					<!-- 'resolveCiFriendliesOnly' is the safest mode for a Parent POM. 
+                         It resolves variables like ${revision}, ${sha1}, and ${changelist} 
+                         without stripping out other important sections of your child modules. -->
+					<flattenMode>resolveCiFriendliesOnly</flattenMode>
+				</configuration>
+				<executions>
+					<!-- Generate the flattened POM during the build -->
+					<execution>
+						<id>flatten</id>
+						<phase>process-resources</phase>
+						<goals>
+							<goal>flatten</goal>
+						</goals>
+					</execution>
+					<!-- Clean up the generated flattened POMs on 'mvn clean' -->
+					<execution>
+						<id>flatten.clean</id>
+						<phase>clean</phase>
+						<goals>
+							<goal>clean</goal>
+						</goals>
+					</execution>
+				</executions>
+			</plugin>
+		</plugins>
+	</build>
+
+	<dependencyManagement>
+	    <dependencies>
+			<!-- Third party dependencies -->
+			<dependency>
+				<groupId>io.opentelemetry</groupId>
+				<artifactId>opentelemetry-api</artifactId>
+				<version>1.66.0</version>
+				<scope>compile</scope>
+			</dependency>			
+			<dependency>
+				<groupId>io.opentelemetry</groupId>
+				<artifactId>opentelemetry-sdk</artifactId>
+				<version>1.66.0</version>
+				<scope>compile</scope>
+			</dependency>			
+			<dependency>
+				<groupId>io.opentelemetry</groupId>
+				<artifactId>opentelemetry-exporter-logging-otlp</artifactId>
+				<version>1.66.0</version>
+			</dependency>			
+			<dependency>
+				<groupId>io.opentelemetry</groupId>
+				<artifactId>opentelemetry-sdk-testing</artifactId>
+				<version>1.66.0</version>
+				<scope>test</scope>
+			</dependency>			
+			<dependency>
+				<groupId>org.eclipse.emf</groupId>
+				<artifactId>org.eclipse.emf.ecore</artifactId>
+				<version>2.42.0</version>
+			</dependency> 		
+			<dependency>
+				<groupId>org.eclipse.emf</groupId>
+				<artifactId>org.eclipse.emf.ecore.xmi</artifactId>
+				<version>2.40.0</version>
+			</dependency>
+			<dependency>
+				<groupId>org.json</groupId>
+				<artifactId>json</artifactId>
+				<version>20260522</version>
+			</dependency>
+			<dependency>
+				<groupId>org.yaml</groupId>
+				<artifactId>snakeyaml</artifactId>
+				<version>2.6</version>
+			</dependency>		
+			<dependency>
+				<groupId>org.jsoup</groupId>
+				<artifactId>jsoup</artifactId>
+				<version>1.22.2</version>
+			</dependency>
+			<dependency>
+				<groupId>org.eclipse.jgit</groupId>
+				<artifactId>org.eclipse.jgit</artifactId>
+				<version>7.7.0.202606012155-r</version>
+			</dependency>
+			<dependency>
+				<groupId>org.nasdanika</groupId>
+				<artifactId>xtext</artifactId>
+				<version>2.43.0</version>
+			</dependency>
+			<dependency>
+				<groupId>org.eclipse.xtext</groupId>
+				<artifactId>org.eclipse.xtext.xbase.lib</artifactId>
+				<version>2.43.0</version>
+			</dependency>
+			<dependency>
+				<groupId>org.eclipse.emf</groupId>
+				<artifactId>org.eclipse.emf.ecore.xcore.lib</artifactId>
+				<version>1.7.1</version>
+			</dependency>
+			<dependency>
+				<groupId>org.eclipse.emf</groupId>
+				<artifactId>org.eclipse.emf.ecore.change</artifactId>
+				<version>2.17.0</version>
+			</dependency>       
+			<dependency>
+				<groupId>org.eclipse.emfcloud</groupId>
+				<artifactId>emfjson-jackson</artifactId>
+				<version>2.3.0</version>
+				<scope>compile</scope>
+			</dependency>
+			<dependency>
+				<groupId>com.fasterxml.jackson.dataformat</groupId>
+				<artifactId>jackson-dataformat-yaml</artifactId>
+				<version>2.22.0</version>
+				<scope>compile</scope>
+			</dependency>
+
+			<!-- SDK modules -->
+			<dependency>
+				<groupId>org.nasdanika.sdk.runtime.models</groupId>
+				<artifactId>bom</artifactId>
+				<version>${revision}</version>
+				<type>pom</type>
+				<scope>import</scope>
+			</dependency>
+
+			<dependency>
+				<groupId>${project.groupId}</groupId>
+				<artifactId>common</artifactId>
+				<version>${revision}</version>
+			</dependency>
+			<dependency>
+				<groupId>${project.groupId}</groupId>
+				<artifactId>emf-json</artifactId>
+				<version>${revision}</version>
+			</dependency>
+			<dependency>
+				<groupId>${project.groupId}</groupId>
+				<artifactId>picocli</artifactId>
+				<version>${revision}</version>
+			</dependency>
+			<dependency>
+				<groupId>${project.groupId}</groupId>
+				<artifactId>volume</artifactId>
+				<version>${revision}</version>
+			</dependency>
+			<dependency>
+				<groupId>${project.groupId}</groupId>
+				<artifactId>bootstrap</artifactId>
+				<version>${revision}</version>
+			</dependency>
+			<dependency>
+				<groupId>${project.groupId}</groupId>
+				<artifactId>groovy</artifactId>
+				<version>${revision}</version>
+			</dependency>
+			<dependency>
+				<groupId>${project.groupId}</groupId>
+				<artifactId>cli</artifactId>
+				<version>${revision}</version>
+			</dependency>
+			<dependency>
+				<groupId>${project.groupId}</groupId>
+				<artifactId>all</artifactId>
+				<version>${revision}</version>
+				<type>pom</type>
+			</dependency>
+	    </dependencies>
+	</dependencyManagement>
+	
+</project>

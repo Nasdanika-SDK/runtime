@@ -1,0 +1,93 @@
+﻿<project xmlns="http://maven.apache.org/POM/4.0.0" xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
+	xsi:schemaLocation="http://maven.apache.org/POM/4.0.0 http://maven.apache.org/xsd/maven-4.0.0.xsd">
+	<modelVersion>4.0.0</modelVersion>
+	<parent>
+		<groupId>org.nasdanika.sdk.runtime.models</groupId>
+		<artifactId>parent</artifactId>
+		<version>2026.10.0</version>
+		<relativePath>..</relativePath>
+	</parent>
+	<artifactId>bom</artifactId>
+	<packaging>pom</packaging>
+	<name>Nasdanika SDK Runtime Models BOM</name>
+	<description>Bill of Materials (BOM) for Nasdanika SDK Models</description>
+
+	<properties>
+		<project.build.sourceEncoding>UTF-8</project.build.sourceEncoding>
+		<revision>${project.version}</revision>
+	</properties>
+
+	<build>
+		<plugins>
+			<plugin>
+				<groupId>org.codehaus.mojo</groupId>
+				<artifactId>flatten-maven-plugin</artifactId>
+				<version>1.8.0</version>
+				<configuration>
+					<!-- Replaces the original pom.xml with the flattened version during
+					install/deploy -->
+					<updatePomFile>true</updatePomFile>
+
+					<!-- 'resolveCiFriendliesOnly' is the safest mode for a Parent POM. 
+                         It resolves variables like ${revision}, ${sha1}, and ${changelist} 
+                         without stripping out other important sections of your child modules. -->
+					<flattenMode>resolveCiFriendliesOnly</flattenMode>
+				</configuration>
+				<executions>
+					<!-- Generate the flattened POM during the build -->
+					<execution>
+						<id>flatten</id>
+						<phase>process-resources</phase>
+						<goals>
+							<goal>flatten</goal>
+						</goals>
+					</execution>
+					<!-- Clean up the generated flattened POMs on 'mvn clean' -->
+					<execution>
+						<id>flatten.clean</id>
+						<phase>clean</phase>
+						<goals>
+							<goal>clean</goal>
+						</goals>
+					</execution>
+				</executions>
+			</plugin>
+		</plugins>
+	</build>
+
+	<dependencyManagement>
+	    <dependencies>
+			<dependency>
+				<groupId>org.nasdanika.sdk.runtime.models</groupId>
+				<version>${revision}</version>
+				<artifactId>core</artifactId>
+			</dependency>
+
+			<dependency>
+				<groupId>org.nasdanika.sdk.runtime.models.file</groupId>
+				<version>${revision}</version>
+				<artifactId>model</artifactId>				
+			</dependency>
+
+			<dependency>
+				<groupId>org.nasdanika.sdk.runtime.models.telemetry</groupId>
+				<version>${revision}</version>
+				<artifactId>model</artifactId>				
+			</dependency>
+			<dependency>
+				<groupId>org.nasdanika.sdk.runtime.models.telemetry</groupId>
+				<version>${revision}</version>
+				<artifactId>exporters</artifactId>				
+			</dependency>
+
+			<dependency>
+				<groupId>org.nasdanika.sdk.runtime.models</groupId>
+				<version>${revision}</version>
+				<artifactId>all</artifactId>
+				<type>pom</type>
+			</dependency>
+
+	    </dependencies>
+	</dependencyManagement>
+	
+</project>

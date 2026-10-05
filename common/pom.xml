@@ -11,6 +11,18 @@
 	<packaging>jar</packaging>
 	<name>Nasdanika SDK Runtime Common</name>
 
+	<dependencyManagement>
+		<dependencies>
+			<dependency>
+				<groupId>${project.groupId}</groupId>
+				<artifactId>bom</artifactId>
+				<version>${project.version}</version>
+				<type>pom</type>
+				<scope>import</scope>
+			</dependency>
+		</dependencies>
+	</dependencyManagement>	
+
 	<dependencies>
 		<dependency>
 			<groupId>io.opentelemetry</groupId>

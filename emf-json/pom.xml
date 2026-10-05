@@ -12,6 +12,19 @@
     <packaging>jar</packaging>
     <name>EMF JSON</name>
     <description>Resource factories for JSON and YAML</description>
+
+	<dependencyManagement>
+		<dependencies>
+			<dependency>
+				<groupId>${project.groupId}</groupId>
+				<artifactId>bom</artifactId>
+				<version>${project.version}</version>
+				<type>pom</type>
+				<scope>import</scope>
+			</dependency>
+		</dependencies>
+	</dependencyManagement>	
+    
     <dependencies>
         <dependency>
             <groupId>${project.groupId}</groupId>

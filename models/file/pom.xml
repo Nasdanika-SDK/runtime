@@ -13,6 +13,18 @@
 	<name>Nasdanika SDK File Model</name>
 	<description>Model, providers</description>
 
+	<dependencyManagement>
+		<dependencies>
+			<dependency>
+				<groupId>org.nasdanika.sdk.runtime</groupId>
+				<artifactId>bom</artifactId>
+				<version>${project.version}</version>
+				<type>pom</type>
+				<scope>import</scope>
+			</dependency>
+		</dependencies>
+	</dependencyManagement>	
+	
 	<modules>
 		<module>model</module>
 		<!--<module>git</module>-->

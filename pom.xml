@@ -501,5 +501,10 @@
 		<module>picocli</module>
 		<module>models</module>
 		<module>tests</module>
+		<module>bom</module>
+		<module>bootstrap</module>
+		<module>groovy</module>
+		<module>cli</module>
+		<module>all</module>
 	</modules>	
 </project>
