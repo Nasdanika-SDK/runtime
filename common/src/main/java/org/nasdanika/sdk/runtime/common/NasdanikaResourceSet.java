@@ -18,6 +18,7 @@ public class NasdanikaResourceSet extends ResourceSetImpl {
 	private Map<URI, EObject> globals = new ConcurrentHashMap<>();
 	
 	public void registerGlobal(URI uri, EObject global) {
+		// TOOD - log global registration via a telemetry logger
 		globals.put(uri, global);
 	}
 

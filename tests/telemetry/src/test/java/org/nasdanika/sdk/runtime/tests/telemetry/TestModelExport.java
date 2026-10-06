@@ -68,6 +68,16 @@ class TestModelExport {
 	}
 
 	@Test
+	void jsonYml() throws IOException {
+		rootCommand("yml");
+	}
+
+	@Test
+	void jsonYaml() throws IOException {
+		rootCommand("yaml");
+	}
+
+	@Test
 	void xmi() throws IOException {
 		rootCommand("xmi");
 	}

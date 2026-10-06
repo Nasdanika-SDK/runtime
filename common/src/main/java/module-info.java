@@ -22,6 +22,7 @@ module org.nasdanika.sdk.runtime.common {
 	exports org.nasdanika.sdk.runtime.common;
 	exports org.nasdanika.sdk.runtime.common.flow;
 	exports org.nasdanika.sdk.runtime.common.capability;
+	exports org.nasdanika.sdk.runtime.common.capability.emf;
 	exports org.nasdanika.sdk.runtime.common.telemetry;
 
 	uses ResourceSetContributor;
