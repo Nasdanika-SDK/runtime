@@ -13,6 +13,9 @@ import org.eclipse.emf.ecore.resource.ResourceSet;
 import org.eclipse.emf.ecore.resource.impl.BinaryResourceImpl;
 import org.nasdanika.sdk.runtime.common.telemetry.ResourceTelemetry;
 
+import io.opentelemetry.api.logs.Logger;
+import io.opentelemetry.api.trace.Span;
+
 /**
  * Gzipped binary resources, with {@link ResourceTelemetry} spans for load, save and unload. The
  * byte counts are of the compressed stream.
@@ -54,6 +57,12 @@ public class GzipBinaryResourceFactoryContributor implements ResourceSetContribu
 				});
 			}
 		});
+	}
+
+	@Override
+	public void contribute(ResourceSet resourceSet, Span span, Logger logger) {
+		throw new UnsupportedOperationException("Should not be called, use contribute(ResourceSet) instead");
+		
 	}
 
 }

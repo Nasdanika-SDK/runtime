@@ -11,12 +11,16 @@ import org.eclipse.emf.ecore.resource.ResourceSet;
 import org.eclipse.emf.ecore.resource.URIConverter;
 import org.eclipse.emf.ecore.resource.URIHandler;
 import org.nasdanika.sdk.runtime.common.telemetry.Telemetry;
+import org.nasdanika.sdk.runtime.common.telemetry.Telemetry.SpanBody;
 import org.nasdanika.sdk.runtime.common.telemetry.TelemetryURIHandler;
 
 import io.opentelemetry.api.OpenTelemetry;
 import io.opentelemetry.api.common.Attributes;
+import io.opentelemetry.api.common.AttributesBuilder;
 import io.opentelemetry.api.logs.Logger;
 import io.opentelemetry.api.logs.Severity;
+import io.opentelemetry.api.trace.Span;
+import io.opentelemetry.api.trace.Tracer;
 import io.opentelemetry.context.Scope;
 
 /**
@@ -34,7 +38,29 @@ import io.opentelemetry.context.Scope;
  */
 public interface ResourceSetContributor {
 
-	void contribute(ResourceSet resourceSet);
+	default void contribute(ResourceSet resourceSet) {
+		OpenTelemetry otel = Telemetry.of(resourceSet);
+		Tracer tracer = Telemetry.tracer(otel);
+		Logger logger = Telemetry.logger(otel);
+
+		SpanBody<Object, RuntimeException> spanBody = span -> {
+			contribute(resourceSet, span, logger);
+			return null;
+		};
+		
+		AttributesBuilder attrBuidler = Attributes.builder();
+		attrBuidler.put("contributorClass", getClass().getName());
+		attrBuidler.put("contributorModule", getClass().getModule().getName());
+		getClass().getModule().getDescriptor().version().ifPresent(v ->	attrBuidler.put("contributorModuleVersion", v.toString()));
+		
+		Telemetry.inSpan(
+				tracer, 
+				"Contribute To Resource Set", 
+				attrBuidler.build(),
+				spanBody);
+	}
+	
+	void contribute(ResourceSet resourceSet, Span span, Logger logger);	
 
 	/**
 	 * Registers EPackages and runs contributors from the class loader, with the current

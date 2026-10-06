@@ -12,6 +12,9 @@ import org.eclipse.emf.ecore.xmi.impl.XMIResourceFactoryImpl;
 import org.eclipse.emf.ecore.xmi.impl.XMIResourceImpl;
 import org.nasdanika.sdk.runtime.common.telemetry.ResourceTelemetry;
 
+import io.opentelemetry.api.logs.Logger;
+import io.opentelemetry.api.trace.Span;
+
 /**
  * XMI for the default extension, with {@link ResourceTelemetry} spans for load, save and unload.
  */
@@ -46,6 +49,12 @@ public class XMIResourceFactoryContributor implements ResourceSetContributor {
 				}
 				
 			});
+	}
+
+	@Override
+	public void contribute(ResourceSet resourceSet, Span span, Logger logger) {
+		throw new UnsupportedOperationException("Should not be called, use contribute(ResourceSet) instead");
+		
 	}
 
 }

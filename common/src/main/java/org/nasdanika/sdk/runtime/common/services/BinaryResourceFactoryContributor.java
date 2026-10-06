@@ -11,6 +11,9 @@ import org.eclipse.emf.ecore.resource.ResourceSet;
 import org.eclipse.emf.ecore.resource.impl.BinaryResourceImpl;
 import org.nasdanika.sdk.runtime.common.telemetry.ResourceTelemetry;
 
+import io.opentelemetry.api.logs.Logger;
+import io.opentelemetry.api.trace.Span;
+
 /**
  * Binary resources, with {@link ResourceTelemetry} spans for load, save and unload.
  */
@@ -43,6 +46,12 @@ public class BinaryResourceFactoryContributor implements ResourceSetContributor 
 				});
 			}
 		});
+	}
+
+	@Override
+	public void contribute(ResourceSet resourceSet, Span span, Logger logger) {
+		throw new UnsupportedOperationException("Should not be called, use contribute(ResourceSet) instead");
+		
 	}
 
 }

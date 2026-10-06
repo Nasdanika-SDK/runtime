@@ -6,12 +6,13 @@ import java.util.List;
 import java.util.ServiceLoader;
 import java.util.function.Predicate;
 
+import org.nasdanika.sdk.runtime.common.Closeable;
+
 /**
- * Supplies {@link CapabilityFactory} instances to a {@link CapabilityLoader}: the half of the old
- * loader that acquires factories, separated from the half that resolves requirements.
+ * Supplies {@link CapabilityFactory} instances to a {@link CapabilityLoader}.
  *
  * <p>
- * {@link AutoCloseable} lives here and not on the loader, because closing means disposing
+ * {@link Closeable} lives here and not on the loader, because closing means disposing
  * factories, which is an ownership concern: a loader borrowing a shared source does not own them.
  * Closing closes the factories that are {@link AutoCloseable}.
  *
@@ -21,7 +22,7 @@ import java.util.function.Predicate;
  * singletons per source, and any factory holding state would quietly fork.
  */
 @FunctionalInterface
-public interface CapabilityFactorySource extends AutoCloseable {
+public interface CapabilityFactorySource extends Closeable {
 
 	List<CapabilityFactory<Object, Object>> getFactories();
 
@@ -122,6 +123,7 @@ public interface CapabilityFactorySource extends AutoCloseable {
 	 * not a surface check. This is how a trust level is enforced structurally.
 	 */
 	default CapabilityFactorySource filtered(Predicate<? super CapabilityFactory<Object, Object>> predicate) {
+		@SuppressWarnings("resource")
 		CapabilityFactorySource source = this;
 		return new CapabilityFactorySource() {
 

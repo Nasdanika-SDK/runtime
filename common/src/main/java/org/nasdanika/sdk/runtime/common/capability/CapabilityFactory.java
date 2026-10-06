@@ -8,6 +8,14 @@ import java.util.concurrent.Flow;
 import org.nasdanika.sdk.runtime.common.flow.Flows;
 import org.nasdanika.sdk.runtime.common.flow.Pump;
 import org.nasdanika.sdk.runtime.common.flow.Transformer;
+import org.nasdanika.sdk.runtime.common.telemetry.Telemetry;
+
+import io.opentelemetry.api.OpenTelemetry;
+import io.opentelemetry.api.common.Attributes;
+import io.opentelemetry.api.common.AttributesBuilder;
+import io.opentelemetry.api.logs.Logger;
+import io.opentelemetry.api.trace.Span;
+import io.opentelemetry.api.trace.Tracer;
 
 /**
  * Creates providers of capabilities satisfying a requirement. A service interface for
@@ -58,7 +66,24 @@ public interface CapabilityFactory<R, C> {
 	 * @param loader Resolves dependency requirements
 	 * @return Providers, emitted as they are produced. Null for none
 	 */
-	Flow.Publisher<CapabilityProvider<C>> create(R requirement, Loader loader);
+	default Flow.Publisher<CapabilityProvider<C>> create(R requirement, Loader loader) {
+		OpenTelemetry otel = Telemetry.current();
+		Tracer tracer = Telemetry.tracer(otel);
+		Logger logger = Telemetry.logger(otel);
+				
+		AttributesBuilder attrBuidler = Attributes.builder();
+		attrBuidler.put("contributorClass", getClass().getName());
+		attrBuidler.put("contributorModule", getClass().getModule().getName());
+		getClass().getModule().getDescriptor().version().ifPresent(v ->	attrBuidler.put("contributorModuleVersion", v.toString()));
+		
+		return Telemetry.inSpan(
+				tracer, 
+				"Create Capability", 
+				attrBuidler.build(),
+				span -> create(requirement, loader, span, logger));
+	}
+	
+	Flow.Publisher<CapabilityProvider<C>> create(R requirement, Loader loader, Span span, Logger logger);	
 
 	/**
 	 * A capability factory backed by a transformer factory: a requirement is a source and its
