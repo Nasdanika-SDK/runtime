@@ -1,0 +1,88 @@
+﻿<project xmlns="http://maven.apache.org/POM/4.0.0" xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
+	xsi:schemaLocation="http://maven.apache.org/POM/4.0.0 http://maven.apache.org/xsd/maven-4.0.0.xsd">
+	<modelVersion>4.0.0</modelVersion>
+	  <parent>
+	    <artifactId>parent</artifactId>
+	    <groupId>org.nasdanika.sdk.runtime</groupId>
+	    <version>2026.10.0</version>
+	    <relativePath>..</relativePath>
+	  </parent>
+	<artifactId>cli</artifactId>
+	<packaging>jar</packaging>
+	<name>CLI</name>
+	<description>Extensible Command Line Interface</description>
+	
+	<build>
+		<plugins>
+			<!-- For building a minimal distribution -->
+			<plugin>
+				<groupId>org.apache.maven.plugins</groupId>
+				<artifactId>maven-dependency-plugin</artifactId>
+				<executions>
+					<execution>
+						<id>copy-dependencies</id>
+						<phase>prepare-package</phase>
+						<goals>
+							<goal>copy-dependencies</goal>
+						</goals>
+						<configuration>
+							<outputDirectory>
+								${project.build.directory}/dist/lib
+							</outputDirectory>
+							<useRepositoryLayout>true</useRepositoryLayout>
+							<includeScope>runtime</includeScope>
+						</configuration>
+					</execution>
+				</executions>
+			</plugin>
+	        <plugin>
+	            <groupId>org.apache.maven.plugins</groupId>
+	            <artifactId>maven-failsafe-plugin</artifactId>
+			    <executions>
+			        <execution>
+			            <goals>
+			                <goal>integration-test</goal>
+			                <goal>verify</goal>
+			            </goals>
+			        </execution>
+			    </executions>
+	        </plugin>			
+		</plugins>
+	</build>
+
+	<dependencyManagement>
+		<dependencies>
+			<dependency>
+				<groupId>${project.groupId}</groupId>
+				<artifactId>bom</artifactId>
+				<version>${project.version}</version>
+				<type>pom</type>
+				<scope>import</scope>
+			</dependency>
+		</dependencies>
+	</dependencyManagement>	
+
+	<dependencies>
+	   	<!-- Waiting for Picocli 4.8.0 with Nadanika contribution
+	   	Using a copy of CommandLine class as part of this module in the meantime 	
+		<dependency>
+			<groupId>info.picocli</groupId>
+			<artifactId>picocli</artifactId>
+		</dependency>
+		-->		
+		<dependency>
+			<groupId>${project.groupId}</groupId>
+			<artifactId>common</artifactId>
+			<version>${project.version}</version>
+		</dependency>
+		<dependency>
+			<groupId>${project.groupId}</groupId>
+			<artifactId>picocli</artifactId>
+			<version>${project.version}</version>
+		</dependency>
+		<dependency>
+		    <groupId>org.jline</groupId>
+		    <artifactId>jline</artifactId>
+		</dependency>
+	</dependencies>
+</project>

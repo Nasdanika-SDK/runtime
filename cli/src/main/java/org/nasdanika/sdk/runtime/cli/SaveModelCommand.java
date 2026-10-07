@@ -1,0 +1,59 @@
+package org.nasdanika.sdk.runtime.cli;
+
+import java.io.File;
+
+import javax.swing.ProgressMonitor;
+
+import org.eclipse.emf.common.util.URI;
+import org.eclipse.emf.ecore.EObject;
+import org.eclipse.emf.ecore.resource.Resource;
+import org.eclipse.emf.ecore.resource.ResourceSet;
+import org.nasdanika.common.Description;
+import org.nasdanika.common.EObjectSupplier;
+import org.nasdanika.sdk.runtime.common.capability.CapabilityLoader;
+
+import picocli.CommandLine.Command;
+import picocli.CommandLine.Mixin;
+import picocli.CommandLine.Parameters;
+import picocli.CommandLine.ParentCommand;
+
+@Command(
+		description = "Saves model to a file",
+		versionProvider = ModuleVersionProvider.class,		
+		mixinStandardHelpOptions = true,
+		name = "save")
+@ParentCommands(EObjectSupplier.class)
+@Description(icon = "https://docs.nasdanika.org/images/diskette.svg")
+public class SaveModelCommand extends CommandBase {
+
+	protected SaveModelCommand(CapabilityLoader capabilityLoader) {
+		super(capabilityLoader);
+	}
+
+	@Parameters(
+		index =  "0",	
+		arity = "1",
+		description = "Output file")
+	private File output;
+
+	@ParentCommand
+	private EObjectSupplier<EObject> eObjectSupplier;
+	
+	@Mixin
+	private ProgressMonitorMixIn progressMonitorMixIn;
+	
+	@Mixin
+	private ResourceSetMixIn resourceSetMixIn;
+
+	@Override
+	public Integer call() throws Exception {
+		ProgressMonitor progressMonitor = progressMonitorMixIn.createProgressMonitor(1);
+		ResourceSet resourceSet = resourceSetMixIn.createResourceSet(progressMonitor.split("Creating a resource set", 1));
+		URI resourceURI = URI.createFileURI(output.getAbsolutePath());		
+		Resource resource = resourceSet.createResource(resourceURI);
+		resource.getContents().addAll(eObjectSupplier.getEObjects(progressMonitor.split("Generating contents", 1)));
+		resource.save(null);		
+		return 0;
+	}	
+
+}
