@@ -61,8 +61,7 @@ public class GzipBinaryResourceFactoryContributor implements ResourceSetContribu
 
 	@Override
 	public void contribute(ResourceSet resourceSet, Span span, Logger logger) {
-		throw new UnsupportedOperationException("Should not be called, use contribute(ResourceSet) instead");
-		
+		throw new UnsupportedOperationException("Should not be called, use contribute(ResourceSet) instead");		
 	}
 
 }

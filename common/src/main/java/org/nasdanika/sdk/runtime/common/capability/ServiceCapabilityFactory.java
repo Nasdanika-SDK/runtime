@@ -4,6 +4,9 @@ import java.util.concurrent.Flow.Publisher;
 
 import org.nasdanika.sdk.runtime.common.flow.Flows;
 
+import io.opentelemetry.api.logs.Logger;
+import io.opentelemetry.api.trace.Span;
+
 /**
  * Factory of a "service" capability. Service capability is a capability that is provided by a service of a given type.
  * @param <R> Service requirement type. Service requirement is passed to the factory.
@@ -31,7 +34,7 @@ public abstract class ServiceCapabilityFactory<R,S> implements CapabilityFactory
 	
 	@SuppressWarnings("unchecked")
 	@Override
-	public Publisher<CapabilityProvider<S>> create(Object requirement, Loader loader) {
+	public Publisher<CapabilityProvider<S>> create(Object requirement, Loader loader, Span span, Logger logger) {
 		if (requirement instanceof Class) {
 			requirement = new Requirement<R,S>((Class<S>) requirement, null);
 		}
@@ -39,7 +42,7 @@ public abstract class ServiceCapabilityFactory<R,S> implements CapabilityFactory
 		if (requirement instanceof Requirement) {
 			Requirement<R,S> theRequirement = (Requirement<R,S>) requirement;
 			if (isFor(theRequirement.serviceType(), theRequirement.serviceRequirement())) {
-				return createService(theRequirement.serviceType(), theRequirement.serviceRequirement(), loader);
+				return createService(theRequirement.serviceType(), theRequirement.serviceRequirement(), loader, span, logger);
 			}
 		} 
 		
@@ -49,6 +52,8 @@ public abstract class ServiceCapabilityFactory<R,S> implements CapabilityFactory
 	protected abstract Publisher<CapabilityProvider<S>> createService(
 		Class<S> serviceType,	
 		R serviceRequirement,
-		Loader loader);	
+		Loader loader, 
+		Span span, 
+		Logger logger);	
 	
 }
