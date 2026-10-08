@@ -1,19 +1,17 @@
 package org.nasdanika.sdk.runtime.cli;
 
-import java.util.Collections;
 import java.util.List;
 import java.util.Objects;
-import java.util.concurrent.CompletableFuture;
-import java.util.concurrent.CompletionStage;
+import java.util.concurrent.Flow.Publisher;
 
-import javax.swing.ProgressMonitor;
-
-import org.apache.felix.resolver.Util;
-import org.nasdanika.capability.ServiceCapabilityFactory;
-import org.nasdanika.common.Adaptable;
-import org.nasdanika.sdk.runtime.common.capability.CapabilityFactory.Loader;
+import org.nasdanika.sdk.runtime.common.Adaptable;
+import org.nasdanika.sdk.runtime.common.Util;
 import org.nasdanika.sdk.runtime.common.capability.CapabilityProvider;
+import org.nasdanika.sdk.runtime.common.capability.ServiceCapabilityFactory;
+import org.nasdanika.sdk.runtime.common.flow.Flows;
 
+import io.opentelemetry.api.logs.Logger;
+import io.opentelemetry.api.trace.Span;
 import picocli.CommandLine;
 
 /**
@@ -27,15 +25,18 @@ public abstract class MixInCapabilityFactory<T> extends ServiceCapabilityFactory
 	}
 	
 	@Override
-	protected CompletionStage<Iterable<CapabilityProvider<MixInRecord>>> createService(Class<MixInRecord> serviceType,
-			MixInRequirement serviceRequirement,
-			Loader loader,
-			ProgressMonitor progressMonitor) {
-		CompletionStage<T> mixInCS = createMixIn(serviceRequirement.commandPath(), loader, progressMonitor);
-		if (mixInCS != null) {
-			return wrapCompletionStage(mixInCS.thenApply(mixIn -> new MixInRecord(getName(), mixIn)));
+	protected Publisher<CapabilityProvider<MixInRecord>> createService(
+			Class<MixInRecord> serviceType,
+			MixInRequirement serviceRequirement, 
+			Loader loader, 
+			Span span, 
+			Logger logger) {
+		
+		Publisher<T> mixInPublisher = createMixIn(serviceRequirement.commandPath(), loader, span, logger);
+		if (mixInPublisher != null) {
+			CapabilityProvider.of(mixInPublisher);
 		}
-		return CompletableFuture.completedStage(Collections.emptyList());
+		return Flows.empty();
 	}
 	
 	protected abstract String getName();
@@ -90,16 +91,18 @@ public abstract class MixInCapabilityFactory<T> extends ServiceCapabilityFactory
 		return false;
 	}
 	
-	protected CompletionStage<T> createMixIn(
+	protected Publisher<T> createMixIn(
 			List<CommandLine> commandPath, 
-			Loader loader,
-			ProgressMonitor progressMonitor) {		
-		return match(commandPath) ? doCreateMixIn(commandPath, loader, progressMonitor) : null;
+			Loader loader, 
+			Span span, 
+			Logger logger) {		
+		return match(commandPath) ? doCreateMixIn(commandPath, loader, span, logger) : null;
 	}
 
-	protected abstract CompletionStage<T> doCreateMixIn(
+	protected abstract Publisher<T> doCreateMixIn(
 			List<CommandLine> commandPath, 
-			Loader loader,
-			ProgressMonitor progressMonitor);
+			Loader loader, 
+			Span span, 
+			Logger logger);
 	
 }

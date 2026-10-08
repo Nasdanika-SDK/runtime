@@ -5,23 +5,19 @@ import java.util.Collections;
 import java.util.List;
 import java.util.Map.Entry;
 import java.util.Objects;
+import java.util.concurrent.CompletableFuture;
 import java.util.concurrent.Flow.Publisher;
 import java.util.concurrent.atomic.AtomicInteger;
 
+import org.nasdanika.sdk.runtime.common.Adaptable;
+import org.nasdanika.sdk.runtime.common.Util;
+import org.nasdanika.sdk.runtime.common.capability.CapabilityProvider;
 import org.nasdanika.sdk.runtime.common.capability.ServiceCapabilityFactory;
 import org.nasdanika.sdk.runtime.common.flow.Flows;
 
-import io.opentelemetry.api.common.AttributeKey;
-import io.opentelemetry.api.common.Attributes;
-import io.opentelemetry.api.common.AttributesBuilder;
 import io.opentelemetry.api.logs.Logger;
 import io.opentelemetry.api.logs.Severity;
 import io.opentelemetry.api.trace.Span;
-
-import org.nasdanika.sdk.runtime.common.Adaptable;
-import org.nasdanika.sdk.runtime.common.capability.CapabilityFactory.Loader;
-import org.nasdanika.sdk.runtime.common.capability.CapabilityProvider;
-
 import picocli.CommandLine;
 
 /**
@@ -120,29 +116,29 @@ public abstract class SubCommandCapabilityFactory<T> extends ServiceCapabilityFa
 					.setAttribute("maxPath", maxPath)
 					.emit();
 			} else {
-				Publisher<T> commandCS = createCommand(parentPath, loader, progressMonitor);
-				if (commandCS != null) {
-					Publisher<CommandLineAndPath> commandLineAndPathCS = commandCS.thenApply(command -> createCommandLine(command, serviceRequirement, progressMonitor));
-					Publisher<Iterable<CapabilityProvider<CommandLine>>> subCommandsCS = commandLineAndPathCS.thenCompose(
-							commandLineAndPath -> createSubCommands(
-									commandLineAndPath == null ? null : commandLineAndPath.path(),
-									serviceRequirement.commandCounter(),
-									loader,
-									progressMonitor));
-					
-					Publisher<Iterable<CapabilityProvider<MixInRecord>>> mixInsCS = commandLineAndPathCS.thenCompose(
-							commandLineAndPath -> createMixIns(
-									commandLineAndPath == null ? null : commandLineAndPath.path(),
-									loader,
-									progressMonitor));
-					
-					Publisher<CommandLine> commandLineWithSubCommandsCS = commandLineAndPathCS.thenCombine(subCommandsCS, this::combineSubCommands);
-					Publisher<CommandLine> commandLineWithSubCommandsAndMixInsCS = commandLineWithSubCommandsCS.thenCombine(mixInsCS, this::combineMixIns);
-					Publisher<CommandLine> loggingCS = commandLineWithSubCommandsAndMixInsCS.thenApply(cl -> {
-						if (cl != null) {
+				Publisher<T> commandPublisher = createCommand(parentPath, loader, span, logger);
+				if (commandPublisher != null) {
+					Publisher<CommandLineAndPath> commandLineAndPathPublisher = Flows.map(commandPublisher, command -> createCommandLine(command, serviceRequirement, span, logger));		
+					Publisher<CommandLine> commandLineWithSubCommandsAndMixInsPublisher = Flows.map(commandLineAndPathPublisher, commandLineAndPath -> {
+						if (commandLineAndPath != null) {
 							int totalCommands = serviceRequirement.commandCounter().incrementAndGet(); // Incrementing command counter for the parent path to prevent creating too many commands 							
-							if (parentPath.isEmpty()) {
-								LOGGER.info("Created command line {}, total commands {}", cl.getCommandName(), totalCommands);						
+							
+							CompletableFuture<List<CommandLine>> subCommandsCF = createSubCommands(commandLineAndPath.path(), serviceRequirement.commandCounter(), loader, span, logger);
+							List<CommandLine> subCommands = loader.pump().join(subCommandsCF);
+							combineSubCommands(commandLineAndPath, subCommands);
+							
+							CompletableFuture<List<MixInRecord>> mixInsCF = createMixIns(commandLineAndPath.path(), loader, span, logger);
+							List<MixInRecord> mixIns = loader.pump().join(mixInsCF);
+							combineMixIns(commandLineAndPath.commandLine(), mixIns);
+							
+							if (parentPath == null || parentPath.isEmpty()) {
+								logger
+									.logRecordBuilder()
+									.setSeverity(Severity.INFO)
+									.setBody("Created command line " + commandLineAndPath.commandLine().getCommandName() + ", total commands " + totalCommands)
+									.setAttribute("commandLine", commandLineAndPath.commandLine().getCommandName())
+									.setAttribute("totalCommands", totalCommands)
+									.emit();
 							} else {
 								StringBuilder commandPath = new StringBuilder();
 								for (CommandLine pathElement: parentPath) {
@@ -151,14 +147,23 @@ public abstract class SubCommandCapabilityFactory<T> extends ServiceCapabilityFa
 									}
 									commandPath.append(pathElement.getCommandName());
 								}
-								LOGGER.info("Created command line {}, parent path {}, total commands {}", cl.getCommandName(), commandPath.toString(), totalCommands);		
+								logger
+									.logRecordBuilder()
+									.setSeverity(Severity.INFO)
+									.setBody("Created command line %s, parent path %s, total commands %d".formatted(commandLineAndPath.commandLine().getCommandName(), commandPath.toString(), totalCommands))
+									.setAttribute("name", commandLineAndPath.commandLine().getCommandName())
+									.setAttribute("parentPath", commandPath.toString())
+									.setAttribute("totalCommands", totalCommands)
+									.emit();
 							}
+
+							return commandLineAndPath.commandLine();
 						}
-						return cl;
-					});
-					
-					
-					return wrapCompletionStage(loggingCS);
+																		
+						return null;
+					});		
+										
+					return Flows.of(CapabilityProvider.of(Flows.filter(commandLineWithSubCommandsAndMixInsPublisher, Objects::nonNull)));
 				}
 			}
 		}
@@ -185,7 +190,7 @@ public abstract class SubCommandCapabilityFactory<T> extends ServiceCapabilityFa
 		return new CommandLineAndPath(commandLine, path);
 	}
 	
-	protected Publisher<CapabilityProvider<CommandLine>> createSubCommands(
+	protected CompletableFuture<List<CommandLine>> createSubCommands(
 				List<CommandLine> path,
 				AtomicInteger commandCounter,
 				Loader loader, 
@@ -193,55 +198,45 @@ public abstract class SubCommandCapabilityFactory<T> extends ServiceCapabilityFa
 				Logger logger) {		
 
 		if (path == null) {
-			return CompletableFuture.completedStage(null);
+			return CompletableFuture.completedFuture(Collections.emptyList());
 		}
 		
-		Requirement<SubCommandRequirement, CommandLine> subCommandRequirement = ServiceCapabilityFactory.createRequirement(CommandLine.class, null, new SubCommandRequirement(path, commandCounter));
-		@SuppressWarnings({ "rawtypes", "unchecked" })
-		CompletionStage<Iterable<CapabilityProvider<CommandLine>>> subCommandsCS = (CompletionStage) loader.load(subCommandRequirement, progressMonitor);
-		return subCommandsCS;
+		Requirement<SubCommandRequirement, CommandLine> subCommandRequirement = ServiceCapabilityFactory.createRequirement(CommandLine.class, new SubCommandRequirement(path, commandCounter));
+		return loader.loadAll(subCommandRequirement);
 	}
 	
-	private CommandLine combineSubCommands(
-			CommandLineAndPath commandLineAndPath,
-			Iterable<CapabilityProvider<CommandLine>> subCommandsProviders) {
-		
-		if (commandLineAndPath == null) {
-			return null;
-		}
-		
-		CommandLine commandLine = commandLineAndPath.commandLine();
-		List<CommandLine> subCommands = new ArrayList<>();
-		subCommandsProviders.forEach(scp -> scp.getPublisher().filter(Objects::nonNull).collectList().block().forEach(subCommands::add));
-		subCommands.sort((a,b) -> a.getCommandName().compareTo(b.getCommandName()));
-		for (Entry<String, List<CommandLine>> commandGroup: Util.groupBy(subCommands, CommandLine::getCommandName).entrySet()) {
-			if (commandGroup.getValue().size() == 1) {
-				commandGroup.getValue().forEach(commandLine::addSubcommand);				
-			} else {
-				// Selecting one of several if possible
-				CommandLine[] sca = commandGroup.getValue().toArray(size -> new CommandLine[size]);
-				Z: for (int i = 0; i < sca.length; ++i) {
-					if (sca[i] != null) {
-						for (int j = i + 1; j < sca.length; ++j) {
-							if (sca[j] != null) {
-								if (overrides(sca[i].getCommandSpec().userObject(), sca[j].getCommandSpec().userObject())) {
-									sca[j] = null;
-								} else if (overrides(sca[j].getCommandSpec().userObject(), sca[i].getCommandSpec().userObject())) {
-									sca[i] = null;
-									continue Z;		
+	private void combineSubCommands(CommandLineAndPath commandLineAndPath, List<CommandLine> subCommands) {		
+		if (commandLineAndPath != null) {
+			CommandLine commandLine = commandLineAndPath.commandLine();
+			subCommands.sort((a,b) -> a.getCommandName().compareTo(b.getCommandName()));
+			for (Entry<String, List<CommandLine>> commandGroup: Util.groupBy(subCommands, CommandLine::getCommandName).entrySet()) {
+				if (commandGroup.getValue().size() == 1) {
+					commandGroup.getValue().forEach(commandLine::addSubcommand);				
+				} else {
+					// Selecting one of several if possible
+					CommandLine[] sca = commandGroup.getValue().toArray(size -> new CommandLine[size]);
+					Z: for (int i = 0; i < sca.length; ++i) {
+						if (sca[i] != null) {
+							for (int j = i + 1; j < sca.length; ++j) {
+								if (sca[j] != null) {
+									if (overrides(sca[i].getCommandSpec().userObject(), sca[j].getCommandSpec().userObject())) {
+										sca[j] = null;
+									} else if (overrides(sca[j].getCommandSpec().userObject(), sca[i].getCommandSpec().userObject())) {
+										sca[i] = null;
+										continue Z;		
+									}
 								}
 							}
 						}
 					}
+					for (CommandLine sc: sca) {
+						if (sc != null) {
+							commandLine.addSubcommand(sc);
+						}
+					}				
 				}
-				for (CommandLine sc: sca) {
-					if (sc != null) {
-						commandLine.addSubcommand(sc);
-					}
-				}				
 			}
 		}
-		return commandLine;
 	};
 	
 	/**
@@ -267,60 +262,50 @@ public abstract class SubCommandCapabilityFactory<T> extends ServiceCapabilityFa
 		return bClass != aClass && bClass.isAssignableFrom(aClass);
 	}
 	
-	protected Publisher<CapabilityProvider<MixInRecord>> createMixIns(
+	protected CompletableFuture<List<MixInRecord>> createMixIns(
 			List<CommandLine> path,
 			Loader loader, 
 			Span span, 
 			Logger logger) {
 	
 		if (path == null) {
-			return Flows.empty();
+			return CompletableFuture.completedFuture(Collections.emptyList());
 		}
 		
 		Requirement<MixInRequirement, MixInRecord> mixInRequirement = ServiceCapabilityFactory.createRequirement(MixInRecord.class, new MixInRequirement(path));
-		return loader.load(mixInRequirement);
+		return loader.loadAll(mixInRequirement);
 	}
 	
-	private CommandLine combineMixIns(
-			CommandLine commandLine,
-			Iterable<CapabilityProvider<MixInRecord>> mixInProviders) {
-		
-		if (commandLine == null) {
-			return null;
-		}
-
-		List<MixInRecord> mixIns = new ArrayList<>();
-		mixInProviders.forEach(mcp -> mcp.getPublisher().filter(Objects::nonNull).collectList().block().forEach(mixIns::add));		
-		
-		for (Entry<String, List<MixInRecord>> mixInGroup: Util.groupBy(mixIns, MixInRecord::name).entrySet()) {
-			if (mixInGroup.getValue().size() == 1) {
-				mixInGroup.getValue().forEach(mr -> commandLine.addMixin(mr.name(), mr.mixIn()));				
-			} else {
-				// Selecting one of several if possible
-				MixInRecord[] mra = mixInGroup.getValue().toArray(size -> new MixInRecord[size]);
-				Z: for (int i = 0; i < mra.length; ++i) {
-					if (mra[i] != null) {
-						for (int j = i + 1; j < mra.length; ++j) {
-							if (mra[j] != null) {
-								if (overrides(mra[i].mixIn(), mra[j].mixIn())) {
-									mra[j] = null;
-								} else if (overrides(mra[j].mixIn(), mra[i].mixIn())) {
-									mra[i] = null;
-									continue Z;		
+	private void combineMixIns(CommandLine commandLine, List<MixInRecord> mixIns) {		
+		if (commandLine != null) {
+			for (Entry<String, List<MixInRecord>> mixInGroup: Util.groupBy(mixIns, MixInRecord::name).entrySet()) {
+				if (mixInGroup.getValue().size() == 1) {
+					mixInGroup.getValue().forEach(mr -> commandLine.addMixin(mr.name(), mr.mixIn()));				
+				} else {
+					// Selecting one of several if possible
+					MixInRecord[] mra = mixInGroup.getValue().toArray(size -> new MixInRecord[size]);
+					Z: for (int i = 0; i < mra.length; ++i) {
+						if (mra[i] != null) {
+							for (int j = i + 1; j < mra.length; ++j) {
+								if (mra[j] != null) {
+									if (overrides(mra[i].mixIn(), mra[j].mixIn())) {
+										mra[j] = null;
+									} else if (overrides(mra[j].mixIn(), mra[i].mixIn())) {
+										mra[i] = null;
+										continue Z;		
+									}
 								}
 							}
 						}
 					}
+					for (MixInRecord mr: mra) {
+						if (mr != null) {
+							commandLine.addMixin(mr.name(), mr.mixIn());
+						}
+					}				
 				}
-				for (MixInRecord mr: mra) {
-					if (mr != null) {
-						commandLine.addMixin(mr.name(), mr.mixIn());
-					}
-				}				
 			}
 		}
-				
-		return commandLine;
 	};
 	
 	protected abstract Class<T> getCommandType();
@@ -340,7 +325,7 @@ public abstract class SubCommandCapabilityFactory<T> extends ServiceCapabilityFa
 		if (userObject != null) {
 			Class<T> commandType = getCommandType();
 			if (commandType != null) {
-				List<SubCommands> subCommandsAnnotations = lineage(userObject.getClass())
+				List<SubCommands> subCommandsAnnotations = Util.lineage(userObject.getClass())
 						.stream()
 						.map(c -> c.getAnnotation(SubCommands.class))
 						.filter(Objects::nonNull)
@@ -356,7 +341,7 @@ public abstract class SubCommandCapabilityFactory<T> extends ServiceCapabilityFa
 			}
 			
 			if (commandType != null) {
-				for (Class<?> le: lineage(commandType)) {
+				for (Class<?> le: Util.lineage(commandType)) {
 					ParentCommands parentCommands = le.getAnnotation(ParentCommands.class);
 					if (parentCommands != null) {
 						for (Class<?> pt: parentCommands.value()) {
@@ -396,18 +381,5 @@ public abstract class SubCommandCapabilityFactory<T> extends ServiceCapabilityFa
 			Logger logger) {
 		return Flows.empty();
 	}
-	
-	private static List<Class<?>> lineage(Class<?> clazz) {
-		if (clazz == null) {
-			return Collections.emptyList();
-		}
-		List<Class<?>> ret = new ArrayList<>();
-		ret.add(clazz);
-		ret.addAll(lineage(clazz.getSuperclass()));
-		for (Class<?> i: clazz.getInterfaces()) {
-			ret.addAll(lineage(i));
-		}
-		return ret.stream().distinct().toList();
-	}	
 
 }

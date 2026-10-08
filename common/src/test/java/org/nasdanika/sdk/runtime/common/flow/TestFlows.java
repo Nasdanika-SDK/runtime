@@ -9,6 +9,7 @@ import java.util.Optional;
 import java.util.concurrent.CompletableFuture;
 import java.util.concurrent.CompletionException;
 import java.util.concurrent.Flow;
+import java.util.concurrent.Flow.Publisher;
 import java.util.concurrent.SubmissionPublisher;
 import java.util.stream.Collectors;
 import java.util.stream.IntStream;
@@ -130,6 +131,16 @@ class TestFlows {
 		Optional<Integer> none = Flows.<Integer>first(Flows.empty()).join();
 		assertThat(none).isEmpty();
 		assertThat(Flows.toList(Flows.mapNotNull(Flows.of(1, 2, 3), n -> n == 2 ? null : n)).join().stream().map(String::valueOf).collect(Collectors.joining())).isEqualTo("13");
+	}
+	
+	@Test
+	void testSubscription() {
+		Publisher<Integer> publisher = Flows.of(1, 2, 3);
+		CompletableFuture<Void> cf = Flows.forEach(publisher, val -> {
+			System.out.println("Received: " + val);
+		});
+		cf.thenRun(() -> System.out.println("Test subscription completed"));
+		System.out.println("Test subscription with demand");
 	}
 
 }
