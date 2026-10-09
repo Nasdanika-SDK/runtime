@@ -1,7 +1,5 @@
 package org.nasdanika.sdk.runtime.cli;
 
-import javax.script.Invocable;
-
 import picocli.CommandLine.Command;
 
 @Command(
@@ -13,15 +11,7 @@ import picocli.CommandLine.Command;
 		subcommands = {
 			LauncherCommand.class	
 		})
-@SubCommands(HelpCommand.class)
-public class RootCommand implements Invocable.Invoker {
+public class RootCommand {
 
-	/**
-	 * To allow running scripts and Groovy shell
-	 */
-	@Override
-	public Object invoke(Invocable invocable) {
-		return invocable.invoke();
-	}
 
 }

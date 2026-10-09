@@ -6,7 +6,7 @@ import static java.lang.annotation.RetentionPolicy.RUNTIME;
 import java.lang.annotation.Retention;
 import java.lang.annotation.Target;
 
-import org.nasdanika.common.Adaptable;
+import org.nasdanika.sdk.runtime.common.Adaptable;
 
 /**
  * Types of parent command to add a sub-command or mix-in annotated with this annotation to.

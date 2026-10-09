@@ -12,7 +12,7 @@ import java.util.Objects;
 import java.util.Optional;
 
 import org.nasdanika.sdk.runtime.volume.Volume;
-import org.nasdanika.sdk.runtime.volume.Volume.Entry;
+import org.nasdanika.sdk.runtime.volume.GenericVolume.Entry;
 
 import com.sun.net.httpserver.HttpExchange;
 import com.sun.net.httpserver.HttpHandler;

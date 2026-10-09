@@ -15,7 +15,7 @@ import org.eclipse.emf.ecore.resource.URIConverter;
 import org.eclipse.emf.ecore.resource.impl.URIHandlerImpl;
 import org.nasdanika.sdk.runtime.volume.Content;
 import org.nasdanika.sdk.runtime.volume.Volume;
-import org.nasdanika.sdk.runtime.volume.Volume.Entry;
+import org.nasdanika.sdk.runtime.volume.GenericVolume.Entry;
 
 /**
  * Bridges EMF onto a {@link Volume}: URIs below a base URI are paths in the volume, so a resource

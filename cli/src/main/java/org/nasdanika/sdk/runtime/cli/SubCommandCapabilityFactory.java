@@ -245,7 +245,7 @@ public abstract class SubCommandCapabilityFactory<T> extends ServiceCapabilityFa
 	 * @return true if a overrides b
 	 */
 	protected boolean overrides(Object a, Object b) {
-		if (a instanceof Overrider && ((Overrider) a).overrides(b)) {
+		if (a instanceof Overrider ovr && ovr.overrides(b)) {
 			return true;
 		}
 		Class<?> aClass = a.getClass();

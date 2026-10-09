@@ -1,23 +1,23 @@
 package org.nasdanika.sdk.runtime.cli;
 
 import java.util.List;
-import java.util.concurrent.CompletableFuture;
-import java.util.concurrent.CompletionStage;
+import java.util.concurrent.Flow.Publisher;
 
-import javax.swing.ProgressMonitor;
+import org.nasdanika.sdk.runtime.common.flow.Flows;
 
-import org.nasdanika.sdk.runtime.common.capability.CapabilityFactory.Loader;
-
+import io.opentelemetry.api.logs.Logger;
+import io.opentelemetry.api.trace.Span;
 import picocli.CommandLine;
 
 public class RootCommandFactory extends SubCommandCapabilityFactory<RootCommand> {
-
+	
 	@Override
-	protected CompletionStage<RootCommand> createCommand(
+	protected Publisher<RootCommand> createCommand(
 			List<CommandLine> parentPath, 
-			Loader loader,
-			ProgressMonitor progressMonitor) {
-		return parentPath == null || parentPath.isEmpty() ? CompletableFuture.completedStage(new RootCommand()) : null;
+			Loader loader, 
+			Span span,
+			Logger logger) {
+		return parentPath == null || parentPath.isEmpty() ? Flows.of(new RootCommand()) : Flows.empty();
 	}
 
 	@Override

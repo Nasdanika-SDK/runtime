@@ -1,13 +1,12 @@
 package org.nasdanika.sdk.runtime.cli;
 
 import java.util.List;
-import java.util.concurrent.CompletableFuture;
-import java.util.concurrent.CompletionStage;
+import java.util.concurrent.Flow.Publisher;
 
-import javax.swing.ProgressMonitor;
+import org.nasdanika.sdk.runtime.common.flow.Flows;
 
-import org.nasdanika.sdk.runtime.common.capability.CapabilityFactory.Loader;
-
+import io.opentelemetry.api.logs.Logger;
+import io.opentelemetry.api.trace.Span;
 import picocli.CommandLine;
 
 public class SaveModelCommandFactory extends SubCommandCapabilityFactory<SaveModelCommand> {
@@ -18,11 +17,12 @@ public class SaveModelCommandFactory extends SubCommandCapabilityFactory<SaveMod
 	}
 	
 	@Override
-	protected CompletionStage<SaveModelCommand> doCreateCommand(
-			List<CommandLine> parentPath,
-			Loader loader,
-			ProgressMonitor progressMonitor) {
-		return CompletableFuture.completedStage(new SaveModelCommand(loader.getCapabilityLoader()));
+	protected Publisher<SaveModelCommand> doCreateCommand(
+			List<CommandLine> parentPath, 
+			Loader loader, 
+			Span span,
+			Logger logger) {
+		return Flows.of(new SaveModelCommand());
 	}
 
 }

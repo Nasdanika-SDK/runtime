@@ -6,6 +6,7 @@ import java.io.IOException;
 import java.nio.file.Path;
 import java.util.List;
 import java.util.concurrent.Flow;
+import java.util.concurrent.Flow.Publisher;
 import java.util.concurrent.CopyOnWriteArrayList;
 import java.util.concurrent.CountDownLatch;
 import java.util.concurrent.TimeUnit;
@@ -29,6 +30,7 @@ import org.nasdanika.sdk.runtime.common.telemetry.PublishingOpenTelemetry;
 import org.nasdanika.sdk.runtime.common.telemetry.SpanEvent;
 import org.nasdanika.sdk.runtime.common.telemetry.Telemetry;
 
+import io.opentelemetry.api.logs.Logger;
 import io.opentelemetry.api.logs.Severity;
 import io.opentelemetry.api.trace.Span;
 import io.opentelemetry.api.trace.SpanContext;
@@ -227,7 +229,11 @@ class TestInstrumentationTelemetry {
 			}
 
 			@Override
-			public Flow.Publisher<CapabilityProvider<Object>> create(Object requirement, Loader loader) {
+			public Publisher<CapabilityProvider<Object>> create(
+					Object requirement, 
+					Loader loader, 
+					Span span,
+					Logger logger) {
 				return Flows.of(CapabilityProvider.of("capability for " + requirement));
 			}
 

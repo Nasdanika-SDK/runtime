@@ -1,16 +1,15 @@
 package org.nasdanika.sdk.runtime.cli;
 
 import java.util.List;
-import java.util.concurrent.CompletableFuture;
-import java.util.concurrent.CompletionStage;
+import java.util.concurrent.Flow.Publisher;
 
-import javax.swing.ProgressMonitor;
+import org.nasdanika.sdk.runtime.common.Util;
+import org.nasdanika.sdk.runtime.common.flow.Flows;
+import org.nasdanika.sdk.runtime.common.services.EModelElementSupplier;
+import org.nasdanika.sdk.runtime.common.services.EObjectSupplier;
 
-import org.apache.felix.resolver.Util;
-import org.nasdanika.common.EModelElementSupplier;
-import org.nasdanika.common.EObjectSupplier;
-import org.nasdanika.sdk.runtime.common.capability.CapabilityFactory.Loader;
-
+import io.opentelemetry.api.logs.Logger;
+import io.opentelemetry.api.trace.Span;
 import picocli.CommandLine;
 
 public class EcoreCommandFactory extends SubCommandCapabilityFactory<EcoreCommand> {
@@ -21,10 +20,11 @@ public class EcoreCommandFactory extends SubCommandCapabilityFactory<EcoreComman
 	}
 	
 	@Override
-	protected CompletionStage<EcoreCommand> doCreateCommand(
-			List<CommandLine> parentPath,
-			Loader loader,
-			ProgressMonitor progressMonitor) {
+	protected Publisher<EcoreCommand> doCreateCommand(
+			List<CommandLine> parentPath, 
+			Loader loader, 
+			Span span,
+			Logger logger) {
 		
 		// Do not bind to EModelElementSuppliers and other sub-interfaces of EObjectSupplier - would be an infinite loop
 		if (!parentPath.isEmpty()) {
@@ -44,7 +44,7 @@ public class EcoreCommandFactory extends SubCommandCapabilityFactory<EcoreComman
 			}
 		}
 			
-		return CompletableFuture.completedStage(new EcoreCommand());
+		return Flows.of(new EcoreCommand());
 	}
 
 }

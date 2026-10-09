@@ -5,14 +5,16 @@ import java.util.ArrayList;
 import java.util.StringTokenizer;
 import java.util.function.Supplier;
 
-import org.apache.felix.resolver.Util;
 import org.jline.reader.LineReader;
 import org.jline.reader.LineReaderBuilder;
 import org.jline.terminal.Terminal;
 import org.jline.terminal.TerminalBuilder;
-import org.nasdanika.common.Description;
-import org.nasdanika.common.NasdanikaException;
+import org.nasdanika.sdk.runtime.common.Description;
+import org.nasdanika.sdk.runtime.common.NasdanikaException;
+import org.nasdanika.sdk.runtime.common.Util;
 
+import io.opentelemetry.api.logs.Logger;
+import io.opentelemetry.api.trace.Span;
 import picocli.CommandLine;
 import picocli.CommandLine.Command;
 
@@ -51,7 +53,7 @@ public class ShellCommand extends CommandBase {
 	}
 	
 	@Override
-	public Integer call() throws Exception {
+	protected Integer execute(Span span, Logger logger) throws Exception {
 		Supplier<Boolean> exitCommand = createExitCommand();
 		root.addSubcommand(exitCommand);
 		PrintWriter oldOut = root.getOut();
@@ -68,7 +70,7 @@ public class ShellCommand extends CommandBase {
             while (!exitCommand.get()) {
                 String line = lineReader.readLine(prompt);
                 if (!Util.isBlank(line)) {
-	                String[] lineArgs = parseLine(line); 
+	                String[] lineArgs = parseLine(line, span, logger); 
 	                int result = root.execute(lineArgs);
 	                terminalWriter.println(result);
                 }
@@ -85,7 +87,7 @@ public class ShellCommand extends CommandBase {
 	 * @param toProcess
 	 * @return
 	 */
-	public static String[] parseLine(String toProcess) {
+	public static String[] parseLine(String toProcess, Span span, Logger logger) {
 		if (toProcess == null || toProcess.isEmpty()) {
 			// no command? no string
 			return new String[0];
@@ -141,7 +143,7 @@ public class ShellCommand extends CommandBase {
 			result.add(current.toString());
 		}
 		if (state == inQuote || state == inDoubleQuote) {
-			throw new NasdanikaException("unbalanced quotes in " + toProcess);
+			throw new NasdanikaException("unbalanced quotes in " + toProcess, span);
 		}
 		return result.toArray(new String[0]);
 	}	
