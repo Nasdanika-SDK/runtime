@@ -3,7 +3,7 @@ import org.nasdanika.sdk.runtime.cli.RootCommandFactory;
 import org.nasdanika.sdk.runtime.cli.SaveModelCommandFactory;
 import org.nasdanika.sdk.runtime.common.capability.CapabilityFactory;
 
-module org.nasdanika.sdk.runitme.cli {
+module org.nasdanika.sdk.runtime.cli {
 			
 	exports org.nasdanika.sdk.runtime.cli;
 	

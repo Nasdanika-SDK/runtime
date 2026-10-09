@@ -124,12 +124,34 @@ public abstract class SubCommandCapabilityFactory<T> extends ServiceCapabilityFa
 							int totalCommands = serviceRequirement.commandCounter().incrementAndGet(); // Incrementing command counter for the parent path to prevent creating too many commands 							
 							
 							CompletableFuture<List<CommandLine>> subCommandsCF = createSubCommands(commandLineAndPath.path(), serviceRequirement.commandCounter(), loader, span, logger);
-							List<CommandLine> subCommands = loader.pump().join(subCommandsCF);
-							combineSubCommands(commandLineAndPath, subCommands);
+							subCommandsCF
+								.thenAccept(subCommands -> combineSubCommands(commandLineAndPath, subCommands))
+								.whenComplete((_, ex) -> {
+									if (ex != null) {
+										logger
+											.logRecordBuilder()
+											.setSeverity(Severity.ERROR)
+											.setBody("Error creating sub-commands for command line " + commandLineAndPath.commandLine().getCommandName() + ": " + ex.getMessage())
+											.setAttribute("commandLine", commandLineAndPath.commandLine().getCommandName())
+											.setAttribute("exception", ex.toString())
+											.emit();
+									}									
+								});
 							
 							CompletableFuture<List<MixInRecord>> mixInsCF = createMixIns(commandLineAndPath.path(), loader, span, logger);
-							List<MixInRecord> mixIns = loader.pump().join(mixInsCF);
-							combineMixIns(commandLineAndPath.commandLine(), mixIns);
+							mixInsCF
+								.thenAccept(mixIns -> combineMixIns(commandLineAndPath.commandLine(), mixIns))
+								.whenComplete((_, ex) -> {
+									if (ex != null) {
+										logger
+											.logRecordBuilder()
+											.setSeverity(Severity.ERROR)
+											.setBody("Error creating mix-ins for command line " + commandLineAndPath.commandLine().getCommandName() + ": " + ex.getMessage())
+											.setAttribute("commandLine", commandLineAndPath.commandLine().getCommandName())
+											.setAttribute("exception", ex.toString())
+											.emit();
+									}									
+								});
 							
 							if (parentPath == null || parentPath.isEmpty()) {
 								logger
