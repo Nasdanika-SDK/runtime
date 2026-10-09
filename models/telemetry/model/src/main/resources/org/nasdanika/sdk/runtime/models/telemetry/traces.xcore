@@ -163,6 +163,7 @@ class Span {
 	int flags
 	contains ChangeDescription changeDescription
 	contains LogRecord[] logRecords
+	contains Span[] children
 }
 
 /**

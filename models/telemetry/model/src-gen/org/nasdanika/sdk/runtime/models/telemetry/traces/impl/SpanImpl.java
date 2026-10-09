@@ -54,6 +54,7 @@ import org.nasdanika.sdk.runtime.models.telemetry.traces.TracesPackage;
  *   <li>{@link org.nasdanika.sdk.runtime.models.telemetry.traces.impl.SpanImpl#getFlags <em>Flags</em>}</li>
  *   <li>{@link org.nasdanika.sdk.runtime.models.telemetry.traces.impl.SpanImpl#getChangeDescription <em>Change Description</em>}</li>
  *   <li>{@link org.nasdanika.sdk.runtime.models.telemetry.traces.impl.SpanImpl#getLogRecords <em>Log Records</em>}</li>
+ *   <li>{@link org.nasdanika.sdk.runtime.models.telemetry.traces.impl.SpanImpl#getChildren <em>Children</em>}</li>
  * </ul>
  *
  * @generated
@@ -525,6 +526,16 @@ public class SpanImpl extends MinimalEObjectImpl.Container implements Span {
 	 * <!-- end-user-doc -->
 	 * @generated
 	 */
+	@SuppressWarnings("unchecked")
+	public EList<Span> getChildren() {
+		return (EList<Span>)eDynamicGet(TracesPackage.SPAN__CHILDREN, TracesPackage.Literals.SPAN__CHILDREN, true, true);
+	}
+
+	/**
+	 * <!-- begin-user-doc -->
+	 * <!-- end-user-doc -->
+	 * @generated
+	 */
 	@Override
 	public NotificationChain eInverseRemove(InternalEObject otherEnd, int featureID, NotificationChain msgs) {
 		switch (featureID) {
@@ -540,6 +551,8 @@ public class SpanImpl extends MinimalEObjectImpl.Container implements Span {
 				return basicSetChangeDescription(null, msgs);
 			case TracesPackage.SPAN__LOG_RECORDS:
 				return ((InternalEList<?>)getLogRecords()).basicRemove(otherEnd, msgs);
+			case TracesPackage.SPAN__CHILDREN:
+				return ((InternalEList<?>)getChildren()).basicRemove(otherEnd, msgs);
 		}
 		return super.eInverseRemove(otherEnd, featureID, msgs);
 	}
@@ -588,6 +601,8 @@ public class SpanImpl extends MinimalEObjectImpl.Container implements Span {
 				return getChangeDescription();
 			case TracesPackage.SPAN__LOG_RECORDS:
 				return getLogRecords();
+			case TracesPackage.SPAN__CHILDREN:
+				return getChildren();
 		}
 		return super.eGet(featureID, resolve, coreType);
 	}
@@ -659,6 +674,10 @@ public class SpanImpl extends MinimalEObjectImpl.Container implements Span {
 				getLogRecords().clear();
 				getLogRecords().addAll((Collection<? extends LogRecord>)newValue);
 				return;
+			case TracesPackage.SPAN__CHILDREN:
+				getChildren().clear();
+				getChildren().addAll((Collection<? extends Span>)newValue);
+				return;
 		}
 		super.eSet(featureID, newValue);
 	}
@@ -725,6 +744,9 @@ public class SpanImpl extends MinimalEObjectImpl.Container implements Span {
 			case TracesPackage.SPAN__LOG_RECORDS:
 				getLogRecords().clear();
 				return;
+			case TracesPackage.SPAN__CHILDREN:
+				getChildren().clear();
+				return;
 		}
 		super.eUnset(featureID);
 	}
@@ -773,6 +795,8 @@ public class SpanImpl extends MinimalEObjectImpl.Container implements Span {
 				return getChangeDescription() != null;
 			case TracesPackage.SPAN__LOG_RECORDS:
 				return !getLogRecords().isEmpty();
+			case TracesPackage.SPAN__CHILDREN:
+				return !getChildren().isEmpty();
 		}
 		return super.eIsSet(featureID);
 	}

@@ -431,6 +431,15 @@ public class TracesPackageImpl extends EPackageImpl implements TracesPackage {
 	 * <!-- end-user-doc -->
 	 * @generated
 	 */
+	public EReference getSpan_Children() {
+		return (EReference)spanEClass.getEStructuralFeatures().get(18);
+	}
+
+	/**
+	 * <!-- begin-user-doc -->
+	 * <!-- end-user-doc -->
+	 * @generated
+	 */
 	public EClass getSpanEvent() {
 		return spanEventEClass;
 	}
@@ -639,6 +648,7 @@ public class TracesPackageImpl extends EPackageImpl implements TracesPackage {
 		createEAttribute(spanEClass, SPAN__FLAGS);
 		createEReference(spanEClass, SPAN__CHANGE_DESCRIPTION);
 		createEReference(spanEClass, SPAN__LOG_RECORDS);
+		createEReference(spanEClass, SPAN__CHILDREN);
 
 		spanEventEClass = createEClass(SPAN_EVENT);
 		createEAttribute(spanEventEClass, SPAN_EVENT__TIME_UNIX_NANO);
@@ -731,6 +741,7 @@ public class TracesPackageImpl extends EPackageImpl implements TracesPackage {
 		initEAttribute(getSpan_Flags(), theEcorePackage.getEInt(), "flags", null, 0, 1, Span.class, !IS_TRANSIENT, !IS_VOLATILE, IS_CHANGEABLE, !IS_UNSETTABLE, !IS_ID, !IS_UNIQUE, !IS_DERIVED, IS_ORDERED);
 		initEReference(getSpan_ChangeDescription(), theChangePackage.getChangeDescription(), null, "changeDescription", null, 0, 1, Span.class, !IS_TRANSIENT, !IS_VOLATILE, IS_CHANGEABLE, IS_COMPOSITE, !IS_RESOLVE_PROXIES, !IS_UNSETTABLE, IS_UNIQUE, !IS_DERIVED, IS_ORDERED);
 		initEReference(getSpan_LogRecords(), theLogsPackage.getLogRecord(), null, "logRecords", null, 0, -1, Span.class, !IS_TRANSIENT, !IS_VOLATILE, IS_CHANGEABLE, IS_COMPOSITE, !IS_RESOLVE_PROXIES, !IS_UNSETTABLE, IS_UNIQUE, !IS_DERIVED, IS_ORDERED);
+		initEReference(getSpan_Children(), this.getSpan(), null, "children", null, 0, -1, Span.class, !IS_TRANSIENT, !IS_VOLATILE, IS_CHANGEABLE, IS_COMPOSITE, !IS_RESOLVE_PROXIES, !IS_UNSETTABLE, IS_UNIQUE, !IS_DERIVED, IS_ORDERED);
 
 		initEClass(spanEventEClass, SpanEvent.class, "SpanEvent", !IS_ABSTRACT, !IS_INTERFACE, IS_GENERATED_INSTANCE_CLASS);
 		initEAttribute(getSpanEvent_TimeUnixNano(), theEcorePackage.getELong(), "timeUnixNano", null, 0, 1, SpanEvent.class, !IS_TRANSIENT, !IS_VOLATILE, IS_CHANGEABLE, !IS_UNSETTABLE, !IS_ID, !IS_UNIQUE, !IS_DERIVED, IS_ORDERED);

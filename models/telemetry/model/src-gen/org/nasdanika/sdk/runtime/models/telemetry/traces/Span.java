@@ -45,6 +45,7 @@ import org.nasdanika.sdk.runtime.models.telemetry.logs.LogRecord;
  *   <li>{@link org.nasdanika.sdk.runtime.models.telemetry.traces.Span#getFlags <em>Flags</em>}</li>
  *   <li>{@link org.nasdanika.sdk.runtime.models.telemetry.traces.Span#getChangeDescription <em>Change Description</em>}</li>
  *   <li>{@link org.nasdanika.sdk.runtime.models.telemetry.traces.Span#getLogRecords <em>Log Records</em>}</li>
+ *   <li>{@link org.nasdanika.sdk.runtime.models.telemetry.traces.Span#getChildren <em>Children</em>}</li>
  * </ul>
  *
  * @see org.nasdanika.sdk.runtime.models.telemetry.traces.TracesPackage#getSpan()
@@ -467,5 +468,17 @@ public interface Span extends EObject {
 	 * @generated
 	 */
 	EList<LogRecord> getLogRecords();
+
+	/**
+	 * Returns the value of the '<em><b>Children</b></em>' containment reference list.
+	 * The list contents are of type {@link org.nasdanika.sdk.runtime.models.telemetry.traces.Span}.
+	 * <!-- begin-user-doc -->
+	 * <!-- end-user-doc -->
+	 * @return the value of the '<em>Children</em>' containment reference list.
+	 * @see org.nasdanika.sdk.runtime.models.telemetry.traces.TracesPackage#getSpan_Children()
+	 * @model containment="true"
+	 * @generated
+	 */
+	EList<Span> getChildren();
 
 } // Span

@@ -379,13 +379,22 @@ public interface TracesPackage extends EPackage {
 	int SPAN__LOG_RECORDS = 17;
 
 	/**
+	 * The feature id for the '<em><b>Children</b></em>' containment reference list.
+	 * <!-- begin-user-doc -->
+	 * <!-- end-user-doc -->
+	 * @generated
+	 * @ordered
+	 */
+	int SPAN__CHILDREN = 18;
+
+	/**
 	 * The number of structural features of the '<em>Span</em>' class.
 	 * <!-- begin-user-doc -->
 	 * <!-- end-user-doc -->
 	 * @generated
 	 * @ordered
 	 */
-	int SPAN_FEATURE_COUNT = 18;
+	int SPAN_FEATURE_COUNT = 19;
 
 	/**
 	 * The number of operations of the '<em>Span</em>' class.
@@ -925,6 +934,17 @@ public interface TracesPackage extends EPackage {
 	EReference getSpan_LogRecords();
 
 	/**
+	 * Returns the meta object for the containment reference list '{@link org.nasdanika.sdk.runtime.models.telemetry.traces.Span#getChildren <em>Children</em>}'.
+	 * <!-- begin-user-doc -->
+	 * <!-- end-user-doc -->
+	 * @return the meta object for the containment reference list '<em>Children</em>'.
+	 * @see org.nasdanika.sdk.runtime.models.telemetry.traces.Span#getChildren()
+	 * @see #getSpan()
+	 * @generated
+	 */
+	EReference getSpan_Children();
+
+	/**
 	 * Returns the meta object for class '{@link org.nasdanika.sdk.runtime.models.telemetry.traces.SpanEvent <em>Span Event</em>}'.
 	 * <!-- begin-user-doc -->
 	 * <!-- end-user-doc -->
@@ -1368,6 +1388,14 @@ public interface TracesPackage extends EPackage {
 		 * @generated
 		 */
 		EReference SPAN__LOG_RECORDS = eINSTANCE.getSpan_LogRecords();
+
+		/**
+		 * The meta object literal for the '<em><b>Children</b></em>' containment reference list feature.
+		 * <!-- begin-user-doc -->
+		 * <!-- end-user-doc -->
+		 * @generated
+		 */
+		EReference SPAN__CHILDREN = eINSTANCE.getSpan_Children();
 
 		/**
 		 * The meta object literal for the '{@link org.nasdanika.sdk.runtime.models.telemetry.traces.impl.SpanEventImpl <em>Span Event</em>}' class.
