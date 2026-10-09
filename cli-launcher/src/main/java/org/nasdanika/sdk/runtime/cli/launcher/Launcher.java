@@ -34,6 +34,7 @@ import io.opentelemetry.api.logs.Severity;
 import io.opentelemetry.api.metrics.Meter;
 import io.opentelemetry.api.trace.Span;
 import io.opentelemetry.api.trace.Tracer;
+import io.opentelemetry.context.Context;
 import io.opentelemetry.context.Scope;
 import io.opentelemetry.sdk.OpenTelemetrySdk;
 import io.opentelemetry.sdk.logs.SdkLoggerProvider;
@@ -98,7 +99,8 @@ public class Launcher {
 	/**
 	 * Builds the instance. The SDK owns the exporters, and the exporters own the telemetry
 	 * resources: shutting the SDK down exports what is pending and saves them. The log record exporter
-	 * is linked to the span exporter.
+	 * is linked to the span exporter. W3C trace context and baggage propagators are set, so the launch
+	 * can continue a trace passed in environment variables.
 	 */
 	static OpenTelemetrySdk openTelemetry(Resource traces, Resource logs, Resource metrics) {
 		Attributes serviceAttributes = Attributes.builder()
@@ -111,6 +113,7 @@ public class Launcher {
 
 		ModelSpanExporter spanExporter = new ModelSpanExporter(traces);
 		return OpenTelemetrySdk.builder()
+				.setPropagators(Telemetry.w3cPropagators())
 				.setTracerProvider(SdkTracerProvider.builder()
 						.setResource(resource)
 						.addSpanProcessor(BatchSpanProcessor.builder(spanExporter).build())
@@ -174,12 +177,14 @@ public class Launcher {
 
 		int exitCode;
 		
-		// Resources close in reverse order: the scope first, then the SDK, which saves the telemetry
+		// Resources close in reverse order: the scope first, then the SDK, which saves the telemetry.
+		// If TRACEPARENT (and optionally TRACESTATE and BAGGAGE) is set, for example by a build step or
+		// a function invocation, the root span continues that trace.
 		try (OpenTelemetrySdk openTelemetry = openTelemetry(
 						telemetryResourceSet.createResource(tracesURI),
 						telemetryResourceSet.createResource(logsURI),
 						telemetryResourceSet.createResource(metricsURI));
-				Scope telemetryScope = Telemetry.makeCurrent(openTelemetry)) {
+				Scope telemetryScope = Telemetry.with(Telemetry.extractFromEnvironment(openTelemetry, Context.current()), openTelemetry).makeCurrent()) {
 
 			Tracer tracer = openTelemetry.getTracer(SCOPE);
 			Logger logger = openTelemetry.getLogsBridge().get(SCOPE);

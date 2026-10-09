@@ -1,5 +1,7 @@
 package org.nasdanika.sdk.runtime.common.telemetry;
 
+import java.util.Locale;
+import java.util.Map;
 import java.util.Objects;
 
 import org.eclipse.emf.common.notify.Adapter;
@@ -10,6 +12,7 @@ import org.eclipse.emf.ecore.resource.Resource;
 import org.eclipse.emf.ecore.resource.ResourceSet;
 
 import io.opentelemetry.api.OpenTelemetry;
+import io.opentelemetry.api.baggage.propagation.W3CBaggagePropagator;
 import io.opentelemetry.api.common.AttributeKey;
 import io.opentelemetry.api.common.Attributes;
 import io.opentelemetry.api.logs.Logger;
@@ -17,9 +20,13 @@ import io.opentelemetry.api.logs.Severity;
 import io.opentelemetry.api.trace.Span;
 import io.opentelemetry.api.trace.StatusCode;
 import io.opentelemetry.api.trace.Tracer;
+import io.opentelemetry.api.trace.propagation.W3CTraceContextPropagator;
 import io.opentelemetry.context.Context;
 import io.opentelemetry.context.ContextKey;
 import io.opentelemetry.context.Scope;
+import io.opentelemetry.context.propagation.ContextPropagators;
+import io.opentelemetry.context.propagation.TextMapGetter;
+import io.opentelemetry.context.propagation.TextMapPropagator;
 
 /**
  * Where instrumented runtime code gets its {@link OpenTelemetry}, and the runtime's attribute keys
@@ -296,6 +303,65 @@ public final class Telemetry {
 	public static void recordFailure(Span span, Throwable failure) {
 		span.recordException(failure);
 		span.setStatus(StatusCode.ERROR, String.valueOf(failure.getMessage()));
+	}
+
+	// --- Propagation ---
+
+	/**
+	 * W3C trace context and baggage. The SDK's default propagates nothing, so an instance that should
+	 * continue a trace started elsewhere is built with these.
+	 */
+	public static ContextPropagators w3cPropagators() {
+		return ContextPropagators.create(TextMapPropagator.composite(
+				W3CTraceContextPropagator.getInstance(),
+				W3CBaggagePropagator.getInstance()));
+	}
+
+	/**
+	 * Reads a map carrier. A key is looked up as the propagator names it ({@code traceparent}) and
+	 * then in upper case ({@code TRACEPARENT}), which is how the OpenTelemetry specification names
+	 * environment variables used as carriers.
+	 */
+	private static final TextMapGetter<Map<String, String>> MAP_GETTER = new TextMapGetter<>() {
+
+		@Override
+		public Iterable<String> keys(Map<String, String> carrier) {
+			return carrier.keySet();
+		}
+
+		@Override
+		public String get(Map<String, String> carrier, String key) {
+			if (carrier == null) {
+				return null;
+			}
+			String value = carrier.get(key);
+			return value == null ? carrier.get(key.toUpperCase(Locale.ROOT)) : value;
+		}
+
+	};
+
+	/**
+	 * Extracts a remote parent and baggage from a map, for example the parameters or headers of a
+	 * request that invoked a function. Nothing is extracted if the map carries nothing valid or the
+	 * instance has no propagators.
+	 *
+	 * @param carrier May be null
+	 * @return The context with the remote span context and baggage, or the given context
+	 */
+	public static Context extract(OpenTelemetry openTelemetry, Context context, Map<String, String> carrier) {
+		if (carrier == null) {
+			return context;
+		}
+		return openTelemetry.getPropagators().getTextMapPropagator().extract(context, carrier, MAP_GETTER);
+	}
+
+	/**
+	 * Extracts a remote parent and baggage from the {@code TRACEPARENT}, {@code TRACESTATE} and
+	 * {@code BAGGAGE} environment variables, if they are set. This lets a process continue a trace
+	 * started by whatever launched it, such as a build step or a function invocation.
+	 */
+	public static Context extractFromEnvironment(OpenTelemetry openTelemetry, Context context) {
+		return extract(openTelemetry, context, System.getenv());
 	}
 
 }
