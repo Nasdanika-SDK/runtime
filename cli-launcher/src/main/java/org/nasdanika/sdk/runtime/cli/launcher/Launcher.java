@@ -9,6 +9,9 @@ import java.security.CodeSource;
 import java.time.LocalDateTime;
 import java.time.format.DateTimeFormatter;
 import java.util.Collections;
+import java.util.Locale;
+import java.util.Map;
+import java.util.TreeSet;
 import java.util.concurrent.atomic.AtomicInteger;
 
 import org.eclipse.emf.common.util.URI;
@@ -94,7 +97,36 @@ public class Launcher {
 		return parent != null ? parent : Path.of(".").toAbsolutePath().normalize();
 	}	
 	
-	private static final String SCOPE = "org.nasdanika.sdk.cli.launcher";	
+	/**
+	 * Telemetry file formats, by the value of {@code nsdk.telemetry.format} or {@code NSDK_TELEMETRY_FORMAT},
+	 * mapped to the extension that selects the resource factory.
+	 */
+	private static final Map<String, String> TELEMETRY_FORMATS = Map.of(
+			"yml", "yml",
+			"json", "json",
+			"xml", "xml",
+			"binary", "ebin",
+			"compressed", "egz");
+
+	private static final String DEFAULT_TELEMETRY_FORMAT = "yml";
+
+	/** @return The extension of telemetry files. The system property takes precedence over the environment variable. */
+	private static String resolveTelemetryExtension() {
+		String format = System.getProperty("nsdk.telemetry.format");
+		if (format == null || format.isBlank()) {
+			format = System.getenv("NSDK_TELEMETRY_FORMAT");
+		}
+		if (format == null || format.isBlank()) {
+			format = DEFAULT_TELEMETRY_FORMAT;
+		}
+		String extension = TELEMETRY_FORMATS.get(format.trim().toLowerCase(Locale.ROOT));
+		if (extension == null) {
+			throw new IllegalArgumentException("Unsupported telemetry format '" + format + "', expected one of " + new TreeSet<>(TELEMETRY_FORMATS.keySet()));
+		}
+		return extension;
+	}
+
+	private static final String SCOPE = "org.nasdanika.sdk.cli.launcher";
 	
 	/**
 	 * Builds the instance. The SDK owns the exporters, and the exporters own the telemetry
@@ -168,10 +200,11 @@ public class Launcher {
 				DateTimeFormatter.ofPattern("MM").format(now),
 				DateTimeFormatter.ofPattern("dd-HH-mm-ss-SSS").format(now));
 		
+		String extension = resolveTelemetryExtension();
 		Files.createDirectories(dir);
-		URI tracesURI = uri(dir, "traces.yml");
-		URI logsURI = uri(dir, "logs.yml");
-		URI metricsURI = uri(dir, "metrics.yml");
+		URI tracesURI = uri(dir, "traces." + extension);
+		URI logsURI = uri(dir, "logs." + extension);
+		URI metricsURI = uri(dir, "metrics." + extension);
 
 		NasdanikaResourceSet telemetryResourceSet = NasdanikaResourceSet.createAndConfigure();
 
