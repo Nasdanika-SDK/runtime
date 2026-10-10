@@ -49,6 +49,15 @@ public interface TracesFactory extends EFactory {
 	ScopeSpans createScopeSpans();
 
 	/**
+	 * Returns a new object of class '<em>Span Id</em>'.
+	 * <!-- begin-user-doc -->
+	 * <!-- end-user-doc -->
+	 * @return a new object of class '<em>Span Id</em>'.
+	 * @generated
+	 */
+	SpanId createSpanId();
+
+	/**
 	 * Returns a new object of class '<em>Span</em>'.
 	 * <!-- begin-user-doc -->
 	 * <!-- end-user-doc -->
@@ -67,6 +76,15 @@ public interface TracesFactory extends EFactory {
 	SpanEvent createSpanEvent();
 
 	/**
+	 * Returns a new object of class '<em>Span Reference</em>'.
+	 * <!-- begin-user-doc -->
+	 * <!-- end-user-doc -->
+	 * @return a new object of class '<em>Span Reference</em>'.
+	 * @generated
+	 */
+	SpanReference createSpanReference();
+
+	/**
 	 * Returns a new object of class '<em>Span Link</em>'.
 	 * <!-- begin-user-doc -->
 	 * <!-- end-user-doc -->
@@ -83,6 +101,24 @@ public interface TracesFactory extends EFactory {
 	 * @generated
 	 */
 	SpanStatus createSpanStatus();
+
+	/**
+	 * Returns a new object of class '<em>Feature Change</em>'.
+	 * <!-- begin-user-doc -->
+	 * <!-- end-user-doc -->
+	 * @return a new object of class '<em>Feature Change</em>'.
+	 * @generated
+	 */
+	FeatureChange createFeatureChange();
+
+	/**
+	 * Returns a new object of class '<em>Resource Change</em>'.
+	 * <!-- begin-user-doc -->
+	 * <!-- end-user-doc -->
+	 * @return a new object of class '<em>Resource Change</em>'.
+	 * @generated
+	 */
+	ResourceChange createResourceChange();
 
 	/**
 	 * Returns the package supported by this factory.

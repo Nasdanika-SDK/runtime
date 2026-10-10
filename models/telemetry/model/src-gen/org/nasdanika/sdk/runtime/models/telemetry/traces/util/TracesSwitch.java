@@ -84,9 +84,16 @@ public class TracesSwitch<T> extends Switch<T> {
 				if (result == null) result = defaultCase(theEObject);
 				return result;
 			}
+			case TracesPackage.SPAN_ID: {
+				SpanId spanId = (SpanId)theEObject;
+				T result = caseSpanId(spanId);
+				if (result == null) result = defaultCase(theEObject);
+				return result;
+			}
 			case TracesPackage.SPAN: {
 				Span span = (Span)theEObject;
 				T result = caseSpan(span);
+				if (result == null) result = caseSpanId(span);
 				if (result == null) result = defaultCase(theEObject);
 				return result;
 			}
@@ -96,15 +103,42 @@ public class TracesSwitch<T> extends Switch<T> {
 				if (result == null) result = defaultCase(theEObject);
 				return result;
 			}
+			case TracesPackage.SPAN_REFERENCE: {
+				SpanReference spanReference = (SpanReference)theEObject;
+				T result = caseSpanReference(spanReference);
+				if (result == null) result = caseSpanId(spanReference);
+				if (result == null) result = defaultCase(theEObject);
+				return result;
+			}
 			case TracesPackage.SPAN_LINK: {
 				SpanLink spanLink = (SpanLink)theEObject;
 				T result = caseSpanLink(spanLink);
+				if (result == null) result = caseSpanReference(spanLink);
+				if (result == null) result = caseSpanId(spanLink);
 				if (result == null) result = defaultCase(theEObject);
 				return result;
 			}
 			case TracesPackage.SPAN_STATUS: {
 				SpanStatus spanStatus = (SpanStatus)theEObject;
 				T result = caseSpanStatus(spanStatus);
+				if (result == null) result = defaultCase(theEObject);
+				return result;
+			}
+			case TracesPackage.FEATURE_CHANGE: {
+				FeatureChange featureChange = (FeatureChange)theEObject;
+				T result = caseFeatureChange(featureChange);
+				if (result == null) result = caseChange_FeatureChange(featureChange);
+				if (result == null) result = caseSpanReference(featureChange);
+				if (result == null) result = caseSpanId(featureChange);
+				if (result == null) result = defaultCase(theEObject);
+				return result;
+			}
+			case TracesPackage.RESOURCE_CHANGE: {
+				ResourceChange resourceChange = (ResourceChange)theEObject;
+				T result = caseResourceChange(resourceChange);
+				if (result == null) result = caseChange_ResourceChange(resourceChange);
+				if (result == null) result = caseSpanReference(resourceChange);
+				if (result == null) result = caseSpanId(resourceChange);
 				if (result == null) result = defaultCase(theEObject);
 				return result;
 			}
@@ -158,6 +192,21 @@ public class TracesSwitch<T> extends Switch<T> {
 	}
 
 	/**
+	 * Returns the result of interpreting the object as an instance of '<em>Span Id</em>'.
+	 * <!-- begin-user-doc -->
+	 * This implementation returns null;
+	 * returning a non-null result will terminate the switch.
+	 * <!-- end-user-doc -->
+	 * @param object the target of the switch.
+	 * @return the result of interpreting the object as an instance of '<em>Span Id</em>'.
+	 * @see #doSwitch(org.eclipse.emf.ecore.EObject) doSwitch(EObject)
+	 * @generated
+	 */
+	public T caseSpanId(SpanId object) {
+		return null;
+	}
+
+	/**
 	 * Returns the result of interpreting the object as an instance of '<em>Span</em>'.
 	 * <!-- begin-user-doc -->
 	 * This implementation returns null;
@@ -188,6 +237,21 @@ public class TracesSwitch<T> extends Switch<T> {
 	}
 
 	/**
+	 * Returns the result of interpreting the object as an instance of '<em>Span Reference</em>'.
+	 * <!-- begin-user-doc -->
+	 * This implementation returns null;
+	 * returning a non-null result will terminate the switch.
+	 * <!-- end-user-doc -->
+	 * @param object the target of the switch.
+	 * @return the result of interpreting the object as an instance of '<em>Span Reference</em>'.
+	 * @see #doSwitch(org.eclipse.emf.ecore.EObject) doSwitch(EObject)
+	 * @generated
+	 */
+	public T caseSpanReference(SpanReference object) {
+		return null;
+	}
+
+	/**
 	 * Returns the result of interpreting the object as an instance of '<em>Span Link</em>'.
 	 * <!-- begin-user-doc -->
 	 * This implementation returns null;
@@ -214,6 +278,66 @@ public class TracesSwitch<T> extends Switch<T> {
 	 * @generated
 	 */
 	public T caseSpanStatus(SpanStatus object) {
+		return null;
+	}
+
+	/**
+	 * Returns the result of interpreting the object as an instance of '<em>Feature Change</em>'.
+	 * <!-- begin-user-doc -->
+	 * This implementation returns null;
+	 * returning a non-null result will terminate the switch.
+	 * <!-- end-user-doc -->
+	 * @param object the target of the switch.
+	 * @return the result of interpreting the object as an instance of '<em>Feature Change</em>'.
+	 * @see #doSwitch(org.eclipse.emf.ecore.EObject) doSwitch(EObject)
+	 * @generated
+	 */
+	public T caseFeatureChange(FeatureChange object) {
+		return null;
+	}
+
+	/**
+	 * Returns the result of interpreting the object as an instance of '<em>Resource Change</em>'.
+	 * <!-- begin-user-doc -->
+	 * This implementation returns null;
+	 * returning a non-null result will terminate the switch.
+	 * <!-- end-user-doc -->
+	 * @param object the target of the switch.
+	 * @return the result of interpreting the object as an instance of '<em>Resource Change</em>'.
+	 * @see #doSwitch(org.eclipse.emf.ecore.EObject) doSwitch(EObject)
+	 * @generated
+	 */
+	public T caseResourceChange(ResourceChange object) {
+		return null;
+	}
+
+	/**
+	 * Returns the result of interpreting the object as an instance of '<em>Feature Change</em>'.
+	 * <!-- begin-user-doc -->
+	 * This implementation returns null;
+	 * returning a non-null result will terminate the switch.
+	 * <!-- end-user-doc -->
+	 * @param object the target of the switch.
+	 * @return the result of interpreting the object as an instance of '<em>Feature Change</em>'.
+	 * @see #doSwitch(org.eclipse.emf.ecore.EObject) doSwitch(EObject)
+	 * @generated
+	 */
+	public T caseChange_FeatureChange(org.eclipse.emf.ecore.change.FeatureChange object) {
+		return null;
+	}
+
+	/**
+	 * Returns the result of interpreting the object as an instance of '<em>Resource Change</em>'.
+	 * <!-- begin-user-doc -->
+	 * This implementation returns null;
+	 * returning a non-null result will terminate the switch.
+	 * <!-- end-user-doc -->
+	 * @param object the target of the switch.
+	 * @return the result of interpreting the object as an instance of '<em>Resource Change</em>'.
+	 * @see #doSwitch(org.eclipse.emf.ecore.EObject) doSwitch(EObject)
+	 * @generated
+	 */
+	public T caseChange_ResourceChange(org.eclipse.emf.ecore.change.ResourceChange object) {
 		return null;
 	}
 

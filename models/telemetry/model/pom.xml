@@ -17,6 +17,21 @@
 			<plugin>
 				<groupId>org.eclipse.xtext</groupId>
 				<artifactId>xtext-maven-plugin</artifactId>
+				<!--
+					src/main/xcore-deps holds a copy of Change.ecore/Change.genmodel from
+					org.eclipse.emf.ecore.change with "../../org.eclipse.emf.ecore/model/..."
+					references replaced by the Ecore nsURI / platform:/resource URIs.
+					The standalone builder loads models from jars with archive:file:...!/ URIs,
+					so the original relative references stay unresolved proxies and generation
+					of classes extending FeatureChange / ResourceChange fails with NPEs.
+					Keep the copy in sync with the org.eclipse.emf.ecore.change version.
+				-->
+				<configuration>
+					<sourceRoots>
+						<root>${project.basedir}/src/main/resources</root>
+						<root>${project.basedir}/src/main/xcore-deps</root>
+					</sourceRoots>
+				</configuration>
 			</plugin>
 			<plugin>
 				<groupId>org.codehaus.mojo</groupId>

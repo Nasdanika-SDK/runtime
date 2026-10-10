@@ -13,8 +13,6 @@ import org.eclipse.emf.ecore.InternalEObject;
 
 import org.eclipse.emf.ecore.change.ChangeDescription;
 
-import org.eclipse.emf.ecore.impl.MinimalEObjectImpl;
-
 import org.eclipse.emf.ecore.util.InternalEList;
 
 import org.nasdanika.sdk.runtime.models.telemetry.KeyValue;
@@ -25,6 +23,7 @@ import org.nasdanika.sdk.runtime.models.telemetry.traces.Span;
 import org.nasdanika.sdk.runtime.models.telemetry.traces.SpanEvent;
 import org.nasdanika.sdk.runtime.models.telemetry.traces.SpanKind;
 import org.nasdanika.sdk.runtime.models.telemetry.traces.SpanLink;
+import org.nasdanika.sdk.runtime.models.telemetry.traces.SpanReference;
 import org.nasdanika.sdk.runtime.models.telemetry.traces.SpanStatus;
 import org.nasdanika.sdk.runtime.models.telemetry.traces.TracesPackage;
 
@@ -36,8 +35,6 @@ import org.nasdanika.sdk.runtime.models.telemetry.traces.TracesPackage;
  * The following features are implemented:
  * </p>
  * <ul>
- *   <li>{@link org.nasdanika.sdk.runtime.models.telemetry.traces.impl.SpanImpl#getTraceId <em>Trace Id</em>}</li>
- *   <li>{@link org.nasdanika.sdk.runtime.models.telemetry.traces.impl.SpanImpl#getSpanId <em>Span Id</em>}</li>
  *   <li>{@link org.nasdanika.sdk.runtime.models.telemetry.traces.impl.SpanImpl#getTraceState <em>Trace State</em>}</li>
  *   <li>{@link org.nasdanika.sdk.runtime.models.telemetry.traces.impl.SpanImpl#getParentSpanId <em>Parent Span Id</em>}</li>
  *   <li>{@link org.nasdanika.sdk.runtime.models.telemetry.traces.impl.SpanImpl#getName <em>Name</em>}</li>
@@ -55,31 +52,12 @@ import org.nasdanika.sdk.runtime.models.telemetry.traces.TracesPackage;
  *   <li>{@link org.nasdanika.sdk.runtime.models.telemetry.traces.impl.SpanImpl#getChangeDescription <em>Change Description</em>}</li>
  *   <li>{@link org.nasdanika.sdk.runtime.models.telemetry.traces.impl.SpanImpl#getLogRecords <em>Log Records</em>}</li>
  *   <li>{@link org.nasdanika.sdk.runtime.models.telemetry.traces.impl.SpanImpl#getChildren <em>Children</em>}</li>
+ *   <li>{@link org.nasdanika.sdk.runtime.models.telemetry.traces.impl.SpanImpl#getReferrers <em>Referrers</em>}</li>
  * </ul>
  *
  * @generated
  */
-public class SpanImpl extends MinimalEObjectImpl.Container implements Span {
-	/**
-	 * The default value of the '{@link #getTraceId() <em>Trace Id</em>}' attribute.
-	 * <!-- begin-user-doc -->
-	 * <!-- end-user-doc -->
-	 * @see #getTraceId()
-	 * @generated
-	 * @ordered
-	 */
-	protected static final String TRACE_ID_EDEFAULT = null;
-
-	/**
-	 * The default value of the '{@link #getSpanId() <em>Span Id</em>}' attribute.
-	 * <!-- begin-user-doc -->
-	 * <!-- end-user-doc -->
-	 * @see #getSpanId()
-	 * @generated
-	 * @ordered
-	 */
-	protected static final String SPAN_ID_EDEFAULT = null;
-
+public class SpanImpl extends SpanIdImpl implements Span {
 	/**
 	 * The default value of the '{@link #getTraceState() <em>Trace State</em>}' attribute.
 	 * <!-- begin-user-doc -->
@@ -197,52 +175,6 @@ public class SpanImpl extends MinimalEObjectImpl.Container implements Span {
 	@Override
 	protected EClass eStaticClass() {
 		return TracesPackage.Literals.SPAN;
-	}
-
-	/**
-	 * <!-- begin-user-doc -->
-	 * <!-- end-user-doc -->
-	 * @generated
-	 */
-	@Override
-	protected int eStaticFeatureCount() {
-		return 0;
-	}
-
-	/**
-	 * <!-- begin-user-doc -->
-	 * <!-- end-user-doc -->
-	 * @generated
-	 */
-	public String getTraceId() {
-		return (String)eDynamicGet(TracesPackage.SPAN__TRACE_ID, TracesPackage.Literals.SPAN__TRACE_ID, true, true);
-	}
-
-	/**
-	 * <!-- begin-user-doc -->
-	 * <!-- end-user-doc -->
-	 * @generated
-	 */
-	public void setTraceId(String newTraceId) {
-		eDynamicSet(TracesPackage.SPAN__TRACE_ID, TracesPackage.Literals.SPAN__TRACE_ID, newTraceId);
-	}
-
-	/**
-	 * <!-- begin-user-doc -->
-	 * <!-- end-user-doc -->
-	 * @generated
-	 */
-	public String getSpanId() {
-		return (String)eDynamicGet(TracesPackage.SPAN__SPAN_ID, TracesPackage.Literals.SPAN__SPAN_ID, true, true);
-	}
-
-	/**
-	 * <!-- begin-user-doc -->
-	 * <!-- end-user-doc -->
-	 * @generated
-	 */
-	public void setSpanId(String newSpanId) {
-		eDynamicSet(TracesPackage.SPAN__SPAN_ID, TracesPackage.Literals.SPAN__SPAN_ID, newSpanId);
 	}
 
 	/**
@@ -536,6 +468,31 @@ public class SpanImpl extends MinimalEObjectImpl.Container implements Span {
 	 * <!-- end-user-doc -->
 	 * @generated
 	 */
+	@SuppressWarnings("unchecked")
+	public EList<SpanReference> getReferrers() {
+		return (EList<SpanReference>)eDynamicGet(TracesPackage.SPAN__REFERRERS, TracesPackage.Literals.SPAN__REFERRERS, true, true);
+	}
+
+	/**
+	 * <!-- begin-user-doc -->
+	 * <!-- end-user-doc -->
+	 * @generated
+	 */
+	@SuppressWarnings("unchecked")
+	@Override
+	public NotificationChain eInverseAdd(InternalEObject otherEnd, int featureID, NotificationChain msgs) {
+		switch (featureID) {
+			case TracesPackage.SPAN__REFERRERS:
+				return ((InternalEList<InternalEObject>)(InternalEList<?>)getReferrers()).basicAdd(otherEnd, msgs);
+		}
+		return super.eInverseAdd(otherEnd, featureID, msgs);
+	}
+
+	/**
+	 * <!-- begin-user-doc -->
+	 * <!-- end-user-doc -->
+	 * @generated
+	 */
 	@Override
 	public NotificationChain eInverseRemove(InternalEObject otherEnd, int featureID, NotificationChain msgs) {
 		switch (featureID) {
@@ -553,6 +510,8 @@ public class SpanImpl extends MinimalEObjectImpl.Container implements Span {
 				return ((InternalEList<?>)getLogRecords()).basicRemove(otherEnd, msgs);
 			case TracesPackage.SPAN__CHILDREN:
 				return ((InternalEList<?>)getChildren()).basicRemove(otherEnd, msgs);
+			case TracesPackage.SPAN__REFERRERS:
+				return ((InternalEList<?>)getReferrers()).basicRemove(otherEnd, msgs);
 		}
 		return super.eInverseRemove(otherEnd, featureID, msgs);
 	}
@@ -565,10 +524,6 @@ public class SpanImpl extends MinimalEObjectImpl.Container implements Span {
 	@Override
 	public Object eGet(int featureID, boolean resolve, boolean coreType) {
 		switch (featureID) {
-			case TracesPackage.SPAN__TRACE_ID:
-				return getTraceId();
-			case TracesPackage.SPAN__SPAN_ID:
-				return getSpanId();
 			case TracesPackage.SPAN__TRACE_STATE:
 				return getTraceState();
 			case TracesPackage.SPAN__PARENT_SPAN_ID:
@@ -603,6 +558,8 @@ public class SpanImpl extends MinimalEObjectImpl.Container implements Span {
 				return getLogRecords();
 			case TracesPackage.SPAN__CHILDREN:
 				return getChildren();
+			case TracesPackage.SPAN__REFERRERS:
+				return getReferrers();
 		}
 		return super.eGet(featureID, resolve, coreType);
 	}
@@ -616,12 +573,6 @@ public class SpanImpl extends MinimalEObjectImpl.Container implements Span {
 	@Override
 	public void eSet(int featureID, Object newValue) {
 		switch (featureID) {
-			case TracesPackage.SPAN__TRACE_ID:
-				setTraceId((String)newValue);
-				return;
-			case TracesPackage.SPAN__SPAN_ID:
-				setSpanId((String)newValue);
-				return;
 			case TracesPackage.SPAN__TRACE_STATE:
 				setTraceState((String)newValue);
 				return;
@@ -678,6 +629,10 @@ public class SpanImpl extends MinimalEObjectImpl.Container implements Span {
 				getChildren().clear();
 				getChildren().addAll((Collection<? extends Span>)newValue);
 				return;
+			case TracesPackage.SPAN__REFERRERS:
+				getReferrers().clear();
+				getReferrers().addAll((Collection<? extends SpanReference>)newValue);
+				return;
 		}
 		super.eSet(featureID, newValue);
 	}
@@ -690,12 +645,6 @@ public class SpanImpl extends MinimalEObjectImpl.Container implements Span {
 	@Override
 	public void eUnset(int featureID) {
 		switch (featureID) {
-			case TracesPackage.SPAN__TRACE_ID:
-				setTraceId(TRACE_ID_EDEFAULT);
-				return;
-			case TracesPackage.SPAN__SPAN_ID:
-				setSpanId(SPAN_ID_EDEFAULT);
-				return;
 			case TracesPackage.SPAN__TRACE_STATE:
 				setTraceState(TRACE_STATE_EDEFAULT);
 				return;
@@ -747,6 +696,9 @@ public class SpanImpl extends MinimalEObjectImpl.Container implements Span {
 			case TracesPackage.SPAN__CHILDREN:
 				getChildren().clear();
 				return;
+			case TracesPackage.SPAN__REFERRERS:
+				getReferrers().clear();
+				return;
 		}
 		super.eUnset(featureID);
 	}
@@ -759,10 +711,6 @@ public class SpanImpl extends MinimalEObjectImpl.Container implements Span {
 	@Override
 	public boolean eIsSet(int featureID) {
 		switch (featureID) {
-			case TracesPackage.SPAN__TRACE_ID:
-				return TRACE_ID_EDEFAULT == null ? getTraceId() != null : !TRACE_ID_EDEFAULT.equals(getTraceId());
-			case TracesPackage.SPAN__SPAN_ID:
-				return SPAN_ID_EDEFAULT == null ? getSpanId() != null : !SPAN_ID_EDEFAULT.equals(getSpanId());
 			case TracesPackage.SPAN__TRACE_STATE:
 				return TRACE_STATE_EDEFAULT == null ? getTraceState() != null : !TRACE_STATE_EDEFAULT.equals(getTraceState());
 			case TracesPackage.SPAN__PARENT_SPAN_ID:
@@ -797,6 +745,8 @@ public class SpanImpl extends MinimalEObjectImpl.Container implements Span {
 				return !getLogRecords().isEmpty();
 			case TracesPackage.SPAN__CHILDREN:
 				return !getChildren().isEmpty();
+			case TracesPackage.SPAN__REFERRERS:
+				return !getReferrers().isEmpty();
 		}
 		return super.eIsSet(featureID);
 	}

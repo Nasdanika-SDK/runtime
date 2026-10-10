@@ -4,8 +4,6 @@ package org.nasdanika.sdk.runtime.models.telemetry.traces;
 
 import org.eclipse.emf.common.util.EList;
 
-import org.eclipse.emf.ecore.EObject;
-
 import org.nasdanika.sdk.runtime.models.telemetry.KeyValue;
 
 /**
@@ -22,8 +20,6 @@ import org.nasdanika.sdk.runtime.models.telemetry.KeyValue;
  * The following features are supported:
  * </p>
  * <ul>
- *   <li>{@link org.nasdanika.sdk.runtime.models.telemetry.traces.SpanLink#getTraceId <em>Trace Id</em>}</li>
- *   <li>{@link org.nasdanika.sdk.runtime.models.telemetry.traces.SpanLink#getSpanId <em>Span Id</em>}</li>
  *   <li>{@link org.nasdanika.sdk.runtime.models.telemetry.traces.SpanLink#getTraceState <em>Trace State</em>}</li>
  *   <li>{@link org.nasdanika.sdk.runtime.models.telemetry.traces.SpanLink#getAttributes <em>Attributes</em>}</li>
  *   <li>{@link org.nasdanika.sdk.runtime.models.telemetry.traces.SpanLink#getDroppedAttributesCount <em>Dropped Attributes Count</em>}</li>
@@ -34,59 +30,7 @@ import org.nasdanika.sdk.runtime.models.telemetry.KeyValue;
  * @model
  * @generated
  */
-public interface SpanLink extends EObject {
-	/**
-	 * Returns the value of the '<em><b>Trace Id</b></em>' attribute.
-	 * <!-- begin-user-doc -->
-	 * <!-- end-user-doc -->
-	 * <!-- begin-model-doc -->
-	 * *
-	 * A unique identifier of a trace that this linked span is part of.
-	 * <!-- end-model-doc -->
-	 * @return the value of the '<em>Trace Id</em>' attribute.
-	 * @see #setTraceId(String)
-	 * @see org.nasdanika.sdk.runtime.models.telemetry.traces.TracesPackage#getSpanLink_TraceId()
-	 * @model unique="false"
-	 * @generated
-	 */
-	String getTraceId();
-
-	/**
-	 * Sets the value of the '{@link org.nasdanika.sdk.runtime.models.telemetry.traces.SpanLink#getTraceId <em>Trace Id</em>}' attribute.
-	 * <!-- begin-user-doc -->
-	 * <!-- end-user-doc -->
-	 * @param value the new value of the '<em>Trace Id</em>' attribute.
-	 * @see #getTraceId()
-	 * @generated
-	 */
-	void setTraceId(String value);
-
-	/**
-	 * Returns the value of the '<em><b>Span Id</b></em>' attribute.
-	 * <!-- begin-user-doc -->
-	 * <!-- end-user-doc -->
-	 * <!-- begin-model-doc -->
-	 * *
-	 * A unique identifier for the linked span.
-	 * <!-- end-model-doc -->
-	 * @return the value of the '<em>Span Id</em>' attribute.
-	 * @see #setSpanId(String)
-	 * @see org.nasdanika.sdk.runtime.models.telemetry.traces.TracesPackage#getSpanLink_SpanId()
-	 * @model unique="false"
-	 * @generated
-	 */
-	String getSpanId();
-
-	/**
-	 * Sets the value of the '{@link org.nasdanika.sdk.runtime.models.telemetry.traces.SpanLink#getSpanId <em>Span Id</em>}' attribute.
-	 * <!-- begin-user-doc -->
-	 * <!-- end-user-doc -->
-	 * @param value the new value of the '<em>Span Id</em>' attribute.
-	 * @see #getSpanId()
-	 * @generated
-	 */
-	void setSpanId(String value);
-
+public interface SpanLink extends SpanReference {
 	/**
 	 * Returns the value of the '<em><b>Trace State</b></em>' attribute.
 	 * <!-- begin-user-doc -->

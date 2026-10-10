@@ -4,8 +4,6 @@ package org.nasdanika.sdk.runtime.models.telemetry.traces;
 
 import org.eclipse.emf.common.util.EList;
 
-import org.eclipse.emf.ecore.EObject;
-
 import org.eclipse.emf.ecore.change.ChangeDescription;
 
 import org.nasdanika.sdk.runtime.models.telemetry.KeyValue;
@@ -27,8 +25,6 @@ import org.nasdanika.sdk.runtime.models.telemetry.logs.LogRecord;
  * The following features are supported:
  * </p>
  * <ul>
- *   <li>{@link org.nasdanika.sdk.runtime.models.telemetry.traces.Span#getTraceId <em>Trace Id</em>}</li>
- *   <li>{@link org.nasdanika.sdk.runtime.models.telemetry.traces.Span#getSpanId <em>Span Id</em>}</li>
  *   <li>{@link org.nasdanika.sdk.runtime.models.telemetry.traces.Span#getTraceState <em>Trace State</em>}</li>
  *   <li>{@link org.nasdanika.sdk.runtime.models.telemetry.traces.Span#getParentSpanId <em>Parent Span Id</em>}</li>
  *   <li>{@link org.nasdanika.sdk.runtime.models.telemetry.traces.Span#getName <em>Name</em>}</li>
@@ -46,67 +42,14 @@ import org.nasdanika.sdk.runtime.models.telemetry.logs.LogRecord;
  *   <li>{@link org.nasdanika.sdk.runtime.models.telemetry.traces.Span#getChangeDescription <em>Change Description</em>}</li>
  *   <li>{@link org.nasdanika.sdk.runtime.models.telemetry.traces.Span#getLogRecords <em>Log Records</em>}</li>
  *   <li>{@link org.nasdanika.sdk.runtime.models.telemetry.traces.Span#getChildren <em>Children</em>}</li>
+ *   <li>{@link org.nasdanika.sdk.runtime.models.telemetry.traces.Span#getReferrers <em>Referrers</em>}</li>
  * </ul>
  *
  * @see org.nasdanika.sdk.runtime.models.telemetry.traces.TracesPackage#getSpan()
  * @model
  * @generated
  */
-public interface Span extends EObject {
-	/**
-	 * Returns the value of the '<em><b>Trace Id</b></em>' attribute.
-	 * <!-- begin-user-doc -->
-	 * <!-- end-user-doc -->
-	 * <!-- begin-model-doc -->
-	 * *
-	 * A unique identifier for a trace. All spans from the same trace share the same trace_id.
-	 * The ID is a 16-byte array.
-	 * <!-- end-model-doc -->
-	 * @return the value of the '<em>Trace Id</em>' attribute.
-	 * @see #setTraceId(String)
-	 * @see org.nasdanika.sdk.runtime.models.telemetry.traces.TracesPackage#getSpan_TraceId()
-	 * @model unique="false"
-	 * @generated
-	 */
-	String getTraceId();
-
-	/**
-	 * Sets the value of the '{@link org.nasdanika.sdk.runtime.models.telemetry.traces.Span#getTraceId <em>Trace Id</em>}' attribute.
-	 * <!-- begin-user-doc -->
-	 * <!-- end-user-doc -->
-	 * @param value the new value of the '<em>Trace Id</em>' attribute.
-	 * @see #getTraceId()
-	 * @generated
-	 */
-	void setTraceId(String value);
-
-	/**
-	 * Returns the value of the '<em><b>Span Id</b></em>' attribute.
-	 * <!-- begin-user-doc -->
-	 * <!-- end-user-doc -->
-	 * <!-- begin-model-doc -->
-	 * *
-	 * A unique identifier for a span within a trace, assigned when the span is created.
-	 * The ID is an 8-byte array.
-	 * <!-- end-model-doc -->
-	 * @return the value of the '<em>Span Id</em>' attribute.
-	 * @see #setSpanId(String)
-	 * @see org.nasdanika.sdk.runtime.models.telemetry.traces.TracesPackage#getSpan_SpanId()
-	 * @model unique="false"
-	 * @generated
-	 */
-	String getSpanId();
-
-	/**
-	 * Sets the value of the '{@link org.nasdanika.sdk.runtime.models.telemetry.traces.Span#getSpanId <em>Span Id</em>}' attribute.
-	 * <!-- begin-user-doc -->
-	 * <!-- end-user-doc -->
-	 * @param value the new value of the '<em>Span Id</em>' attribute.
-	 * @see #getSpanId()
-	 * @generated
-	 */
-	void setSpanId(String value);
-
+public interface Span extends SpanId {
 	/**
 	 * Returns the value of the '<em><b>Trace State</b></em>' attribute.
 	 * <!-- begin-user-doc -->
@@ -476,9 +419,23 @@ public interface Span extends EObject {
 	 * <!-- end-user-doc -->
 	 * @return the value of the '<em>Children</em>' containment reference list.
 	 * @see org.nasdanika.sdk.runtime.models.telemetry.traces.TracesPackage#getSpan_Children()
-	 * @model containment="true"
+	 * @model containment="true" keys="traceId spanId"
 	 * @generated
 	 */
 	EList<Span> getChildren();
+
+	/**
+	 * Returns the value of the '<em><b>Referrers</b></em>' reference list.
+	 * The list contents are of type {@link org.nasdanika.sdk.runtime.models.telemetry.traces.SpanReference}.
+	 * It is bidirectional and its opposite is '{@link org.nasdanika.sdk.runtime.models.telemetry.traces.SpanReference#getSpan <em>Span</em>}'.
+	 * <!-- begin-user-doc -->
+	 * <!-- end-user-doc -->
+	 * @return the value of the '<em>Referrers</em>' reference list.
+	 * @see org.nasdanika.sdk.runtime.models.telemetry.traces.TracesPackage#getSpan_Referrers()
+	 * @see org.nasdanika.sdk.runtime.models.telemetry.traces.SpanReference#getSpan
+	 * @model opposite="span"
+	 * @generated
+	 */
+	EList<SpanReference> getReferrers();
 
 } // Span

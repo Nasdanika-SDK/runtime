@@ -60,10 +60,14 @@ public class TracesFactoryImpl extends EFactoryImpl implements TracesFactory {
 			case TracesPackage.TRACES_DATA: return createTracesData();
 			case TracesPackage.RESOURCE_SPANS: return createResourceSpans();
 			case TracesPackage.SCOPE_SPANS: return createScopeSpans();
+			case TracesPackage.SPAN_ID: return createSpanId();
 			case TracesPackage.SPAN: return createSpan();
 			case TracesPackage.SPAN_EVENT: return createSpanEvent();
+			case TracesPackage.SPAN_REFERENCE: return createSpanReference();
 			case TracesPackage.SPAN_LINK: return createSpanLink();
 			case TracesPackage.SPAN_STATUS: return createSpanStatus();
+			case TracesPackage.FEATURE_CHANGE: return createFeatureChange();
+			case TracesPackage.RESOURCE_CHANGE: return createResourceChange();
 			default:
 				throw new IllegalArgumentException("The class '" + eClass.getName() + "' is not a valid classifier");
 		}
@@ -138,6 +142,16 @@ public class TracesFactoryImpl extends EFactoryImpl implements TracesFactory {
 	 * <!-- end-user-doc -->
 	 * @generated
 	 */
+	public SpanId createSpanId() {
+		SpanIdImpl spanId = new SpanIdImpl();
+		return spanId;
+	}
+
+	/**
+	 * <!-- begin-user-doc -->
+	 * <!-- end-user-doc -->
+	 * @generated
+	 */
 	public Span createSpan() {
 		SpanImpl span = new SpanImpl();
 		return span;
@@ -158,6 +172,16 @@ public class TracesFactoryImpl extends EFactoryImpl implements TracesFactory {
 	 * <!-- end-user-doc -->
 	 * @generated
 	 */
+	public SpanReference createSpanReference() {
+		SpanReferenceImpl spanReference = new SpanReferenceImpl();
+		return spanReference;
+	}
+
+	/**
+	 * <!-- begin-user-doc -->
+	 * <!-- end-user-doc -->
+	 * @generated
+	 */
 	public SpanLink createSpanLink() {
 		SpanLinkImpl spanLink = new SpanLinkImpl();
 		return spanLink;
@@ -171,6 +195,26 @@ public class TracesFactoryImpl extends EFactoryImpl implements TracesFactory {
 	public SpanStatus createSpanStatus() {
 		SpanStatusImpl spanStatus = new SpanStatusImpl();
 		return spanStatus;
+	}
+
+	/**
+	 * <!-- begin-user-doc -->
+	 * <!-- end-user-doc -->
+	 * @generated
+	 */
+	public FeatureChange createFeatureChange() {
+		FeatureChangeImpl featureChange = new FeatureChangeImpl();
+		return featureChange;
+	}
+
+	/**
+	 * <!-- begin-user-doc -->
+	 * <!-- end-user-doc -->
+	 * @generated
+	 */
+	public ResourceChange createResourceChange() {
+		ResourceChangeImpl resourceChange = new ResourceChangeImpl();
+		return resourceChange;
 	}
 
 	/**

@@ -11,8 +11,6 @@ import org.eclipse.emf.common.util.EList;
 import org.eclipse.emf.ecore.EClass;
 import org.eclipse.emf.ecore.InternalEObject;
 
-import org.eclipse.emf.ecore.impl.MinimalEObjectImpl;
-
 import org.eclipse.emf.ecore.util.InternalEList;
 
 import org.nasdanika.sdk.runtime.models.telemetry.KeyValue;
@@ -28,8 +26,6 @@ import org.nasdanika.sdk.runtime.models.telemetry.traces.TracesPackage;
  * The following features are implemented:
  * </p>
  * <ul>
- *   <li>{@link org.nasdanika.sdk.runtime.models.telemetry.traces.impl.SpanLinkImpl#getTraceId <em>Trace Id</em>}</li>
- *   <li>{@link org.nasdanika.sdk.runtime.models.telemetry.traces.impl.SpanLinkImpl#getSpanId <em>Span Id</em>}</li>
  *   <li>{@link org.nasdanika.sdk.runtime.models.telemetry.traces.impl.SpanLinkImpl#getTraceState <em>Trace State</em>}</li>
  *   <li>{@link org.nasdanika.sdk.runtime.models.telemetry.traces.impl.SpanLinkImpl#getAttributes <em>Attributes</em>}</li>
  *   <li>{@link org.nasdanika.sdk.runtime.models.telemetry.traces.impl.SpanLinkImpl#getDroppedAttributesCount <em>Dropped Attributes Count</em>}</li>
@@ -38,27 +34,7 @@ import org.nasdanika.sdk.runtime.models.telemetry.traces.TracesPackage;
  *
  * @generated
  */
-public class SpanLinkImpl extends MinimalEObjectImpl.Container implements SpanLink {
-	/**
-	 * The default value of the '{@link #getTraceId() <em>Trace Id</em>}' attribute.
-	 * <!-- begin-user-doc -->
-	 * <!-- end-user-doc -->
-	 * @see #getTraceId()
-	 * @generated
-	 * @ordered
-	 */
-	protected static final String TRACE_ID_EDEFAULT = null;
-
-	/**
-	 * The default value of the '{@link #getSpanId() <em>Span Id</em>}' attribute.
-	 * <!-- begin-user-doc -->
-	 * <!-- end-user-doc -->
-	 * @see #getSpanId()
-	 * @generated
-	 * @ordered
-	 */
-	protected static final String SPAN_ID_EDEFAULT = null;
-
+public class SpanLinkImpl extends SpanReferenceImpl implements SpanLink {
 	/**
 	 * The default value of the '{@link #getTraceState() <em>Trace State</em>}' attribute.
 	 * <!-- begin-user-doc -->
@@ -106,52 +82,6 @@ public class SpanLinkImpl extends MinimalEObjectImpl.Container implements SpanLi
 	@Override
 	protected EClass eStaticClass() {
 		return TracesPackage.Literals.SPAN_LINK;
-	}
-
-	/**
-	 * <!-- begin-user-doc -->
-	 * <!-- end-user-doc -->
-	 * @generated
-	 */
-	@Override
-	protected int eStaticFeatureCount() {
-		return 0;
-	}
-
-	/**
-	 * <!-- begin-user-doc -->
-	 * <!-- end-user-doc -->
-	 * @generated
-	 */
-	public String getTraceId() {
-		return (String)eDynamicGet(TracesPackage.SPAN_LINK__TRACE_ID, TracesPackage.Literals.SPAN_LINK__TRACE_ID, true, true);
-	}
-
-	/**
-	 * <!-- begin-user-doc -->
-	 * <!-- end-user-doc -->
-	 * @generated
-	 */
-	public void setTraceId(String newTraceId) {
-		eDynamicSet(TracesPackage.SPAN_LINK__TRACE_ID, TracesPackage.Literals.SPAN_LINK__TRACE_ID, newTraceId);
-	}
-
-	/**
-	 * <!-- begin-user-doc -->
-	 * <!-- end-user-doc -->
-	 * @generated
-	 */
-	public String getSpanId() {
-		return (String)eDynamicGet(TracesPackage.SPAN_LINK__SPAN_ID, TracesPackage.Literals.SPAN_LINK__SPAN_ID, true, true);
-	}
-
-	/**
-	 * <!-- begin-user-doc -->
-	 * <!-- end-user-doc -->
-	 * @generated
-	 */
-	public void setSpanId(String newSpanId) {
-		eDynamicSet(TracesPackage.SPAN_LINK__SPAN_ID, TracesPackage.Literals.SPAN_LINK__SPAN_ID, newSpanId);
 	}
 
 	/**
@@ -240,10 +170,6 @@ public class SpanLinkImpl extends MinimalEObjectImpl.Container implements SpanLi
 	@Override
 	public Object eGet(int featureID, boolean resolve, boolean coreType) {
 		switch (featureID) {
-			case TracesPackage.SPAN_LINK__TRACE_ID:
-				return getTraceId();
-			case TracesPackage.SPAN_LINK__SPAN_ID:
-				return getSpanId();
 			case TracesPackage.SPAN_LINK__TRACE_STATE:
 				return getTraceState();
 			case TracesPackage.SPAN_LINK__ATTRIBUTES:
@@ -265,12 +191,6 @@ public class SpanLinkImpl extends MinimalEObjectImpl.Container implements SpanLi
 	@Override
 	public void eSet(int featureID, Object newValue) {
 		switch (featureID) {
-			case TracesPackage.SPAN_LINK__TRACE_ID:
-				setTraceId((String)newValue);
-				return;
-			case TracesPackage.SPAN_LINK__SPAN_ID:
-				setSpanId((String)newValue);
-				return;
 			case TracesPackage.SPAN_LINK__TRACE_STATE:
 				setTraceState((String)newValue);
 				return;
@@ -296,12 +216,6 @@ public class SpanLinkImpl extends MinimalEObjectImpl.Container implements SpanLi
 	@Override
 	public void eUnset(int featureID) {
 		switch (featureID) {
-			case TracesPackage.SPAN_LINK__TRACE_ID:
-				setTraceId(TRACE_ID_EDEFAULT);
-				return;
-			case TracesPackage.SPAN_LINK__SPAN_ID:
-				setSpanId(SPAN_ID_EDEFAULT);
-				return;
 			case TracesPackage.SPAN_LINK__TRACE_STATE:
 				setTraceState(TRACE_STATE_EDEFAULT);
 				return;
@@ -326,10 +240,6 @@ public class SpanLinkImpl extends MinimalEObjectImpl.Container implements SpanLi
 	@Override
 	public boolean eIsSet(int featureID) {
 		switch (featureID) {
-			case TracesPackage.SPAN_LINK__TRACE_ID:
-				return TRACE_ID_EDEFAULT == null ? getTraceId() != null : !TRACE_ID_EDEFAULT.equals(getTraceId());
-			case TracesPackage.SPAN_LINK__SPAN_ID:
-				return SPAN_ID_EDEFAULT == null ? getSpanId() != null : !SPAN_ID_EDEFAULT.equals(getSpanId());
 			case TracesPackage.SPAN_LINK__TRACE_STATE:
 				return TRACE_STATE_EDEFAULT == null ? getTraceState() != null : !TRACE_STATE_EDEFAULT.equals(getTraceState());
 			case TracesPackage.SPAN_LINK__ATTRIBUTES:

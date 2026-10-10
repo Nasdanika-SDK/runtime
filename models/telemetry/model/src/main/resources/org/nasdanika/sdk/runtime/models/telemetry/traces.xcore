@@ -8,7 +8,7 @@
     complianceLevel="25",
     suppressGenModelAnnotations="false",
     copyrightFields="false",
-    operationReflection="true",
+    operationReflection="false",
     importOrganizing="true"
 )
 package org.nasdanika.sdk.runtime.models.telemetry.traces
@@ -96,11 +96,7 @@ enum SpanKind {
 	SPAN_KIND_CONSUMER = 5
 }
 
-/**
- * A Span represents a single operation performed by a single component of the system.
- * The next available field id is 17.
- */
-class Span {
+class SpanId {
 	/**
 	 * A unique identifier for a trace. All spans from the same trace share the same trace_id.
 	 * The ID is a 16-byte array.
@@ -111,6 +107,14 @@ class Span {
 	 * The ID is an 8-byte array.
 	 */
 	String spanId
+	
+}
+
+/**
+ * A Span represents a single operation performed by a single component of the system.
+ * The next available field id is 17.
+ */
+class Span extends SpanId {
 	/**
 	 * trace_state conveys information about request position in multiple distributed tracing graphs. It is a vendor-specific format as described by the W3C Trace Context specification.
 	 */
@@ -163,7 +167,9 @@ class Span {
 	int flags
 	contains ChangeDescription changeDescription
 	contains LogRecord[] logRecords
-	contains Span[] children
+	contains Span[] children keys traceId, spanId
+	
+	refers SpanReference[] referrers opposite span
 }
 
 /**
@@ -185,18 +191,18 @@ class SpanEvent {
 	int droppedAttributesCount
 }
 
+
+class SpanReference extends SpanId {
+	
+	refers Span span opposite referrers
+	
+}
+
 /**
  * A pointer from the current span to another span in the same trace or in a different trace. For example, this can be used in batching operations, where a single batch handler processes multiple requests from different traces or when the handler receives a request from a different project.
  */
-class SpanLink {
-	/**
-	 * A unique identifier of a trace that this linked span is part of.
-	 */
-	String traceId
-	/**
-	 * A unique identifier for the linked span.
-	 */
-	String spanId
+class SpanLink extends SpanReference {
+	
 	String traceState
 	/**
 	 * attributes is a collection of attribute key/value pairs on the link.
@@ -241,3 +247,12 @@ enum StatusCode {
 	STATUS_CODE_ERROR = 2
 }
 
+// Change specializations
+
+class FeatureChange extends org.eclipse.emf.ecore.change.FeatureChange, SpanReference {
+	
+}
+
+class ResourceChange extends org.eclipse.emf.ecore.change.ResourceChange, SpanReference {
+	
+}

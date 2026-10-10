@@ -8,6 +8,8 @@ import org.eclipse.emf.ecore.EEnum;
 import org.eclipse.emf.ecore.EPackage;
 import org.eclipse.emf.ecore.EReference;
 
+import org.eclipse.emf.ecore.change.ChangePackage;
+
 /**
  * <!-- begin-user-doc -->
  * The <b>Package</b> for the model.
@@ -15,14 +17,13 @@ import org.eclipse.emf.ecore.EReference;
  * <ul>
  *   <li>each class,</li>
  *   <li>each feature of each class,</li>
- *   <li>each operation of each class,</li>
  *   <li>each enum,</li>
  *   <li>and each data type</li>
  * </ul>
  * <!-- end-user-doc -->
  * @see org.nasdanika.sdk.runtime.models.telemetry.traces.TracesFactory
  * @model kind="package"
- *        annotation="http://www.eclipse.org/emf/2002/GenModel modelDirectory='/org.nasdanika.sdk.runtime.models.telemetry.model/src-gen' featureDelegation='Dynamic' complianceLevel='25' suppressGenModelAnnotations='false' copyrightFields='false' operationReflection='true' importOrganizing='true' basePackage='org.nasdanika.sdk.runtime.models.telemetry'"
+ *        annotation="http://www.eclipse.org/emf/2002/GenModel modelDirectory='/org.nasdanika.sdk.runtime.models.telemetry.model/src-gen' featureDelegation='Dynamic' complianceLevel='25' suppressGenModelAnnotations='false' copyrightFields='false' operationReflection='false' importOrganizing='true' basePackage='org.nasdanika.sdk.runtime.models.telemetry'"
  *        annotation="http://www.eclipse.org/emf/2011/Xcore Ecore='http://www.eclipse.org/emf/2002/Ecore' GenModel='http://www.eclipse.org/emf/2002/GenModel' Nasdanika='urn:org.nasdanika'"
  * @generated
  */
@@ -88,15 +89,6 @@ public interface TracesPackage extends EPackage {
 	int TRACES_DATA_FEATURE_COUNT = 1;
 
 	/**
-	 * The number of operations of the '<em>Data</em>' class.
-	 * <!-- begin-user-doc -->
-	 * <!-- end-user-doc -->
-	 * @generated
-	 * @ordered
-	 */
-	int TRACES_DATA_OPERATION_COUNT = 0;
-
-	/**
 	 * The meta object id for the '{@link org.nasdanika.sdk.runtime.models.telemetry.traces.impl.ResourceSpansImpl <em>Resource Spans</em>}' class.
 	 * <!-- begin-user-doc -->
 	 * <!-- end-user-doc -->
@@ -141,15 +133,6 @@ public interface TracesPackage extends EPackage {
 	 * @ordered
 	 */
 	int RESOURCE_SPANS_FEATURE_COUNT = 3;
-
-	/**
-	 * The number of operations of the '<em>Resource Spans</em>' class.
-	 * <!-- begin-user-doc -->
-	 * <!-- end-user-doc -->
-	 * @generated
-	 * @ordered
-	 */
-	int RESOURCE_SPANS_OPERATION_COUNT = 0;
 
 	/**
 	 * The meta object id for the '{@link org.nasdanika.sdk.runtime.models.telemetry.traces.impl.ScopeSpansImpl <em>Scope Spans</em>}' class.
@@ -198,13 +181,41 @@ public interface TracesPackage extends EPackage {
 	int SCOPE_SPANS_FEATURE_COUNT = 3;
 
 	/**
-	 * The number of operations of the '<em>Scope Spans</em>' class.
+	 * The meta object id for the '{@link org.nasdanika.sdk.runtime.models.telemetry.traces.impl.SpanIdImpl <em>Span Id</em>}' class.
+	 * <!-- begin-user-doc -->
+	 * <!-- end-user-doc -->
+	 * @see org.nasdanika.sdk.runtime.models.telemetry.traces.impl.SpanIdImpl
+	 * @see org.nasdanika.sdk.runtime.models.telemetry.traces.impl.TracesPackageImpl#getSpanId()
+	 * @generated
+	 */
+	int SPAN_ID = 3;
+
+	/**
+	 * The feature id for the '<em><b>Trace Id</b></em>' attribute.
 	 * <!-- begin-user-doc -->
 	 * <!-- end-user-doc -->
 	 * @generated
 	 * @ordered
 	 */
-	int SCOPE_SPANS_OPERATION_COUNT = 0;
+	int SPAN_ID__TRACE_ID = 0;
+
+	/**
+	 * The feature id for the '<em><b>Span Id</b></em>' attribute.
+	 * <!-- begin-user-doc -->
+	 * <!-- end-user-doc -->
+	 * @generated
+	 * @ordered
+	 */
+	int SPAN_ID__SPAN_ID = 1;
+
+	/**
+	 * The number of structural features of the '<em>Span Id</em>' class.
+	 * <!-- begin-user-doc -->
+	 * <!-- end-user-doc -->
+	 * @generated
+	 * @ordered
+	 */
+	int SPAN_ID_FEATURE_COUNT = 2;
 
 	/**
 	 * The meta object id for the '{@link org.nasdanika.sdk.runtime.models.telemetry.traces.impl.SpanImpl <em>Span</em>}' class.
@@ -214,7 +225,7 @@ public interface TracesPackage extends EPackage {
 	 * @see org.nasdanika.sdk.runtime.models.telemetry.traces.impl.TracesPackageImpl#getSpan()
 	 * @generated
 	 */
-	int SPAN = 3;
+	int SPAN = 4;
 
 	/**
 	 * The feature id for the '<em><b>Trace Id</b></em>' attribute.
@@ -223,7 +234,7 @@ public interface TracesPackage extends EPackage {
 	 * @generated
 	 * @ordered
 	 */
-	int SPAN__TRACE_ID = 0;
+	int SPAN__TRACE_ID = SPAN_ID__TRACE_ID;
 
 	/**
 	 * The feature id for the '<em><b>Span Id</b></em>' attribute.
@@ -232,7 +243,7 @@ public interface TracesPackage extends EPackage {
 	 * @generated
 	 * @ordered
 	 */
-	int SPAN__SPAN_ID = 1;
+	int SPAN__SPAN_ID = SPAN_ID__SPAN_ID;
 
 	/**
 	 * The feature id for the '<em><b>Trace State</b></em>' attribute.
@@ -241,7 +252,7 @@ public interface TracesPackage extends EPackage {
 	 * @generated
 	 * @ordered
 	 */
-	int SPAN__TRACE_STATE = 2;
+	int SPAN__TRACE_STATE = SPAN_ID_FEATURE_COUNT + 0;
 
 	/**
 	 * The feature id for the '<em><b>Parent Span Id</b></em>' attribute.
@@ -250,7 +261,7 @@ public interface TracesPackage extends EPackage {
 	 * @generated
 	 * @ordered
 	 */
-	int SPAN__PARENT_SPAN_ID = 3;
+	int SPAN__PARENT_SPAN_ID = SPAN_ID_FEATURE_COUNT + 1;
 
 	/**
 	 * The feature id for the '<em><b>Name</b></em>' attribute.
@@ -259,7 +270,7 @@ public interface TracesPackage extends EPackage {
 	 * @generated
 	 * @ordered
 	 */
-	int SPAN__NAME = 4;
+	int SPAN__NAME = SPAN_ID_FEATURE_COUNT + 2;
 
 	/**
 	 * The feature id for the '<em><b>Kind</b></em>' attribute.
@@ -268,7 +279,7 @@ public interface TracesPackage extends EPackage {
 	 * @generated
 	 * @ordered
 	 */
-	int SPAN__KIND = 5;
+	int SPAN__KIND = SPAN_ID_FEATURE_COUNT + 3;
 
 	/**
 	 * The feature id for the '<em><b>Start Time Unix Nano</b></em>' attribute.
@@ -277,7 +288,7 @@ public interface TracesPackage extends EPackage {
 	 * @generated
 	 * @ordered
 	 */
-	int SPAN__START_TIME_UNIX_NANO = 6;
+	int SPAN__START_TIME_UNIX_NANO = SPAN_ID_FEATURE_COUNT + 4;
 
 	/**
 	 * The feature id for the '<em><b>End Time Unix Nano</b></em>' attribute.
@@ -286,7 +297,7 @@ public interface TracesPackage extends EPackage {
 	 * @generated
 	 * @ordered
 	 */
-	int SPAN__END_TIME_UNIX_NANO = 7;
+	int SPAN__END_TIME_UNIX_NANO = SPAN_ID_FEATURE_COUNT + 5;
 
 	/**
 	 * The feature id for the '<em><b>Attributes</b></em>' containment reference list.
@@ -295,7 +306,7 @@ public interface TracesPackage extends EPackage {
 	 * @generated
 	 * @ordered
 	 */
-	int SPAN__ATTRIBUTES = 8;
+	int SPAN__ATTRIBUTES = SPAN_ID_FEATURE_COUNT + 6;
 
 	/**
 	 * The feature id for the '<em><b>Dropped Attributes Count</b></em>' attribute.
@@ -304,7 +315,7 @@ public interface TracesPackage extends EPackage {
 	 * @generated
 	 * @ordered
 	 */
-	int SPAN__DROPPED_ATTRIBUTES_COUNT = 9;
+	int SPAN__DROPPED_ATTRIBUTES_COUNT = SPAN_ID_FEATURE_COUNT + 7;
 
 	/**
 	 * The feature id for the '<em><b>Events</b></em>' containment reference list.
@@ -313,7 +324,7 @@ public interface TracesPackage extends EPackage {
 	 * @generated
 	 * @ordered
 	 */
-	int SPAN__EVENTS = 10;
+	int SPAN__EVENTS = SPAN_ID_FEATURE_COUNT + 8;
 
 	/**
 	 * The feature id for the '<em><b>Dropped Events Count</b></em>' attribute.
@@ -322,7 +333,7 @@ public interface TracesPackage extends EPackage {
 	 * @generated
 	 * @ordered
 	 */
-	int SPAN__DROPPED_EVENTS_COUNT = 11;
+	int SPAN__DROPPED_EVENTS_COUNT = SPAN_ID_FEATURE_COUNT + 9;
 
 	/**
 	 * The feature id for the '<em><b>Links</b></em>' containment reference list.
@@ -331,7 +342,7 @@ public interface TracesPackage extends EPackage {
 	 * @generated
 	 * @ordered
 	 */
-	int SPAN__LINKS = 12;
+	int SPAN__LINKS = SPAN_ID_FEATURE_COUNT + 10;
 
 	/**
 	 * The feature id for the '<em><b>Dropped Links Count</b></em>' attribute.
@@ -340,7 +351,7 @@ public interface TracesPackage extends EPackage {
 	 * @generated
 	 * @ordered
 	 */
-	int SPAN__DROPPED_LINKS_COUNT = 13;
+	int SPAN__DROPPED_LINKS_COUNT = SPAN_ID_FEATURE_COUNT + 11;
 
 	/**
 	 * The feature id for the '<em><b>Status</b></em>' containment reference.
@@ -349,7 +360,7 @@ public interface TracesPackage extends EPackage {
 	 * @generated
 	 * @ordered
 	 */
-	int SPAN__STATUS = 14;
+	int SPAN__STATUS = SPAN_ID_FEATURE_COUNT + 12;
 
 	/**
 	 * The feature id for the '<em><b>Flags</b></em>' attribute.
@@ -358,7 +369,7 @@ public interface TracesPackage extends EPackage {
 	 * @generated
 	 * @ordered
 	 */
-	int SPAN__FLAGS = 15;
+	int SPAN__FLAGS = SPAN_ID_FEATURE_COUNT + 13;
 
 	/**
 	 * The feature id for the '<em><b>Change Description</b></em>' containment reference.
@@ -367,7 +378,7 @@ public interface TracesPackage extends EPackage {
 	 * @generated
 	 * @ordered
 	 */
-	int SPAN__CHANGE_DESCRIPTION = 16;
+	int SPAN__CHANGE_DESCRIPTION = SPAN_ID_FEATURE_COUNT + 14;
 
 	/**
 	 * The feature id for the '<em><b>Log Records</b></em>' containment reference list.
@@ -376,7 +387,7 @@ public interface TracesPackage extends EPackage {
 	 * @generated
 	 * @ordered
 	 */
-	int SPAN__LOG_RECORDS = 17;
+	int SPAN__LOG_RECORDS = SPAN_ID_FEATURE_COUNT + 15;
 
 	/**
 	 * The feature id for the '<em><b>Children</b></em>' containment reference list.
@@ -385,7 +396,16 @@ public interface TracesPackage extends EPackage {
 	 * @generated
 	 * @ordered
 	 */
-	int SPAN__CHILDREN = 18;
+	int SPAN__CHILDREN = SPAN_ID_FEATURE_COUNT + 16;
+
+	/**
+	 * The feature id for the '<em><b>Referrers</b></em>' reference list.
+	 * <!-- begin-user-doc -->
+	 * <!-- end-user-doc -->
+	 * @generated
+	 * @ordered
+	 */
+	int SPAN__REFERRERS = SPAN_ID_FEATURE_COUNT + 17;
 
 	/**
 	 * The number of structural features of the '<em>Span</em>' class.
@@ -394,16 +414,7 @@ public interface TracesPackage extends EPackage {
 	 * @generated
 	 * @ordered
 	 */
-	int SPAN_FEATURE_COUNT = 19;
-
-	/**
-	 * The number of operations of the '<em>Span</em>' class.
-	 * <!-- begin-user-doc -->
-	 * <!-- end-user-doc -->
-	 * @generated
-	 * @ordered
-	 */
-	int SPAN_OPERATION_COUNT = 0;
+	int SPAN_FEATURE_COUNT = SPAN_ID_FEATURE_COUNT + 18;
 
 	/**
 	 * The meta object id for the '{@link org.nasdanika.sdk.runtime.models.telemetry.traces.impl.SpanEventImpl <em>Span Event</em>}' class.
@@ -413,7 +424,7 @@ public interface TracesPackage extends EPackage {
 	 * @see org.nasdanika.sdk.runtime.models.telemetry.traces.impl.TracesPackageImpl#getSpanEvent()
 	 * @generated
 	 */
-	int SPAN_EVENT = 4;
+	int SPAN_EVENT = 5;
 
 	/**
 	 * The feature id for the '<em><b>Time Unix Nano</b></em>' attribute.
@@ -461,13 +472,50 @@ public interface TracesPackage extends EPackage {
 	int SPAN_EVENT_FEATURE_COUNT = 4;
 
 	/**
-	 * The number of operations of the '<em>Span Event</em>' class.
+	 * The meta object id for the '{@link org.nasdanika.sdk.runtime.models.telemetry.traces.impl.SpanReferenceImpl <em>Span Reference</em>}' class.
+	 * <!-- begin-user-doc -->
+	 * <!-- end-user-doc -->
+	 * @see org.nasdanika.sdk.runtime.models.telemetry.traces.impl.SpanReferenceImpl
+	 * @see org.nasdanika.sdk.runtime.models.telemetry.traces.impl.TracesPackageImpl#getSpanReference()
+	 * @generated
+	 */
+	int SPAN_REFERENCE = 6;
+
+	/**
+	 * The feature id for the '<em><b>Trace Id</b></em>' attribute.
 	 * <!-- begin-user-doc -->
 	 * <!-- end-user-doc -->
 	 * @generated
 	 * @ordered
 	 */
-	int SPAN_EVENT_OPERATION_COUNT = 0;
+	int SPAN_REFERENCE__TRACE_ID = SPAN_ID__TRACE_ID;
+
+	/**
+	 * The feature id for the '<em><b>Span Id</b></em>' attribute.
+	 * <!-- begin-user-doc -->
+	 * <!-- end-user-doc -->
+	 * @generated
+	 * @ordered
+	 */
+	int SPAN_REFERENCE__SPAN_ID = SPAN_ID__SPAN_ID;
+
+	/**
+	 * The feature id for the '<em><b>Span</b></em>' reference.
+	 * <!-- begin-user-doc -->
+	 * <!-- end-user-doc -->
+	 * @generated
+	 * @ordered
+	 */
+	int SPAN_REFERENCE__SPAN = SPAN_ID_FEATURE_COUNT + 0;
+
+	/**
+	 * The number of structural features of the '<em>Span Reference</em>' class.
+	 * <!-- begin-user-doc -->
+	 * <!-- end-user-doc -->
+	 * @generated
+	 * @ordered
+	 */
+	int SPAN_REFERENCE_FEATURE_COUNT = SPAN_ID_FEATURE_COUNT + 1;
 
 	/**
 	 * The meta object id for the '{@link org.nasdanika.sdk.runtime.models.telemetry.traces.impl.SpanLinkImpl <em>Span Link</em>}' class.
@@ -477,7 +525,7 @@ public interface TracesPackage extends EPackage {
 	 * @see org.nasdanika.sdk.runtime.models.telemetry.traces.impl.TracesPackageImpl#getSpanLink()
 	 * @generated
 	 */
-	int SPAN_LINK = 5;
+	int SPAN_LINK = 7;
 
 	/**
 	 * The feature id for the '<em><b>Trace Id</b></em>' attribute.
@@ -486,7 +534,7 @@ public interface TracesPackage extends EPackage {
 	 * @generated
 	 * @ordered
 	 */
-	int SPAN_LINK__TRACE_ID = 0;
+	int SPAN_LINK__TRACE_ID = SPAN_REFERENCE__TRACE_ID;
 
 	/**
 	 * The feature id for the '<em><b>Span Id</b></em>' attribute.
@@ -495,7 +543,16 @@ public interface TracesPackage extends EPackage {
 	 * @generated
 	 * @ordered
 	 */
-	int SPAN_LINK__SPAN_ID = 1;
+	int SPAN_LINK__SPAN_ID = SPAN_REFERENCE__SPAN_ID;
+
+	/**
+	 * The feature id for the '<em><b>Span</b></em>' reference.
+	 * <!-- begin-user-doc -->
+	 * <!-- end-user-doc -->
+	 * @generated
+	 * @ordered
+	 */
+	int SPAN_LINK__SPAN = SPAN_REFERENCE__SPAN;
 
 	/**
 	 * The feature id for the '<em><b>Trace State</b></em>' attribute.
@@ -504,7 +561,7 @@ public interface TracesPackage extends EPackage {
 	 * @generated
 	 * @ordered
 	 */
-	int SPAN_LINK__TRACE_STATE = 2;
+	int SPAN_LINK__TRACE_STATE = SPAN_REFERENCE_FEATURE_COUNT + 0;
 
 	/**
 	 * The feature id for the '<em><b>Attributes</b></em>' containment reference list.
@@ -513,7 +570,7 @@ public interface TracesPackage extends EPackage {
 	 * @generated
 	 * @ordered
 	 */
-	int SPAN_LINK__ATTRIBUTES = 3;
+	int SPAN_LINK__ATTRIBUTES = SPAN_REFERENCE_FEATURE_COUNT + 1;
 
 	/**
 	 * The feature id for the '<em><b>Dropped Attributes Count</b></em>' attribute.
@@ -522,7 +579,7 @@ public interface TracesPackage extends EPackage {
 	 * @generated
 	 * @ordered
 	 */
-	int SPAN_LINK__DROPPED_ATTRIBUTES_COUNT = 4;
+	int SPAN_LINK__DROPPED_ATTRIBUTES_COUNT = SPAN_REFERENCE_FEATURE_COUNT + 2;
 
 	/**
 	 * The feature id for the '<em><b>Flags</b></em>' attribute.
@@ -531,7 +588,7 @@ public interface TracesPackage extends EPackage {
 	 * @generated
 	 * @ordered
 	 */
-	int SPAN_LINK__FLAGS = 5;
+	int SPAN_LINK__FLAGS = SPAN_REFERENCE_FEATURE_COUNT + 3;
 
 	/**
 	 * The number of structural features of the '<em>Span Link</em>' class.
@@ -540,16 +597,7 @@ public interface TracesPackage extends EPackage {
 	 * @generated
 	 * @ordered
 	 */
-	int SPAN_LINK_FEATURE_COUNT = 6;
-
-	/**
-	 * The number of operations of the '<em>Span Link</em>' class.
-	 * <!-- begin-user-doc -->
-	 * <!-- end-user-doc -->
-	 * @generated
-	 * @ordered
-	 */
-	int SPAN_LINK_OPERATION_COUNT = 0;
+	int SPAN_LINK_FEATURE_COUNT = SPAN_REFERENCE_FEATURE_COUNT + 4;
 
 	/**
 	 * The meta object id for the '{@link org.nasdanika.sdk.runtime.models.telemetry.traces.impl.SpanStatusImpl <em>Span Status</em>}' class.
@@ -559,7 +607,7 @@ public interface TracesPackage extends EPackage {
 	 * @see org.nasdanika.sdk.runtime.models.telemetry.traces.impl.TracesPackageImpl#getSpanStatus()
 	 * @generated
 	 */
-	int SPAN_STATUS = 6;
+	int SPAN_STATUS = 8;
 
 	/**
 	 * The feature id for the '<em><b>Message</b></em>' attribute.
@@ -589,13 +637,195 @@ public interface TracesPackage extends EPackage {
 	int SPAN_STATUS_FEATURE_COUNT = 2;
 
 	/**
-	 * The number of operations of the '<em>Span Status</em>' class.
+	 * The meta object id for the '{@link org.nasdanika.sdk.runtime.models.telemetry.traces.impl.FeatureChangeImpl <em>Feature Change</em>}' class.
+	 * <!-- begin-user-doc -->
+	 * <!-- end-user-doc -->
+	 * @see org.nasdanika.sdk.runtime.models.telemetry.traces.impl.FeatureChangeImpl
+	 * @see org.nasdanika.sdk.runtime.models.telemetry.traces.impl.TracesPackageImpl#getFeatureChange()
+	 * @generated
+	 */
+	int FEATURE_CHANGE = 9;
+
+	/**
+	 * The feature id for the '<em><b>Feature Name</b></em>' attribute.
 	 * <!-- begin-user-doc -->
 	 * <!-- end-user-doc -->
 	 * @generated
 	 * @ordered
 	 */
-	int SPAN_STATUS_OPERATION_COUNT = 0;
+	int FEATURE_CHANGE__FEATURE_NAME = ChangePackage.FEATURE_CHANGE__FEATURE_NAME;
+
+	/**
+	 * The feature id for the '<em><b>Data Value</b></em>' attribute.
+	 * <!-- begin-user-doc -->
+	 * <!-- end-user-doc -->
+	 * @generated
+	 * @ordered
+	 */
+	int FEATURE_CHANGE__DATA_VALUE = ChangePackage.FEATURE_CHANGE__DATA_VALUE;
+
+	/**
+	 * The feature id for the '<em><b>Set</b></em>' attribute.
+	 * <!-- begin-user-doc -->
+	 * <!-- end-user-doc -->
+	 * @generated
+	 * @ordered
+	 */
+	int FEATURE_CHANGE__SET = ChangePackage.FEATURE_CHANGE__SET;
+
+	/**
+	 * The feature id for the '<em><b>Value</b></em>' attribute.
+	 * <!-- begin-user-doc -->
+	 * <!-- end-user-doc -->
+	 * @generated
+	 * @ordered
+	 */
+	int FEATURE_CHANGE__VALUE = ChangePackage.FEATURE_CHANGE__VALUE;
+
+	/**
+	 * The feature id for the '<em><b>Feature</b></em>' reference.
+	 * <!-- begin-user-doc -->
+	 * <!-- end-user-doc -->
+	 * @generated
+	 * @ordered
+	 */
+	int FEATURE_CHANGE__FEATURE = ChangePackage.FEATURE_CHANGE__FEATURE;
+
+	/**
+	 * The feature id for the '<em><b>Reference Value</b></em>' reference.
+	 * <!-- begin-user-doc -->
+	 * <!-- end-user-doc -->
+	 * @generated
+	 * @ordered
+	 */
+	int FEATURE_CHANGE__REFERENCE_VALUE = ChangePackage.FEATURE_CHANGE__REFERENCE_VALUE;
+
+	/**
+	 * The feature id for the '<em><b>List Changes</b></em>' containment reference list.
+	 * <!-- begin-user-doc -->
+	 * <!-- end-user-doc -->
+	 * @generated
+	 * @ordered
+	 */
+	int FEATURE_CHANGE__LIST_CHANGES = ChangePackage.FEATURE_CHANGE__LIST_CHANGES;
+
+	/**
+	 * The feature id for the '<em><b>Trace Id</b></em>' attribute.
+	 * <!-- begin-user-doc -->
+	 * <!-- end-user-doc -->
+	 * @generated
+	 * @ordered
+	 */
+	int FEATURE_CHANGE__TRACE_ID = ChangePackage.FEATURE_CHANGE_FEATURE_COUNT + 0;
+
+	/**
+	 * The feature id for the '<em><b>Span Id</b></em>' attribute.
+	 * <!-- begin-user-doc -->
+	 * <!-- end-user-doc -->
+	 * @generated
+	 * @ordered
+	 */
+	int FEATURE_CHANGE__SPAN_ID = ChangePackage.FEATURE_CHANGE_FEATURE_COUNT + 1;
+
+	/**
+	 * The feature id for the '<em><b>Span</b></em>' reference.
+	 * <!-- begin-user-doc -->
+	 * <!-- end-user-doc -->
+	 * @generated
+	 * @ordered
+	 */
+	int FEATURE_CHANGE__SPAN = ChangePackage.FEATURE_CHANGE_FEATURE_COUNT + 2;
+
+	/**
+	 * The number of structural features of the '<em>Feature Change</em>' class.
+	 * <!-- begin-user-doc -->
+	 * <!-- end-user-doc -->
+	 * @generated
+	 * @ordered
+	 */
+	int FEATURE_CHANGE_FEATURE_COUNT = ChangePackage.FEATURE_CHANGE_FEATURE_COUNT + 3;
+
+	/**
+	 * The meta object id for the '{@link org.nasdanika.sdk.runtime.models.telemetry.traces.impl.ResourceChangeImpl <em>Resource Change</em>}' class.
+	 * <!-- begin-user-doc -->
+	 * <!-- end-user-doc -->
+	 * @see org.nasdanika.sdk.runtime.models.telemetry.traces.impl.ResourceChangeImpl
+	 * @see org.nasdanika.sdk.runtime.models.telemetry.traces.impl.TracesPackageImpl#getResourceChange()
+	 * @generated
+	 */
+	int RESOURCE_CHANGE = 10;
+
+	/**
+	 * The feature id for the '<em><b>Resource URI</b></em>' attribute.
+	 * <!-- begin-user-doc -->
+	 * <!-- end-user-doc -->
+	 * @generated
+	 * @ordered
+	 */
+	int RESOURCE_CHANGE__RESOURCE_URI = ChangePackage.RESOURCE_CHANGE__RESOURCE_URI;
+
+	/**
+	 * The feature id for the '<em><b>Resource</b></em>' attribute.
+	 * <!-- begin-user-doc -->
+	 * <!-- end-user-doc -->
+	 * @generated
+	 * @ordered
+	 */
+	int RESOURCE_CHANGE__RESOURCE = ChangePackage.RESOURCE_CHANGE__RESOURCE;
+
+	/**
+	 * The feature id for the '<em><b>Value</b></em>' attribute.
+	 * <!-- begin-user-doc -->
+	 * <!-- end-user-doc -->
+	 * @generated
+	 * @ordered
+	 */
+	int RESOURCE_CHANGE__VALUE = ChangePackage.RESOURCE_CHANGE__VALUE;
+
+	/**
+	 * The feature id for the '<em><b>List Changes</b></em>' containment reference list.
+	 * <!-- begin-user-doc -->
+	 * <!-- end-user-doc -->
+	 * @generated
+	 * @ordered
+	 */
+	int RESOURCE_CHANGE__LIST_CHANGES = ChangePackage.RESOURCE_CHANGE__LIST_CHANGES;
+
+	/**
+	 * The feature id for the '<em><b>Trace Id</b></em>' attribute.
+	 * <!-- begin-user-doc -->
+	 * <!-- end-user-doc -->
+	 * @generated
+	 * @ordered
+	 */
+	int RESOURCE_CHANGE__TRACE_ID = ChangePackage.RESOURCE_CHANGE_FEATURE_COUNT + 0;
+
+	/**
+	 * The feature id for the '<em><b>Span Id</b></em>' attribute.
+	 * <!-- begin-user-doc -->
+	 * <!-- end-user-doc -->
+	 * @generated
+	 * @ordered
+	 */
+	int RESOURCE_CHANGE__SPAN_ID = ChangePackage.RESOURCE_CHANGE_FEATURE_COUNT + 1;
+
+	/**
+	 * The feature id for the '<em><b>Span</b></em>' reference.
+	 * <!-- begin-user-doc -->
+	 * <!-- end-user-doc -->
+	 * @generated
+	 * @ordered
+	 */
+	int RESOURCE_CHANGE__SPAN = ChangePackage.RESOURCE_CHANGE_FEATURE_COUNT + 2;
+
+	/**
+	 * The number of structural features of the '<em>Resource Change</em>' class.
+	 * <!-- begin-user-doc -->
+	 * <!-- end-user-doc -->
+	 * @generated
+	 * @ordered
+	 */
+	int RESOURCE_CHANGE_FEATURE_COUNT = ChangePackage.RESOURCE_CHANGE_FEATURE_COUNT + 3;
 
 	/**
 	 * The meta object id for the '{@link org.nasdanika.sdk.runtime.models.telemetry.traces.SpanKind <em>Span Kind</em>}' enum.
@@ -605,7 +835,7 @@ public interface TracesPackage extends EPackage {
 	 * @see org.nasdanika.sdk.runtime.models.telemetry.traces.impl.TracesPackageImpl#getSpanKind()
 	 * @generated
 	 */
-	int SPAN_KIND = 7;
+	int SPAN_KIND = 11;
 
 	/**
 	 * The meta object id for the '{@link org.nasdanika.sdk.runtime.models.telemetry.traces.StatusCode <em>Status Code</em>}' enum.
@@ -615,7 +845,7 @@ public interface TracesPackage extends EPackage {
 	 * @see org.nasdanika.sdk.runtime.models.telemetry.traces.impl.TracesPackageImpl#getStatusCode()
 	 * @generated
 	 */
-	int STATUS_CODE = 8;
+	int STATUS_CODE = 12;
 
 
 	/**
@@ -726,6 +956,38 @@ public interface TracesPackage extends EPackage {
 	EAttribute getScopeSpans_SchemaUrl();
 
 	/**
+	 * Returns the meta object for class '{@link org.nasdanika.sdk.runtime.models.telemetry.traces.SpanId <em>Span Id</em>}'.
+	 * <!-- begin-user-doc -->
+	 * <!-- end-user-doc -->
+	 * @return the meta object for class '<em>Span Id</em>'.
+	 * @see org.nasdanika.sdk.runtime.models.telemetry.traces.SpanId
+	 * @generated
+	 */
+	EClass getSpanId();
+
+	/**
+	 * Returns the meta object for the attribute '{@link org.nasdanika.sdk.runtime.models.telemetry.traces.SpanId#getTraceId <em>Trace Id</em>}'.
+	 * <!-- begin-user-doc -->
+	 * <!-- end-user-doc -->
+	 * @return the meta object for the attribute '<em>Trace Id</em>'.
+	 * @see org.nasdanika.sdk.runtime.models.telemetry.traces.SpanId#getTraceId()
+	 * @see #getSpanId()
+	 * @generated
+	 */
+	EAttribute getSpanId_TraceId();
+
+	/**
+	 * Returns the meta object for the attribute '{@link org.nasdanika.sdk.runtime.models.telemetry.traces.SpanId#getSpanId <em>Span Id</em>}'.
+	 * <!-- begin-user-doc -->
+	 * <!-- end-user-doc -->
+	 * @return the meta object for the attribute '<em>Span Id</em>'.
+	 * @see org.nasdanika.sdk.runtime.models.telemetry.traces.SpanId#getSpanId()
+	 * @see #getSpanId()
+	 * @generated
+	 */
+	EAttribute getSpanId_SpanId();
+
+	/**
 	 * Returns the meta object for class '{@link org.nasdanika.sdk.runtime.models.telemetry.traces.Span <em>Span</em>}'.
 	 * <!-- begin-user-doc -->
 	 * <!-- end-user-doc -->
@@ -734,28 +996,6 @@ public interface TracesPackage extends EPackage {
 	 * @generated
 	 */
 	EClass getSpan();
-
-	/**
-	 * Returns the meta object for the attribute '{@link org.nasdanika.sdk.runtime.models.telemetry.traces.Span#getTraceId <em>Trace Id</em>}'.
-	 * <!-- begin-user-doc -->
-	 * <!-- end-user-doc -->
-	 * @return the meta object for the attribute '<em>Trace Id</em>'.
-	 * @see org.nasdanika.sdk.runtime.models.telemetry.traces.Span#getTraceId()
-	 * @see #getSpan()
-	 * @generated
-	 */
-	EAttribute getSpan_TraceId();
-
-	/**
-	 * Returns the meta object for the attribute '{@link org.nasdanika.sdk.runtime.models.telemetry.traces.Span#getSpanId <em>Span Id</em>}'.
-	 * <!-- begin-user-doc -->
-	 * <!-- end-user-doc -->
-	 * @return the meta object for the attribute '<em>Span Id</em>'.
-	 * @see org.nasdanika.sdk.runtime.models.telemetry.traces.Span#getSpanId()
-	 * @see #getSpan()
-	 * @generated
-	 */
-	EAttribute getSpan_SpanId();
 
 	/**
 	 * Returns the meta object for the attribute '{@link org.nasdanika.sdk.runtime.models.telemetry.traces.Span#getTraceState <em>Trace State</em>}'.
@@ -945,6 +1185,17 @@ public interface TracesPackage extends EPackage {
 	EReference getSpan_Children();
 
 	/**
+	 * Returns the meta object for the reference list '{@link org.nasdanika.sdk.runtime.models.telemetry.traces.Span#getReferrers <em>Referrers</em>}'.
+	 * <!-- begin-user-doc -->
+	 * <!-- end-user-doc -->
+	 * @return the meta object for the reference list '<em>Referrers</em>'.
+	 * @see org.nasdanika.sdk.runtime.models.telemetry.traces.Span#getReferrers()
+	 * @see #getSpan()
+	 * @generated
+	 */
+	EReference getSpan_Referrers();
+
+	/**
 	 * Returns the meta object for class '{@link org.nasdanika.sdk.runtime.models.telemetry.traces.SpanEvent <em>Span Event</em>}'.
 	 * <!-- begin-user-doc -->
 	 * <!-- end-user-doc -->
@@ -999,6 +1250,27 @@ public interface TracesPackage extends EPackage {
 	EAttribute getSpanEvent_DroppedAttributesCount();
 
 	/**
+	 * Returns the meta object for class '{@link org.nasdanika.sdk.runtime.models.telemetry.traces.SpanReference <em>Span Reference</em>}'.
+	 * <!-- begin-user-doc -->
+	 * <!-- end-user-doc -->
+	 * @return the meta object for class '<em>Span Reference</em>'.
+	 * @see org.nasdanika.sdk.runtime.models.telemetry.traces.SpanReference
+	 * @generated
+	 */
+	EClass getSpanReference();
+
+	/**
+	 * Returns the meta object for the reference '{@link org.nasdanika.sdk.runtime.models.telemetry.traces.SpanReference#getSpan <em>Span</em>}'.
+	 * <!-- begin-user-doc -->
+	 * <!-- end-user-doc -->
+	 * @return the meta object for the reference '<em>Span</em>'.
+	 * @see org.nasdanika.sdk.runtime.models.telemetry.traces.SpanReference#getSpan()
+	 * @see #getSpanReference()
+	 * @generated
+	 */
+	EReference getSpanReference_Span();
+
+	/**
 	 * Returns the meta object for class '{@link org.nasdanika.sdk.runtime.models.telemetry.traces.SpanLink <em>Span Link</em>}'.
 	 * <!-- begin-user-doc -->
 	 * <!-- end-user-doc -->
@@ -1007,28 +1279,6 @@ public interface TracesPackage extends EPackage {
 	 * @generated
 	 */
 	EClass getSpanLink();
-
-	/**
-	 * Returns the meta object for the attribute '{@link org.nasdanika.sdk.runtime.models.telemetry.traces.SpanLink#getTraceId <em>Trace Id</em>}'.
-	 * <!-- begin-user-doc -->
-	 * <!-- end-user-doc -->
-	 * @return the meta object for the attribute '<em>Trace Id</em>'.
-	 * @see org.nasdanika.sdk.runtime.models.telemetry.traces.SpanLink#getTraceId()
-	 * @see #getSpanLink()
-	 * @generated
-	 */
-	EAttribute getSpanLink_TraceId();
-
-	/**
-	 * Returns the meta object for the attribute '{@link org.nasdanika.sdk.runtime.models.telemetry.traces.SpanLink#getSpanId <em>Span Id</em>}'.
-	 * <!-- begin-user-doc -->
-	 * <!-- end-user-doc -->
-	 * @return the meta object for the attribute '<em>Span Id</em>'.
-	 * @see org.nasdanika.sdk.runtime.models.telemetry.traces.SpanLink#getSpanId()
-	 * @see #getSpanLink()
-	 * @generated
-	 */
-	EAttribute getSpanLink_SpanId();
 
 	/**
 	 * Returns the meta object for the attribute '{@link org.nasdanika.sdk.runtime.models.telemetry.traces.SpanLink#getTraceState <em>Trace State</em>}'.
@@ -1107,6 +1357,26 @@ public interface TracesPackage extends EPackage {
 	EAttribute getSpanStatus_Code();
 
 	/**
+	 * Returns the meta object for class '{@link org.nasdanika.sdk.runtime.models.telemetry.traces.FeatureChange <em>Feature Change</em>}'.
+	 * <!-- begin-user-doc -->
+	 * <!-- end-user-doc -->
+	 * @return the meta object for class '<em>Feature Change</em>'.
+	 * @see org.nasdanika.sdk.runtime.models.telemetry.traces.FeatureChange
+	 * @generated
+	 */
+	EClass getFeatureChange();
+
+	/**
+	 * Returns the meta object for class '{@link org.nasdanika.sdk.runtime.models.telemetry.traces.ResourceChange <em>Resource Change</em>}'.
+	 * <!-- begin-user-doc -->
+	 * <!-- end-user-doc -->
+	 * @return the meta object for class '<em>Resource Change</em>'.
+	 * @see org.nasdanika.sdk.runtime.models.telemetry.traces.ResourceChange
+	 * @generated
+	 */
+	EClass getResourceChange();
+
+	/**
 	 * Returns the meta object for enum '{@link org.nasdanika.sdk.runtime.models.telemetry.traces.SpanKind <em>Span Kind</em>}'.
 	 * <!-- begin-user-doc -->
 	 * <!-- end-user-doc -->
@@ -1141,7 +1411,6 @@ public interface TracesPackage extends EPackage {
 	 * <ul>
 	 *   <li>each class,</li>
 	 *   <li>each feature of each class,</li>
-	 *   <li>each operation of each class,</li>
 	 *   <li>each enum,</li>
 	 *   <li>and each data type</li>
 	 * </ul>
@@ -1236,6 +1505,32 @@ public interface TracesPackage extends EPackage {
 		EAttribute SCOPE_SPANS__SCHEMA_URL = eINSTANCE.getScopeSpans_SchemaUrl();
 
 		/**
+		 * The meta object literal for the '{@link org.nasdanika.sdk.runtime.models.telemetry.traces.impl.SpanIdImpl <em>Span Id</em>}' class.
+		 * <!-- begin-user-doc -->
+		 * <!-- end-user-doc -->
+		 * @see org.nasdanika.sdk.runtime.models.telemetry.traces.impl.SpanIdImpl
+		 * @see org.nasdanika.sdk.runtime.models.telemetry.traces.impl.TracesPackageImpl#getSpanId()
+		 * @generated
+		 */
+		EClass SPAN_ID = eINSTANCE.getSpanId();
+
+		/**
+		 * The meta object literal for the '<em><b>Trace Id</b></em>' attribute feature.
+		 * <!-- begin-user-doc -->
+		 * <!-- end-user-doc -->
+		 * @generated
+		 */
+		EAttribute SPAN_ID__TRACE_ID = eINSTANCE.getSpanId_TraceId();
+
+		/**
+		 * The meta object literal for the '<em><b>Span Id</b></em>' attribute feature.
+		 * <!-- begin-user-doc -->
+		 * <!-- end-user-doc -->
+		 * @generated
+		 */
+		EAttribute SPAN_ID__SPAN_ID = eINSTANCE.getSpanId_SpanId();
+
+		/**
 		 * The meta object literal for the '{@link org.nasdanika.sdk.runtime.models.telemetry.traces.impl.SpanImpl <em>Span</em>}' class.
 		 * <!-- begin-user-doc -->
 		 * <!-- end-user-doc -->
@@ -1244,22 +1539,6 @@ public interface TracesPackage extends EPackage {
 		 * @generated
 		 */
 		EClass SPAN = eINSTANCE.getSpan();
-
-		/**
-		 * The meta object literal for the '<em><b>Trace Id</b></em>' attribute feature.
-		 * <!-- begin-user-doc -->
-		 * <!-- end-user-doc -->
-		 * @generated
-		 */
-		EAttribute SPAN__TRACE_ID = eINSTANCE.getSpan_TraceId();
-
-		/**
-		 * The meta object literal for the '<em><b>Span Id</b></em>' attribute feature.
-		 * <!-- begin-user-doc -->
-		 * <!-- end-user-doc -->
-		 * @generated
-		 */
-		EAttribute SPAN__SPAN_ID = eINSTANCE.getSpan_SpanId();
 
 		/**
 		 * The meta object literal for the '<em><b>Trace State</b></em>' attribute feature.
@@ -1398,6 +1677,14 @@ public interface TracesPackage extends EPackage {
 		EReference SPAN__CHILDREN = eINSTANCE.getSpan_Children();
 
 		/**
+		 * The meta object literal for the '<em><b>Referrers</b></em>' reference list feature.
+		 * <!-- begin-user-doc -->
+		 * <!-- end-user-doc -->
+		 * @generated
+		 */
+		EReference SPAN__REFERRERS = eINSTANCE.getSpan_Referrers();
+
+		/**
 		 * The meta object literal for the '{@link org.nasdanika.sdk.runtime.models.telemetry.traces.impl.SpanEventImpl <em>Span Event</em>}' class.
 		 * <!-- begin-user-doc -->
 		 * <!-- end-user-doc -->
@@ -1440,6 +1727,24 @@ public interface TracesPackage extends EPackage {
 		EAttribute SPAN_EVENT__DROPPED_ATTRIBUTES_COUNT = eINSTANCE.getSpanEvent_DroppedAttributesCount();
 
 		/**
+		 * The meta object literal for the '{@link org.nasdanika.sdk.runtime.models.telemetry.traces.impl.SpanReferenceImpl <em>Span Reference</em>}' class.
+		 * <!-- begin-user-doc -->
+		 * <!-- end-user-doc -->
+		 * @see org.nasdanika.sdk.runtime.models.telemetry.traces.impl.SpanReferenceImpl
+		 * @see org.nasdanika.sdk.runtime.models.telemetry.traces.impl.TracesPackageImpl#getSpanReference()
+		 * @generated
+		 */
+		EClass SPAN_REFERENCE = eINSTANCE.getSpanReference();
+
+		/**
+		 * The meta object literal for the '<em><b>Span</b></em>' reference feature.
+		 * <!-- begin-user-doc -->
+		 * <!-- end-user-doc -->
+		 * @generated
+		 */
+		EReference SPAN_REFERENCE__SPAN = eINSTANCE.getSpanReference_Span();
+
+		/**
 		 * The meta object literal for the '{@link org.nasdanika.sdk.runtime.models.telemetry.traces.impl.SpanLinkImpl <em>Span Link</em>}' class.
 		 * <!-- begin-user-doc -->
 		 * <!-- end-user-doc -->
@@ -1448,22 +1753,6 @@ public interface TracesPackage extends EPackage {
 		 * @generated
 		 */
 		EClass SPAN_LINK = eINSTANCE.getSpanLink();
-
-		/**
-		 * The meta object literal for the '<em><b>Trace Id</b></em>' attribute feature.
-		 * <!-- begin-user-doc -->
-		 * <!-- end-user-doc -->
-		 * @generated
-		 */
-		EAttribute SPAN_LINK__TRACE_ID = eINSTANCE.getSpanLink_TraceId();
-
-		/**
-		 * The meta object literal for the '<em><b>Span Id</b></em>' attribute feature.
-		 * <!-- begin-user-doc -->
-		 * <!-- end-user-doc -->
-		 * @generated
-		 */
-		EAttribute SPAN_LINK__SPAN_ID = eINSTANCE.getSpanLink_SpanId();
 
 		/**
 		 * The meta object literal for the '<em><b>Trace State</b></em>' attribute feature.
@@ -1522,6 +1811,26 @@ public interface TracesPackage extends EPackage {
 		 * @generated
 		 */
 		EAttribute SPAN_STATUS__CODE = eINSTANCE.getSpanStatus_Code();
+
+		/**
+		 * The meta object literal for the '{@link org.nasdanika.sdk.runtime.models.telemetry.traces.impl.FeatureChangeImpl <em>Feature Change</em>}' class.
+		 * <!-- begin-user-doc -->
+		 * <!-- end-user-doc -->
+		 * @see org.nasdanika.sdk.runtime.models.telemetry.traces.impl.FeatureChangeImpl
+		 * @see org.nasdanika.sdk.runtime.models.telemetry.traces.impl.TracesPackageImpl#getFeatureChange()
+		 * @generated
+		 */
+		EClass FEATURE_CHANGE = eINSTANCE.getFeatureChange();
+
+		/**
+		 * The meta object literal for the '{@link org.nasdanika.sdk.runtime.models.telemetry.traces.impl.ResourceChangeImpl <em>Resource Change</em>}' class.
+		 * <!-- begin-user-doc -->
+		 * <!-- end-user-doc -->
+		 * @see org.nasdanika.sdk.runtime.models.telemetry.traces.impl.ResourceChangeImpl
+		 * @see org.nasdanika.sdk.runtime.models.telemetry.traces.impl.TracesPackageImpl#getResourceChange()
+		 * @generated
+		 */
+		EClass RESOURCE_CHANGE = eINSTANCE.getResourceChange();
 
 		/**
 		 * The meta object literal for the '{@link org.nasdanika.sdk.runtime.models.telemetry.traces.SpanKind <em>Span Kind</em>}' enum.

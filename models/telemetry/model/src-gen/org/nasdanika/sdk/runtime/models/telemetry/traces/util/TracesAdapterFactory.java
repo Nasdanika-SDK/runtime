@@ -80,6 +80,10 @@ public class TracesAdapterFactory extends AdapterFactoryImpl {
 				return createScopeSpansAdapter();
 			}
 			@Override
+			public Adapter caseSpanId(SpanId object) {
+				return createSpanIdAdapter();
+			}
+			@Override
 			public Adapter caseSpan(Span object) {
 				return createSpanAdapter();
 			}
@@ -88,12 +92,32 @@ public class TracesAdapterFactory extends AdapterFactoryImpl {
 				return createSpanEventAdapter();
 			}
 			@Override
+			public Adapter caseSpanReference(SpanReference object) {
+				return createSpanReferenceAdapter();
+			}
+			@Override
 			public Adapter caseSpanLink(SpanLink object) {
 				return createSpanLinkAdapter();
 			}
 			@Override
 			public Adapter caseSpanStatus(SpanStatus object) {
 				return createSpanStatusAdapter();
+			}
+			@Override
+			public Adapter caseFeatureChange(FeatureChange object) {
+				return createFeatureChangeAdapter();
+			}
+			@Override
+			public Adapter caseResourceChange(ResourceChange object) {
+				return createResourceChangeAdapter();
+			}
+			@Override
+			public Adapter caseChange_FeatureChange(org.eclipse.emf.ecore.change.FeatureChange object) {
+				return createChange_FeatureChangeAdapter();
+			}
+			@Override
+			public Adapter caseChange_ResourceChange(org.eclipse.emf.ecore.change.ResourceChange object) {
+				return createChange_ResourceChangeAdapter();
 			}
 			@Override
 			public Adapter defaultCase(EObject object) {
@@ -158,6 +182,20 @@ public class TracesAdapterFactory extends AdapterFactoryImpl {
 	}
 
 	/**
+	 * Creates a new adapter for an object of class '{@link org.nasdanika.sdk.runtime.models.telemetry.traces.SpanId <em>Span Id</em>}'.
+	 * <!-- begin-user-doc -->
+	 * This default implementation returns null so that we can easily ignore cases;
+	 * it's useful to ignore a case when inheritance will catch all the cases anyway.
+	 * <!-- end-user-doc -->
+	 * @return the new adapter.
+	 * @see org.nasdanika.sdk.runtime.models.telemetry.traces.SpanId
+	 * @generated
+	 */
+	public Adapter createSpanIdAdapter() {
+		return null;
+	}
+
+	/**
 	 * Creates a new adapter for an object of class '{@link org.nasdanika.sdk.runtime.models.telemetry.traces.Span <em>Span</em>}'.
 	 * <!-- begin-user-doc -->
 	 * This default implementation returns null so that we can easily ignore cases;
@@ -186,6 +224,20 @@ public class TracesAdapterFactory extends AdapterFactoryImpl {
 	}
 
 	/**
+	 * Creates a new adapter for an object of class '{@link org.nasdanika.sdk.runtime.models.telemetry.traces.SpanReference <em>Span Reference</em>}'.
+	 * <!-- begin-user-doc -->
+	 * This default implementation returns null so that we can easily ignore cases;
+	 * it's useful to ignore a case when inheritance will catch all the cases anyway.
+	 * <!-- end-user-doc -->
+	 * @return the new adapter.
+	 * @see org.nasdanika.sdk.runtime.models.telemetry.traces.SpanReference
+	 * @generated
+	 */
+	public Adapter createSpanReferenceAdapter() {
+		return null;
+	}
+
+	/**
 	 * Creates a new adapter for an object of class '{@link org.nasdanika.sdk.runtime.models.telemetry.traces.SpanLink <em>Span Link</em>}'.
 	 * <!-- begin-user-doc -->
 	 * This default implementation returns null so that we can easily ignore cases;
@@ -210,6 +262,62 @@ public class TracesAdapterFactory extends AdapterFactoryImpl {
 	 * @generated
 	 */
 	public Adapter createSpanStatusAdapter() {
+		return null;
+	}
+
+	/**
+	 * Creates a new adapter for an object of class '{@link org.nasdanika.sdk.runtime.models.telemetry.traces.FeatureChange <em>Feature Change</em>}'.
+	 * <!-- begin-user-doc -->
+	 * This default implementation returns null so that we can easily ignore cases;
+	 * it's useful to ignore a case when inheritance will catch all the cases anyway.
+	 * <!-- end-user-doc -->
+	 * @return the new adapter.
+	 * @see org.nasdanika.sdk.runtime.models.telemetry.traces.FeatureChange
+	 * @generated
+	 */
+	public Adapter createFeatureChangeAdapter() {
+		return null;
+	}
+
+	/**
+	 * Creates a new adapter for an object of class '{@link org.nasdanika.sdk.runtime.models.telemetry.traces.ResourceChange <em>Resource Change</em>}'.
+	 * <!-- begin-user-doc -->
+	 * This default implementation returns null so that we can easily ignore cases;
+	 * it's useful to ignore a case when inheritance will catch all the cases anyway.
+	 * <!-- end-user-doc -->
+	 * @return the new adapter.
+	 * @see org.nasdanika.sdk.runtime.models.telemetry.traces.ResourceChange
+	 * @generated
+	 */
+	public Adapter createResourceChangeAdapter() {
+		return null;
+	}
+
+	/**
+	 * Creates a new adapter for an object of class '{@link org.eclipse.emf.ecore.change.FeatureChange <em>Feature Change</em>}'.
+	 * <!-- begin-user-doc -->
+	 * This default implementation returns null so that we can easily ignore cases;
+	 * it's useful to ignore a case when inheritance will catch all the cases anyway.
+	 * <!-- end-user-doc -->
+	 * @return the new adapter.
+	 * @see org.eclipse.emf.ecore.change.FeatureChange
+	 * @generated
+	 */
+	public Adapter createChange_FeatureChangeAdapter() {
+		return null;
+	}
+
+	/**
+	 * Creates a new adapter for an object of class '{@link org.eclipse.emf.ecore.change.ResourceChange <em>Resource Change</em>}'.
+	 * <!-- begin-user-doc -->
+	 * This default implementation returns null so that we can easily ignore cases;
+	 * it's useful to ignore a case when inheritance will catch all the cases anyway.
+	 * <!-- end-user-doc -->
+	 * @return the new adapter.
+	 * @see org.eclipse.emf.ecore.change.ResourceChange
+	 * @generated
+	 */
+	public Adapter createChange_ResourceChangeAdapter() {
 		return null;
 	}
 

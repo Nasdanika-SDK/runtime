@@ -17,12 +17,16 @@ import org.nasdanika.sdk.runtime.models.telemetry.TelemetryPackage;
 
 import org.nasdanika.sdk.runtime.models.telemetry.logs.LogsPackage;
 
+import org.nasdanika.sdk.runtime.models.telemetry.traces.FeatureChange;
+import org.nasdanika.sdk.runtime.models.telemetry.traces.ResourceChange;
 import org.nasdanika.sdk.runtime.models.telemetry.traces.ResourceSpans;
 import org.nasdanika.sdk.runtime.models.telemetry.traces.ScopeSpans;
 import org.nasdanika.sdk.runtime.models.telemetry.traces.Span;
 import org.nasdanika.sdk.runtime.models.telemetry.traces.SpanEvent;
+import org.nasdanika.sdk.runtime.models.telemetry.traces.SpanId;
 import org.nasdanika.sdk.runtime.models.telemetry.traces.SpanKind;
 import org.nasdanika.sdk.runtime.models.telemetry.traces.SpanLink;
+import org.nasdanika.sdk.runtime.models.telemetry.traces.SpanReference;
 import org.nasdanika.sdk.runtime.models.telemetry.traces.SpanStatus;
 import org.nasdanika.sdk.runtime.models.telemetry.traces.StatusCode;
 import org.nasdanika.sdk.runtime.models.telemetry.traces.TracesData;
@@ -62,6 +66,13 @@ public class TracesPackageImpl extends EPackageImpl implements TracesPackage {
 	 * <!-- end-user-doc -->
 	 * @generated
 	 */
+	private EClass spanIdEClass = null;
+
+	/**
+	 * <!-- begin-user-doc -->
+	 * <!-- end-user-doc -->
+	 * @generated
+	 */
 	private EClass spanEClass = null;
 
 	/**
@@ -76,6 +87,13 @@ public class TracesPackageImpl extends EPackageImpl implements TracesPackage {
 	 * <!-- end-user-doc -->
 	 * @generated
 	 */
+	private EClass spanReferenceEClass = null;
+
+	/**
+	 * <!-- begin-user-doc -->
+	 * <!-- end-user-doc -->
+	 * @generated
+	 */
 	private EClass spanLinkEClass = null;
 
 	/**
@@ -84,6 +102,20 @@ public class TracesPackageImpl extends EPackageImpl implements TracesPackage {
 	 * @generated
 	 */
 	private EClass spanStatusEClass = null;
+
+	/**
+	 * <!-- begin-user-doc -->
+	 * <!-- end-user-doc -->
+	 * @generated
+	 */
+	private EClass featureChangeEClass = null;
+
+	/**
+	 * <!-- begin-user-doc -->
+	 * <!-- end-user-doc -->
+	 * @generated
+	 */
+	private EClass resourceChangeEClass = null;
 
 	/**
 	 * <!-- begin-user-doc -->
@@ -260,6 +292,33 @@ public class TracesPackageImpl extends EPackageImpl implements TracesPackage {
 	 * <!-- end-user-doc -->
 	 * @generated
 	 */
+	public EClass getSpanId() {
+		return spanIdEClass;
+	}
+
+	/**
+	 * <!-- begin-user-doc -->
+	 * <!-- end-user-doc -->
+	 * @generated
+	 */
+	public EAttribute getSpanId_TraceId() {
+		return (EAttribute)spanIdEClass.getEStructuralFeatures().get(0);
+	}
+
+	/**
+	 * <!-- begin-user-doc -->
+	 * <!-- end-user-doc -->
+	 * @generated
+	 */
+	public EAttribute getSpanId_SpanId() {
+		return (EAttribute)spanIdEClass.getEStructuralFeatures().get(1);
+	}
+
+	/**
+	 * <!-- begin-user-doc -->
+	 * <!-- end-user-doc -->
+	 * @generated
+	 */
 	public EClass getSpan() {
 		return spanEClass;
 	}
@@ -269,7 +328,7 @@ public class TracesPackageImpl extends EPackageImpl implements TracesPackage {
 	 * <!-- end-user-doc -->
 	 * @generated
 	 */
-	public EAttribute getSpan_TraceId() {
+	public EAttribute getSpan_TraceState() {
 		return (EAttribute)spanEClass.getEStructuralFeatures().get(0);
 	}
 
@@ -278,7 +337,7 @@ public class TracesPackageImpl extends EPackageImpl implements TracesPackage {
 	 * <!-- end-user-doc -->
 	 * @generated
 	 */
-	public EAttribute getSpan_SpanId() {
+	public EAttribute getSpan_ParentSpanId() {
 		return (EAttribute)spanEClass.getEStructuralFeatures().get(1);
 	}
 
@@ -287,7 +346,7 @@ public class TracesPackageImpl extends EPackageImpl implements TracesPackage {
 	 * <!-- end-user-doc -->
 	 * @generated
 	 */
-	public EAttribute getSpan_TraceState() {
+	public EAttribute getSpan_Name() {
 		return (EAttribute)spanEClass.getEStructuralFeatures().get(2);
 	}
 
@@ -296,7 +355,7 @@ public class TracesPackageImpl extends EPackageImpl implements TracesPackage {
 	 * <!-- end-user-doc -->
 	 * @generated
 	 */
-	public EAttribute getSpan_ParentSpanId() {
+	public EAttribute getSpan_Kind() {
 		return (EAttribute)spanEClass.getEStructuralFeatures().get(3);
 	}
 
@@ -305,7 +364,7 @@ public class TracesPackageImpl extends EPackageImpl implements TracesPackage {
 	 * <!-- end-user-doc -->
 	 * @generated
 	 */
-	public EAttribute getSpan_Name() {
+	public EAttribute getSpan_StartTimeUnixNano() {
 		return (EAttribute)spanEClass.getEStructuralFeatures().get(4);
 	}
 
@@ -314,7 +373,7 @@ public class TracesPackageImpl extends EPackageImpl implements TracesPackage {
 	 * <!-- end-user-doc -->
 	 * @generated
 	 */
-	public EAttribute getSpan_Kind() {
+	public EAttribute getSpan_EndTimeUnixNano() {
 		return (EAttribute)spanEClass.getEStructuralFeatures().get(5);
 	}
 
@@ -323,26 +382,8 @@ public class TracesPackageImpl extends EPackageImpl implements TracesPackage {
 	 * <!-- end-user-doc -->
 	 * @generated
 	 */
-	public EAttribute getSpan_StartTimeUnixNano() {
-		return (EAttribute)spanEClass.getEStructuralFeatures().get(6);
-	}
-
-	/**
-	 * <!-- begin-user-doc -->
-	 * <!-- end-user-doc -->
-	 * @generated
-	 */
-	public EAttribute getSpan_EndTimeUnixNano() {
-		return (EAttribute)spanEClass.getEStructuralFeatures().get(7);
-	}
-
-	/**
-	 * <!-- begin-user-doc -->
-	 * <!-- end-user-doc -->
-	 * @generated
-	 */
 	public EReference getSpan_Attributes() {
-		return (EReference)spanEClass.getEStructuralFeatures().get(8);
+		return (EReference)spanEClass.getEStructuralFeatures().get(6);
 	}
 
 	/**
@@ -351,7 +392,7 @@ public class TracesPackageImpl extends EPackageImpl implements TracesPackage {
 	 * @generated
 	 */
 	public EAttribute getSpan_DroppedAttributesCount() {
-		return (EAttribute)spanEClass.getEStructuralFeatures().get(9);
+		return (EAttribute)spanEClass.getEStructuralFeatures().get(7);
 	}
 
 	/**
@@ -360,7 +401,7 @@ public class TracesPackageImpl extends EPackageImpl implements TracesPackage {
 	 * @generated
 	 */
 	public EReference getSpan_Events() {
-		return (EReference)spanEClass.getEStructuralFeatures().get(10);
+		return (EReference)spanEClass.getEStructuralFeatures().get(8);
 	}
 
 	/**
@@ -369,7 +410,7 @@ public class TracesPackageImpl extends EPackageImpl implements TracesPackage {
 	 * @generated
 	 */
 	public EAttribute getSpan_DroppedEventsCount() {
-		return (EAttribute)spanEClass.getEStructuralFeatures().get(11);
+		return (EAttribute)spanEClass.getEStructuralFeatures().get(9);
 	}
 
 	/**
@@ -378,7 +419,7 @@ public class TracesPackageImpl extends EPackageImpl implements TracesPackage {
 	 * @generated
 	 */
 	public EReference getSpan_Links() {
-		return (EReference)spanEClass.getEStructuralFeatures().get(12);
+		return (EReference)spanEClass.getEStructuralFeatures().get(10);
 	}
 
 	/**
@@ -387,7 +428,7 @@ public class TracesPackageImpl extends EPackageImpl implements TracesPackage {
 	 * @generated
 	 */
 	public EAttribute getSpan_DroppedLinksCount() {
-		return (EAttribute)spanEClass.getEStructuralFeatures().get(13);
+		return (EAttribute)spanEClass.getEStructuralFeatures().get(11);
 	}
 
 	/**
@@ -396,7 +437,7 @@ public class TracesPackageImpl extends EPackageImpl implements TracesPackage {
 	 * @generated
 	 */
 	public EReference getSpan_Status() {
-		return (EReference)spanEClass.getEStructuralFeatures().get(14);
+		return (EReference)spanEClass.getEStructuralFeatures().get(12);
 	}
 
 	/**
@@ -405,7 +446,7 @@ public class TracesPackageImpl extends EPackageImpl implements TracesPackage {
 	 * @generated
 	 */
 	public EAttribute getSpan_Flags() {
-		return (EAttribute)spanEClass.getEStructuralFeatures().get(15);
+		return (EAttribute)spanEClass.getEStructuralFeatures().get(13);
 	}
 
 	/**
@@ -414,7 +455,7 @@ public class TracesPackageImpl extends EPackageImpl implements TracesPackage {
 	 * @generated
 	 */
 	public EReference getSpan_ChangeDescription() {
-		return (EReference)spanEClass.getEStructuralFeatures().get(16);
+		return (EReference)spanEClass.getEStructuralFeatures().get(14);
 	}
 
 	/**
@@ -423,7 +464,7 @@ public class TracesPackageImpl extends EPackageImpl implements TracesPackage {
 	 * @generated
 	 */
 	public EReference getSpan_LogRecords() {
-		return (EReference)spanEClass.getEStructuralFeatures().get(17);
+		return (EReference)spanEClass.getEStructuralFeatures().get(15);
 	}
 
 	/**
@@ -432,7 +473,16 @@ public class TracesPackageImpl extends EPackageImpl implements TracesPackage {
 	 * @generated
 	 */
 	public EReference getSpan_Children() {
-		return (EReference)spanEClass.getEStructuralFeatures().get(18);
+		return (EReference)spanEClass.getEStructuralFeatures().get(16);
+	}
+
+	/**
+	 * <!-- begin-user-doc -->
+	 * <!-- end-user-doc -->
+	 * @generated
+	 */
+	public EReference getSpan_Referrers() {
+		return (EReference)spanEClass.getEStructuralFeatures().get(17);
 	}
 
 	/**
@@ -485,6 +535,24 @@ public class TracesPackageImpl extends EPackageImpl implements TracesPackage {
 	 * <!-- end-user-doc -->
 	 * @generated
 	 */
+	public EClass getSpanReference() {
+		return spanReferenceEClass;
+	}
+
+	/**
+	 * <!-- begin-user-doc -->
+	 * <!-- end-user-doc -->
+	 * @generated
+	 */
+	public EReference getSpanReference_Span() {
+		return (EReference)spanReferenceEClass.getEStructuralFeatures().get(0);
+	}
+
+	/**
+	 * <!-- begin-user-doc -->
+	 * <!-- end-user-doc -->
+	 * @generated
+	 */
 	public EClass getSpanLink() {
 		return spanLinkEClass;
 	}
@@ -494,7 +562,7 @@ public class TracesPackageImpl extends EPackageImpl implements TracesPackage {
 	 * <!-- end-user-doc -->
 	 * @generated
 	 */
-	public EAttribute getSpanLink_TraceId() {
+	public EAttribute getSpanLink_TraceState() {
 		return (EAttribute)spanLinkEClass.getEStructuralFeatures().get(0);
 	}
 
@@ -503,26 +571,8 @@ public class TracesPackageImpl extends EPackageImpl implements TracesPackage {
 	 * <!-- end-user-doc -->
 	 * @generated
 	 */
-	public EAttribute getSpanLink_SpanId() {
-		return (EAttribute)spanLinkEClass.getEStructuralFeatures().get(1);
-	}
-
-	/**
-	 * <!-- begin-user-doc -->
-	 * <!-- end-user-doc -->
-	 * @generated
-	 */
-	public EAttribute getSpanLink_TraceState() {
-		return (EAttribute)spanLinkEClass.getEStructuralFeatures().get(2);
-	}
-
-	/**
-	 * <!-- begin-user-doc -->
-	 * <!-- end-user-doc -->
-	 * @generated
-	 */
 	public EReference getSpanLink_Attributes() {
-		return (EReference)spanLinkEClass.getEStructuralFeatures().get(3);
+		return (EReference)spanLinkEClass.getEStructuralFeatures().get(1);
 	}
 
 	/**
@@ -531,7 +581,7 @@ public class TracesPackageImpl extends EPackageImpl implements TracesPackage {
 	 * @generated
 	 */
 	public EAttribute getSpanLink_DroppedAttributesCount() {
-		return (EAttribute)spanLinkEClass.getEStructuralFeatures().get(4);
+		return (EAttribute)spanLinkEClass.getEStructuralFeatures().get(2);
 	}
 
 	/**
@@ -540,7 +590,7 @@ public class TracesPackageImpl extends EPackageImpl implements TracesPackage {
 	 * @generated
 	 */
 	public EAttribute getSpanLink_Flags() {
-		return (EAttribute)spanLinkEClass.getEStructuralFeatures().get(5);
+		return (EAttribute)spanLinkEClass.getEStructuralFeatures().get(3);
 	}
 
 	/**
@@ -568,6 +618,24 @@ public class TracesPackageImpl extends EPackageImpl implements TracesPackage {
 	 */
 	public EAttribute getSpanStatus_Code() {
 		return (EAttribute)spanStatusEClass.getEStructuralFeatures().get(1);
+	}
+
+	/**
+	 * <!-- begin-user-doc -->
+	 * <!-- end-user-doc -->
+	 * @generated
+	 */
+	public EClass getFeatureChange() {
+		return featureChangeEClass;
+	}
+
+	/**
+	 * <!-- begin-user-doc -->
+	 * <!-- end-user-doc -->
+	 * @generated
+	 */
+	public EClass getResourceChange() {
+		return resourceChangeEClass;
 	}
 
 	/**
@@ -629,9 +697,11 @@ public class TracesPackageImpl extends EPackageImpl implements TracesPackage {
 		createEReference(scopeSpansEClass, SCOPE_SPANS__SPANS);
 		createEAttribute(scopeSpansEClass, SCOPE_SPANS__SCHEMA_URL);
 
+		spanIdEClass = createEClass(SPAN_ID);
+		createEAttribute(spanIdEClass, SPAN_ID__TRACE_ID);
+		createEAttribute(spanIdEClass, SPAN_ID__SPAN_ID);
+
 		spanEClass = createEClass(SPAN);
-		createEAttribute(spanEClass, SPAN__TRACE_ID);
-		createEAttribute(spanEClass, SPAN__SPAN_ID);
 		createEAttribute(spanEClass, SPAN__TRACE_STATE);
 		createEAttribute(spanEClass, SPAN__PARENT_SPAN_ID);
 		createEAttribute(spanEClass, SPAN__NAME);
@@ -649,6 +719,7 @@ public class TracesPackageImpl extends EPackageImpl implements TracesPackage {
 		createEReference(spanEClass, SPAN__CHANGE_DESCRIPTION);
 		createEReference(spanEClass, SPAN__LOG_RECORDS);
 		createEReference(spanEClass, SPAN__CHILDREN);
+		createEReference(spanEClass, SPAN__REFERRERS);
 
 		spanEventEClass = createEClass(SPAN_EVENT);
 		createEAttribute(spanEventEClass, SPAN_EVENT__TIME_UNIX_NANO);
@@ -656,9 +727,10 @@ public class TracesPackageImpl extends EPackageImpl implements TracesPackage {
 		createEReference(spanEventEClass, SPAN_EVENT__ATTRIBUTES);
 		createEAttribute(spanEventEClass, SPAN_EVENT__DROPPED_ATTRIBUTES_COUNT);
 
+		spanReferenceEClass = createEClass(SPAN_REFERENCE);
+		createEReference(spanReferenceEClass, SPAN_REFERENCE__SPAN);
+
 		spanLinkEClass = createEClass(SPAN_LINK);
-		createEAttribute(spanLinkEClass, SPAN_LINK__TRACE_ID);
-		createEAttribute(spanLinkEClass, SPAN_LINK__SPAN_ID);
 		createEAttribute(spanLinkEClass, SPAN_LINK__TRACE_STATE);
 		createEReference(spanLinkEClass, SPAN_LINK__ATTRIBUTES);
 		createEAttribute(spanLinkEClass, SPAN_LINK__DROPPED_ATTRIBUTES_COUNT);
@@ -667,6 +739,10 @@ public class TracesPackageImpl extends EPackageImpl implements TracesPackage {
 		spanStatusEClass = createEClass(SPAN_STATUS);
 		createEAttribute(spanStatusEClass, SPAN_STATUS__MESSAGE);
 		createEAttribute(spanStatusEClass, SPAN_STATUS__CODE);
+
+		featureChangeEClass = createEClass(FEATURE_CHANGE);
+
+		resourceChangeEClass = createEClass(RESOURCE_CHANGE);
 
 		// Create enums
 		spanKindEEnum = createEEnum(SPAN_KIND);
@@ -707,8 +783,15 @@ public class TracesPackageImpl extends EPackageImpl implements TracesPackage {
 		// Set bounds for type parameters
 
 		// Add supertypes to classes
+		spanEClass.getESuperTypes().add(this.getSpanId());
+		spanReferenceEClass.getESuperTypes().add(this.getSpanId());
+		spanLinkEClass.getESuperTypes().add(this.getSpanReference());
+		featureChangeEClass.getESuperTypes().add(theChangePackage.getFeatureChange());
+		featureChangeEClass.getESuperTypes().add(this.getSpanReference());
+		resourceChangeEClass.getESuperTypes().add(theChangePackage.getResourceChange());
+		resourceChangeEClass.getESuperTypes().add(this.getSpanReference());
 
-		// Initialize classes, features, and operations; add parameters
+		// Initialize classes and features; add operations and parameters
 		initEClass(tracesDataEClass, TracesData.class, "TracesData", !IS_ABSTRACT, !IS_INTERFACE, IS_GENERATED_INSTANCE_CLASS);
 		initEReference(getTracesData_ResourceSpans(), this.getResourceSpans(), null, "resourceSpans", null, 0, -1, TracesData.class, !IS_TRANSIENT, !IS_VOLATILE, IS_CHANGEABLE, IS_COMPOSITE, !IS_RESOLVE_PROXIES, !IS_UNSETTABLE, IS_UNIQUE, !IS_DERIVED, IS_ORDERED);
 
@@ -722,9 +805,11 @@ public class TracesPackageImpl extends EPackageImpl implements TracesPackage {
 		initEReference(getScopeSpans_Spans(), this.getSpan(), null, "spans", null, 0, -1, ScopeSpans.class, !IS_TRANSIENT, !IS_VOLATILE, IS_CHANGEABLE, IS_COMPOSITE, !IS_RESOLVE_PROXIES, !IS_UNSETTABLE, IS_UNIQUE, !IS_DERIVED, IS_ORDERED);
 		initEAttribute(getScopeSpans_SchemaUrl(), theEcorePackage.getEString(), "schemaUrl", null, 0, 1, ScopeSpans.class, !IS_TRANSIENT, !IS_VOLATILE, IS_CHANGEABLE, !IS_UNSETTABLE, !IS_ID, !IS_UNIQUE, !IS_DERIVED, IS_ORDERED);
 
+		initEClass(spanIdEClass, SpanId.class, "SpanId", !IS_ABSTRACT, !IS_INTERFACE, IS_GENERATED_INSTANCE_CLASS);
+		initEAttribute(getSpanId_TraceId(), theEcorePackage.getEString(), "traceId", null, 0, 1, SpanId.class, !IS_TRANSIENT, !IS_VOLATILE, IS_CHANGEABLE, !IS_UNSETTABLE, !IS_ID, !IS_UNIQUE, !IS_DERIVED, IS_ORDERED);
+		initEAttribute(getSpanId_SpanId(), theEcorePackage.getEString(), "spanId", null, 0, 1, SpanId.class, !IS_TRANSIENT, !IS_VOLATILE, IS_CHANGEABLE, !IS_UNSETTABLE, !IS_ID, !IS_UNIQUE, !IS_DERIVED, IS_ORDERED);
+
 		initEClass(spanEClass, Span.class, "Span", !IS_ABSTRACT, !IS_INTERFACE, IS_GENERATED_INSTANCE_CLASS);
-		initEAttribute(getSpan_TraceId(), theEcorePackage.getEString(), "traceId", null, 0, 1, Span.class, !IS_TRANSIENT, !IS_VOLATILE, IS_CHANGEABLE, !IS_UNSETTABLE, !IS_ID, !IS_UNIQUE, !IS_DERIVED, IS_ORDERED);
-		initEAttribute(getSpan_SpanId(), theEcorePackage.getEString(), "spanId", null, 0, 1, Span.class, !IS_TRANSIENT, !IS_VOLATILE, IS_CHANGEABLE, !IS_UNSETTABLE, !IS_ID, !IS_UNIQUE, !IS_DERIVED, IS_ORDERED);
 		initEAttribute(getSpan_TraceState(), theEcorePackage.getEString(), "traceState", null, 0, 1, Span.class, !IS_TRANSIENT, !IS_VOLATILE, IS_CHANGEABLE, !IS_UNSETTABLE, !IS_ID, !IS_UNIQUE, !IS_DERIVED, IS_ORDERED);
 		initEAttribute(getSpan_ParentSpanId(), theEcorePackage.getEString(), "parentSpanId", null, 0, 1, Span.class, !IS_TRANSIENT, !IS_VOLATILE, IS_CHANGEABLE, !IS_UNSETTABLE, !IS_ID, !IS_UNIQUE, !IS_DERIVED, IS_ORDERED);
 		initEAttribute(getSpan_Name(), theEcorePackage.getEString(), "name", null, 1, 1, Span.class, !IS_TRANSIENT, !IS_VOLATILE, IS_CHANGEABLE, !IS_UNSETTABLE, !IS_ID, !IS_UNIQUE, !IS_DERIVED, IS_ORDERED);
@@ -742,6 +827,9 @@ public class TracesPackageImpl extends EPackageImpl implements TracesPackage {
 		initEReference(getSpan_ChangeDescription(), theChangePackage.getChangeDescription(), null, "changeDescription", null, 0, 1, Span.class, !IS_TRANSIENT, !IS_VOLATILE, IS_CHANGEABLE, IS_COMPOSITE, !IS_RESOLVE_PROXIES, !IS_UNSETTABLE, IS_UNIQUE, !IS_DERIVED, IS_ORDERED);
 		initEReference(getSpan_LogRecords(), theLogsPackage.getLogRecord(), null, "logRecords", null, 0, -1, Span.class, !IS_TRANSIENT, !IS_VOLATILE, IS_CHANGEABLE, IS_COMPOSITE, !IS_RESOLVE_PROXIES, !IS_UNSETTABLE, IS_UNIQUE, !IS_DERIVED, IS_ORDERED);
 		initEReference(getSpan_Children(), this.getSpan(), null, "children", null, 0, -1, Span.class, !IS_TRANSIENT, !IS_VOLATILE, IS_CHANGEABLE, IS_COMPOSITE, !IS_RESOLVE_PROXIES, !IS_UNSETTABLE, IS_UNIQUE, !IS_DERIVED, IS_ORDERED);
+		getSpan_Children().getEKeys().add(this.getSpanId_TraceId());
+		getSpan_Children().getEKeys().add(this.getSpanId_SpanId());
+		initEReference(getSpan_Referrers(), this.getSpanReference(), this.getSpanReference_Span(), "referrers", null, 0, -1, Span.class, !IS_TRANSIENT, !IS_VOLATILE, IS_CHANGEABLE, !IS_COMPOSITE, IS_RESOLVE_PROXIES, !IS_UNSETTABLE, IS_UNIQUE, !IS_DERIVED, IS_ORDERED);
 
 		initEClass(spanEventEClass, SpanEvent.class, "SpanEvent", !IS_ABSTRACT, !IS_INTERFACE, IS_GENERATED_INSTANCE_CLASS);
 		initEAttribute(getSpanEvent_TimeUnixNano(), theEcorePackage.getELong(), "timeUnixNano", null, 0, 1, SpanEvent.class, !IS_TRANSIENT, !IS_VOLATILE, IS_CHANGEABLE, !IS_UNSETTABLE, !IS_ID, !IS_UNIQUE, !IS_DERIVED, IS_ORDERED);
@@ -749,9 +837,10 @@ public class TracesPackageImpl extends EPackageImpl implements TracesPackage {
 		initEReference(getSpanEvent_Attributes(), theTelemetryPackage.getKeyValue(), null, "attributes", null, 0, -1, SpanEvent.class, !IS_TRANSIENT, !IS_VOLATILE, IS_CHANGEABLE, IS_COMPOSITE, !IS_RESOLVE_PROXIES, !IS_UNSETTABLE, IS_UNIQUE, !IS_DERIVED, IS_ORDERED);
 		initEAttribute(getSpanEvent_DroppedAttributesCount(), theEcorePackage.getEInt(), "droppedAttributesCount", null, 0, 1, SpanEvent.class, !IS_TRANSIENT, !IS_VOLATILE, IS_CHANGEABLE, !IS_UNSETTABLE, !IS_ID, !IS_UNIQUE, !IS_DERIVED, IS_ORDERED);
 
+		initEClass(spanReferenceEClass, SpanReference.class, "SpanReference", !IS_ABSTRACT, !IS_INTERFACE, IS_GENERATED_INSTANCE_CLASS);
+		initEReference(getSpanReference_Span(), this.getSpan(), this.getSpan_Referrers(), "span", null, 0, 1, SpanReference.class, !IS_TRANSIENT, !IS_VOLATILE, IS_CHANGEABLE, !IS_COMPOSITE, IS_RESOLVE_PROXIES, !IS_UNSETTABLE, IS_UNIQUE, !IS_DERIVED, IS_ORDERED);
+
 		initEClass(spanLinkEClass, SpanLink.class, "SpanLink", !IS_ABSTRACT, !IS_INTERFACE, IS_GENERATED_INSTANCE_CLASS);
-		initEAttribute(getSpanLink_TraceId(), theEcorePackage.getEString(), "traceId", null, 0, 1, SpanLink.class, !IS_TRANSIENT, !IS_VOLATILE, IS_CHANGEABLE, !IS_UNSETTABLE, !IS_ID, !IS_UNIQUE, !IS_DERIVED, IS_ORDERED);
-		initEAttribute(getSpanLink_SpanId(), theEcorePackage.getEString(), "spanId", null, 0, 1, SpanLink.class, !IS_TRANSIENT, !IS_VOLATILE, IS_CHANGEABLE, !IS_UNSETTABLE, !IS_ID, !IS_UNIQUE, !IS_DERIVED, IS_ORDERED);
 		initEAttribute(getSpanLink_TraceState(), theEcorePackage.getEString(), "traceState", null, 0, 1, SpanLink.class, !IS_TRANSIENT, !IS_VOLATILE, IS_CHANGEABLE, !IS_UNSETTABLE, !IS_ID, !IS_UNIQUE, !IS_DERIVED, IS_ORDERED);
 		initEReference(getSpanLink_Attributes(), theTelemetryPackage.getKeyValue(), null, "attributes", null, 0, -1, SpanLink.class, !IS_TRANSIENT, !IS_VOLATILE, IS_CHANGEABLE, IS_COMPOSITE, !IS_RESOLVE_PROXIES, !IS_UNSETTABLE, IS_UNIQUE, !IS_DERIVED, IS_ORDERED);
 		initEAttribute(getSpanLink_DroppedAttributesCount(), theEcorePackage.getEInt(), "droppedAttributesCount", null, 0, 1, SpanLink.class, !IS_TRANSIENT, !IS_VOLATILE, IS_CHANGEABLE, !IS_UNSETTABLE, !IS_ID, !IS_UNIQUE, !IS_DERIVED, IS_ORDERED);
@@ -760,6 +849,10 @@ public class TracesPackageImpl extends EPackageImpl implements TracesPackage {
 		initEClass(spanStatusEClass, SpanStatus.class, "SpanStatus", !IS_ABSTRACT, !IS_INTERFACE, IS_GENERATED_INSTANCE_CLASS);
 		initEAttribute(getSpanStatus_Message(), theEcorePackage.getEString(), "message", null, 0, 1, SpanStatus.class, !IS_TRANSIENT, !IS_VOLATILE, IS_CHANGEABLE, !IS_UNSETTABLE, !IS_ID, !IS_UNIQUE, !IS_DERIVED, IS_ORDERED);
 		initEAttribute(getSpanStatus_Code(), this.getStatusCode(), "code", null, 0, 1, SpanStatus.class, !IS_TRANSIENT, !IS_VOLATILE, IS_CHANGEABLE, !IS_UNSETTABLE, !IS_ID, !IS_UNIQUE, !IS_DERIVED, IS_ORDERED);
+
+		initEClass(featureChangeEClass, FeatureChange.class, "FeatureChange", !IS_ABSTRACT, !IS_INTERFACE, IS_GENERATED_INSTANCE_CLASS);
+
+		initEClass(resourceChangeEClass, ResourceChange.class, "ResourceChange", !IS_ABSTRACT, !IS_INTERFACE, IS_GENERATED_INSTANCE_CLASS);
 
 		// Initialize enums and add enum literals
 		initEEnum(spanKindEEnum, SpanKind.class, "SpanKind");
@@ -802,7 +895,7 @@ public class TracesPackageImpl extends EPackageImpl implements TracesPackage {
 			   "complianceLevel", "25",
 			   "suppressGenModelAnnotations", "false",
 			   "copyrightFields", "false",
-			   "operationReflection", "true",
+			   "operationReflection", "false",
 			   "importOrganizing", "true",
 			   "basePackage", "org.nasdanika.sdk.runtime.models.telemetry"
 		   });
@@ -903,22 +996,22 @@ public class TracesPackageImpl extends EPackageImpl implements TracesPackage {
 			   "documentation", "*\nIndicates that the span describes consumer receiving a message from a broker. Like the PRODUCER kind, there is often no direct critical-path latency relationship between producer and consumer spans."
 		   });
 		addAnnotation
-		  (spanEClass,
-		   source,
-		   new String[] {
-			   "documentation", "*\nA Span represents a single operation performed by a single component of the system.\nThe next available field id is 17."
-		   });
-		addAnnotation
-		  (getSpan_TraceId(),
+		  (getSpanId_TraceId(),
 		   source,
 		   new String[] {
 			   "documentation", "*\nA unique identifier for a trace. All spans from the same trace share the same trace_id.\nThe ID is a 16-byte array."
 		   });
 		addAnnotation
-		  (getSpan_SpanId(),
+		  (getSpanId_SpanId(),
 		   source,
 		   new String[] {
 			   "documentation", "*\nA unique identifier for a span within a trace, assigned when the span is created.\nThe ID is an 8-byte array."
+		   });
+		addAnnotation
+		  (spanEClass,
+		   source,
+		   new String[] {
+			   "documentation", "*\nA Span represents a single operation performed by a single component of the system.\nThe next available field id is 17."
 		   });
 		addAnnotation
 		  (getSpan_TraceState(),
@@ -1015,18 +1108,6 @@ public class TracesPackageImpl extends EPackageImpl implements TracesPackage {
 		   source,
 		   new String[] {
 			   "documentation", "*\nA pointer from the current span to another span in the same trace or in a different trace. For example, this can be used in batching operations, where a single batch handler processes multiple requests from different traces or when the handler receives a request from a different project."
-		   });
-		addAnnotation
-		  (getSpanLink_TraceId(),
-		   source,
-		   new String[] {
-			   "documentation", "*\nA unique identifier of a trace that this linked span is part of."
-		   });
-		addAnnotation
-		  (getSpanLink_SpanId(),
-		   source,
-		   new String[] {
-			   "documentation", "*\nA unique identifier for the linked span."
 		   });
 		addAnnotation
 		  (getSpanLink_Attributes(),
