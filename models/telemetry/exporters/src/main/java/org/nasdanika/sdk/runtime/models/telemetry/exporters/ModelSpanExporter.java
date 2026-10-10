@@ -1,12 +1,15 @@
 package org.nasdanika.sdk.runtime.models.telemetry.exporters;
 
+import java.util.ArrayList;
 import java.util.Collection;
 import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
 import java.util.function.Consumer;
 
+import org.eclipse.emf.ecore.EObject;
 import org.eclipse.emf.ecore.resource.Resource;
+import org.eclipse.emf.ecore.util.EcoreUtil;
 import org.nasdanika.sdk.runtime.models.telemetry.traces.ResourceSpans;
 import org.nasdanika.sdk.runtime.models.telemetry.traces.ScopeSpans;
 import org.nasdanika.sdk.runtime.models.telemetry.traces.Span;
@@ -22,6 +25,10 @@ import io.opentelemetry.sdk.trace.export.SpanExporter;
 /**
  * Exports spans to {@link TracesData}, to a consumer or to an EMF resource saved on flush and
  * shutdown. See {@link AbstractModelExporter} for the two modes.
+ *
+ * <p>
+ * Spans are exported to their scope groups, and {@link #resolveParents(TracesData) nested in their
+ * parents} before the resource is saved.
  *
  * <p>
  * Exporting to a resource, it can be linked to a {@link ModelLogRecordExporter}, which adds log
@@ -104,6 +111,55 @@ public class ModelSpanExporter extends AbstractModelExporter<SpanData, TracesDat
 			}
 			return result;
 		}
+	}
+
+	/**
+	 * Moves spans from their scope groups to {@link Span#getChildren() the children} of their
+	 * parent spans, in the order they are in the scope groups. A span stays in its scope group if
+	 * its parent is not in the data or is in a different scope group: moving it would lose its
+	 * instrumentation scope. Spans already nested stay as they are, so resolving again nests only
+	 * the spans added since.
+	 */
+	public static void resolveParents(TracesData data) {
+		Map<String, Span> spans = new HashMap<>();
+		List<Span> children = new ArrayList<>();
+		for (ResourceSpans resourceSpans : data.getResourceSpans()) {
+			for (ScopeSpans scopeSpans : resourceSpans.getScopeSpans()) {
+				for (Span span : scopeSpans.getSpans()) {
+					if (span.getParentSpanId() != null) {
+						children.add(span);
+					}
+				}
+			}
+		}
+		data.eAllContents().forEachRemaining(e -> {
+			if (e instanceof Span span && span.getTraceId() != null && span.getSpanId() != null) {
+				spans.put(span.getTraceId() + span.getSpanId(), span);
+			}
+		});
+		for (Span child : children) {
+			Span parent = spans.get(child.getTraceId() + child.getParentSpanId());
+			if (parent != null && scopeGroup(parent) == child.eContainer() && !EcoreUtil.isAncestor(child, parent)) {
+				parent.getChildren().add(child); // Moves from the scope group
+			}
+		}
+	}
+
+	/**
+	 * @return The scope group containing the span, directly or through its ancestor spans
+	 */
+	private static ScopeSpans scopeGroup(Span span) {
+		for (EObject container = span.eContainer(); container != null; container = container.eContainer()) {
+			if (container instanceof ScopeSpans scopeGroup) {
+				return scopeGroup;
+			}
+		}
+		return null;
+	}
+
+	@Override
+	protected void beforeSave(TracesData data) {
+		resolveParents(data);
 	}
 
 	@Override

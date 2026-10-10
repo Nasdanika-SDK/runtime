@@ -56,6 +56,7 @@ import io.opentelemetry.sdk.metrics.SdkMeterProvider;
 import io.opentelemetry.sdk.metrics.View;
 import io.opentelemetry.sdk.metrics.export.PeriodicMetricReader;
 import io.opentelemetry.sdk.trace.SdkTracerProvider;
+import io.opentelemetry.sdk.trace.export.BatchSpanProcessor;
 import io.opentelemetry.sdk.trace.export.SimpleSpanProcessor;
 
 /**
@@ -225,10 +226,12 @@ class TestModelExporters {
 					assertThat(ss.getScope().getVersion()).isEqualTo("1.0");
 				});
 		List<Span> spans = traces.getResourceSpans().getFirst().getScopeSpans().getFirst().getSpans();
-		assertThat(spans).extracting(Span::getName).containsExactly("child", "parent"); // in the order they ended
-
-		Span child = spans.get(0);
-		Span parent = spans.get(1);
+		// The child ended first, and was moved to the parent when it was exported
+		assertThat(spans).extracting(Span::getName).containsExactly("parent");
+		Span parent = spans.getFirst();
+		assertThat(parent.getChildren()).extracting(Span::getName).containsExactly("child");
+		Span child = parent.getChildren().getFirst();
+		assertThat(child.getChildren()).isEmpty();
 		assertThat(parent.getKind()).isEqualTo(SpanKind.SPAN_KIND_SERVER);
 		assertThat(parent.getParentSpanId()).isNull();
 		assertThat(parent.getTraceId()).hasSize(32);
@@ -495,6 +498,72 @@ class TestModelExporters {
 				.singleElement()
 				.satisfies(s -> assertThat(s.getLogRecords()).extracting(l -> l.getBody().getStringValue()).containsExactly("late"));
 		assertThat(bodies(load(logsURI, LogsData.class))).containsExactlyInAnyOrder("pending", "after span exporter shutdown");
+	}
+
+	/**
+	 * Spans are nested in their parents on save, whether they end before or after them. Spans in a
+	 * different scope or with a parent which is not exported stay in their scope groups.
+	 */
+	@Test
+	void spanTree(@TempDir Path dir) {
+		URI tracesURI = uri(dir, "traces.xmi");
+		try (OpenTelemetrySdk openTelemetry = OpenTelemetrySdk.builder()
+				.setTracerProvider(SdkTracerProvider.builder()
+						.addSpanProcessor(SimpleSpanProcessor.create(new ModelSpanExporter(resourceSet().createResource(tracesURI))))
+						.build())
+				.build()) {
+			Tracer tracer = openTelemetry.getTracer(SCOPE);
+			io.opentelemetry.api.trace.Span parent = tracer.spanBuilder("parent").startSpan();
+			io.opentelemetry.context.Context parentContext = io.opentelemetry.context.Context.current().with(parent);
+			io.opentelemetry.api.trace.Span late = tracer.spanBuilder("late").setParent(parentContext).startSpan();
+			io.opentelemetry.api.trace.Span grandchild = tracer.spanBuilder("grandchild").setParent(parentContext.with(late)).startSpan();
+			tracer.spanBuilder("early").setParent(parentContext).startSpan().end();
+			openTelemetry.getTracer("other").spanBuilder("other scope").setParent(parentContext).startSpan().end();
+			tracer.spanBuilder("unexported parent")
+					.setParent(io.opentelemetry.context.Context.current().with(tracer.spanBuilder("never ended").startSpan()))
+					.startSpan()
+					.end();
+			parent.end();
+			late.end();
+			grandchild.end();
+		}
+
+		TracesData traces = load(tracesURI, TracesData.class);
+		List<Span> roots = spans(traces);
+		assertThat(roots).extracting(Span::getName).containsExactly("unexported parent", "parent", "other scope"); // by scope group
+		Span parent = roots.get(1);
+		assertThat(parent.getChildren()).extracting(Span::getName).containsExactly("early", "late");
+		assertThat(parent.getChildren().get(1).getChildren()).extracting(Span::getName).containsExactly("grandchild");
+		assertThat(roots.get(2).getParentSpanId()).isEqualTo(parent.getSpanId());
+	}
+
+	/**
+	 * Exporting to a consumer, spans are not nested - the consumer can resolve parents in a batch.
+	 */
+	@Test
+	void spanTreeInBatch() {
+		List<TracesData> batches = new ArrayList<>();
+		try (OpenTelemetrySdk openTelemetry = OpenTelemetrySdk.builder()
+				.setTracerProvider(SdkTracerProvider.builder()
+						.addSpanProcessor(BatchSpanProcessor.builder(new ModelSpanExporter(batch -> {
+							assertThat(spans(batch)).hasSize(2);
+							ModelSpanExporter.resolveParents(batch);
+							batches.add(batch);
+						})).build())
+						.build())
+				.build()) {
+			Tracer tracer = openTelemetry.getTracer(SCOPE);
+			io.opentelemetry.api.trace.Span parent = tracer.spanBuilder("parent").startSpan();
+			tracer.spanBuilder("child").setParent(io.opentelemetry.context.Context.current().with(parent)).startSpan().end();
+			parent.end();
+		}
+
+		assertThat(batches).singleElement().satisfies(batch -> assertThat(spans(batch))
+				.singleElement()
+				.satisfies(parent -> {
+					assertThat(parent.getName()).isEqualTo("parent");
+					assertThat(parent.getChildren()).extracting(Span::getName).containsExactly("child");
+				}));
 	}
 
 	@Test

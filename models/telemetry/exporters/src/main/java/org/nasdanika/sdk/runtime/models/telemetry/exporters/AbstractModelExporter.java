@@ -201,6 +201,12 @@ public abstract class AbstractModelExporter<T, D extends EObject, R extends EObj
 	}
 
 	/**
+	 * Called before the resource is saved. Does nothing, override to restructure the data root.
+	 */
+	protected void beforeSave(D data) {
+	}
+
+	/**
 	 * Saves the resource, if exporting to one, with the data root even if nothing was exported.
 	 * Regardless of the exporter state.
 	 */
@@ -211,7 +217,7 @@ public abstract class AbstractModelExporter<T, D extends EObject, R extends EObj
 			}
 			saving = true;
 			try (Scope scope = Context.root().makeCurrent()) {
-				getData();
+				beforeSave(getData());
 				resource.save(saveOptions);
 				return CompletableResultCode.ofSuccess();
 			} catch (IOException | RuntimeException e) {
