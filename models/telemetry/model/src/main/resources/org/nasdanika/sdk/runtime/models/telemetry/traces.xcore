@@ -13,7 +13,6 @@
 )
 package org.nasdanika.sdk.runtime.models.telemetry.traces
 
-import org.eclipse.emf.ecore.change.ChangeDescription
 import org.nasdanika.sdk.runtime.models.telemetry.Resource
 import org.nasdanika.sdk.runtime.models.telemetry.InstrumentationScope
 import org.nasdanika.sdk.runtime.models.telemetry.KeyValue
@@ -191,7 +190,6 @@ class SpanEvent {
 	int droppedAttributesCount
 }
 
-
 class SpanReference extends SpanId {
 	
 	refers Span span opposite referrers
@@ -254,5 +252,9 @@ class FeatureChange extends org.eclipse.emf.ecore.change.FeatureChange, SpanRefe
 }
 
 class ResourceChange extends org.eclipse.emf.ecore.change.ResourceChange, SpanReference {
+	
+}
+
+class ChangeDescription extends org.eclipse.emf.ecore.change.ChangeDescription, SpanReference {
 	
 }

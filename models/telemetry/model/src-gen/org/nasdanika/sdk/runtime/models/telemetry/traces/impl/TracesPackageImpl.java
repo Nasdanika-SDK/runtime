@@ -17,6 +17,7 @@ import org.nasdanika.sdk.runtime.models.telemetry.TelemetryPackage;
 
 import org.nasdanika.sdk.runtime.models.telemetry.logs.LogsPackage;
 
+import org.nasdanika.sdk.runtime.models.telemetry.traces.ChangeDescription;
 import org.nasdanika.sdk.runtime.models.telemetry.traces.FeatureChange;
 import org.nasdanika.sdk.runtime.models.telemetry.traces.ResourceChange;
 import org.nasdanika.sdk.runtime.models.telemetry.traces.ResourceSpans;
@@ -122,6 +123,13 @@ public class TracesPackageImpl extends EPackageImpl implements TracesPackage {
 	 * <!-- end-user-doc -->
 	 * @generated
 	 */
+	private EClass changeDescriptionEClass = null;
+
+	/**
+	 * <!-- begin-user-doc -->
+	 * <!-- end-user-doc -->
+	 * @generated
+	 */
 	private EEnum spanKindEEnum = null;
 
 	/**
@@ -180,8 +188,8 @@ public class TracesPackageImpl extends EPackageImpl implements TracesPackage {
 		// Initialize simple dependencies
 		TelemetryPackage.eINSTANCE.eClass();
 		EcorePackage.eINSTANCE.eClass();
-		ChangePackage.eINSTANCE.eClass();
 		LogsPackage.eINSTANCE.eClass();
+		ChangePackage.eINSTANCE.eClass();
 
 		// Create package meta-data objects
 		theTracesPackage.createPackageContents();
@@ -643,6 +651,15 @@ public class TracesPackageImpl extends EPackageImpl implements TracesPackage {
 	 * <!-- end-user-doc -->
 	 * @generated
 	 */
+	public EClass getChangeDescription() {
+		return changeDescriptionEClass;
+	}
+
+	/**
+	 * <!-- begin-user-doc -->
+	 * <!-- end-user-doc -->
+	 * @generated
+	 */
 	public EEnum getSpanKind() {
 		return spanKindEEnum;
 	}
@@ -744,6 +761,8 @@ public class TracesPackageImpl extends EPackageImpl implements TracesPackage {
 
 		resourceChangeEClass = createEClass(RESOURCE_CHANGE);
 
+		changeDescriptionEClass = createEClass(CHANGE_DESCRIPTION);
+
 		// Create enums
 		spanKindEEnum = createEEnum(SPAN_KIND);
 		statusCodeEEnum = createEEnum(STATUS_CODE);
@@ -775,8 +794,8 @@ public class TracesPackageImpl extends EPackageImpl implements TracesPackage {
 		// Obtain other dependent packages
 		TelemetryPackage theTelemetryPackage = (TelemetryPackage)EPackage.Registry.INSTANCE.getEPackage(TelemetryPackage.eNS_URI);
 		EcorePackage theEcorePackage = (EcorePackage)EPackage.Registry.INSTANCE.getEPackage(EcorePackage.eNS_URI);
-		ChangePackage theChangePackage = (ChangePackage)EPackage.Registry.INSTANCE.getEPackage(ChangePackage.eNS_URI);
 		LogsPackage theLogsPackage = (LogsPackage)EPackage.Registry.INSTANCE.getEPackage(LogsPackage.eNS_URI);
+		ChangePackage theChangePackage = (ChangePackage)EPackage.Registry.INSTANCE.getEPackage(ChangePackage.eNS_URI);
 
 		// Create type parameters
 
@@ -790,6 +809,8 @@ public class TracesPackageImpl extends EPackageImpl implements TracesPackage {
 		featureChangeEClass.getESuperTypes().add(this.getSpanReference());
 		resourceChangeEClass.getESuperTypes().add(theChangePackage.getResourceChange());
 		resourceChangeEClass.getESuperTypes().add(this.getSpanReference());
+		changeDescriptionEClass.getESuperTypes().add(theChangePackage.getChangeDescription());
+		changeDescriptionEClass.getESuperTypes().add(this.getSpanReference());
 
 		// Initialize classes and features; add operations and parameters
 		initEClass(tracesDataEClass, TracesData.class, "TracesData", !IS_ABSTRACT, !IS_INTERFACE, IS_GENERATED_INSTANCE_CLASS);
@@ -824,7 +845,7 @@ public class TracesPackageImpl extends EPackageImpl implements TracesPackage {
 		initEAttribute(getSpan_DroppedLinksCount(), theEcorePackage.getEInt(), "droppedLinksCount", null, 0, 1, Span.class, !IS_TRANSIENT, !IS_VOLATILE, IS_CHANGEABLE, !IS_UNSETTABLE, !IS_ID, !IS_UNIQUE, !IS_DERIVED, IS_ORDERED);
 		initEReference(getSpan_Status(), this.getSpanStatus(), null, "status", null, 0, 1, Span.class, !IS_TRANSIENT, !IS_VOLATILE, IS_CHANGEABLE, IS_COMPOSITE, !IS_RESOLVE_PROXIES, !IS_UNSETTABLE, IS_UNIQUE, !IS_DERIVED, IS_ORDERED);
 		initEAttribute(getSpan_Flags(), theEcorePackage.getEInt(), "flags", null, 0, 1, Span.class, !IS_TRANSIENT, !IS_VOLATILE, IS_CHANGEABLE, !IS_UNSETTABLE, !IS_ID, !IS_UNIQUE, !IS_DERIVED, IS_ORDERED);
-		initEReference(getSpan_ChangeDescription(), theChangePackage.getChangeDescription(), null, "changeDescription", null, 0, 1, Span.class, !IS_TRANSIENT, !IS_VOLATILE, IS_CHANGEABLE, IS_COMPOSITE, !IS_RESOLVE_PROXIES, !IS_UNSETTABLE, IS_UNIQUE, !IS_DERIVED, IS_ORDERED);
+		initEReference(getSpan_ChangeDescription(), this.getChangeDescription(), null, "changeDescription", null, 0, 1, Span.class, !IS_TRANSIENT, !IS_VOLATILE, IS_CHANGEABLE, IS_COMPOSITE, !IS_RESOLVE_PROXIES, !IS_UNSETTABLE, IS_UNIQUE, !IS_DERIVED, IS_ORDERED);
 		initEReference(getSpan_LogRecords(), theLogsPackage.getLogRecord(), null, "logRecords", null, 0, -1, Span.class, !IS_TRANSIENT, !IS_VOLATILE, IS_CHANGEABLE, IS_COMPOSITE, !IS_RESOLVE_PROXIES, !IS_UNSETTABLE, IS_UNIQUE, !IS_DERIVED, IS_ORDERED);
 		initEReference(getSpan_Children(), this.getSpan(), null, "children", null, 0, -1, Span.class, !IS_TRANSIENT, !IS_VOLATILE, IS_CHANGEABLE, IS_COMPOSITE, !IS_RESOLVE_PROXIES, !IS_UNSETTABLE, IS_UNIQUE, !IS_DERIVED, IS_ORDERED);
 		getSpan_Children().getEKeys().add(this.getSpanId_TraceId());
@@ -853,6 +874,8 @@ public class TracesPackageImpl extends EPackageImpl implements TracesPackage {
 		initEClass(featureChangeEClass, FeatureChange.class, "FeatureChange", !IS_ABSTRACT, !IS_INTERFACE, IS_GENERATED_INSTANCE_CLASS);
 
 		initEClass(resourceChangeEClass, ResourceChange.class, "ResourceChange", !IS_ABSTRACT, !IS_INTERFACE, IS_GENERATED_INSTANCE_CLASS);
+
+		initEClass(changeDescriptionEClass, ChangeDescription.class, "ChangeDescription", !IS_ABSTRACT, !IS_INTERFACE, IS_GENERATED_INSTANCE_CLASS);
 
 		// Initialize enums and add enum literals
 		initEEnum(spanKindEEnum, SpanKind.class, "SpanKind");

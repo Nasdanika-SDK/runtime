@@ -215,8 +215,8 @@ public class MetricsPackageImpl extends EPackageImpl implements MetricsPackage {
 		TelemetryPackage.eINSTANCE.eClass();
 		EcorePackage.eINSTANCE.eClass();
 		TracesPackage.eINSTANCE.eClass();
-		ChangePackage.eINSTANCE.eClass();
 		LogsPackage.eINSTANCE.eClass();
+		ChangePackage.eINSTANCE.eClass();
 
 		// Create package meta-data objects
 		theMetricsPackage.createPackageContents();

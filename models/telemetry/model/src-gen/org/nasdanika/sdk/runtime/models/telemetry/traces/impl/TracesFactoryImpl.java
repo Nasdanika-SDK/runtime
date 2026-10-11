@@ -68,6 +68,7 @@ public class TracesFactoryImpl extends EFactoryImpl implements TracesFactory {
 			case TracesPackage.SPAN_STATUS: return createSpanStatus();
 			case TracesPackage.FEATURE_CHANGE: return createFeatureChange();
 			case TracesPackage.RESOURCE_CHANGE: return createResourceChange();
+			case TracesPackage.CHANGE_DESCRIPTION: return createChangeDescription();
 			default:
 				throw new IllegalArgumentException("The class '" + eClass.getName() + "' is not a valid classifier");
 		}
@@ -215,6 +216,16 @@ public class TracesFactoryImpl extends EFactoryImpl implements TracesFactory {
 	public ResourceChange createResourceChange() {
 		ResourceChangeImpl resourceChange = new ResourceChangeImpl();
 		return resourceChange;
+	}
+
+	/**
+	 * <!-- begin-user-doc -->
+	 * <!-- end-user-doc -->
+	 * @generated
+	 */
+	public ChangeDescription createChangeDescription() {
+		ChangeDescriptionImpl changeDescription = new ChangeDescriptionImpl();
+		return changeDescription;
 	}
 
 	/**

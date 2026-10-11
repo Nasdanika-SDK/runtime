@@ -4,8 +4,6 @@ package org.nasdanika.sdk.runtime.models.telemetry.traces;
 
 import org.eclipse.emf.common.util.EList;
 
-import org.eclipse.emf.ecore.change.ChangeDescription;
-
 import org.nasdanika.sdk.runtime.models.telemetry.KeyValue;
 
 import org.nasdanika.sdk.runtime.models.telemetry.logs.LogRecord;

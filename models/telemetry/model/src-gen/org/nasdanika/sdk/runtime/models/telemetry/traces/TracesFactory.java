@@ -121,6 +121,15 @@ public interface TracesFactory extends EFactory {
 	ResourceChange createResourceChange();
 
 	/**
+	 * Returns a new object of class '<em>Change Description</em>'.
+	 * <!-- begin-user-doc -->
+	 * <!-- end-user-doc -->
+	 * @return a new object of class '<em>Change Description</em>'.
+	 * @generated
+	 */
+	ChangeDescription createChangeDescription();
+
+	/**
 	 * Returns the package supported by this factory.
 	 * <!-- begin-user-doc -->
 	 * <!-- end-user-doc -->

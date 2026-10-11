@@ -11,14 +11,13 @@ import org.eclipse.emf.common.util.EList;
 import org.eclipse.emf.ecore.EClass;
 import org.eclipse.emf.ecore.InternalEObject;
 
-import org.eclipse.emf.ecore.change.ChangeDescription;
-
 import org.eclipse.emf.ecore.util.InternalEList;
 
 import org.nasdanika.sdk.runtime.models.telemetry.KeyValue;
 
 import org.nasdanika.sdk.runtime.models.telemetry.logs.LogRecord;
 
+import org.nasdanika.sdk.runtime.models.telemetry.traces.ChangeDescription;
 import org.nasdanika.sdk.runtime.models.telemetry.traces.Span;
 import org.nasdanika.sdk.runtime.models.telemetry.traces.SpanEvent;
 import org.nasdanika.sdk.runtime.models.telemetry.traces.SpanKind;

@@ -112,12 +112,20 @@ public class TracesAdapterFactory extends AdapterFactoryImpl {
 				return createResourceChangeAdapter();
 			}
 			@Override
+			public Adapter caseChangeDescription(ChangeDescription object) {
+				return createChangeDescriptionAdapter();
+			}
+			@Override
 			public Adapter caseChange_FeatureChange(org.eclipse.emf.ecore.change.FeatureChange object) {
 				return createChange_FeatureChangeAdapter();
 			}
 			@Override
 			public Adapter caseChange_ResourceChange(org.eclipse.emf.ecore.change.ResourceChange object) {
 				return createChange_ResourceChangeAdapter();
+			}
+			@Override
+			public Adapter caseChange_ChangeDescription(org.eclipse.emf.ecore.change.ChangeDescription object) {
+				return createChange_ChangeDescriptionAdapter();
 			}
 			@Override
 			public Adapter defaultCase(EObject object) {
@@ -294,6 +302,20 @@ public class TracesAdapterFactory extends AdapterFactoryImpl {
 	}
 
 	/**
+	 * Creates a new adapter for an object of class '{@link org.nasdanika.sdk.runtime.models.telemetry.traces.ChangeDescription <em>Change Description</em>}'.
+	 * <!-- begin-user-doc -->
+	 * This default implementation returns null so that we can easily ignore cases;
+	 * it's useful to ignore a case when inheritance will catch all the cases anyway.
+	 * <!-- end-user-doc -->
+	 * @return the new adapter.
+	 * @see org.nasdanika.sdk.runtime.models.telemetry.traces.ChangeDescription
+	 * @generated
+	 */
+	public Adapter createChangeDescriptionAdapter() {
+		return null;
+	}
+
+	/**
 	 * Creates a new adapter for an object of class '{@link org.eclipse.emf.ecore.change.FeatureChange <em>Feature Change</em>}'.
 	 * <!-- begin-user-doc -->
 	 * This default implementation returns null so that we can easily ignore cases;
@@ -318,6 +340,20 @@ public class TracesAdapterFactory extends AdapterFactoryImpl {
 	 * @generated
 	 */
 	public Adapter createChange_ResourceChangeAdapter() {
+		return null;
+	}
+
+	/**
+	 * Creates a new adapter for an object of class '{@link org.eclipse.emf.ecore.change.ChangeDescription <em>Description</em>}'.
+	 * <!-- begin-user-doc -->
+	 * This default implementation returns null so that we can easily ignore cases;
+	 * it's useful to ignore a case when inheritance will catch all the cases anyway.
+	 * <!-- end-user-doc -->
+	 * @return the new adapter.
+	 * @see org.eclipse.emf.ecore.change.ChangeDescription
+	 * @generated
+	 */
+	public Adapter createChange_ChangeDescriptionAdapter() {
 		return null;
 	}
 

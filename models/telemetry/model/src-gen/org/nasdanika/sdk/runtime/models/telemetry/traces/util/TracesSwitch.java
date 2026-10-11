@@ -142,6 +142,15 @@ public class TracesSwitch<T> extends Switch<T> {
 				if (result == null) result = defaultCase(theEObject);
 				return result;
 			}
+			case TracesPackage.CHANGE_DESCRIPTION: {
+				ChangeDescription changeDescription = (ChangeDescription)theEObject;
+				T result = caseChangeDescription(changeDescription);
+				if (result == null) result = caseChange_ChangeDescription(changeDescription);
+				if (result == null) result = caseSpanReference(changeDescription);
+				if (result == null) result = caseSpanId(changeDescription);
+				if (result == null) result = defaultCase(theEObject);
+				return result;
+			}
 			default: return defaultCase(theEObject);
 		}
 	}
@@ -312,6 +321,21 @@ public class TracesSwitch<T> extends Switch<T> {
 	}
 
 	/**
+	 * Returns the result of interpreting the object as an instance of '<em>Change Description</em>'.
+	 * <!-- begin-user-doc -->
+	 * This implementation returns null;
+	 * returning a non-null result will terminate the switch.
+	 * <!-- end-user-doc -->
+	 * @param object the target of the switch.
+	 * @return the result of interpreting the object as an instance of '<em>Change Description</em>'.
+	 * @see #doSwitch(org.eclipse.emf.ecore.EObject) doSwitch(EObject)
+	 * @generated
+	 */
+	public T caseChangeDescription(ChangeDescription object) {
+		return null;
+	}
+
+	/**
 	 * Returns the result of interpreting the object as an instance of '<em>Feature Change</em>'.
 	 * <!-- begin-user-doc -->
 	 * This implementation returns null;
@@ -338,6 +362,21 @@ public class TracesSwitch<T> extends Switch<T> {
 	 * @generated
 	 */
 	public T caseChange_ResourceChange(org.eclipse.emf.ecore.change.ResourceChange object) {
+		return null;
+	}
+
+	/**
+	 * Returns the result of interpreting the object as an instance of '<em>Description</em>'.
+	 * <!-- begin-user-doc -->
+	 * This implementation returns null;
+	 * returning a non-null result will terminate the switch.
+	 * <!-- end-user-doc -->
+	 * @param object the target of the switch.
+	 * @return the result of interpreting the object as an instance of '<em>Description</em>'.
+	 * @see #doSwitch(org.eclipse.emf.ecore.EObject) doSwitch(EObject)
+	 * @generated
+	 */
+	public T caseChange_ChangeDescription(org.eclipse.emf.ecore.change.ChangeDescription object) {
 		return null;
 	}
 

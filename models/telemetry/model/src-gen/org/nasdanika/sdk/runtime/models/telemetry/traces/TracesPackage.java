@@ -828,6 +828,88 @@ public interface TracesPackage extends EPackage {
 	int RESOURCE_CHANGE_FEATURE_COUNT = ChangePackage.RESOURCE_CHANGE_FEATURE_COUNT + 3;
 
 	/**
+	 * The meta object id for the '{@link org.nasdanika.sdk.runtime.models.telemetry.traces.impl.ChangeDescriptionImpl <em>Change Description</em>}' class.
+	 * <!-- begin-user-doc -->
+	 * <!-- end-user-doc -->
+	 * @see org.nasdanika.sdk.runtime.models.telemetry.traces.impl.ChangeDescriptionImpl
+	 * @see org.nasdanika.sdk.runtime.models.telemetry.traces.impl.TracesPackageImpl#getChangeDescription()
+	 * @generated
+	 */
+	int CHANGE_DESCRIPTION = 11;
+
+	/**
+	 * The feature id for the '<em><b>Object Changes</b></em>' map.
+	 * <!-- begin-user-doc -->
+	 * <!-- end-user-doc -->
+	 * @generated
+	 * @ordered
+	 */
+	int CHANGE_DESCRIPTION__OBJECT_CHANGES = ChangePackage.CHANGE_DESCRIPTION__OBJECT_CHANGES;
+
+	/**
+	 * The feature id for the '<em><b>Objects To Detach</b></em>' reference list.
+	 * <!-- begin-user-doc -->
+	 * <!-- end-user-doc -->
+	 * @generated
+	 * @ordered
+	 */
+	int CHANGE_DESCRIPTION__OBJECTS_TO_DETACH = ChangePackage.CHANGE_DESCRIPTION__OBJECTS_TO_DETACH;
+
+	/**
+	 * The feature id for the '<em><b>Objects To Attach</b></em>' containment reference list.
+	 * <!-- begin-user-doc -->
+	 * <!-- end-user-doc -->
+	 * @generated
+	 * @ordered
+	 */
+	int CHANGE_DESCRIPTION__OBJECTS_TO_ATTACH = ChangePackage.CHANGE_DESCRIPTION__OBJECTS_TO_ATTACH;
+
+	/**
+	 * The feature id for the '<em><b>Resource Changes</b></em>' containment reference list.
+	 * <!-- begin-user-doc -->
+	 * <!-- end-user-doc -->
+	 * @generated
+	 * @ordered
+	 */
+	int CHANGE_DESCRIPTION__RESOURCE_CHANGES = ChangePackage.CHANGE_DESCRIPTION__RESOURCE_CHANGES;
+
+	/**
+	 * The feature id for the '<em><b>Trace Id</b></em>' attribute.
+	 * <!-- begin-user-doc -->
+	 * <!-- end-user-doc -->
+	 * @generated
+	 * @ordered
+	 */
+	int CHANGE_DESCRIPTION__TRACE_ID = ChangePackage.CHANGE_DESCRIPTION_FEATURE_COUNT + 0;
+
+	/**
+	 * The feature id for the '<em><b>Span Id</b></em>' attribute.
+	 * <!-- begin-user-doc -->
+	 * <!-- end-user-doc -->
+	 * @generated
+	 * @ordered
+	 */
+	int CHANGE_DESCRIPTION__SPAN_ID = ChangePackage.CHANGE_DESCRIPTION_FEATURE_COUNT + 1;
+
+	/**
+	 * The feature id for the '<em><b>Span</b></em>' reference.
+	 * <!-- begin-user-doc -->
+	 * <!-- end-user-doc -->
+	 * @generated
+	 * @ordered
+	 */
+	int CHANGE_DESCRIPTION__SPAN = ChangePackage.CHANGE_DESCRIPTION_FEATURE_COUNT + 2;
+
+	/**
+	 * The number of structural features of the '<em>Change Description</em>' class.
+	 * <!-- begin-user-doc -->
+	 * <!-- end-user-doc -->
+	 * @generated
+	 * @ordered
+	 */
+	int CHANGE_DESCRIPTION_FEATURE_COUNT = ChangePackage.CHANGE_DESCRIPTION_FEATURE_COUNT + 3;
+
+	/**
 	 * The meta object id for the '{@link org.nasdanika.sdk.runtime.models.telemetry.traces.SpanKind <em>Span Kind</em>}' enum.
 	 * <!-- begin-user-doc -->
 	 * <!-- end-user-doc -->
@@ -835,7 +917,7 @@ public interface TracesPackage extends EPackage {
 	 * @see org.nasdanika.sdk.runtime.models.telemetry.traces.impl.TracesPackageImpl#getSpanKind()
 	 * @generated
 	 */
-	int SPAN_KIND = 11;
+	int SPAN_KIND = 12;
 
 	/**
 	 * The meta object id for the '{@link org.nasdanika.sdk.runtime.models.telemetry.traces.StatusCode <em>Status Code</em>}' enum.
@@ -845,7 +927,7 @@ public interface TracesPackage extends EPackage {
 	 * @see org.nasdanika.sdk.runtime.models.telemetry.traces.impl.TracesPackageImpl#getStatusCode()
 	 * @generated
 	 */
-	int STATUS_CODE = 12;
+	int STATUS_CODE = 13;
 
 
 	/**
@@ -1377,6 +1459,16 @@ public interface TracesPackage extends EPackage {
 	EClass getResourceChange();
 
 	/**
+	 * Returns the meta object for class '{@link org.nasdanika.sdk.runtime.models.telemetry.traces.ChangeDescription <em>Change Description</em>}'.
+	 * <!-- begin-user-doc -->
+	 * <!-- end-user-doc -->
+	 * @return the meta object for class '<em>Change Description</em>'.
+	 * @see org.nasdanika.sdk.runtime.models.telemetry.traces.ChangeDescription
+	 * @generated
+	 */
+	EClass getChangeDescription();
+
+	/**
 	 * Returns the meta object for enum '{@link org.nasdanika.sdk.runtime.models.telemetry.traces.SpanKind <em>Span Kind</em>}'.
 	 * <!-- begin-user-doc -->
 	 * <!-- end-user-doc -->
@@ -1831,6 +1923,16 @@ public interface TracesPackage extends EPackage {
 		 * @generated
 		 */
 		EClass RESOURCE_CHANGE = eINSTANCE.getResourceChange();
+
+		/**
+		 * The meta object literal for the '{@link org.nasdanika.sdk.runtime.models.telemetry.traces.impl.ChangeDescriptionImpl <em>Change Description</em>}' class.
+		 * <!-- begin-user-doc -->
+		 * <!-- end-user-doc -->
+		 * @see org.nasdanika.sdk.runtime.models.telemetry.traces.impl.ChangeDescriptionImpl
+		 * @see org.nasdanika.sdk.runtime.models.telemetry.traces.impl.TracesPackageImpl#getChangeDescription()
+		 * @generated
+		 */
+		EClass CHANGE_DESCRIPTION = eINSTANCE.getChangeDescription();
 
 		/**
 		 * The meta object literal for the '{@link org.nasdanika.sdk.runtime.models.telemetry.traces.SpanKind <em>Span Kind</em>}' enum.

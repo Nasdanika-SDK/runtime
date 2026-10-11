@@ -11,6 +11,7 @@ import org.eclipse.emf.common.util.URI;
 import org.eclipse.emf.ecore.EObject;
 import org.eclipse.emf.ecore.EPackage;
 import org.eclipse.emf.ecore.EcoreFactory;
+import org.eclipse.emf.ecore.change.ChangeDescription;
 import org.eclipse.emf.ecore.resource.Resource;
 import org.junit.jupiter.api.Test;
 import org.nasdanika.sdk.runtime.common.NasdanikaResourceSet;
@@ -26,6 +27,7 @@ import org.nasdanika.sdk.runtime.models.telemetry.metrics.Histogram;
 import org.nasdanika.sdk.runtime.models.telemetry.metrics.Metric;
 import org.nasdanika.sdk.runtime.models.telemetry.metrics.MetricsData;
 import org.nasdanika.sdk.runtime.models.telemetry.metrics.Sum;
+import org.nasdanika.sdk.runtime.models.telemetry.traces.ChangeRecorder;
 import org.nasdanika.sdk.runtime.models.telemetry.traces.Span;
 import org.nasdanika.sdk.runtime.models.telemetry.traces.StatusCode;
 import org.nasdanika.sdk.runtime.models.telemetry.traces.TracesData;
@@ -125,6 +127,7 @@ class TestModelExport {
 		URI logsURI = uri(dir, "logs." + extension);
 		URI metricsURI = uri(dir, "metrics." + extension);
 		URI modelURI = uri(dir, "model.xmi");
+		URI changesURI = uri(dir, "changes.yml");
 
 		NasdanikaResourceSet telemetryResourceSet = NasdanikaResourceSet.createAndConfigure();
 
@@ -148,6 +151,7 @@ class TestModelExport {
 
 				// Instrumented runtime code reports to the current instance
 				NasdanikaResourceSet resourceSet = NasdanikaResourceSet.createAndConfigure();
+				ChangeRecorder changeRecorder = new ChangeRecorder(resourceSet);
 				Resource resource = resourceSet.createResource(modelURI);
 				EPackage ePackage = EcoreFactory.eINSTANCE.createEPackage();
 				ePackage.setName("root");
@@ -157,6 +161,11 @@ class TestModelExport {
 				meter.counterBuilder("nsdk.models.saved").build().add(1);
 				meter.histogramBuilder("nsdk.model.size").setUnit("By").build().record(Files.size(dir.resolve("model.xmi")));
 
+				ChangeDescription changeDescription = changeRecorder.endRecording();
+				Resource changesResource = resourceSet.createResource(changesURI);
+				changesResource.getContents().add(changeDescription);
+				changesResource.save(null);
+				
 				span.setStatus(io.opentelemetry.api.trace.StatusCode.OK);
 			} catch (IOException | RuntimeException e) {
 				Telemetry.recordFailure(span, e);
@@ -173,26 +182,26 @@ class TestModelExport {
 				.flatMap(ss -> ss.getSpans().stream())
 				.toList();
 
-		Span root = span(spans, "nsdk");
+		Span root = span(spans, "nsdk", 1);
 		assertThat(root.getParentSpanId()).isNull();
 		assertThat(root.getStatus().getCode()).isEqualTo(StatusCode.STATUS_CODE_OK);
 		assertThat(attribute(root.getAttributes(), "nasdanika.command.args").getStringValue()).isEqualTo("model save");
 
-		Span save = span(spans, "Resource.save");
+		Span save = span(spans, "Resource.save", 2);
 		assertThat(save.getTraceId()).isEqualTo(root.getTraceId());
 		assertThat(save.getParentSpanId()).isEqualTo(root.getSpanId());
 		long bytes = attribute(save.getAttributes(), Telemetry.IO_BYTES.getKey()).getIntValue();
 		assertThat(bytes).isEqualTo(Files.size(dir.resolve("model.xmi")));
-		assertThat(attribute(span(spans, "URIHandler.write").getAttributes(), Telemetry.IO_BYTES.getKey()).getIntValue()).isEqualTo(bytes);
+		assertThat(attribute(span(spans, "URIHandler.write", 2).getAttributes(), Telemetry.IO_BYTES.getKey()).getIntValue()).isEqualTo(bytes);
 		assertThat(spans).extracting(Span::getName).contains("ResourceSetContributor.configure");
 
 		// --- Logs ---
 		// Log records emitted in a span are added to it
-		assertThat(root.getLogRecords()).hasSize(2).allSatisfy(l -> assertThat(l.getSpanId()).isEqualTo(root.getSpanId()));
+		assertThat(root.getLogRecords()).hasSize(3).allSatisfy(l -> assertThat(l.getSpanId()).isEqualTo(root.getSpanId()));
 		assertThat(root.getLogRecords().get(0).getBody().getStringValue()).isEqualTo("Hello from the root command");
 		assertThat(root.getLogRecords().get(1).getEventName()).isEqualTo(Telemetry.RESOURCE_CREATED_EVENT);
 		assertThat(save.getLogRecords()).extracting(LogRecord::getEventName).containsExactly(Telemetry.RESOURCE_SAVED_EVENT);
-		assertThat(span(spans, "ResourceSetContributor.configure").getLogRecords())
+		assertThat(span(spans, "ResourceSetContributor.configure", 1).getLogRecords())
 				.isNotEmpty()
 				.allSatisfy(l -> assertThat(l.getEventName()).isEqualTo(Telemetry.CONTRIBUTION_EVENT));
 
@@ -230,9 +239,9 @@ class TestModelExport {
 		return type.cast(resource.getContents().getFirst());
 	}
 
-	private static Span span(List<Span> spans, String name) {
+	private static Span span(List<Span> spans, String name, int size) {
 		List<Span> named = spans.stream().filter(s -> s.getName().equals(name)).toList();
-		assertThat(named).as(name).hasSize(1);
+		assertThat(named).as(name).hasSize(size);
 		return named.getFirst();
 	}
 

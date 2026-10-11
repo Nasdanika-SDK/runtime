@@ -25,6 +25,7 @@ module org.nasdanika.sdk.runtime.models.telemetry {
 	requires transitive org.eclipse.emf.common;
 	requires transitive org.eclipse.emf.ecore;
 	requires transitive org.eclipse.emf.ecore.change;
+	requires transitive io.opentelemetry.api;
 	
 	provides EPackage with 
 		TelemetryEPackageProvider,
