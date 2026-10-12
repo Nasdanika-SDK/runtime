@@ -417,7 +417,7 @@ public interface Span extends SpanId {
 	 * <!-- end-user-doc -->
 	 * @return the value of the '<em>Children</em>' containment reference list.
 	 * @see org.nasdanika.sdk.runtime.models.telemetry.traces.TracesPackage#getSpan_Children()
-	 * @model containment="true" keys="traceId spanId"
+	 * @model containment="true" keys="spanId"
 	 * @generated
 	 */
 	EList<Span> getChildren();

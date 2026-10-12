@@ -10,9 +10,12 @@ import java.util.function.Consumer;
 import org.eclipse.emf.ecore.EObject;
 import org.eclipse.emf.ecore.resource.Resource;
 import org.eclipse.emf.ecore.util.EcoreUtil;
+import org.nasdanika.sdk.runtime.models.telemetry.traces.ChangeDescription;
+import org.nasdanika.sdk.runtime.models.telemetry.traces.Changes;
 import org.nasdanika.sdk.runtime.models.telemetry.traces.ResourceSpans;
 import org.nasdanika.sdk.runtime.models.telemetry.traces.ScopeSpans;
 import org.nasdanika.sdk.runtime.models.telemetry.traces.Span;
+import org.nasdanika.sdk.runtime.models.telemetry.traces.SpanReference;
 import org.nasdanika.sdk.runtime.models.telemetry.traces.TracesData;
 import org.nasdanika.sdk.runtime.models.telemetry.traces.TracesFactory;
 
@@ -33,10 +36,18 @@ import io.opentelemetry.sdk.trace.export.SpanExporter;
  * <p>
  * Exporting to a resource, it can be linked to a {@link ModelLogRecordExporter}, which adds log
  * records to {@link Span#getLogRecords() the spans they were emitted in}.
+ *
+ * <p>
+ * It is also a sink of {@link Changes recorded changes}: a change description is set as
+ * {@link Span#getChangeDescription() the change description of the span} it was recorded in, when
+ * the span is exported - or right away if it has been. Change descriptions without a span, and of
+ * spans not exported by the time the exporter is shut down, are dropped. Before
+ * the resource is saved, {@link #resolveReferences(TracesData) span references are resolved}.
  */
-public class ModelSpanExporter extends AbstractModelExporter<SpanData, TracesData, ResourceSpans, ScopeSpans> implements SpanExporter {
+public class ModelSpanExporter extends AbstractModelExporter<SpanData, TracesData, ResourceSpans, ScopeSpans> implements SpanExporter, Consumer<ChangeDescription> {
 
 	private final Map<String, Span> spans = new HashMap<>();
+	private final Map<String, ChangeDescription> pendingChanges = new HashMap<>();
 	private ModelLogRecordExporter logRecordExporter;
 
 	/**
@@ -90,6 +101,29 @@ public class ModelSpanExporter extends AbstractModelExporter<SpanData, TracesDat
 		}
 	}
 
+	/**
+	 * Adds the change description to the span it was recorded in. A span has one change
+	 * description: a later one recorded in the same span replaces it.
+	 */
+	@Override
+	public void accept(ChangeDescription changeDescription) {
+		if (changeDescription.getTraceId() == null || changeDescription.getSpanId() == null) {
+			return;
+		}
+		String key = changeDescription.getTraceId() + changeDescription.getSpanId();
+		synchronized (getLock()) {
+			if (isShutdown()) {
+				return;
+			}
+			Span span = spans.get(key);
+			if (span == null) {
+				pendingChanges.put(key, changeDescription);
+			} else {
+				span.setChangeDescription(changeDescription);
+			}
+		}
+	}
+
 	@Override
 	public CompletableResultCode export(Collection<SpanData> spans) {
 		return doExport(spans);
@@ -106,6 +140,7 @@ public class ModelSpanExporter extends AbstractModelExporter<SpanData, TracesDat
 				return CompletableResultCode.ofSuccess();
 			}
 			CompletableResultCode result = super.shutdown();
+			pendingChanges.clear();
 			if (logRecordExporter != null && logRecordExporter.isShutdown()) {
 				return CompletableResultCode.ofAll(List.of(result, logRecordExporter.writePending()));
 			}
@@ -146,6 +181,29 @@ public class ModelSpanExporter extends AbstractModelExporter<SpanData, TracesDat
 	}
 
 	/**
+	 * Sets {@link SpanReference#getSpan() the span} of span references - span links, change
+	 * descriptions and changes - to the span with their ids if it is in the data. References
+	 * already resolved, and to spans not in the data, stay as they are.
+	 */
+	public static void resolveReferences(TracesData data) {
+		Map<String, Span> spans = new HashMap<>();
+		List<SpanReference> references = new ArrayList<>();
+		data.eAllContents().forEachRemaining(e -> {
+			if (e instanceof Span span && span.getTraceId() != null && span.getSpanId() != null) {
+				spans.put(span.getTraceId() + span.getSpanId(), span);
+			} else if (e instanceof SpanReference reference && reference.getSpan() == null && reference.getTraceId() != null && reference.getSpanId() != null) {
+				references.add(reference);
+			}
+		});
+		for (SpanReference reference : references) {
+			Span span = spans.get(reference.getTraceId() + reference.getSpanId());
+			if (span != null) {
+				reference.setSpan(span);
+			}
+		}
+	}
+
+	/**
 	 * @return The scope group containing the span, directly or through its ancestor spans
 	 */
 	private static ScopeSpans scopeGroup(Span span) {
@@ -160,6 +218,7 @@ public class ModelSpanExporter extends AbstractModelExporter<SpanData, TracesDat
 	@Override
 	protected void beforeSave(TracesData data) {
 		resolveParents(data);
+		resolveReferences(data);
 	}
 
 	@Override
@@ -205,6 +264,12 @@ public class ModelSpanExporter extends AbstractModelExporter<SpanData, TracesDat
 		Span span = TelemetryConverter.span(item);
 		scopeGroup.getSpans().add(span);
 		String key = key(item.getSpanContext());
+		if (key != null) {
+			ChangeDescription changeDescription = pendingChanges.remove(key);
+			if (changeDescription != null) {
+				span.setChangeDescription(changeDescription);
+			}
+		}
 		if (getModelResource() != null && key != null) {
 			spans.put(key, span);
 			if (logRecordExporter != null) {
