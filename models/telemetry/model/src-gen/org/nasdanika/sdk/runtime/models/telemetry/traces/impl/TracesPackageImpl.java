@@ -660,6 +660,15 @@ public class TracesPackageImpl extends EPackageImpl implements TracesPackage {
 	 * <!-- end-user-doc -->
 	 * @generated
 	 */
+	public EReference getChangeDescription_RemovedObjects() {
+		return (EReference)changeDescriptionEClass.getEStructuralFeatures().get(0);
+	}
+
+	/**
+	 * <!-- begin-user-doc -->
+	 * <!-- end-user-doc -->
+	 * @generated
+	 */
 	public EEnum getSpanKind() {
 		return spanKindEEnum;
 	}
@@ -762,6 +771,7 @@ public class TracesPackageImpl extends EPackageImpl implements TracesPackage {
 		resourceChangeEClass = createEClass(RESOURCE_CHANGE);
 
 		changeDescriptionEClass = createEClass(CHANGE_DESCRIPTION);
+		createEReference(changeDescriptionEClass, CHANGE_DESCRIPTION__REMOVED_OBJECTS);
 
 		// Create enums
 		spanKindEEnum = createEEnum(SPAN_KIND);
@@ -824,6 +834,8 @@ public class TracesPackageImpl extends EPackageImpl implements TracesPackage {
 		initEClass(scopeSpansEClass, ScopeSpans.class, "ScopeSpans", !IS_ABSTRACT, !IS_INTERFACE, IS_GENERATED_INSTANCE_CLASS);
 		initEReference(getScopeSpans_Scope(), theTelemetryPackage.getInstrumentationScope(), null, "scope", null, 0, 1, ScopeSpans.class, !IS_TRANSIENT, !IS_VOLATILE, IS_CHANGEABLE, IS_COMPOSITE, !IS_RESOLVE_PROXIES, !IS_UNSETTABLE, IS_UNIQUE, !IS_DERIVED, IS_ORDERED);
 		initEReference(getScopeSpans_Spans(), this.getSpan(), null, "spans", null, 0, -1, ScopeSpans.class, !IS_TRANSIENT, !IS_VOLATILE, IS_CHANGEABLE, IS_COMPOSITE, !IS_RESOLVE_PROXIES, !IS_UNSETTABLE, IS_UNIQUE, !IS_DERIVED, IS_ORDERED);
+		getScopeSpans_Spans().getEKeys().add(this.getSpanId_TraceId());
+		getScopeSpans_Spans().getEKeys().add(this.getSpanId_SpanId());
 		initEAttribute(getScopeSpans_SchemaUrl(), theEcorePackage.getEString(), "schemaUrl", null, 0, 1, ScopeSpans.class, !IS_TRANSIENT, !IS_VOLATILE, IS_CHANGEABLE, !IS_UNSETTABLE, !IS_ID, !IS_UNIQUE, !IS_DERIVED, IS_ORDERED);
 
 		initEClass(spanIdEClass, SpanId.class, "SpanId", !IS_ABSTRACT, !IS_INTERFACE, IS_GENERATED_INSTANCE_CLASS);
@@ -848,7 +860,6 @@ public class TracesPackageImpl extends EPackageImpl implements TracesPackage {
 		initEReference(getSpan_ChangeDescription(), this.getChangeDescription(), null, "changeDescription", null, 0, 1, Span.class, !IS_TRANSIENT, !IS_VOLATILE, IS_CHANGEABLE, IS_COMPOSITE, !IS_RESOLVE_PROXIES, !IS_UNSETTABLE, IS_UNIQUE, !IS_DERIVED, IS_ORDERED);
 		initEReference(getSpan_LogRecords(), theLogsPackage.getLogRecord(), null, "logRecords", null, 0, -1, Span.class, !IS_TRANSIENT, !IS_VOLATILE, IS_CHANGEABLE, IS_COMPOSITE, !IS_RESOLVE_PROXIES, !IS_UNSETTABLE, IS_UNIQUE, !IS_DERIVED, IS_ORDERED);
 		initEReference(getSpan_Children(), this.getSpan(), null, "children", null, 0, -1, Span.class, !IS_TRANSIENT, !IS_VOLATILE, IS_CHANGEABLE, IS_COMPOSITE, !IS_RESOLVE_PROXIES, !IS_UNSETTABLE, IS_UNIQUE, !IS_DERIVED, IS_ORDERED);
-		getSpan_Children().getEKeys().add(this.getSpanId_TraceId());
 		getSpan_Children().getEKeys().add(this.getSpanId_SpanId());
 		initEReference(getSpan_Referrers(), this.getSpanReference(), this.getSpanReference_Span(), "referrers", null, 0, -1, Span.class, !IS_TRANSIENT, !IS_VOLATILE, IS_CHANGEABLE, !IS_COMPOSITE, IS_RESOLVE_PROXIES, !IS_UNSETTABLE, IS_UNIQUE, !IS_DERIVED, IS_ORDERED);
 
@@ -876,6 +887,7 @@ public class TracesPackageImpl extends EPackageImpl implements TracesPackage {
 		initEClass(resourceChangeEClass, ResourceChange.class, "ResourceChange", !IS_ABSTRACT, !IS_INTERFACE, IS_GENERATED_INSTANCE_CLASS);
 
 		initEClass(changeDescriptionEClass, ChangeDescription.class, "ChangeDescription", !IS_ABSTRACT, !IS_INTERFACE, IS_GENERATED_INSTANCE_CLASS);
+		initEReference(getChangeDescription_RemovedObjects(), theEcorePackage.getEObject(), null, "removedObjects", null, 0, -1, ChangeDescription.class, !IS_TRANSIENT, !IS_VOLATILE, IS_CHANGEABLE, IS_COMPOSITE, !IS_RESOLVE_PROXIES, !IS_UNSETTABLE, IS_UNIQUE, !IS_DERIVED, IS_ORDERED);
 
 		// Initialize enums and add enum literals
 		initEEnum(spanKindEEnum, SpanKind.class, "SpanKind");

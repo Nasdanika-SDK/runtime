@@ -1,6 +1,7 @@
 package org.nasdanika.sdk.runtime.cli;
 
 import io.opentelemetry.api.logs.Logger;
+import io.opentelemetry.api.metrics.Meter;
 import io.opentelemetry.api.trace.Span;
 import picocli.CommandLine.ParameterException;
 import picocli.CommandLine.ParentCommand;
@@ -20,7 +21,7 @@ public abstract class CommandGroup extends CommandBase {
 	}
 
 	@Override
-	protected Integer execute(Span span, Logger logger) throws Exception {
+	protected Integer execute(Span span, Logger logger, Meter meter) throws Exception {
 		throw new ParameterException(spec.commandLine(), "Missing required subcommand");
 	}
 

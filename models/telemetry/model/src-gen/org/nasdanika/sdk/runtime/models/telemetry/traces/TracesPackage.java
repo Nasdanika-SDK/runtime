@@ -901,13 +901,22 @@ public interface TracesPackage extends EPackage {
 	int CHANGE_DESCRIPTION__SPAN = ChangePackage.CHANGE_DESCRIPTION_FEATURE_COUNT + 2;
 
 	/**
+	 * The feature id for the '<em><b>Removed Objects</b></em>' containment reference list.
+	 * <!-- begin-user-doc -->
+	 * <!-- end-user-doc -->
+	 * @generated
+	 * @ordered
+	 */
+	int CHANGE_DESCRIPTION__REMOVED_OBJECTS = ChangePackage.CHANGE_DESCRIPTION_FEATURE_COUNT + 3;
+
+	/**
 	 * The number of structural features of the '<em>Change Description</em>' class.
 	 * <!-- begin-user-doc -->
 	 * <!-- end-user-doc -->
 	 * @generated
 	 * @ordered
 	 */
-	int CHANGE_DESCRIPTION_FEATURE_COUNT = ChangePackage.CHANGE_DESCRIPTION_FEATURE_COUNT + 3;
+	int CHANGE_DESCRIPTION_FEATURE_COUNT = ChangePackage.CHANGE_DESCRIPTION_FEATURE_COUNT + 4;
 
 	/**
 	 * The meta object id for the '{@link org.nasdanika.sdk.runtime.models.telemetry.traces.SpanKind <em>Span Kind</em>}' enum.
@@ -1469,6 +1478,17 @@ public interface TracesPackage extends EPackage {
 	EClass getChangeDescription();
 
 	/**
+	 * Returns the meta object for the containment reference list '{@link org.nasdanika.sdk.runtime.models.telemetry.traces.ChangeDescription#getRemovedObjects <em>Removed Objects</em>}'.
+	 * <!-- begin-user-doc -->
+	 * <!-- end-user-doc -->
+	 * @return the meta object for the containment reference list '<em>Removed Objects</em>'.
+	 * @see org.nasdanika.sdk.runtime.models.telemetry.traces.ChangeDescription#getRemovedObjects()
+	 * @see #getChangeDescription()
+	 * @generated
+	 */
+	EReference getChangeDescription_RemovedObjects();
+
+	/**
 	 * Returns the meta object for enum '{@link org.nasdanika.sdk.runtime.models.telemetry.traces.SpanKind <em>Span Kind</em>}'.
 	 * <!-- begin-user-doc -->
 	 * <!-- end-user-doc -->
@@ -1933,6 +1953,14 @@ public interface TracesPackage extends EPackage {
 		 * @generated
 		 */
 		EClass CHANGE_DESCRIPTION = eINSTANCE.getChangeDescription();
+
+		/**
+		 * The meta object literal for the '<em><b>Removed Objects</b></em>' containment reference list feature.
+		 * <!-- begin-user-doc -->
+		 * <!-- end-user-doc -->
+		 * @generated
+		 */
+		EReference CHANGE_DESCRIPTION__REMOVED_OBJECTS = eINSTANCE.getChangeDescription_RemovedObjects();
 
 		/**
 		 * The meta object literal for the '{@link org.nasdanika.sdk.runtime.models.telemetry.traces.SpanKind <em>Span Kind</em>}' enum.

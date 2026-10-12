@@ -2,10 +2,17 @@
  */
 package org.nasdanika.sdk.runtime.models.telemetry.traces.impl;
 
+import java.util.Collection;
+
 import org.eclipse.emf.common.notify.NotificationChain;
 
+import org.eclipse.emf.common.util.EList;
+
 import org.eclipse.emf.ecore.EClass;
+import org.eclipse.emf.ecore.EObject;
 import org.eclipse.emf.ecore.InternalEObject;
+
+import org.eclipse.emf.ecore.util.InternalEList;
 
 import org.nasdanika.sdk.runtime.models.telemetry.traces.ChangeDescription;
 import org.nasdanika.sdk.runtime.models.telemetry.traces.Span;
@@ -24,6 +31,7 @@ import org.nasdanika.sdk.runtime.models.telemetry.traces.TracesPackage;
  *   <li>{@link org.nasdanika.sdk.runtime.models.telemetry.traces.impl.ChangeDescriptionImpl#getTraceId <em>Trace Id</em>}</li>
  *   <li>{@link org.nasdanika.sdk.runtime.models.telemetry.traces.impl.ChangeDescriptionImpl#getSpanId <em>Span Id</em>}</li>
  *   <li>{@link org.nasdanika.sdk.runtime.models.telemetry.traces.impl.ChangeDescriptionImpl#getSpan <em>Span</em>}</li>
+ *   <li>{@link org.nasdanika.sdk.runtime.models.telemetry.traces.impl.ChangeDescriptionImpl#getRemovedObjects <em>Removed Objects</em>}</li>
  * </ul>
  *
  * @generated
@@ -163,6 +171,16 @@ public class ChangeDescriptionImpl extends org.eclipse.emf.ecore.change.impl.Cha
 	 * <!-- end-user-doc -->
 	 * @generated
 	 */
+	@SuppressWarnings("unchecked")
+	public EList<EObject> getRemovedObjects() {
+		return (EList<EObject>)eDynamicGet(TracesPackage.CHANGE_DESCRIPTION__REMOVED_OBJECTS - ESTATIC_FEATURE_COUNT, TracesPackage.Literals.CHANGE_DESCRIPTION__REMOVED_OBJECTS, true, true);
+	}
+
+	/**
+	 * <!-- begin-user-doc -->
+	 * <!-- end-user-doc -->
+	 * @generated
+	 */
 	@Override
 	public NotificationChain eInverseAdd(InternalEObject otherEnd, int featureID, NotificationChain msgs) {
 		switch (featureID) {
@@ -185,6 +203,8 @@ public class ChangeDescriptionImpl extends org.eclipse.emf.ecore.change.impl.Cha
 		switch (featureID) {
 			case TracesPackage.CHANGE_DESCRIPTION__SPAN:
 				return basicSetSpan(null, msgs);
+			case TracesPackage.CHANGE_DESCRIPTION__REMOVED_OBJECTS:
+				return ((InternalEList<?>)getRemovedObjects()).basicRemove(otherEnd, msgs);
 		}
 		return super.eInverseRemove(otherEnd, featureID, msgs);
 	}
@@ -204,6 +224,8 @@ public class ChangeDescriptionImpl extends org.eclipse.emf.ecore.change.impl.Cha
 			case TracesPackage.CHANGE_DESCRIPTION__SPAN:
 				if (resolve) return getSpan();
 				return basicGetSpan();
+			case TracesPackage.CHANGE_DESCRIPTION__REMOVED_OBJECTS:
+				return getRemovedObjects();
 		}
 		return super.eGet(featureID, resolve, coreType);
 	}
@@ -213,6 +235,7 @@ public class ChangeDescriptionImpl extends org.eclipse.emf.ecore.change.impl.Cha
 	 * <!-- end-user-doc -->
 	 * @generated
 	 */
+	@SuppressWarnings("unchecked")
 	@Override
 	public void eSet(int featureID, Object newValue) {
 		switch (featureID) {
@@ -224,6 +247,10 @@ public class ChangeDescriptionImpl extends org.eclipse.emf.ecore.change.impl.Cha
 				return;
 			case TracesPackage.CHANGE_DESCRIPTION__SPAN:
 				setSpan((Span)newValue);
+				return;
+			case TracesPackage.CHANGE_DESCRIPTION__REMOVED_OBJECTS:
+				getRemovedObjects().clear();
+				getRemovedObjects().addAll((Collection<? extends EObject>)newValue);
 				return;
 		}
 		super.eSet(featureID, newValue);
@@ -246,6 +273,9 @@ public class ChangeDescriptionImpl extends org.eclipse.emf.ecore.change.impl.Cha
 			case TracesPackage.CHANGE_DESCRIPTION__SPAN:
 				setSpan((Span)null);
 				return;
+			case TracesPackage.CHANGE_DESCRIPTION__REMOVED_OBJECTS:
+				getRemovedObjects().clear();
+				return;
 		}
 		super.eUnset(featureID);
 	}
@@ -264,6 +294,8 @@ public class ChangeDescriptionImpl extends org.eclipse.emf.ecore.change.impl.Cha
 				return SPAN_ID_EDEFAULT == null ? getSpanId() != null : !SPAN_ID_EDEFAULT.equals(getSpanId());
 			case TracesPackage.CHANGE_DESCRIPTION__SPAN:
 				return basicGetSpan() != null;
+			case TracesPackage.CHANGE_DESCRIPTION__REMOVED_OBJECTS:
+				return !getRemovedObjects().isEmpty();
 		}
 		return super.eIsSet(featureID);
 	}

@@ -17,6 +17,7 @@ import io.opentelemetry.api.common.AttributeKey;
 import io.opentelemetry.api.common.Attributes;
 import io.opentelemetry.api.logs.Logger;
 import io.opentelemetry.api.logs.Severity;
+import io.opentelemetry.api.metrics.Meter;
 import io.opentelemetry.api.trace.Span;
 import io.opentelemetry.api.trace.StatusCode;
 import io.opentelemetry.api.trace.Tracer;
@@ -234,6 +235,10 @@ public final class Telemetry {
 
 	public static Logger logger(OpenTelemetry openTelemetry) {
 		return openTelemetry.getLogsBridge().get(INSTRUMENTATION_SCOPE);
+	}
+
+	public static Meter meter(OpenTelemetry openTelemetry) {
+		return openTelemetry.getMeter(INSTRUMENTATION_SCOPE);
 	}
 
 	/**

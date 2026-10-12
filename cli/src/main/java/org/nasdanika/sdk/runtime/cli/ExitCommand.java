@@ -3,6 +3,7 @@ package org.nasdanika.sdk.runtime.cli;
 import java.util.function.Supplier;
 
 import io.opentelemetry.api.logs.Logger;
+import io.opentelemetry.api.metrics.Meter;
 import io.opentelemetry.api.trace.Span;
 import picocli.CommandLine.Command;
 
@@ -19,7 +20,7 @@ public class ExitCommand extends CommandBase implements Supplier<Boolean> {
 	}
 	
 	@Override
-	protected Integer execute(Span span, Logger logger) throws Exception {
+	protected Integer execute(Span span, Logger logger, Meter meter) throws Exception {
 		value = true;
 		return 0;
 	}

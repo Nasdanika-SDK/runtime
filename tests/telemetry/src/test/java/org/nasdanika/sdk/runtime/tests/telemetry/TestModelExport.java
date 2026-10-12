@@ -8,10 +8,15 @@ import java.nio.file.Path;
 import java.util.List;
 
 import org.eclipse.emf.common.util.URI;
+import org.eclipse.emf.ecore.EAttribute;
+import org.eclipse.emf.ecore.EClass;
 import org.eclipse.emf.ecore.EObject;
 import org.eclipse.emf.ecore.EPackage;
+import org.eclipse.emf.ecore.EStructuralFeature;
 import org.eclipse.emf.ecore.EcoreFactory;
-import org.eclipse.emf.ecore.change.ChangeDescription;
+import org.eclipse.emf.ecore.EcorePackage;
+import org.eclipse.emf.ecore.change.ChangeKind;
+import org.eclipse.emf.ecore.change.FeatureChange;
 import org.eclipse.emf.ecore.resource.Resource;
 import org.junit.jupiter.api.Test;
 import org.nasdanika.sdk.runtime.common.NasdanikaResourceSet;
@@ -27,8 +32,10 @@ import org.nasdanika.sdk.runtime.models.telemetry.metrics.Histogram;
 import org.nasdanika.sdk.runtime.models.telemetry.metrics.Metric;
 import org.nasdanika.sdk.runtime.models.telemetry.metrics.MetricsData;
 import org.nasdanika.sdk.runtime.models.telemetry.metrics.Sum;
-import org.nasdanika.sdk.runtime.models.telemetry.traces.ChangeRecorder;
+import org.nasdanika.sdk.runtime.models.telemetry.traces.ChangeDescription;
+import org.nasdanika.sdk.runtime.models.telemetry.traces.Changes;
 import org.nasdanika.sdk.runtime.models.telemetry.traces.Span;
+import org.nasdanika.sdk.runtime.models.telemetry.traces.SpanReference;
 import org.nasdanika.sdk.runtime.models.telemetry.traces.StatusCode;
 import org.nasdanika.sdk.runtime.models.telemetry.traces.TracesData;
 
@@ -99,11 +106,10 @@ class TestModelExport {
 	 * resources: shutting the SDK down exports what is pending and saves them. The log record exporter
 	 * is linked to the span exporter.
 	 */
-	static OpenTelemetrySdk openTelemetry(Resource traces, Resource logs, Resource metrics, String serviceName) {
+	static OpenTelemetrySdk openTelemetry(ModelSpanExporter spanExporter, Resource logs, Resource metrics, String serviceName) {
 		io.opentelemetry.sdk.resources.Resource resource = io.opentelemetry.sdk.resources.Resource.getDefault()
 				.merge(io.opentelemetry.sdk.resources.Resource.create(Attributes.of(SERVICE_NAME, serviceName)));
 
-		ModelSpanExporter spanExporter = new ModelSpanExporter(traces);
 		return OpenTelemetrySdk.builder()
 				.setTracerProvider(SdkTracerProvider.builder()
 						.setResource(resource)
@@ -127,17 +133,19 @@ class TestModelExport {
 		URI logsURI = uri(dir, "logs." + extension);
 		URI metricsURI = uri(dir, "metrics." + extension);
 		URI modelURI = uri(dir, "model.xmi");
-		URI changesURI = uri(dir, "changes.yml");
 
 		NasdanikaResourceSet telemetryResourceSet = NasdanikaResourceSet.createAndConfigure();
+		ModelSpanExporter spanExporter = new ModelSpanExporter(telemetryResourceSet.createResource(tracesURI));
 
-		// Resources close in reverse order: the scope first, then the SDK, which saves the telemetry
+		// Resources close in reverse order: the scopes first, then the SDK, which saves the telemetry.
+		// The span exporter is the sink of recorded changes.
 		try (OpenTelemetrySdk openTelemetry = openTelemetry(
-						telemetryResourceSet.createResource(tracesURI),
+						spanExporter,
 						telemetryResourceSet.createResource(logsURI),
 						telemetryResourceSet.createResource(metricsURI),
 						"nsdk");
-				Scope telemetryScope = Telemetry.makeCurrent(openTelemetry)) {
+				Scope telemetryScope = Telemetry.makeCurrent(openTelemetry);
+				Scope changesScope = Changes.makeCurrent(spanExporter)) {
 
 			Tracer tracer = openTelemetry.getTracer(SCOPE);
 			Logger logger = openTelemetry.getLogsBridge().get(SCOPE);
@@ -149,23 +157,38 @@ class TestModelExport {
 			try (Scope spanScope = span.makeCurrent()) {
 				Telemetry.log(logger, Severity.INFO, null, "Hello from the root command", null);
 
-				// Instrumented runtime code reports to the current instance
+				// Instrumented runtime code reports to the current instance. The model is in its own
+				// resource set: recorded changes reference it by proxies.
 				NasdanikaResourceSet resourceSet = NasdanikaResourceSet.createAndConfigure();
-				ChangeRecorder changeRecorder = new ChangeRecorder(resourceSet);
-				Resource resource = resourceSet.createResource(modelURI);
-				EPackage ePackage = EcoreFactory.eINSTANCE.createEPackage();
-				ePackage.setName("root");
-				resource.getContents().add(ePackage);
-				resource.save(null);
+				Resource resource = Changes.record(resourceSet, () -> {
+					Resource modelResource = resourceSet.createResource(modelURI);
+					EPackage ePackage = EcoreFactory.eINSTANCE.createEPackage();
+					ePackage.setName("root");
+					EClass obsolete = EcoreFactory.eINSTANCE.createEClass();
+					obsolete.setName("Obsolete");
+					EAttribute label = EcoreFactory.eINSTANCE.createEAttribute();
+					label.setName("label");
+					obsolete.getEStructuralFeatures().add(label);
+					ePackage.getEClassifiers().add(obsolete);
+					modelResource.getContents().add(ePackage);
+					modelResource.save(null);
+					return modelResource;
+				});
 
-				meter.counterBuilder("nsdk.models.saved").build().add(1);
+				EPackage ePackage = (EPackage) resource.getContents().getFirst();
+				Telemetry.inSpan(tracer, "model.edit", null, editSpan -> Changes.record(resourceSet, () -> {
+					ePackage.setNsURI("urn:root");
+					ePackage.getEClassifiers().remove(ePackage.getEClassifier("Obsolete"));
+					EClass eClass = EcoreFactory.eINSTANCE.createEClass();
+					eClass.setName("Root");
+					ePackage.getEClassifiers().add(eClass);
+					resource.save(null);
+					return null;
+				}));
+
+				meter.counterBuilder("nsdk.models.saved").build().add(2);
 				meter.histogramBuilder("nsdk.model.size").setUnit("By").build().record(Files.size(dir.resolve("model.xmi")));
 
-				ChangeDescription changeDescription = changeRecorder.endRecording();
-				Resource changesResource = resourceSet.createResource(changesURI);
-				changesResource.getContents().add(changeDescription);
-				changesResource.save(null);
-				
 				span.setStatus(io.opentelemetry.api.trace.StatusCode.OK);
 			} catch (IOException | RuntimeException e) {
 				Telemetry.recordFailure(span, e);
@@ -187,17 +210,71 @@ class TestModelExport {
 		assertThat(root.getStatus().getCode()).isEqualTo(StatusCode.STATUS_CODE_OK);
 		assertThat(attribute(root.getAttributes(), "nasdanika.command.args").getStringValue()).isEqualTo("model save");
 
-		Span save = span(spans, "Resource.save", 2);
+		// Nested in the root span: same scope
+		Span edit = span(root.getChildren(), "model.edit", 1);
+		assertThat(edit.getParentSpanId()).isEqualTo(root.getSpanId());
+
+		span(spans, "Resource.save", 2);
+		Span save = child(spans, "Resource.save", root);
 		assertThat(save.getTraceId()).isEqualTo(root.getTraceId());
-		assertThat(save.getParentSpanId()).isEqualTo(root.getSpanId());
-		long bytes = attribute(save.getAttributes(), Telemetry.IO_BYTES.getKey()).getIntValue();
+		Span editSave = child(spans, "Resource.save", edit);
+		long bytes = attribute(editSave.getAttributes(), Telemetry.IO_BYTES.getKey()).getIntValue();
 		assertThat(bytes).isEqualTo(Files.size(dir.resolve("model.xmi")));
-		assertThat(attribute(span(spans, "URIHandler.write", 2).getAttributes(), Telemetry.IO_BYTES.getKey()).getIntValue()).isEqualTo(bytes);
+		span(spans, "URIHandler.write", 2);
+		assertThat(spans.stream().filter(s -> s.getName().equals("URIHandler.write")))
+				.anySatisfy(write -> assertThat(attribute(write.getAttributes(), Telemetry.IO_BYTES.getKey()).getIntValue()).isEqualTo(bytes));
 		assertThat(spans).extracting(Span::getName).contains("ResourceSetContributor.configure");
+
+		// --- Changes ---
+		// Recorded forward, under the spans they were recorded in, referencing the spans they were made in
+		ChangeDescription created = root.getChangeDescription();
+		assertThat(created.getSpan()).isSameAs(root);
+		assertThat(created.getObjectChanges()).isEmpty();
+		assertThat(created.getObjectsToAttach()).singleElement()
+				.satisfies(e -> assertThat(((EPackage) e).getName()).isEqualTo("root"));
+		assertThat(created.getResourceChanges()).singleElement().satisfies(rc -> {
+			assertThat(rc.getResourceURI()).endsWith("model.xmi");
+			assertThat(((SpanReference) rc).getSpan()).isSameAs(root);
+			assertThat(rc.getListChanges()).singleElement().satisfies(lc -> {
+				assertThat(lc.getKind()).isEqualTo(ChangeKind.ADD_LITERAL);
+				assertThat(lc.getValues()).containsExactlyElementsOf(created.getObjectsToAttach());
+			});
+		});
+
+		ChangeDescription edited = edit.getChangeDescription();
+		assertThat(edited.getSpan()).isSameAs(edit);
+		assertThat(edited.getResourceChanges()).isEmpty();
+		assertThat(edited.getObjectsToAttach()).singleElement()
+				.satisfies(e -> assertThat(((EClass) e).getName()).isEqualTo("Root"));
+		assertThat(edited.getObjectChanges()).singleElement().satisfies(entry -> {
+			// A proxy to the model, resolved on access
+			EPackage changed = (EPackage) entry.getKey();
+			assertThat(changed.eIsProxy()).isFalse();
+			assertThat(changed.eResource().getURI().lastSegment()).isEqualTo("model.xmi");
+			assertThat(changed.getName()).isEqualTo("root");
+			assertThat(entry.getValue())
+					.allSatisfy(fc -> assertThat(((SpanReference) fc).getSpan()).isSameAs(edit))
+					.extracting(fc -> fc.getFeature().getName())
+					.containsExactlyInAnyOrder("nsURI", "eClassifiers");
+			FeatureChange classifiers = entry.getValue().stream()
+					.filter(fc -> fc.getFeature() == EcorePackage.Literals.EPACKAGE__ECLASSIFIERS)
+					.findFirst()
+					.orElseThrow();
+			assertThat(classifiers.getListChanges()).hasSize(2);
+			assertThat(classifiers.getListChanges().get(0).getKind()).isEqualTo(ChangeKind.REMOVE_LITERAL);
+			assertThat(classifiers.getListChanges().get(1).getKind()).isEqualTo(ChangeKind.ADD_LITERAL);
+			assertThat(classifiers.getListChanges().get(1).getReferenceValues()).containsExactlyElementsOf(edited.getObjectsToAttach());
+		});
+		// Removed objects are kept as they were when removed
+		assertThat(edited.getRemovedObjects()).singleElement().satisfies(e -> {
+			EClass removed = (EClass) e;
+			assertThat(removed.getName()).isEqualTo("Obsolete");
+			assertThat(removed.getEStructuralFeatures()).extracting(EStructuralFeature::getName).containsExactly("label");
+		});
 
 		// --- Logs ---
 		// Log records emitted in a span are added to it
-		assertThat(root.getLogRecords()).hasSize(3).allSatisfy(l -> assertThat(l.getSpanId()).isEqualTo(root.getSpanId()));
+		assertThat(root.getLogRecords()).hasSize(2).allSatisfy(l -> assertThat(l.getSpanId()).isEqualTo(root.getSpanId()));
 		assertThat(root.getLogRecords().get(0).getBody().getStringValue()).isEqualTo("Hello from the root command");
 		assertThat(root.getLogRecords().get(1).getEventName()).isEqualTo(Telemetry.RESOURCE_CREATED_EVENT);
 		assertThat(save.getLogRecords()).extracting(LogRecord::getEventName).containsExactly(Telemetry.RESOURCE_SAVED_EVENT);
@@ -218,7 +295,7 @@ class TestModelExport {
 		// --- Metrics ---
 		MetricsData metrics = load(metricsURI, MetricsData.class);
 		Sum saved = (Sum) metric(metrics, "nsdk.models.saved");
-		assertThat(saved.getDataPoints()).singleElement().satisfies(p -> assertThat(p.getAsInt()).isEqualTo(1L));
+		assertThat(saved.getDataPoints()).singleElement().satisfies(p -> assertThat(p.getAsInt()).isEqualTo(2L));
 		Histogram size = (Histogram) metric(metrics, "nsdk.model.size");
 		assertThat(size.getDataPoints()).singleElement().satisfies(p -> {
 			assertThat(p.getSum()).isEqualTo((double) bytes);
@@ -243,6 +320,13 @@ class TestModelExport {
 		List<Span> named = spans.stream().filter(s -> s.getName().equals(name)).toList();
 		assertThat(named).as(name).hasSize(size);
 		return named.getFirst();
+	}
+
+	private static Span child(List<Span> spans, String name, Span parent) {
+		return spans.stream()
+				.filter(s -> s.getName().equals(name) && parent.getSpanId().equals(s.getParentSpanId()))
+				.findFirst()
+				.orElseThrow(() -> new AssertionError("No " + name + " in " + parent.getName()));
 	}
 
 	private static AnyValue attribute(List<KeyValue> attributes, String key) {

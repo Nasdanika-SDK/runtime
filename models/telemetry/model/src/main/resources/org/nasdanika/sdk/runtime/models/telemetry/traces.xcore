@@ -61,7 +61,7 @@ class ScopeSpans {
 	/**
 	 * A list of Spans that originate from an instrumentation scope.
 	 */
-	contains Span[] spans
+	contains Span[] spans keys traceId, spanId
 	String schemaUrl
 }
 
@@ -166,7 +166,7 @@ class Span extends SpanId {
 	int flags
 	contains ChangeDescription changeDescription
 	contains LogRecord[] logRecords
-	contains Span[] children keys traceId, spanId
+	contains Span[] children keys spanId
 	
 	refers SpanReference[] referrers opposite span
 }
@@ -256,5 +256,7 @@ class ResourceChange extends org.eclipse.emf.ecore.change.ResourceChange, SpanRe
 }
 
 class ChangeDescription extends org.eclipse.emf.ecore.change.ChangeDescription, SpanReference {
+	
+	contains org.eclipse.emf.ecore.EObject[] removedObjects
 	
 }

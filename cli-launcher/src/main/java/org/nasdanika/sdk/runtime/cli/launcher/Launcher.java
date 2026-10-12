@@ -48,7 +48,6 @@ import io.opentelemetry.sdk.trace.SdkTracerProvider;
 import io.opentelemetry.sdk.trace.export.BatchSpanProcessor;
 import picocli.CommandLine;
 
-
 public class Launcher {
 			
 	private static String getVersion() {
@@ -170,7 +169,10 @@ public class Launcher {
 			CapabilityLoader capabilityLoader = CapabilityLoader.of(capabilityFactorySource);
 			
 			// Sub-commands, sorting alphabetically
-			Requirement<SubCommandRequirement, CommandLine> subCommandRequirement = ServiceCapabilityFactory.createRequirement(CommandLine.class,  new SubCommandRequirement(Collections.emptyList(), new AtomicInteger()));
+			Requirement<SubCommandRequirement, CommandLine> subCommandRequirement = ServiceCapabilityFactory.createRequirement(
+					CommandLine.class,  
+					new SubCommandRequirement(Collections.emptyList(), new AtomicInteger()));
+			
 			for (Object rcmd: capabilityLoader.loadAll(subCommandRequirement)) {
 				if (rcmd instanceof CommandLine rootCommand) {
 					rootCommand.addSubcommand(new ShellCommand(rootCommand));
@@ -192,7 +194,6 @@ public class Launcher {
 
 	public static void main(String[] args) throws IOException {
         LocalDateTime now = LocalDateTime.now();
-        DateTimeFormatter formatter = DateTimeFormatter.ofPattern("yyyy-MM-dd HH:mm:ss.SSS");
  		
 		Path dir = resolveHome().resolve(
 				"telemetry", 

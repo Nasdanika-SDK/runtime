@@ -26,6 +26,7 @@ import java.util.function.Function;
 import java.util.stream.Stream;
 
 import io.opentelemetry.api.logs.Logger;
+import io.opentelemetry.api.metrics.Meter;
 import io.opentelemetry.api.trace.Span;
 import picocli.CommandLine.Option;
 import picocli.CommandLine.Parameters;
@@ -105,7 +106,7 @@ public abstract class AbstractLauncherCommand extends AbstractModuleResolverComm
 	private String javaCommand;
 		
 	@Override
-	protected Integer execute(Span span, Logger logger) throws Exception {
+	protected Integer execute(Span span, Logger logger, Meter meter) throws Exception {
 		if (output == null) {
 			System.out.println(generateLauncherCommand());
 		} else {

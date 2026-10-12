@@ -10,6 +10,7 @@ import org.nasdanika.sdk.runtime.common.Description;
 import org.nasdanika.sdk.runtime.common.services.EObjectSupplier;
 
 import io.opentelemetry.api.logs.Logger;
+import io.opentelemetry.api.metrics.Meter;
 import io.opentelemetry.api.trace.Span;
 import picocli.CommandLine.Command;
 import picocli.CommandLine.Mixin;
@@ -39,7 +40,7 @@ public class SaveModelCommand extends CommandBase {
 	private ResourceSetMixIn resourceSetMixIn;
 	
 	@Override
-	protected Integer execute(Span span, Logger logger) throws Exception {
+	protected Integer execute(Span span, Logger logger, Meter meter) throws Exception {
 		ResourceSet resourceSet = resourceSetMixIn.createResourceSet();
 		URI resourceURI = URI.createFileURI(output.getAbsolutePath());		
 		Resource resource = resourceSet.createResource(resourceURI);

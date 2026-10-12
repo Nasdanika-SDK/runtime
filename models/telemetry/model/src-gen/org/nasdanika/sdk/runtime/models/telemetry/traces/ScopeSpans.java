@@ -69,7 +69,7 @@ public interface ScopeSpans extends EObject {
 	 * <!-- end-model-doc -->
 	 * @return the value of the '<em>Spans</em>' containment reference list.
 	 * @see org.nasdanika.sdk.runtime.models.telemetry.traces.TracesPackage#getScopeSpans_Spans()
-	 * @model containment="true"
+	 * @model containment="true" keys="traceId spanId"
 	 * @generated
 	 */
 	EList<Span> getSpans();

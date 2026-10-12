@@ -14,6 +14,7 @@ import org.nasdanika.sdk.runtime.common.NasdanikaException;
 import org.nasdanika.sdk.runtime.common.Util;
 
 import io.opentelemetry.api.logs.Logger;
+import io.opentelemetry.api.metrics.Meter;
 import io.opentelemetry.api.trace.Span;
 import picocli.CommandLine;
 import picocli.CommandLine.Command;
@@ -53,7 +54,7 @@ public class ShellCommand extends CommandBase {
 	}
 	
 	@Override
-	protected Integer execute(Span span, Logger logger) throws Exception {
+	protected Integer execute(Span span, Logger logger, Meter meter) throws Exception {
 		Supplier<Boolean> exitCommand = createExitCommand();
 		root.addSubcommand(exitCommand);
 		PrintWriter oldOut = root.getOut();
