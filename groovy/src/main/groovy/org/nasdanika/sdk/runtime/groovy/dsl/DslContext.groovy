@@ -1,0 +1,857 @@
+package org.nasdanika.sdk.runtime.groovy.dsl
+
+import org.eclipse.emf.common.util.URI
+import org.eclipse.emf.ecore.EClass
+import org.eclipse.emf.ecore.EClassifier
+import org.eclipse.emf.ecore.EObject
+import org.eclipse.emf.ecore.EPackage
+import org.eclipse.emf.ecore.EReference
+import org.eclipse.emf.ecore.EStructuralFeature
+import org.eclipse.emf.ecore.InternalEObject
+import org.eclipse.emf.ecore.resource.Resource
+import org.eclipse.emf.ecore.resource.ResourceSet
+import org.eclipse.emf.ecore.util.EcoreUtil
+import org.nasdanika.sdk.runtime.common.telemetry.Telemetry
+
+import io.opentelemetry.api.common.Attributes
+import io.opentelemetry.api.common.AttributesBuilder
+import io.opentelemetry.api.logs.Logger
+import io.opentelemetry.api.logs.Severity
+import io.opentelemetry.api.trace.Span
+import io.opentelemetry.api.trace.Tracer
+
+/**
+ * Metamodel-driven context for the reflective DSL. This is the {@code ProductManagementGroovyDsl}
+ * plumbing (factory, id index, deferred resolution, cross-file {@code ref()}) generalised so that
+ * <em>nothing</em> is hard-coded per {@link EClass} or per feature: every fact the builder needs is
+ * read from the {@link EPackage} at construction time.
+ *
+ * <p>Drop-in starting point: it lives alongside the hand-written builders rather than replacing them.
+ * See groovy-kotlin-dsl-design.md &sect;5.6.</p>
+ */
+class DslContext {
+
+	interface Resolver {
+		
+        EClass classByName(EObject base, String name)
+        EClassifier classifierByName(EObject base, String name)
+
+		/**
+		 * Selects a concrete class for a name, reporting the matches the selected class superseded
+		 * because it is more specific. The DSL calls this method rather than
+		 * {@link #classByName(EObject, String)}, and records superseded classes in its telemetry. The
+		 * default wraps {@link #classByName(EObject, String)} and supersedes nothing.
+		 *
+		 * @return the selection, or {@code null} when nothing matches
+		 */
+		default Selection<EClass> selectClass(EObject base, String name) {
+			EClass eClass = classByName(base, name)
+			eClass == null ? null : new Selection<EClass>(eClass, [])
+		}
+
+		/**
+		 * Selects a classifier for a name, see {@link #selectClass(EObject, String)}. The default wraps
+		 * {@link #classifierByName(EObject, String)}.
+		 */
+		default Selection<EClassifier> selectClassifier(EObject base, String name) {
+			EClassifier eClassifier = classifierByName(base, name)
+			eClassifier == null ? null : new Selection<EClassifier>(eClassifier, [])
+		}
+
+		EClass classByInstanceClass(EObject base, Class clazz)
+		List<EClass> candidates(EObject base, EClass featureType, EClass targetType)
+				
+		/**
+		 * Returns a map of decapitalised EClass names to concrete EClasses in the metamodel.
+		 * @return
+		 */
+		Map<String, EClass> names();
+
+        default Map<String, Object> bindings() {
+            return [:]
+        }
+		
+		/**
+		 * Registers a global object by id, so that it can be referenced from other resources.
+		 * @param id
+		 * @param element
+		 */
+		void global(Object id, EObject element);
+		
+		/**
+		 * Finds an object by id (URI).
+		 * @param id
+		 * @return
+		 */
+		EObject get(String id);
+
+		/**
+		 * Records the source location an object or feature value was authored at. Called during loading
+		 * through {@link DslContext#mark(EObject, EStructuralFeature)}: with {@code feature == null} when
+		 * an {@link EObject} is created, and with the feature when a feature value is set on it.
+		 *
+		 * <p>{@code line} is the 1-based line of the offending statement in the {@code .groovy} script,
+		 * recovered from the Groovy runtime stack (or {@code -1} when unknown). {@code col} is always
+		 * {@code -1}: the Groovy runtime does not expose columns in stack traces (see
+		 * {@link DslContext#located(Throwable)}); the parameter is kept for a future AST-based
+		 * implementation that could supply it.</p>
+		 *
+		 * <p>The default is a no-op; override to associate line/column information with loaded objects
+		 * (e.g. for hyperlinking diagnostics or navigation back to source).</p>
+		 *
+		 * @param eObject the object being created, or the object carrying the feature being set
+		 * @param feature the feature being set, or {@code null} when {@code eObject} itself was created
+		 * @param line 1-based script line, or {@code -1} when unknown
+		 * @param col always {@code -1} (columns are not exposed by the Groovy runtime)
+		 */
+		default void mark(EObject eObject, EStructuralFeature feature, int line, int col) {
+			// no-op by default
+		}
+
+        /**
+         * Creates a new object to add to a given EReference and initialises it with the given value -
+         * the <em>short</em> authoring form {@code evaluator 'a.b.c'}, where the reference type is
+         * abstract or has several implementations and this resolver knows which concrete type to
+         * default to and which feature to initialise from the value (e.g. a {@code SpelEvaluator} with
+         * its {@code expression} attribute set to the string).
+         *
+         * <p>{@code value} is {@code null} when only the default type is requested - the
+         * {@code evaluator { ... }} form, where the closure, not a value, supplies the configuration.
+         * It may also be passed alongside a closure ({@code evaluator('a.b.c') { documentation '...' }}),
+         * which is then run against the created object, so the short form extends to the full authoring
+         * surface.</p>
+         *
+         * <p>The returned object is attached to {@code eReference} as-is: it is never wrapped in a
+         * {@code *Reference} type (see {@link DslContext#referenceWrapperFor}), because it was created
+         * <em>for</em> this reference rather than resolved from elsewhere.</p>
+         *
+         * <p>The default implementation handles only the {@code value == null} case, and only for a
+         * reference typed by a concrete {@link EClass}: it instantiates that type, which is what the
+         * plain {@code evaluator { ... }} form means when the metamodel leaves no choice to make. For a
+         * value, or for an abstract/interface reference type, it returns {@code null} - "this reference
+         * has no value/default-type syntax": a {@link CharSequence} or {@link Closure} then keeps its
+         * usual meaning of a cross-reference selector, any other value is rejected, and a closure on an
+         * abstract type reports that a concrete type must be named. Note the converse - creation is
+         * tried first, so a reference for which this method returns non-null for a string can no longer
+         * take a path/URI selector.</p>
+         *
+         * @param eReference the reference the created object will be added to
+         * @param value the authored value, or {@code null} when only a default type is requested
+         * @return the created object, or {@code null} to decline
+         */
+        default EObject create(EReference eReference, Object value) {
+            if (value == null && eReference.EType instanceof EClass) {
+                EClass eType = (EClass) eReference.EType
+                if (!eType.abstract && !eType.interface) {
+                    return (EObject) eType.EPackage.EFactoryInstance.create(eType)
+                }
+            }
+            return null;
+        }
+
+	}
+	
+    final Resolver resolver
+    final Resource resource
+    final ResourceSet resourceSet
+    final URI baseURI
+    final Tracer tracer
+    final Logger logger
+
+    /**
+     * A reference resolver run after the script has been evaluated (so every id is indexed). The
+     * script frame is no longer on the stack then, so the line, and the element and feature the
+     * reference belongs to, are captured when it is deferred, for diagnostics and telemetry.
+     */
+    private static final class Deferred {
+
+        final int line
+        final EObject element
+        final EStructuralFeature feature
+        final Closure resolver
+
+        Deferred(int line, EObject element, EStructuralFeature feature, Closure resolver) {
+            this.line = line
+            this.element = element
+            this.feature = feature
+            this.resolver = resolver
+        }
+
+    }
+
+    private final List<Deferred> deferred = []
+    /** Top-level elements created by root entry points; the terminal stage adds them to the resource. */
+    private final List<EObject> roots = []
+    /** Cache for {@link #referenceWrapperFor}: 'featureType->targetType' -> wrapper EClass (or NONE). */
+    private final Map<String, EClass> wrapperCache = [:]
+    private static final EClass NONE = org.eclipse.emf.ecore.EcoreFactory.eINSTANCE.createEClass()
+
+    /**
+     * Save callback registered by the script through {@code onSave { outputStream, options -> ... }}.
+     * When present it takes over persistence (see {@link #save(OutputStream, Map)}); when absent the
+     * handler falls back to the read-only default (throwing {@code UnsupportedOperationException}).
+     */
+    private Closure saveHandler
+
+    DslContext(Resolver resolver, Resource resource) {
+        this.resolver = resolver
+        this.resource = resource
+        this.resourceSet = resource?.resourceSet
+        this.baseURI = resource?.URI
+        def openTelemetry = Telemetry.of(resource)
+        this.tracer = Telemetry.tracer(openTelemetry)
+        this.logger = Telemetry.logger(openTelemetry)
+    }
+
+    // --- factory / registry ---------------------------------------------------------------------
+
+    EObject create(EClass type) {
+        (EObject) type.EPackage.EFactoryInstance.create(type)
+    }
+
+    /**
+     * Asks the resolver to create an element for {@code eReference} from an arbitrary {@code value}
+     * (or, with {@code value == null}, an element of the reference's default type) - see
+     * {@link Resolver#create(EReference, Object)}. The result is type-checked against the reference.
+     * Like an element created from an explicit type token, it is marked with its source location by
+     * {@link #loading(EObject, List, Attributes, Closure)}.
+     *
+     * @return the created element, or {@code null} when the resolver declines - callers turn that into
+     *         the error appropriate for the form they were invoked from.
+     */
+    EObject create(EReference eReference, Object value) {
+        EObject created = resolver.create(eReference, value)
+        if (created == null) {
+            return null
+        }
+        if (!eReference.EType.isInstance(created)) {
+            throw new IllegalStateException(
+                "Resolver created a ${created.eClass().name} for ${eReference.EContainingClass.name}.${eReference.name}, " +
+                "which is not a ${eReference.EType.name}")
+        }
+        created
+    }
+
+    /**
+     * Register an element as a global object under the given id (URI), so it can be referenced from
+     * other resources. Backs the {@code global '<uri>'} keyword in {@link ReflectiveBuilder}. Logged
+     * with the id, the element type and the script line.
+     */
+    void global(Object id, EObject element) {
+        resolver.global(id, element)
+        Telemetry.log(
+            logger,
+            Severity.DEBUG,
+            DslTelemetry.GLOBAL_EVENT,
+            "Registered global ${id}",
+            locationAttributes(scriptLine(new Throwable()))
+                .put(DslTelemetry.GLOBAL_URI, String.valueOf(id))
+                .put(DslTelemetry.TYPE, DslTelemetry.id(element.eClass()))
+                .build())
+    }
+
+    /** Concrete EClass registered under a decapitalised name, or {@code null}. */
+    EClass classByName(EObject base, String name) {
+        selectClass(base, name)?.selected()
+    }
+
+    /** Concrete EClass for a name and the classes it superseded, or {@code null}. */
+    Selection<EClass> selectClass(EObject base, String name) {
+        resolver.selectClass(base, name)
+    }
+
+    /** Coerce a type token (EClass, Class, or name String) to an EClass, or {@code null}. */
+    EClass toEClass(EObject base, Object token) {
+        selectType(base, token)?.selected()
+    }
+
+    /**
+     * Coerce a type token to an EClass, see {@link #toEClass(EObject, Object)}. Only a name can
+     * supersede classes.
+     */
+    Selection<EClass> selectType(EObject base, Object token) {
+        if (token instanceof EClass) {
+            return new Selection<EClass>((EClass) token, [])
+        }
+        if (token instanceof Class) {
+            EClass eClass = resolver.classByInstanceClass(base, (Class) token)
+            return eClass == null ? null : new Selection<EClass>(eClass, [])
+        }
+        if (token instanceof CharSequence) {
+            return resolver.selectClass(base, token.toString())
+        }
+        null
+    }
+
+    /**
+     * Resolve a reference selector relative to {@code base}. A selector is one of:
+     *
+     * <ul>
+     *   <li>an {@link EObject} - returned as-is (already resolved);</li>
+     *   <li>a {@link Closure} - cloned, given {@code base} as its delegate (DELEGATE_FIRST) and as
+     *       its single argument, then invoked; whatever it returns is resolved recursively, so a
+     *       closure may yield either an {@link EObject} or a path/URI {@link String}. This lets
+     *       authors navigate the model directly, e.g.
+     *       {@code { eContainer().eContainer().getEClassifier('Person') }};</li>
+     *   <li>a {@link CharSequence} - a relative path / cross-resource URI, resolved as described in
+     *       {@link #resolveRelativePath(EObject, String)}.</li>
+     * </ul>
+     */
+    EObject resolveRelative(EObject base, Object selector) {
+        if (selector == null) {
+            return null
+        }
+        if (selector instanceof EObject) {
+            return (EObject) selector
+        }
+        if (selector instanceof Closure) {
+            Closure copy = (Closure) ((Closure) selector).clone()
+            copy.delegate = base
+            copy.resolveStrategy = Closure.DELEGATE_FIRST
+            Object result = copy.call(base)
+            return resolveRelative(base, result)            // result may be EObject or path String
+        }
+        if (selector instanceof CharSequence) {
+            return resolveRelativePath(base, selector.toString())
+        }
+        throw new IllegalArgumentException(
+            "Cannot use ${selector.getClass().name} as a reference selector")
+    }
+
+    /**
+     * Resolve a string reference expression relative to {@code base}.
+     *
+     * <ul>
+     *   <li>contains {@code '#'} - a (possibly relative) cross-resource URI, resolved through the
+     *       resource set (this is where global objects and proxies live);</li>
+     *   <li>leading {@code '/'} - anchored at the resource root container of {@code base};</li>
+     *   <li>otherwise - relative to {@code base} itself.</li>
+     * </ul>
+     *
+     * <p>Each forward path step is a standard EMF URI-fragment segment - {@code @feature},
+     * {@code @feature.index} or {@code @feature[key='value']} (eKeys) - resolved by EMF's own
+     * {@link InternalEObject#eObjectForURIFragmentSegment}, so eKey/index/single-valued matching,
+     * value decoding and escaping all come for free. The leading {@code '@'} is optional in author
+     * input (prepended here); EMF requires predicate values to be quoted, e.g.
+     * {@code personas[id='pavel']}. A {@code '..'} step navigates to {@link EObject#eContainer}.</p>
+     *
+     * <p>Note: resolution matches the named attribute and does <em>not</em> require eKeys to be
+     * declared on the reference; eKeys are only needed when EMF must <em>emit</em> this fragment
+     * form (proxy URIs / serialization).</p>
+     */
+    EObject resolveRelativePath(EObject base, String expr) {
+		if (!expr.contains('/')) {
+			Selection<EClassifier> selection = resolver.selectClassifier(base, expr)
+			if (selection != null) {
+                if (selection.superseded()) {
+                    Span.current()
+                        .setAttribute(DslTelemetry.TYPE, DslTelemetry.id(selection.selected()))
+                        .setAttribute(DslTelemetry.SUPERSEDED, DslTelemetry.ids(selection.superseded()))
+                }
+                return selection.selected()
+            }
+		}
+			
+        if (expr.contains('#')) {
+            if (resourceSet == null) {
+                return null
+            }
+            URI uri = URI.createURI(expr)
+            if (baseURI != null) {
+                uri = uri.resolve(baseURI)
+            }
+            return resourceSet.getEObject(uri, true)        // may yield a proxy, resolved lazily
+        }
+
+        EObject cur
+        if (expr.startsWith('/')) {
+            cur = base != null ? EcoreUtil.getRootContainer(base) : (resource != null && !resource.contents.empty ? resource.contents[0] : null)
+        } else {
+            cur = base
+        }
+        if (cur == null) {
+            throw new IllegalStateException("Cannot resolve relative reference '${expr}' without a context object")
+        }
+		
+        for (String seg : expr.tokenize('/')) {
+            seg = seg.trim()
+            if (!seg) {
+                continue
+            }
+            if (seg == '..') {
+                cur = cur.eContainer()
+                if (cur == null) {
+                    throw new IllegalStateException("'..' steps past the resource root in '${expr}'")
+                }
+                continue
+            }
+			
+			// ./<name> form to disambiguater from resolver classifiers.
+            if (seg == '.') {
+                continue
+            }
+            if (!seg.startsWith('@')) {
+                seg = '@' + seg                             // accept terse 'personas[...]'
+            }
+            cur = ((InternalEObject) cur).eObjectForURIFragmentSegment(seg)
+            if (cur == null) {
+                throw new IllegalStateException("Cannot resolve segment '${seg}' in '${expr}'")
+            }
+        }
+        cur
+    }
+
+    /**
+     * Explicit reference helper. The {@code selector} may be a path/URI String
+     * ({@code ref('../personas[id=\'pavel\']')}, {@code ref('a.pm#//@x')}), an {@link EObject}, or a
+     * {@link Closure} that computes one - see {@link #resolveRelative(EObject, Object)}.
+     */
+    EObject ref(Object selector) {
+        EObject resolved = resolveRelative(null, selector)
+        if (resolved == null) {
+            throw new IllegalStateException("Cannot resolve reference '" + selector + "'")
+        }
+        resolved
+    }
+
+    /**
+     * Loads another resource and returns it, backing the {@code loadResource '<uri>'} keyword. This is
+     * what lets a script <em>derive</em> a model from data that lives elsewhere - iterate a Draw.io
+     * diagram and emit an architecture model, read a spreadsheet and emit a product backlog - instead
+     * of authoring every element by hand.
+     *
+     * <p>{@code uri} is resolved against this script's own URI when relative, so a sibling file is just
+     * {@code loadResource 'diagram.drawio'}. Loading goes through the script resource's
+     * {@link ResourceSet}, which means every registered URI handler, resource factory and content
+     * handler applies - including other DSL scripts - and a resource already loaded in that set is
+     * returned as-is rather than re-read.</p>
+     *
+     * <p>Because the loaded elements share the resource set, they can be referenced directly: hand an
+     * {@link EObject} from the returned resource to any feature, or reach into it with a {@code '#'}
+     * selector / {@link #ref(Object)}.</p>
+     *
+     * <p>Loading runs in a {@code Loading resource} span with the resolved URI and the script line.</p>
+     *
+     * @param uri absolute, or relative to the script's URI
+     * @return the loaded resource - never {@code null}; failures are reported as exceptions tagged with
+     *         the script line
+     */
+    Resource loadResource(String uri) {
+        if (uri == null) {
+            throw new IllegalArgumentException("loadResource requires a URI")
+        }
+        if (resourceSet == null) {
+            throw new IllegalStateException("Cannot load '${uri}': this script's resource has no resource set")
+        }
+        URI resolved = URI.createURI(uri)
+        if (resolved.isRelative() && baseURI != null && !baseURI.isRelative() && baseURI.isHierarchical()) {
+            resolved = resolved.resolve(baseURI)
+        }
+        AttributesBuilder attributes = locationAttributes(scriptLine(new Throwable()))
+            .put(DslTelemetry.TARGET_URI, resolved.toString())
+        inSpan('Loading resource', attributes.build()) {
+            Resource loaded = resourceSet.getResource(resolved, true)
+            if (loaded == null) {
+                throw new IllegalStateException("Cannot load resource '${uri}' (resolved to '${resolved}')")
+            }
+            loaded
+        }
+    }
+
+    /**
+     * Resolves a prototype and returns a <em>detached deep copy</em> of it, backing the
+     * {@code copy '<uri>'} keyword. This is the layering story: the bulk of a model is authored where
+     * it is cheapest - a Draw.io diagram, a Markdown file, another DSL script - and the script copies
+     * an element from there and layers the parts that only code can express on top, exactly the way a
+     * fresh element is populated.
+     *
+     * <p>The copy is a <b>snapshot</b>, not a live link: later edits to the prototype do not propagate,
+     * and edits to the copy never touch the prototype. Cross-references that point <em>out</em> of the
+     * copied subtree are preserved as-is, so a copied element still refers to the original's targets;
+     * references <em>within</em> the subtree are rewired to the copies (this is {@link EcoreUtil#copy}).</p>
+     *
+     * @param base the element relative selectors resolve against, or {@code null} at the top level
+     * @param selector anything {@link #resolveRelative(EObject, Object)} accepts - typically a
+     *        {@code '<resource uri>#<fragment>'} string, but an {@link EObject} or a navigation
+     *        {@link Closure} works too
+     */
+    EObject copy(EObject base, Object selector) {
+        EObject prototype = prototype(base, selector)
+        EObject copy = EcoreUtil.copy(prototype)
+        loading(copy, [], prototypeAttributes(prototype), null)
+    }
+
+    /** Resolves the element a {@code copy} is made from. */
+    EObject prototype(EObject base, Object selector) {
+        if (selector == null) {
+            throw new IllegalArgumentException("copy requires a prototype selector")
+        }
+        EObject prototype = resolveRelative(base, selector)
+        if (prototype == null) {
+            throw new IllegalStateException("Cannot resolve prototype '${selector}'")
+        }
+        prototype
+    }
+
+    /** The prototype's URI, for the {@code Loading} span of its copy. */
+    Attributes prototypeAttributes(EObject prototype) {
+        Attributes.of(DslTelemetry.PROTOTYPE_URI, String.valueOf(EcoreUtil.getURI(prototype)))
+    }
+
+    /**
+     * A detached copy resolved without a context element - {@code dsl.copy('<uri>')}. Use it where the
+     * copy must be placed by hand rather than auto-routed, e.g. into a named feature:
+     * {@code members dsl.copy('base.xmi#//@people.0')}. Relative paths need a context element, so pass
+     * an absolute URI, an {@link EObject}, or use the {@code copy} keyword instead.
+     */
+    EObject copy(Object selector) {
+        copy((EObject) null, selector)
+    }
+
+    /**
+     * Top-level {@code copy('<uri>') { ... }}: a copied element becomes a root of this resource, the
+     * way {@code eObject('<type>') { ... }} does for a newly created one.
+     */
+    EObject rootCopy(Object selector, Closure cl) {
+        EObject prototype = prototype((EObject) null, selector)
+        EObject copy = EcoreUtil.copy(prototype)
+        loading(copy, [], prototypeAttributes(prototype)) {
+            if (cl != null) {
+                run(cl, new ReflectiveBuilder(this, copy))
+            }
+        }
+        roots << copy
+        copy
+    }
+
+    void defer(Closure resolver) {
+        defer(null, null, resolver)
+    }
+
+    /**
+     * Defers a reference resolver until the script has been evaluated.
+     *
+     * @param element the element the reference belongs to, for telemetry, may be {@code null}
+     * @param feature the reference, for telemetry, may be {@code null}
+     */
+    void defer(EObject element, EStructuralFeature feature, Closure resolver) {
+        deferred << new Deferred(scriptLine(new Throwable()), element, feature, resolver)
+    }
+
+    // --- diagnostics ----------------------------------------------------------------------------
+
+    /**
+     * Groovy infrastructure that authors a {@code .groovy} stack frame but isn't the user's script:
+     * the Groovy runtime/engine and this DSL's own builder classes (all compiled from Groovy). A
+     * {@code .groovy} frame outside these prefixes belongs to the script being loaded.
+     */
+    private static final List<String> LIB_PREFIXES = [
+        'org.nasdanika.', 'groovy.', 'org.codehaus.groovy.', 'org.apache.groovy.'
+    ]
+
+    /**
+     * Tag a build/evaluation failure with the source location it came from. The original throw site
+     * lives in the deepest cause, so the cause chain is scanned deepest-first for the first script
+     * frame (line recovered from the Groovy stack trace; column is not exposed by the runtime, so it
+     * stays {@code -1}); the root cause supplies the message. Already-located exceptions are returned
+     * unchanged so wrapping is idempotent.
+     */
+    DslException located(Throwable t) {
+        if (t instanceof DslException) {
+            return (DslException) t
+        }
+        List<Throwable> chain = []
+        for (Throwable cur = t; cur != null && !chain.contains(cur); cur = cur.cause) {
+            chain << cur
+        }
+        int line = -1
+        for (Throwable cur : chain.reverse()) {     // deepest cause first - that's the throw site
+            int l = scriptLine(cur)
+            if (l > 0) {
+                line = l
+                break
+            }
+        }
+        Throwable root = chain.last()
+        String message = root.message ?: root.toString()
+        new DslException(message, t, baseURI, line, -1)
+    }
+
+    /**
+     * Records the source location of a just-created object ({@code feature == null}) or a just-set
+     * feature value, by recovering the authoring script line from the current stack - the same
+     * mechanism {@link #located(Throwable)} uses for diagnostics - and forwarding it to
+     * {@link Resolver#mark}. Column is not exposed by the Groovy runtime, so it is reported as
+     * {@code -1}. Invoked from {@link ReflectiveBuilder} at the object-creation and feature-setting
+     * points, while the user's script frame is still on the stack.
+     */
+    void mark(EObject eObject, EStructuralFeature feature) {
+        resolver.mark(eObject, feature, scriptLine(new Throwable()), -1)
+    }
+
+    // --- telemetry ------------------------------------------------------------------------------
+
+    /**
+     * Marks a created element and runs its configuration in a {@code Loading <Type>} span with the
+     * script URI and line, the element type, and the types it superseded.
+     *
+     * @param superseded less specific types the element's type was selected over
+     * @param attributes further span attributes, may be {@code null}
+     * @param body runs in the span, may be {@code null}
+     * @return the element
+     */
+    EObject loading(EObject element, List<? extends EClassifier> superseded, Attributes attributes, Closure body) {
+        int line = scriptLine(new Throwable())
+        resolver.mark(element, null, line, -1)
+        AttributesBuilder builder = locationAttributes(line).put(DslTelemetry.TYPE, DslTelemetry.id(element.eClass()))
+        if (superseded) {
+            builder.put(DslTelemetry.SUPERSEDED, DslTelemetry.ids(superseded))
+        }
+        if (attributes != null) {
+            builder.putAll(attributes)
+        }
+        inSpan("Loading ${element.eClass().name}", builder.build()) {
+            body?.call()
+            element
+        }
+    }
+
+    /**
+     * Marks a feature of an element as authored at the current script line and runs the body in a
+     * {@code Setting <feature>} span. A containment's {@code Loading} spans nest in it.
+     */
+    def setting(EObject element, EStructuralFeature feature, Closure body) {
+        int line = scriptLine(new Throwable())
+        resolver.mark(element, feature, line, -1)
+        Attributes attributes = locationAttributes(line)
+            .put(DslTelemetry.FEATURE, feature.name)
+            .put(DslTelemetry.FEATURE_CLASS, DslTelemetry.id(feature.EContainingClass))
+            .put(DslTelemetry.FEATURE_KIND, DslTelemetry.kind(feature))
+            .build()
+        inSpan("Setting ${feature.name}", attributes, body)
+    }
+
+    /** The script URI and, when known, the line. */
+    private AttributesBuilder locationAttributes(int line) {
+        AttributesBuilder builder = Attributes.builder()
+        if (baseURI != null) {
+            builder.put(Telemetry.RESOURCE_URI, baseURI.toString())
+        }
+        if (line > 0) {
+            builder.put(DslTelemetry.LINE, (long) line)
+        }
+        builder
+    }
+
+    private def inSpan(String name, Attributes attributes, Closure body) {
+        Telemetry.inSpan(tracer, name, attributes, { Span span -> body.call() } as Telemetry.SpanBody)
+    }
+
+    /** First user-script ({@code .groovy}, non-library) line in a throwable's stack trace, or {@code -1}. */
+    private static int scriptLine(Throwable t) {
+        for (StackTraceElement e : t.stackTrace) {
+            String fn = e.fileName
+            if (fn == null || !fn.endsWith('.groovy')) {
+                continue
+            }
+            String cn = e.className
+            if (cn != null && LIB_PREFIXES.any { cn.startsWith(it) }) {
+                continue
+            }
+            if (e.lineNumber > 0) {
+                return e.lineNumber
+            }
+        }
+        -1
+    }
+
+    /**
+     * Called by the terminal normalise stage, after the script has been evaluated. Runs in a
+     * {@code Resolving references} span, with a {@code Resolving <feature>} span per reference carrying
+     * the line the reference was authored on.
+     */
+    void resolveDeferred() {
+        inSpan('Resolving references', Attributes.of(DslTelemetry.REFERENCES, (long) deferred.size())) {
+            for (Deferred entry : deferred) {
+                AttributesBuilder attributes = locationAttributes(entry.line)
+                if (entry.feature != null) {
+                    attributes
+                        .put(DslTelemetry.FEATURE, entry.feature.name)
+                        .put(DslTelemetry.FEATURE_CLASS, DslTelemetry.id(entry.feature.EContainingClass))
+                        .put(DslTelemetry.FEATURE_KIND, DslTelemetry.kind(entry.feature))
+                }
+                inSpan("Resolving ${entry.feature?.name ?: 'reference'}", attributes.build()) {
+                    try {
+                        entry.resolver.call()
+                    } catch (DslException e) {
+                        throw e
+                    } catch (RuntimeException e) {
+                        // No script frame on the stack now; use the line captured when this was deferred.
+                        throw new DslException(e.message ?: e.toString(), e, baseURI, entry.line, -1)
+                    }
+                }
+            }
+        }
+    }
+
+    List<EObject> getRoots() {
+        roots
+    }
+
+    // --- save support ---------------------------------------------------------------------------
+
+    /**
+     * Registers a save callback backing the {@code onSave { source, outputStream, options -> ... }}
+     * keyword - a self-writing script. The callback is invoked on save (see
+     * {@link #save(String, OutputStream, Map)}) with three arguments:
+     *
+     * <ul>
+     *   <li>{@code source} - the original {@code .groovy} script text this resource was loaded from,
+     *       so the callback can write it back verbatim, or emit a modified version (e.g. append DSL
+     *       fragments for newly discovered/modified objects);</li>
+     *   <li>{@code outputStream} - the target the script content is written to;</li>
+     *   <li>{@code options} - the save options {@link Map}.</li>
+     * </ul>
+     *
+     * <p>The real effect of a save may live entirely in side effects (calling Jira APIs, updating a
+     * database); in that case the callback does its work and writes {@code source} back unchanged so
+     * the {@code .groovy} file is preserved. Registering a callback replaces any previously registered
+     * one - the last {@code onSave} wins.</p>
+     *
+     * <p>Note: the output stream is opened against the resource URI (the {@code .groovy} source itself)
+     * before this callback runs, so a callback that writes nothing leaves the source file truncated -
+     * write {@code source} back to preserve it.</p>
+     */
+    void onSave(Closure callback) {
+        this.saveHandler = callback
+    }
+
+    /** Whether a script registered an {@link #onSave(Closure) onSave} callback. */
+    boolean isSaveSupported() {
+        saveHandler != null
+    }
+
+    /**
+     * Invokes the registered {@link #onSave(Closure) onSave} callback with the original script
+     * {@code source}, the target {@code outputStream} and the save {@code options}, or throws
+     * {@link UnsupportedOperationException} when the script registered none.
+     */
+    void save(String source, OutputStream outputStream, Map<?, ?> options) {
+        if (saveHandler == null) {
+            throw new UnsupportedOperationException("Save operation is not supported: no onSave callback registered")
+        }
+        saveHandler.call(source, outputStream, options)
+    }
+
+    // --- reference-wrapper detection (the centralised cross-ref policy) --------------------------
+
+    /**
+     * The single subtlety the reflective builder must centralise: a "reference" is modelled two ways
+     * in this metamodel - as a direct {@code refers} EReference, or as containment of a {@code *Reference}
+     * wrapper carrying a single-valued {@code target}. Adding a resolved element straight into a
+     * containment feature would <em>relocate</em> it (EMF containment is exclusive), so for containment
+     * references we must instead create the wrapper and set its target.
+     *
+     * <p>This finds that wrapper purely from Ecore: a concrete subtype of {@code featureType} that has a
+     * single-valued, non-containment EReference whose type accepts {@code targetType}. When several
+     * qualify (e.g. CapabilityReference and its subtype CapabilityDependency), the most general one is
+     * chosen. Returns {@code null} when no wrapper exists (a genuine inline containment).</p>
+     */
+    EClass referenceWrapperFor(EObject base, EClass featureType, EClass targetType) {
+        String key = featureType.name + '->' + targetType.name
+        EClass cached = wrapperCache[key]
+        if (cached != null) {
+            return cached.is(NONE) ? null : cached
+        }
+		
+		List<EClass> candidates = resolver.candidates(base, featureType, targetType)
+
+        // Drop any candidate that is a subtype of another candidate -> keep the most general wrapper(s).
+        List<EClass> roots = candidates.findAll { EClass c ->
+            !candidates.any { EClass o -> !o.is(c) && o.isSuperTypeOf(c) }
+        }
+
+        EClass result = roots.size() == 1 ? roots[0] : null
+        wrapperCache[key] = (result == null ? NONE : result)
+        result
+    }
+
+    // --- entry points ---------------------------------------------------------------------------
+
+    /**
+     * Install top-level names where {@code groovy.lang.Script.invokeMethod} will find them: every
+     * concrete EClass with an <em>unambiguous</em> simple name becomes a root entry point
+     * ({@code product { }}, {@code persona { }}, ...), plus the built-in keywords {@code ref},
+     * {@code dsl}, {@code onSave}, {@code loadResource}, {@code copy('<uri>') { }} and
+     * {@code eObject('<name>') { }}.
+     * {@code eObject} accepts a simple, qualified ({@code 'c4.Component'}) or URI
+     * ({@code '<nsURI>#Component'}) name, so a class can be addressed even when its simple name
+     * collides across packages in a resource set - see {@link Resolver#classByName(EObject, String)}.
+     *
+     * <p>The built-ins are installed <em>after</em> the metamodel names, so a metamodel class whose
+     * decapitalised name collides with a keyword does not shadow it - mirroring the builder, where the
+     * keywords are real methods and therefore win over feature/type dispatch. Such a class is still
+     * instantiable through {@code eObject('<name>') { }}. Bindings contributed by the resolver come
+     * last and override everything, keeping them the final word for a metamodel-specific DSL.</p>
+     */
+    void installInto(Map<String, Object> bindings) {
+        resolver.names().each { String name, EClass type ->
+            Selection<EClass> selection = resolver.selectClass(null, name)
+            List<EClass> superseded = selection != null && selection.selected().is(type) ? selection.superseded() : []
+            bindings[name] = { Closure cl -> root(type, superseded, cl) }
+        }
+
+        bindings.ref = this.&ref
+        bindings.dsl = this
+        bindings.onSave = this.&onSave
+        bindings.loadResource = this.&loadResource
+        bindings.copy = { Object selector, Closure cl = null -> rootCopy(selector, cl) }
+        bindings.eObject = { String name, Closure cl ->
+            Selection<EClass> selection = resolver.selectClass(null, name)
+            if (selection == null) {
+                throw new IllegalArgumentException("Cannot resolve type '${name}'")
+            }
+            root(selection.selected(), selection.superseded(), cl)
+        }
+
+        bindings.putAll(resolver.bindings())
+    }
+
+    EObject root(EClass type, Closure cl) {
+        root(type, [], cl)
+    }
+
+    /**
+     * @param superseded less specific types {@code type} was selected over, recorded in telemetry
+     */
+    EObject root(EClass type, List<EClass> superseded, Closure cl) {
+        EObject element = create(type)
+        loading(element, superseded, null) {
+            if (cl != null) {
+                run(cl, new ReflectiveBuilder(this, element))
+            }
+        }
+        roots << element
+        element
+    }
+
+    /** Runs a configuration closure against a builder delegate with DELEGATE_FIRST resolution. */
+    static void run(Closure cl, Object delegate) {
+        Closure copy = (Closure) cl.clone()
+        copy.delegate = delegate
+        copy.resolveStrategy = Closure.DELEGATE_FIRST
+        copy.call()
+    }
+
+    /**
+     * The wrapper's {@code target} feature: its single-valued, non-containment EReference whose type
+     * accepts {@code targetType}. Named by convention {@code target} across the metamodel, but detected
+     * structurally so the convention isn't load-bearing.
+     */
+    EReference targetFeature(EClass wrapper, EClass targetType) {
+        wrapper.EAllReferences.find { EReference r ->
+            !r.containment && !r.many && ((EClass) r.EType).isSuperTypeOf(targetType)
+        }
+    }
+
+}

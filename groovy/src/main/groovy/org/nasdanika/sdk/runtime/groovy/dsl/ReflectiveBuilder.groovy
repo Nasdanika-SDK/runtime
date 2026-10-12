@@ -1,0 +1,437 @@
+package org.nasdanika.sdk.runtime.groovy.dsl
+
+import org.eclipse.emf.common.util.Enumerator
+import org.eclipse.emf.common.util.EList
+import org.eclipse.emf.ecore.EAttribute
+import org.eclipse.emf.ecore.EClass
+import org.eclipse.emf.ecore.EDataType
+import org.eclipse.emf.ecore.EEnum
+import org.eclipse.emf.ecore.EEnumLiteral
+import org.eclipse.emf.ecore.EObject
+import org.eclipse.emf.ecore.EReference
+import org.eclipse.emf.ecore.EStructuralFeature
+import org.eclipse.emf.ecore.resource.Resource
+import org.eclipse.emf.ecore.util.EcoreUtil
+
+import io.opentelemetry.api.trace.Span
+
+/**
+ * A single generic builder that replaces the hand-written one-class-per-EClass / one-method-per-feature
+ * builders. It wraps an {@link EObject} and drives the entire authoring surface off
+ * {@code element.eClass().getEAllStructuralFeatures()} - so multiple inheritance (e.g. ProductModel
+ * mixing in four domains) and any future xcore change are covered with no code change.
+ *
+ * <p>Two-level dispatch in {@link #methodMissing}:</p>
+ * <ol>
+ *   <li><b>Feature dispatch</b> - the call name is a structural feature of the current EClass
+ *       ({@code name 'x'}, {@code lifecycle 'Available'}, {@code addresses 'kyc-latency'},
+ *       {@code concerns(Concern) { }}).</li>
+ *   <li><b>Type dispatch</b> - the call name is a concrete EClass; a child is created and auto-routed
+ *       to the unique containment feature that accepts it ({@code goal { }} where unambiguous).</li>
+ * </ol>
+ *
+ * <p>All cross-references - direct {@code refers} and {@code *Reference} wrappers alike - funnel through
+ * the one {@link #resolveReference} / {@link #attachReference} pair, so there is no per-feature
+ * reference code to drift. See groovy-kotlin-dsl-design.md &sect;5.6.</p>
+ *
+ * <p>Before a non-{@link EObject} argument is read as a cross-reference selector it is offered to
+ * {@link DslContext.Resolver#create(EReference, Object)}, which lets a metamodel give a reference a
+ * short value form - {@code evaluator 'a.b.c'} creating a default-typed {@code SpelEvaluator} - that
+ * scales up to the full form ({@code evaluator('SpelEvaluator') { }},
+ * {@code evaluator('a.b.c') { documentation '...' }}) without a second keyword.</p>
+ *
+ * <p>Telemetry: every feature call runs in a {@code Setting <feature>} span and every element is
+ * created and configured in a {@code Loading <Type>} span, nested in the span of the containment
+ * feature it is added to - see {@link DslTelemetry}.</p>
+ */
+class ReflectiveBuilder {
+
+    protected final DslContext ctx
+    protected final EObject element
+    protected final EClass eClass
+
+    ReflectiveBuilder(DslContext ctx, EObject element) {
+        this.ctx = ctx
+        this.element = element
+        this.eClass = element.eClass()
+    }
+
+    EObject getElement() {
+        element
+    }
+
+    // --- global registration --------------------------------------------------------------------
+
+    /**
+     * Registers the current element as a global object under the given URI via
+     * {@link DslContext#global(Object, EObject)}. Defined as a real method so it always wins over
+     * feature/type dispatch: {@code global 'uri'} registers even on an EClass that declares a
+     * {@code global} feature. That feature stays settable through the assignment form
+     * {@code global = value} (which routes through {@link #propertyMissing}, not this method) and
+     * readable through the read form - a real method never intercepts property access.
+     */
+    EObject global(String uri) {
+        ctx.global(uri, element)
+        element
+    }
+	
+	/**
+	 * 
+	 * @param uri
+	 * @return
+	 */
+	
+	EObject proxy(String uri) {
+		((org.eclipse.emf.ecore.InternalEObject) element).eSetProxyURI(org.eclipse.emf.common.util.URI.createURI(uri))
+		element
+	}
+
+	/**
+	 * Loads another resource through {@link DslContext#loadResource(String)} - the nested counterpart of
+	 * the top-level {@code loadResource '<uri>'} keyword, so a script can iterate a Draw.io diagram (or
+	 * any other resource the resource set can read) while building an element:
+	 *
+	 * <pre>
+	 * architecture {
+	 *     loadResource('diagram.drawio').contents.each { page -&gt; ... }
+	 * }
+	 * </pre>
+	 *
+	 * <p>Defined as a real method so it always wins over feature/type dispatch. A metamodel feature
+	 * literally named {@code loadResource} stays settable through the assignment form
+	 * {@code loadResource = value} (which routes through {@link #propertyMissing}, not this method) and
+	 * readable through the read form - a real method never intercepts property access.</p>
+	 */
+	Resource loadResource(String uri) {
+		ctx.loadResource(uri)
+	}
+
+	/**
+	 * Copies an existing element and adds the copy to this one - the nested counterpart of the top-level
+	 * {@code copy('<uri>') { }} keyword. The prototype is resolved through
+	 * {@link DslContext#copy(EObject, Object)} (so a relative path resolves against <em>this</em>
+	 * element), deep-copied, configured by the closure exactly like a newly created child, then routed
+	 * into the one containment feature that accepts it - the same routing the bare {@code eClass { }}
+	 * type-dispatch form uses:
+	 *
+	 * <pre>
+	 * architecture {
+	 *     copy('base.drawio#//@nodes.0') {
+	 *         description 'the bit only code can express'
+	 *     }
+	 * }
+	 * </pre>
+	 *
+	 * <p>When more than one containment feature accepts the copy, name the feature and hand it a
+	 * detached copy instead: {@code members dsl.copy('<uri>')}.</p>
+	 *
+	 * <p>Defined as a real method so it always wins over feature/type dispatch. A metamodel feature
+	 * literally named {@code copy} stays settable through the assignment form {@code copy = value}.</p>
+	 */
+	EObject copy(Object selector, Closure cl = null) {
+		EObject prototype = ctx.prototype(element, selector)
+		EObject copy = EcoreUtil.copy(prototype)
+		List<EReference> candidates = containmentsFor(copy.eClass())
+		if (candidates.isEmpty()) {
+			throw new IllegalStateException(
+				"No containment feature of ${eClass.name} accepts a copy of ${copy.eClass().name}")
+		}
+		if (candidates.size() > 1) {
+			throw new IllegalStateException(
+				"Ambiguous: a copy of ${copy.eClass().name} fits containment features ${candidates*.name} " +
+				"on ${eClass.name}; name the feature instead, e.g. ${candidates[0].name} dsl.copy('<uri>')")
+		}
+		EReference r = candidates[0]
+		ctx.setting(element, r) {
+			ctx.loading(copy, [], ctx.prototypeAttributes(prototype)) {
+				if (cl != null) {
+					DslContext.run(cl, new ReflectiveBuilder(ctx, copy))
+				}
+				addOrSet(r, copy)
+			}
+		}
+		copy
+	}
+
+	/**
+	 * Nested counterpart of the top-level {@code eObject('<name>') { }} entry point. Resolves an EClass
+	 * by simple, qualified or URI name (see {@link DslContext.Resolver#classByName}) and auto-routes a
+	 * new child into the unique containment feature that accepts it - same routing as the bare
+	 * {@code eClass { }} type-dispatch form, but with a name that can disambiguate across packages.
+	 * Defined as a real method so it wins over the top-level binding when invoked inside a builder
+	 * closure (which would otherwise create a detached root).
+	 */
+	EObject eObject(String name, Closure cl) {
+		Selection<EClass> type = ctx.selectClass(element, name)
+		if (type == null) {
+			throw new IllegalArgumentException("Cannot resolve type '${name}' for ${eClass.name}")
+		}
+		createChildAutoRouted(type, [cl] as Object[])
+	}
+
+    // --- dispatch -------------------------------------------------------------------------------
+
+    def methodMissing(String name, Object args) {
+        Object[] a = args as Object[]
+
+        EStructuralFeature f = eClass.getEStructuralFeature(name)
+        if (f != null) {
+            return invokeFeature(f, a)
+        }
+
+        Selection<EClass> childType = ctx.selectClass(element, name)
+        if (childType != null) {
+            return createChildAutoRouted(childType, a)
+        }
+
+        throw new MissingMethodException(name, ReflectiveBuilder, a)
+    }
+
+    /** Assignment form: {@code name = 'x'} as an alternative to {@code name 'x'}. */
+    def propertyMissing(String name, Object value) {
+        EStructuralFeature f = eClass.getEStructuralFeature(name)
+        if (f == null) {
+            throw new MissingPropertyException(name, ReflectiveBuilder)
+        }
+        invokeFeature(f, [value] as Object[])
+    }
+
+    /** Read form: lets a closure read back a feature value. */
+    def propertyMissing(String name) {
+        EStructuralFeature f = eClass.getEStructuralFeature(name)
+        if (f == null) {
+            throw new MissingPropertyException(name, ReflectiveBuilder)
+        }
+        element.eGet(f)
+    }
+
+    // --- feature dispatch -----------------------------------------------------------------------
+
+    private Object invokeFeature(EStructuralFeature f, Object[] a) {
+        if (!f.changeable || f.derived) {
+            throw new IllegalStateException("Feature '${eClass.name}.${f.name}' is derived/read-only and cannot be set")
+        }
+        ctx.setting(element, f) {                   // marks where this feature was authored
+            if (f instanceof EAttribute) {
+                a.each { setAttribute((EAttribute) f, it) }
+                return null
+            }
+            EReference r = (EReference) f
+            if (r.containment && a.any { it instanceof Closure }) {
+                return containChild(r, a)           // inline build: addresses { goal { } }
+            }
+            // A reference into a containment feature is wrapped, a direct refers reference is set
+            a.each { resolveReference(r, it) }
+            null
+        }
+    }
+
+    // --- attributes -----------------------------------------------------------------------------
+
+    private void setAttribute(EAttribute f, Object value) {
+        Object coerced = coerce(f, value)
+        if (f.many) {
+            (element.eGet(f) as EList).add(coerced)
+        } else {
+            element.eSet(f, coerced)
+        }
+    }
+
+    private Object coerce(EAttribute f, Object value) {
+        if (value == null) {
+            return null
+        }
+        EDataType dt = f.EAttributeType
+        if (dt instanceof EEnum) {
+            if (value instanceof Enumerator) {
+                return value
+            }
+            String s = value.toString()
+            EEnum e = (EEnum) dt
+            EEnumLiteral lit = e.getEEnumLiteralByLiteral(s) ?: e.getEEnumLiteral(s)
+            if (lit == null) {
+                throw new IllegalArgumentException("Unknown ${e.name} literal: '${s}'")
+            }
+            return lit.instance
+        }
+        Class<?> ic = dt.instanceClass
+        if (ic != null && ic.isInstance(value)) {
+            return value                          // already the right Java type (incl. wraps types)
+        }
+        if (value instanceof CharSequence) {
+            try {
+                return EcoreUtil.createFromString(dt, value.toString())
+            } catch (Exception ignore) {
+                // fall through; let eSet do its own coercion or fail with EMF's message
+            }
+        }
+        value
+    }
+
+    // --- containment (inline build) -------------------------------------------------------------
+
+    private EObject containChild(EReference r, Object[] a) {
+        Closure cl = (Closure) a.find { it instanceof Closure }
+        Object token = a.find { !(it instanceof Closure) }
+        Selection<EClass> typeSelection = token == null ? null : ctx.selectType(element, token)
+        List<EClass> superseded = []
+        EObject child = null
+        if (token != null && typeSelection == null) {
+            // Not a type token - hand the value to the resolver: evaluator('a.b.c') { documentation '...' }
+            child = ctx.create(r, token)
+            if (child == null) {
+                throw new IllegalArgumentException(
+                    "Unknown type '${token}' for ${eClass.name}.${r.name}, " +
+                    "and the resolver created no element from it")
+            }
+        } else if (token == null) {
+            // evaluator { ... } - the resolver supplies the reference's default type: the feature type
+            // itself unless it overrides create(), and null when that type is abstract.
+            child = ctx.create(r, null)
+        }
+        if (child == null) {
+            EClass type = resolveConcreteType(r, token, typeSelection)     // reports the abstract-feature-type error
+            superseded = typeSelection?.superseded() ?: []
+            child = ctx.create(type)
+        }
+        EObject theChild = child
+        ctx.loading(theChild, superseded, null) {
+            if (cl != null) {
+                DslContext.run(cl, new ReflectiveBuilder(ctx, theChild))
+            }
+            addOrSet(r, theChild)
+        }
+    }
+
+    /** Concrete type for a containment: an explicit token if given, else the feature type if concrete. */
+    private EClass resolveConcreteType(EReference r, Object token, Selection<EClass> typeSelection) {
+        if (token != null) {
+            EClass type = typeSelection?.selected()
+            if (type == null) {
+                throw new IllegalArgumentException("Unknown type '${token}' for ${eClass.name}.${r.name}")
+            }
+            if (!((EClass) r.EType).isSuperTypeOf(type)) {
+                throw new IllegalArgumentException("${type.name} is not a ${r.EType.name} for ${eClass.name}.${r.name}")
+            }
+            return type
+        }
+        EClass featureType = (EClass) r.EType
+        if (featureType.abstract || featureType.interface) {
+            throw new IllegalStateException(
+                "${eClass.name}.${r.name} is typed by abstract ${featureType.name}; " +
+                "name a concrete type, e.g. ${r.name}('<Type>') { ... }")
+        }
+        featureType
+    }
+
+    /** Every settable containment feature of the current element that accepts {@code type}. */
+    private List<EReference> containmentsFor(EClass type) {
+        eClass.EAllContainments.findAll { EReference r ->
+            r.changeable && !r.derived && ((EClass) r.EType).isSuperTypeOf(type)
+        }
+    }
+
+    /**
+     * Type-dispatch: route a {@code goal { }}-style call to the unique containment feature accepting it.
+     * The child's {@code Loading} span nests in a {@code Setting} span of that feature.
+     */
+    private EObject createChildAutoRouted(Selection<EClass> typeSelection, Object[] a) {
+        EClass type = typeSelection.selected()
+        List<EReference> candidates = containmentsFor(type)
+        if (candidates.isEmpty()) {
+            throw new MissingMethodException(type.name, ReflectiveBuilder, a)
+        }
+        if (candidates.size() > 1) {
+            throw new IllegalStateException(
+                "Ambiguous: ${type.name} fits containment features ${candidates*.name} on ${eClass.name}; " +
+                "use the feature form, e.g. ${candidates[0].name}('${type.name}') { ... }")
+        }
+        EReference r = candidates[0]
+        Closure cl = (Closure) a.find { it instanceof Closure }
+        EObject child = ctx.create(type)
+        ctx.setting(element, r) {
+            ctx.loading(child, typeSelection.superseded(), null) {
+                if (cl != null) {
+                    DslContext.run(cl, new ReflectiveBuilder(ctx, child))
+                }
+                addOrSet(r, child)
+            }
+        }
+        child
+    }
+
+    // --- the unified cross-reference resolver ---------------------------------------------------
+
+    private void resolveReference(EReference r, Object arg) {
+        if (arg instanceof EObject) {
+            attachReference(r, (EObject) arg)                 // tier 1 (by var)
+            return
+        }
+        if (arg != null && !(arg instanceof Closure)) {
+            // tier 0 (short form): let the resolver turn the value into a default-typed element,
+            // e.g. evaluator 'a.b.c' -> SpelEvaluator(expression: 'a.b.c'). Created for this
+            // reference, so it is attached as-is rather than through a *Reference wrapper.
+            EObject created = ctx.create(r, arg)
+            if (created != null) {
+                ctx.loading(created, [], null) {
+                    addOrSet(r, created)
+                }
+                return
+            }
+        }
+        if (arg instanceof CharSequence || arg instanceof Closure) {
+            Object selector = arg                              // path/URI String, or closure computing one
+            Span.current().setAttribute(DslTelemetry.DEFERRED, true)
+            ctx.defer(element, r) {                            // deferred: navigate the fully-built model
+                EObject target = ctx.resolveRelative(element, selector)
+                if (target == null) {
+                    throw new IllegalStateException("Unresolved reference '${selector}' for ${eClass.name}.${r.name}")
+                }
+                if (!r.EType.isInstance(target)) {
+                    throw new IllegalStateException(
+                        "'${selector}' resolves to ${target.eClass().name}, not a ${r.EType.name} for ${r.name}")
+                }
+                attachReference(r, target)
+            }
+            return
+        }
+        throw new IllegalArgumentException(
+            "Cannot use ${arg?.getClass()?.name} as a reference for ${r.name}: " +
+            "it is neither an element nor a selector, and the resolver created no element from it")
+    }
+
+    /**
+     * Attach a resolved target. Direct {@code refers} references are set straight; containment
+     * references are wrapped in their {@code *Reference} type (so an existing element isn't relocated).
+     * If no wrapper exists and the target is already contained, refuse rather than silently steal it.
+     */
+    private void attachReference(EReference r, EObject target) {
+        if (!r.containment) {
+            addOrSet(r, target)
+            return
+        }
+        EClass wrapperType = ctx.referenceWrapperFor(element, (EClass) r.EType, target.eClass())
+        if (wrapperType != null) {
+            EObject wrapper = ctx.create(wrapperType)
+            EReference targetFeature = ctx.targetFeature(wrapperType, target.eClass())
+            wrapper.eSet(targetFeature, target)
+            addOrSet(r, wrapper)
+            return
+        }
+        if (target.eContainer() != null) {
+            throw new IllegalStateException(
+                "Attaching already-contained ${target.eClass().name} to containment " +
+                "${eClass.name}.${r.name} would relocate it, and no reference wrapper was found")
+        }
+        addOrSet(r, target)
+    }
+
+    private void addOrSet(EReference r, EObject value) {
+        if (r.many) {
+            (element.eGet(r) as EList).add(value)
+        } else {
+            element.eSet(r, value)
+        }
+    }
+
+}

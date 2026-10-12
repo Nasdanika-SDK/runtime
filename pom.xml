@@ -540,7 +540,7 @@
 		<module>tests</module>
 		<module>bom</module>
 		<module>bootstrap</module>
-		<!--<module>groovy</module>-->
+		<module>groovy</module>
 		<module>cli</module>
 		<module>all</module>
 		<module>cli-launcher</module>
