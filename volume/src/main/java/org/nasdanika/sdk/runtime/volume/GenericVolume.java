@@ -95,8 +95,7 @@ public interface GenericVolume<C> {
 				}
 				
 			};
-		}
-		
+		}		
 
 	}
 

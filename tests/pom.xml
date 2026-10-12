@@ -18,5 +18,6 @@
 	<modules>
 		<module>general</module>
 		<module>telemetry</module>
+		<module>cli</module>
 	</modules>	
 </project>
