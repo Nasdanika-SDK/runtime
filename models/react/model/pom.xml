@@ -1,0 +1,104 @@
+﻿<project xmlns="http://maven.apache.org/POM/4.0.0"
+    xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
+    xsi:schemaLocation="http://maven.apache.org/POM/4.0.0 http://maven.apache.org/xsd/maven-4.0.0.xsd">
+    <modelVersion>4.0.0</modelVersion>
+    <parent>
+        <groupId>org.nasdanika.sdk.runtime.models.react</groupId>
+        <version>2026.10.0</version>
+        <artifactId>parent</artifactId>
+        <relativePath>..</relativePath>
+    </parent>
+    <artifactId>model</artifactId>
+    <packaging>jar</packaging>
+    <name>Nasdanika SDK Runtime React Model</name>
+
+    <build>
+        <plugins>
+            <plugin>
+                <groupId>org.eclipse.xtext</groupId>
+                <artifactId>xtext-maven-plugin</artifactId>
+            </plugin>
+            <plugin>
+                <groupId>org.codehaus.mojo</groupId>
+                <artifactId>build-helper-maven-plugin</artifactId>
+            </plugin>
+             <!--
+                Tests are patched into org.nasdanika.sdk.runtime.models.react on the module path.
+                The web tests serve pages with the JDK HTTP server and fetch them with the
+                JDK HTTP client, and DrawioEmbedTests parses draw.io XML with the JDK DOM, so
+                the test module has to read jdk.httpserver, java.net.http and java.xml. Test
+                scope only: the model itself needs none of them.
+            -->
+            <plugin>
+                <groupId>org.apache.maven.plugins</groupId>
+                <artifactId>maven-compiler-plugin</artifactId>
+                <executions>
+                    <execution>
+                        <id>default-testCompile</id>
+                        <configuration>
+                            <compilerArgs>
+                                <arg>--add-modules</arg>
+                                <arg>jdk.httpserver,java.net.http,java.xml</arg>
+                                <arg>--add-reads</arg>
+                                <arg>org.nasdanika.sdk.runtime.models.react=jdk.httpserver,java.net.http,java.xml</arg>
+                            </compilerArgs>
+                        </configuration>
+                    </execution>
+                </executions>
+            </plugin>
+            <plugin>
+                <groupId>org.apache.maven.plugins</groupId>
+                <artifactId>maven-surefire-plugin</artifactId>
+                <configuration>
+                    <argLine>--add-modules jdk.httpserver,java.net.http,java.xml --add-reads org.nasdanika.sdk.runtime.models.react=jdk.httpserver,java.net.http,java.xml</argLine>
+                </configuration>
+            </plugin>
+            <!--
+                BankTests generates a demo npm package into target/bank, and verifying
+                it means running npm install there. node_modules defeats the clean
+                plugin on Windows - deep trees exceed MAX_PATH - so target/bank is left
+                alone and BankTests wipes its own src directory instead. Leaving it also
+                means the npm install is cached between builds.
+            -->
+            <plugin>
+                <groupId>org.apache.maven.plugins</groupId>
+                <artifactId>maven-clean-plugin</artifactId>
+                <configuration>
+                    <excludeDefaultDirectories>true</excludeDefaultDirectories>
+                    <filesets>
+                        <fileset>
+                            <directory>${project.build.directory}</directory>
+                            <excludes>
+                                <exclude>bank/**</exclude>
+                            </excludes>
+                            <followSymlinks>false</followSymlinks>
+                        </fileset>
+                    </filesets>
+                </configuration>
+            </plugin>
+       </plugins>
+    </build>
+    <dependencies>
+		<dependency>
+		    <groupId>org.nasdanika.sdk.runtime.models.typescript</groupId>
+		    <artifactId>model</artifactId>
+		</dependency> 		
+		<dependency>
+		    <groupId>org.json</groupId>
+		    <artifactId>json</artifactId>
+		    <scope>compile</scope>
+		</dependency>		
+        <dependency>
+            <groupId>org.eclipse.xtext</groupId>
+            <artifactId>org.eclipse.xtext.xbase.lib</artifactId>
+        </dependency>
+        <dependency>
+            <groupId>org.eclipse.emf</groupId>
+            <artifactId>org.eclipse.emf.ecore.xcore.lib</artifactId>
+        </dependency>
+        <dependency>
+            <groupId>org.nasdanika.sdk.runtime.models.html</groupId>
+            <artifactId>model</artifactId>
+        </dependency>
+    </dependencies>
+</project>

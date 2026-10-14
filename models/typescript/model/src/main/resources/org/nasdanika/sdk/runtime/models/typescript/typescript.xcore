@@ -1,0 +1,316 @@
+@Ecore(
+   	nsURI="https://runtime.sdk.nasdanika.org/models/typescript", 
+	nsPrefix="org.nasdanika.sdk.runtime.models.typescript")
+@GenModel(
+	modelDirectory="/model/src-gen",
+    featureDelegation="Dynamic",
+    complianceLevel="25",
+    suppressGenModelAnnotations="false",
+    copyrightFields="false",
+    operationReflection="true",
+    importOrganizing="true"
+)
+package org.nasdanika.sdk.runtime.models.typescript
+
+import org.nasdanika.sdk.runtime.models.core.NamedElement
+//import org.nasdanika.ncore.Situated
+
+annotation "http://www.eclipse.org/emf/2002/Ecore" as Ecore
+annotation "http://www.eclipse.org/emf/2002/GenModel" as GenModel
+annotation "urn:org.nasdanika" as Nasdanika
+
+/*
+ * Base of everything in the model. Inherits name from nxcore NamedElement, plus
+ * documentation-as-structure and nested markers: documentation is emitted as JSDoc,
+ * and markers are the provenance join back to the source model element, which is
+ * where owners, work and governance actually live.
+ */
+abstract class TypeScriptElement extends NamedElement {
+}
+
+/*
+ * An npm package to emit: enough to write package.json and lay out files, not an
+ * estate model. Version, dependency versions and provenance belong to the packaging
+ * estate model, which references packages by URI rather than containing them. Kept
+ * here only because a generator that emits modules but not the package around them
+ * leaves the last mile to a script, and that script is where drift starts.
+ */
+class Package extends TypeScriptElement {
+    /* Scoped npm name, e.g. @nasdanika/nxcore. */
+    String packageName
+    String version
+    String description
+    String license
+    /* package.json "type"; "module" for the ESM packages the tower publishes. */
+    String moduleType
+    /* Bare specifiers of runtime dependencies, mapped to versions by the emitter. */
+    String[] dependencies
+    /* Bare specifiers of peer dependencies. */
+    String[] peerDependencies
+    contains Module[] modules
+}
+
+/*
+ * One emitted file. Situated because a generation run happens at a POINT in a
+ * coordinate space (jurisdiction, language, tier, audience) and the module is the
+ * artifact that records which point produced it. Individual declarations are not
+ * Situated: the coordinate is a property of the generation run, and runs produce
+ * modules. Note that the coordinate is a RECEIPT here, never a filter - what varies
+ * by coordinate is decided on the source model and in the transformation, and a
+ * TypeScript model that knew about Ontario would be a TypeScript model that is wrong.
+ */
+class Module extends TypeScriptElement /**, Situated */ {
+
+    /* Path relative to the package root, without extension, e.g. "model/element". */
+    String path
+    /* Emit as .d.ts rather than .ts: declarations only, no bodies. */
+    boolean declarationOnly
+    /* Verbatim banner emitted first: license header, do-not-edit notice, provenance. */
+    String header
+    /*
+     * Normally COMPUTED at save time from the TypeReferences reachable in this
+     * module. Authored imports are for the cases the resolver cannot see, such as
+     * side-effect imports and types referenced only inside opaque code.
+     */
+    contains Import[] imports
+    contains Declaration[] declarations
+    /* Opaque trailing source appended verbatim: re-exports, module augmentation. */
+    String footer
+}
+
+enum ImportKind {
+    /* import { X } from "..." */
+    NAMED
+    /* import X from "..." */
+    DEFAULT
+    /* import * as X from "..." */
+    NAMESPACE
+    /* import "..." - side effect only, no bindings */
+    SIDE_EFFECT
+}
+
+/*
+ * One import statement. typeOnly emits `import type`, which is what keeps
+ * cross-floor references from creating runtime cycles between generated packages:
+ * a package that only needs its parent floor's TYPES must not pull in its runtime.
+ * Getting this wrong is the single most likely defect in a hand-written emitter,
+ * which is the argument for owning it here.
+ */
+class Import extends TypeScriptElement {
+    /* Bare specifier (@nasdanika/nxcore) or relative path (./element.js). */
+    String moduleSpecifier
+    boolean typeOnly
+    contains ImportBinding[] bindings
+}
+
+class ImportBinding extends TypeScriptElement {
+    ImportKind kind
+    /* Name as exported by the target module; unset for DEFAULT and NAMESPACE. */
+    String importedName
+    /* Local alias; unset means the imported name is used as is. */
+    String alias
+}
+
+/* ---------------------------------------------------------------------------
+ * Type references. This is a reference language, not the TypeScript type system:
+ * enough to write the type position of a declaration, with OpaqueTypeReference as
+ * the release valve for everything else.
+ * --------------------------------------------------------------------------- */
+
+abstract class TypeReference extends TypeScriptElement {
+}
+
+enum PrimitiveType {
+    STRING NUMBER BOOLEAN BIGINT SYMBOL
+    NULL UNDEFINED VOID NEVER UNKNOWN ANY OBJECT
+}
+
+class PrimitiveTypeReference extends TypeReference {
+    PrimitiveType primitiveType
+}
+
+/*
+ * Reference to a declared type. `target` is set for types declared inside this
+ * model, and is what the import resolver follows to work out the specifier and
+ * whether the import can be type-only. `qualifiedName` plus `moduleSpecifier` cover
+ * types from packages the generator does not own.
+ */
+class NamedTypeReference extends TypeReference {
+    refers Declaration target
+    String qualifiedName
+    String moduleSpecifier
+    contains TypeReference[] typeArguments
+}
+
+class ArrayTypeReference extends TypeReference {
+    contains TypeReference elementType
+}
+
+class UnionTypeReference extends TypeReference {
+    contains TypeReference[] types
+}
+
+class IntersectionTypeReference extends TypeReference {
+    contains TypeReference[] types
+}
+
+enum LiteralKind { STRING NUMBER BOOLEAN }
+
+class LiteralTypeReference extends TypeReference {
+    LiteralKind literalKind
+    String value
+}
+
+/* Inline object type: { a: string; b?: number }. Members reuse Property. */
+class TypeLiteralReference extends TypeReference {
+    contains Member[] members
+}
+
+class FunctionTypeReference extends TypeReference {
+    contains Parameter[] parameters
+    contains TypeReference returnType
+}
+
+/*
+ * Verbatim type text. Deliberate escape hatch for conditional types, mapped types,
+ * template literal types, `keyof`/`typeof` gymnastics and anything else not worth a
+ * class. `references` lets the import resolver still see the named types used inside
+ * the text, so an opaque type does not silently break import management.
+ */
+class OpaqueTypeReference extends TypeReference {
+    String text
+    contains TypeReference[] references
+}
+
+/* ---------------------------------------------------------------------------
+ * Declarations
+ * --------------------------------------------------------------------------- */
+
+abstract class Declaration extends TypeScriptElement {
+    boolean exported
+    /* Emit `declare`: ambient declaration, no implementation. */
+    boolean ambient
+}
+
+class TypeParameter extends TypeScriptElement {
+    contains TypeReference constraint
+    contains TypeReference ^default
+}
+
+/*
+ * Shared signature shape for functions, methods, constructors and accessors.
+ * Multiple supertypes are used rather than duplicating the four features, so an
+ * emitter can write one signature routine.
+ */
+abstract class Callable extends TypeScriptElement {
+    contains TypeParameter[] typeParameters
+    contains Parameter[] parameters
+    contains TypeReference returnType
+    contains CodeBlock body
+    boolean async
+    boolean generator
+}
+
+class Parameter extends TypeScriptElement {
+    contains TypeReference ^type
+    boolean optional
+    /* Rest parameter: ...args */
+    boolean rest
+    contains CodeBlock defaultValue
+}
+
+/*
+ * Opaque source text with managed indentation, the same bargain the Python model
+ * makes for bodies. `references` keeps the import resolver honest about types used
+ * only inside the text.
+ */
+class CodeBlock extends TypeScriptElement {
+    String text
+    contains TypeReference[] references
+}
+
+class InterfaceDeclaration extends Declaration {
+    contains TypeParameter[] typeParameters
+    /* `extends` clause; a TypeScript interface may extend several. */
+    contains TypeReference[] superTypes
+    contains Member[] members
+}
+
+class ClassDeclaration extends Declaration {
+    contains TypeParameter[] typeParameters
+    contains TypeReference superClass
+    /* `implements` clause. */
+    contains TypeReference[] interfaces
+    boolean ^abstract
+    contains Member[] members
+}
+
+class TypeAliasDeclaration extends Declaration {
+    contains TypeParameter[] typeParameters
+    contains TypeReference ^type
+}
+
+class EnumDeclaration extends Declaration {
+    /* Emit `const enum`. Rarely wanted in published packages: it does not survive
+     * isolatedModules and breaks consumers that compile files independently. */
+    boolean constant
+    contains EnumMember[] members
+}
+
+class EnumMember extends TypeScriptElement {
+    /* Verbatim initializer including quotes for string enums; unset means implicit. */
+    String value
+}
+
+class FunctionDeclaration extends Declaration, Callable {
+}
+
+enum VariableKind { CONST LET VAR }
+
+class VariableDeclaration extends Declaration, Callable {
+    VariableKind variableKind
+    contains TypeReference ^type
+    contains CodeBlock initializer
+}
+
+/* ---------------------------------------------------------------------------
+ * Members
+ * --------------------------------------------------------------------------- */
+
+enum Visibility { PUBLIC PROTECTED PRIVATE }
+
+abstract class Member extends TypeScriptElement {
+    Visibility visibility
+    boolean ^static
+    boolean optional
+}
+
+class Property extends Member {
+    contains TypeReference ^type
+    boolean ^readonly
+    contains CodeBlock initializer
+}
+
+class Method extends Member, Callable {
+    boolean ^abstract
+}
+
+class Constructor extends Member {
+    contains Parameter[] parameters
+    contains CodeBlock body
+}
+
+enum AccessorKind { GET SET }
+
+class Accessor extends Member, Callable {
+    AccessorKind accessorKind
+}
+
+/*
+ * Verbatim member text: index signatures, call signatures, decorators with awkward
+ * arguments, overload sets. Same bargain as OpaqueTypeReference.
+ */
+class OpaqueMember extends Member {
+    String text
+    contains TypeReference[] references
+}

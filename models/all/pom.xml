@@ -36,6 +36,21 @@
 		</dependency>
 
 		<dependency>
+			<groupId>org.nasdanika.sdk.runtime.models.html</groupId>
+			<artifactId>model</artifactId>				
+		</dependency>
+
+		<dependency>
+			<groupId>org.nasdanika.sdk.runtime.models.react</groupId>
+			<artifactId>model</artifactId>				
+		</dependency>
+
+		<dependency>
+			<groupId>org.nasdanika.sdk.runtime.models.typescript</groupId>
+			<artifactId>model</artifactId>				
+		</dependency>
+
+		<dependency>
 			<groupId>org.nasdanika.sdk.runtime.models.telemetry</groupId>
 			<artifactId>model</artifactId>				
 		</dependency>

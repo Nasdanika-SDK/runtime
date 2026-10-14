@@ -1,6 +1,7 @@
 package org.nasdanika.sdk.runtime.volume;
 
 import java.io.IOException;
+import java.nio.file.Path;
 import java.util.List;
 import java.util.Optional;
 
@@ -47,6 +48,15 @@ public interface Volume extends GenericVolume<Content> {
 		}
 	}
 	
+	/**
+	 * A writable volume over a directory of a NIO file system. The directory does not have to exist
+	 * until the volume is used. Writing into a missing directory fails, as on a file system: create
+	 * directories first.
+	 */
+	static Volume of(Path root) {
+		return new PathVolume(root);
+	}
+
 	static Volume of(GenericVolume<Content> volume) {
 			
 		return new Volume() {

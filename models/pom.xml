@@ -18,6 +18,9 @@
 		<module>file</module>
 		<module>telemetry</module>
 		<module>bom</module>
+		<module>typescript</module>
+		<module>html</module>
+		<module>react</module>
 		<module>all</module>
 	</modules>
 </project>

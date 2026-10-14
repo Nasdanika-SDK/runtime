@@ -1,0 +1,729 @@
+@Ecore(
+   	nsURI="https://runtime.sdk.nasdanika.org/models/html",
+	nsPrefix="org.nasdanika.sdk.runtime.models.html")
+@GenModel(
+	modelDirectory="/model/src-gen",
+    featureDelegation="Dynamic",
+    complianceLevel="25",
+    suppressGenModelAnnotations="false",
+    copyrightFields="false",
+    operationReflection="true",
+    importOrganizing="true"
+)
+package org.nasdanika.sdk.runtime.models.html
+
+import org.nasdanika.sdk.runtime.models.core.Marked
+import org.nasdanika.sdk.runtime.models.core.StringToStringMapEntry
+
+annotation "http://www.eclipse.org/emf/2002/Ecore" as Ecore
+annotation "http://www.eclipse.org/emf/2002/GenModel" as GenModel
+
+/*
+ * Generator hints on EAttributes:
+ *
+ * - attribute: HTML attribute name when it differs from the lower-cased feature name, e.g. http-equiv.
+ * - logical: "true" for features which are not rendered as HTML attributes but consumed
+ *   by the generator, e.g. heading level, option text, script content.
+ *
+ * Every other EAttribute of an element class is rendered as an HTML attribute when set:
+ * strings and numbers as name="value", booleans as a bare attribute when true.
+ */
+annotation "urn:org.nasdanika:html" as Html
+
+// --- Nodes ---------------------------------------------------------------
+
+/*
+ * Anything that can be placed into a Container: elements, text, raw markup, comments.
+ * Other models (e.g. React) extend Node to put their own kinds of content, such as
+ * expressions and component instances, into HTML containers.
+ * Markers are the provenance join back to the source model element.
+ */
+abstract class Node extends Marked {
+}
+
+/*
+ * Plain text, escaped on output.
+ */
+class Text extends Node {
+	String content
+}
+
+/*
+ * Raw HTML emitted verbatim, without escaping. An escape hatch for content the model
+ * does not cover, e.g. output of a Markdown renderer.
+ */
+class Markup extends Node {
+	String content
+}
+
+class Comment extends Node {
+	String content
+}
+
+/*
+ * Mixin for elements with flow/phrasing content.
+ * Content model rules (e.g. no div in p) are not encoded in types.
+ */
+interface Container {
+	contains Node[] contents
+}
+
+abstract class Element extends Node {
+	String ^id
+
+	/* class attribute */
+	String[] classes
+
+	/* style attribute as property to value map */
+	contains StringToStringMapEntry[] style
+
+	/*
+	 * Attributes not modeled by the element class, including data-* and aria-*.
+	 * Null value - boolean attribute.
+	 */
+	contains StringToStringMapEntry[] attributes
+
+	op String tagName()
+}
+
+/*
+ * Void elements have no content and no end tag.
+ */
+abstract class VoidElement extends Element {
+}
+
+/*
+ * Element with an arbitrary tag name - for elements not modeled explicitly and for custom elements.
+ */
+class GenericElement extends Element, Container {
+	@Html(logical="true")
+	String name
+
+	op String tagName() {
+		name
+	}
+}
+
+class GenericVoidElement extends VoidElement {
+	@Html(logical="true")
+	String name
+
+	op String tagName() {
+		name
+	}
+}
+
+// --- Document ------------------------------------------------------------
+
+/*
+ * Page - html element preceded by the doctype.
+ */
+class Document extends Element {
+	@Html(logical="true")
+	String doctype = "html"
+
+	String lang
+
+	contains Head head
+	contains Body body
+
+	op String tagName() {
+		"html"
+	}
+}
+
+/*
+ * Head. Contents, if any, are rendered after the modeled children.
+ */
+class Head extends Element, Container {
+	/* meta charset, rendered first */
+	@Html(logical="true")
+	String charset = "utf-8"
+
+	@Html(logical="true")
+	String title
+
+	/* base href */
+	@Html(logical="true")
+	String base
+
+	contains Meta[] metas
+	contains Link[] links
+	contains Stylesheet[] stylesheets
+
+	/* Rendered before scripts, as module scripts depend on it */
+	contains ImportMap importMap
+
+	contains Script[] scripts
+
+	op String tagName() {
+		"head"
+	}
+}
+
+class Body extends Element, Container {
+	op String tagName() {
+		"body"
+	}
+}
+
+class Meta extends VoidElement {
+	String name
+	@Html(attribute="http-equiv")
+	String httpEquiv
+	String property
+	String content
+	String charset
+
+	op String tagName() {
+		"meta"
+	}
+}
+
+class Link extends VoidElement {
+	String rel
+	String href
+	String ^type
+	String media
+	String sizes
+	String crossorigin
+	String integrity
+
+	op String tagName() {
+		"link"
+	}
+}
+
+/*
+ * Logical stylesheet - rendered as <link rel="stylesheet"> if href is set, as <style> otherwise.
+ */
+class Stylesheet extends Element {
+	String href
+	String media
+	String crossorigin
+	String integrity
+
+	/* Inline CSS, emitted verbatim */
+	@Html(logical="true")
+	String content
+
+	op String tagName() {
+		if (href === null) "style" else "link"
+	}
+}
+
+/*
+ * Script - external if src is set, inline otherwise. Can be placed in head and in containers.
+ */
+class Script extends Element {
+	String src
+	String ^type
+
+	/* type="module" unless type is set explicitly */
+	@Html(logical="true")
+	boolean module
+
+	boolean async
+	boolean defer
+	String crossorigin
+	String integrity
+
+	/* Inline source, emitted verbatim except for closing script tags */
+	@Html(logical="true")
+	String content
+
+	op String tagName() {
+		"script"
+	}
+}
+
+/*
+ * <script type="importmap"> - bare module specifiers to URLs, rendered as JSON.
+ */
+class ImportMap extends Element {
+	/* Specifier or specifier prefix to URL */
+	contains StringToStringMapEntry[] imports
+
+	contains ImportMapScope[] scopes
+
+	op String tagName() {
+		"script"
+	}
+}
+
+/*
+ * Imports applying to modules under a URL prefix.
+ */
+class ImportMapScope {
+	String prefix
+	contains StringToStringMapEntry[] imports
+}
+
+// --- Sections and grouping -----------------------------------------------
+
+class Div extends Element, Container {
+	op String tagName() {
+		"div"
+	}
+}
+
+class Span extends Element, Container {
+	op String tagName() {
+		"span"
+	}
+}
+
+class Paragraph extends Element, Container {
+	op String tagName() {
+		"p"
+	}
+}
+
+/*
+ * h1 - h6
+ */
+class Heading extends Element, Container {
+	@Html(logical="true")
+	int level = "1"
+
+	op String tagName() {
+		"h" + level
+	}
+}
+
+class Header extends Element, Container {
+	op String tagName() {
+		"header"
+	}
+}
+
+class Footer extends Element, Container {
+	op String tagName() {
+		"footer"
+	}
+}
+
+class Main extends Element, Container {
+	op String tagName() {
+		"main"
+	}
+}
+
+class Nav extends Element, Container {
+	op String tagName() {
+		"nav"
+	}
+}
+
+class Section extends Element, Container {
+	op String tagName() {
+		"section"
+	}
+}
+
+class Article extends Element, Container {
+	op String tagName() {
+		"article"
+	}
+}
+
+class Aside extends Element, Container {
+	op String tagName() {
+		"aside"
+	}
+}
+
+class Blockquote extends Element, Container {
+	String cite
+
+	op String tagName() {
+		"blockquote"
+	}
+}
+
+/*
+ * Preformatted content, never re-indented by the generator.
+ */
+class Pre extends Element, Container {
+	op String tagName() {
+		"pre"
+	}
+}
+
+class Figure extends Element, Container {
+	op String tagName() {
+		"figure"
+	}
+}
+
+class FigureCaption extends Element, Container {
+	op String tagName() {
+		"figcaption"
+	}
+}
+
+class Details extends Element, Container {
+	boolean open
+
+	/* Rendered before contents */
+	contains Summary summary
+
+	op String tagName() {
+		"details"
+	}
+}
+
+class Summary extends Element, Container {
+	op String tagName() {
+		"summary"
+	}
+}
+
+class HorizontalRule extends VoidElement {
+	op String tagName() {
+		"hr"
+	}
+}
+
+class LineBreak extends VoidElement {
+	op String tagName() {
+		"br"
+	}
+}
+
+// --- Text level ----------------------------------------------------------
+
+class Anchor extends Element, Container {
+	String href
+	String target
+	String rel
+	String download
+
+	op String tagName() {
+		"a"
+	}
+}
+
+class Strong extends Element, Container {
+	op String tagName() {
+		"strong"
+	}
+}
+
+class Emphasis extends Element, Container {
+	op String tagName() {
+		"em"
+	}
+}
+
+class Code extends Element, Container {
+	op String tagName() {
+		"code"
+	}
+}
+
+// --- Media ---------------------------------------------------------------
+
+class Image extends VoidElement {
+	String src
+	String alt
+	String srcset
+	String sizes
+	int width
+	int height
+	String loading
+
+	op String tagName() {
+		"img"
+	}
+}
+
+class InlineFrame extends Element {
+	String src
+	String title
+	int width
+	int height
+	String allow
+	String loading
+
+	op String tagName() {
+		"iframe"
+	}
+}
+
+// --- Lists ---------------------------------------------------------------
+
+interface ItemList {
+	contains ListItem[] items
+}
+
+class UnorderedList extends Element, ItemList {
+	op String tagName() {
+		"ul"
+	}
+}
+
+class OrderedList extends Element, ItemList {
+	int start
+	boolean reversed
+	String ^type
+
+	op String tagName() {
+		"ol"
+	}
+}
+
+class ListItem extends Element, Container {
+	int value
+
+	op String tagName() {
+		"li"
+	}
+}
+
+/*
+ * dt or dd
+ */
+interface DescriptionListItem {
+}
+
+class DescriptionList extends Element {
+	contains DescriptionListItem[] items
+
+	op String tagName() {
+		"dl"
+	}
+}
+
+class DescriptionTerm extends Element, Container, DescriptionListItem {
+	op String tagName() {
+		"dt"
+	}
+}
+
+class DescriptionDetails extends Element, Container, DescriptionListItem {
+	op String tagName() {
+		"dd"
+	}
+}
+
+// --- Tables --------------------------------------------------------------
+
+class Table extends Element {
+	contains Caption caption
+	contains ColumnGroup[] columnGroups
+	contains TableHead head
+
+	/* HTML allows multiple tbody elements */
+	contains TableBody[] bodies
+
+	contains TableFoot foot
+
+	op String tagName() {
+		"table"
+	}
+}
+
+class Caption extends Element, Container {
+	op String tagName() {
+		"caption"
+	}
+}
+
+class ColumnGroup extends Element {
+	int span
+	contains Column[] columns
+
+	op String tagName() {
+		"colgroup"
+	}
+}
+
+class Column extends VoidElement {
+	int span
+
+	op String tagName() {
+		"col"
+	}
+}
+
+abstract class TableSection extends Element {
+	contains TableRow[] rows
+}
+
+class TableHead extends TableSection {
+	op String tagName() {
+		"thead"
+	}
+}
+
+class TableBody extends TableSection {
+	op String tagName() {
+		"tbody"
+	}
+}
+
+class TableFoot extends TableSection {
+	op String tagName() {
+		"tfoot"
+	}
+}
+
+class TableRow extends Element {
+	contains TableCell[] cells
+
+	op String tagName() {
+		"tr"
+	}
+}
+
+/*
+ * td, or th if header is true
+ */
+class TableCell extends Element, Container {
+	@Html(logical="true")
+	boolean header
+
+	int colspan
+	int rowspan
+
+	/* row, col, rowgroup, colgroup - for header cells */
+	String scope
+
+	/* Space separated ids of header cells */
+	String headers
+
+	op String tagName() {
+		if (header) "th" else "td"
+	}
+}
+
+// --- Forms ---------------------------------------------------------------
+
+class Form extends Element, Container {
+	String action
+	String method
+	String enctype
+	String target
+	boolean novalidate
+
+	op String tagName() {
+		"form"
+	}
+}
+
+class Fieldset extends Element, Container {
+	boolean disabled
+
+	/* Rendered before contents */
+	contains Legend legend
+
+	op String tagName() {
+		"fieldset"
+	}
+}
+
+class Legend extends Element, Container {
+	op String tagName() {
+		"legend"
+	}
+}
+
+class Label extends Element, Container {
+	/* Id of the labeled control */
+	@Html(attribute="for")
+	String htmlFor
+
+	op String tagName() {
+		"label"
+	}
+}
+
+class Input extends VoidElement {
+	String ^type
+	String name
+	String value
+	String placeholder
+	boolean required
+	boolean disabled
+	boolean ^readonly
+	boolean checked
+	boolean multiple
+
+	op String tagName() {
+		"input"
+	}
+}
+
+class Button extends Element, Container {
+	String ^type
+	String name
+	String value
+	boolean disabled
+
+	op String tagName() {
+		"button"
+	}
+}
+
+class TextArea extends Element {
+	String name
+	int rows
+	int cols
+	String placeholder
+	boolean required
+	boolean disabled
+	boolean ^readonly
+
+	/* Escaped, whitespace preserved */
+	@Html(logical="true")
+	String text
+
+	op String tagName() {
+		"textarea"
+	}
+}
+
+/*
+ * option or optgroup
+ */
+interface SelectItem {
+}
+
+class Select extends Element {
+	String name
+	boolean multiple
+	boolean required
+	boolean disabled
+	int size
+
+	contains SelectItem[] items
+
+	op String tagName() {
+		"select"
+	}
+}
+
+class Option extends Element, SelectItem {
+	String value
+	String label
+	boolean selected
+	boolean disabled
+
+	@Html(logical="true")
+	String text
+
+	op String tagName() {
+		"option"
+	}
+}
+
+class OptionGroup extends Element, SelectItem {
+	String label
+	boolean disabled
+	contains Option[] options
+
+	op String tagName() {
+		"optgroup"
+	}
+}

@@ -1,0 +1,276 @@
+@Ecore(
+    nsURI="https://runtime.sdk.nasdanika.org/models/react", 
+	nsPrefix="org.nasdanika.sdk.runtime.models.react")
+
+@GenModel(
+	modelDirectory="/model/src-gen",
+    featureDelegation="Dynamic",
+    complianceLevel="25",
+    suppressGenModelAnnotations="false",
+    copyrightFields="false",
+    operationReflection="true",
+    importOrganizing="true"
+)
+package org.nasdanika.sdk.runtime.models.react
+
+import org.nasdanika.sdk.runtime.models.typescript.CodeBlock
+import org.nasdanika.sdk.runtime.models.typescript.Declaration
+import org.nasdanika.sdk.runtime.models.typescript.FunctionDeclaration
+import org.nasdanika.sdk.runtime.models.typescript.InterfaceDeclaration
+import org.nasdanika.sdk.runtime.models.typescript.Module
+import org.nasdanika.sdk.runtime.models.typescript.NamedTypeReference
+import org.nasdanika.sdk.runtime.models.typescript.TypeReference
+import org.nasdanika.sdk.runtime.models.typescript.TypeScriptElement
+
+annotation "http://www.eclipse.org/emf/2002/Ecore" as Ecore
+annotation "http://www.eclipse.org/emf/2002/GenModel" as GenModel
+annotation "urn:org.nasdanika" as Nasdanika
+
+/*
+ * Base of everything React specific. Extends the TypeScript base so the whole code
+ * family shares one root: name, documentation-as-structure, and nested markers from
+ * nxcore. The markers are the provenance join back to the ui elements a drawing
+ * produced, and through them to owners and work.
+ */
+abstract class ReactElement extends TypeScriptElement {
+}
+
+/*
+ * A .tsx module. Directive carries "use client" or "use server" verbatim when a
+ * framework needs it; the model does not interpret it, because interpreting it would
+ * mean modeling a specific meta-framework's boundary rules.
+ */
+class TsxModule extends Module {
+    String directive
+}
+
+/*
+ * A React function component. It IS a TypeScript function declaration, so signature,
+ * type parameters, exportedness and async-ness are inherited rather than duplicated.
+ *
+ * The inherited `body` holds prelude statements as opaque code (destructuring,
+ * derived values). Hooks are separate because their ORDER is semantically
+ * significant in React and a generator must be able to emit them before the prelude
+ * and in a stable sequence; burying them in opaque text would make that
+ * unverifiable. `render` is the returned tree.
+ */
+class ComponentDeclaration extends FunctionDeclaration {
+    /* Props interface, normally generated beside the component in the same module. */
+    refers InterfaceDeclaration propsType
+    /* Emitted in declaration order; React requires stable hook order across renders. */
+    contains Hook[] hooks
+    contains JsxNode render
+    /* Wrap the export in React.memo. */
+    boolean memo
+}
+
+/*
+ * A function body that returns structured JSX rather than opaque text. This is the
+ * seam into the TypeScript model: anywhere a CodeBlock is accepted, a JsxBlock can
+ * appear, and its element types still feed import management. Used for render props,
+ * cell renderers and helper functions that are not components in their own right.
+ */
+class JsxBlock extends CodeBlock {
+    contains JsxNode root
+}
+
+/* ---------------------------------------------------------------------------
+ * Hooks. Declarations only: what is called, what it binds, what it depends on.
+ * Bodies are opaque code, which is where application logic belongs.
+ * --------------------------------------------------------------------------- */
+
+abstract class Hook extends ReactElement {
+    /*
+     * Names bound by this hook, in destructuring order: ["count", "setCount"] for
+     * useState. Emitted as the left hand side; referenced by expressions elsewhere.
+     */
+    String[] bindings
+}
+
+class StateHook extends Hook {
+    contains TypeReference stateType
+    contains CodeBlock initialValue
+}
+
+/* useEffect, or useLayoutEffect when layout is set. Empty dependencies means run once. */
+class EffectHook extends Hook {
+    contains CodeBlock body
+    contains CodeBlock[] dependencies
+    boolean layout
+    /* Returned teardown, if any. */
+    contains CodeBlock cleanup
+}
+
+/* useMemo, or useCallback when callback is set. */
+class MemoHook extends Hook {
+    contains CodeBlock expression
+    contains CodeBlock[] dependencies
+    boolean callback
+}
+
+class ContextHook extends Hook {
+    refers ContextDeclaration context
+}
+
+class RefHook extends Hook {
+    contains TypeReference refType
+    contains CodeBlock initialValue
+}
+
+/*
+ * Escape hatch: reducers, custom hooks, router hooks, store hooks, anything from a
+ * library. `references` keeps import management honest about types and functions
+ * used only inside the text, the same bargain as OpaqueTypeReference.
+ */
+class OpaqueHook extends Hook {
+    String text
+    contains TypeReference[] references
+}
+
+/* React context object, created at module level. */
+class ContextDeclaration extends Declaration {
+    contains TypeReference valueType
+    contains CodeBlock defaultValue
+}
+
+/* ---------------------------------------------------------------------------
+ * JSX
+ * --------------------------------------------------------------------------- */
+
+abstract class JsxNode extends ReactElement {
+}
+
+abstract class JsxContainer extends JsxNode {
+    contains JsxNode[] children
+}
+
+/*
+ * A JSX element. Exactly one of `tag` and `componentType` is set: `tag` for
+ * intrinsics ("div", "table", "input"), `componentType` for components.
+ * For intrinsics prefer Intrinsic, which carries a typed HTML model element.
+ *
+ * componentType is the load-bearing feature of this whole model. It is what the
+ * emitter walks to decide which components must be imported, from which specifier,
+ * and whether the import can be type-only. Modeling JSX purely as text would lose
+ * this and hand the problem back to a template.
+ */
+class JsxElement extends JsxContainer {
+    String tag
+    contains NamedTypeReference componentType
+    contains JsxAttribute[] attributes
+}
+
+/* <>...</> */
+class JsxFragment extends JsxContainer {
+}
+
+/* Literal text content. Escaping is an emitter concern. */
+class JsxText extends JsxNode {
+    String text
+}
+
+/* {expression} */
+class JsxExpression extends JsxNode {
+    contains CodeBlock expression
+}
+
+/*
+ * Conditional rendering. With `otherwise` set the emitter writes a ternary,
+ * without it a short-circuit. Target of ui.Conditional.
+ */
+class JsxConditional extends JsxNode {
+    contains CodeBlock condition
+    contains JsxNode then
+    contains JsxNode otherwise
+}
+
+/*
+ * List rendering: {items.map(variable => template)}. Target of ui.Iterator, whose
+ * `key` already exists for keyed updates and lands here as React's required key
+ * prop. The emitter must reject a missing key rather than emit a warning at runtime.
+ */
+class JsxIterator extends JsxNode {
+    contains CodeBlock items
+    String variable
+    contains CodeBlock key
+    contains JsxNode template
+}
+
+/*
+ * <SomeContext.Provider value={...}>. Kept as its own class rather than a plain
+ * JsxElement because the provider is where a ui.DataContext lands, and the
+ * transformation needs to find these to hoist scopes correctly.
+ */
+class ContextProvider extends JsxContainer {
+    refers ContextDeclaration context
+    contains CodeBlock value
+}
+
+/* Verbatim JSX text. Escape hatch; `references` keeps imports resolvable. */
+class OpaqueJsx extends JsxNode {
+    String text
+    contains TypeReference[] references
+}
+
+/*
+ * An HTML model element used as a JSX intrinsic. Tag name, static attributes, classes,
+ * style and structure (table sections, select options, ...) come from the HTML model and
+ * are interpreted by its HtmlStructure, so HTML produced by a transformation, e.g. a
+ * Bootstrap layer, can be used in components as is.
+ *
+ * `attributes` are props HTML cannot express: expressions, event handlers, key, spreads.
+ * Where a name is set both ways, the JSX attribute wins. JSX inside the element is
+ * placed into HTML containers with JsxContent. `children` follow the children of the
+ * HTML element - for dynamic content where the HTML model has a typed reference
+ * rather than a container, e.g. an iterator over the rows of a TableBody.
+ *
+ * Prefer this to JsxElement.tag, which remains for intrinsics the HTML model does not
+ * cover and for opaque output of older transformations.
+ */
+class Intrinsic extends JsxContainer {
+    contains org.nasdanika.sdk.runtime.models.html.Element element
+    contains JsxAttribute[] attributes
+}
+
+/*
+ * JSX in an HTML container: {expression}, conditionals, iterators, component elements.
+ * The counterpart of Intrinsic, so the two trees nest in each other. Rendered by the JSX
+ * emitter only - static HTML generation rejects it.
+ */
+class JsxContent extends org.nasdanika.sdk.runtime.models.html.Node {
+    contains JsxNode node
+}
+
+/* ---------------------------------------------------------------------------
+ * Attributes
+ * --------------------------------------------------------------------------- */
+
+abstract class JsxAttribute extends ReactElement {
+    /* JSX attribute name: className, htmlFor, value, onClick, data-bs-theme. */
+    String attributeName
+}
+
+/* name="literal" */
+class LiteralAttribute extends JsxAttribute {
+    String value
+}
+
+/* name={expression} */
+class ExpressionAttribute extends JsxAttribute {
+    contains CodeBlock expression
+}
+
+/*
+ * onClick={handler} and friends. Distinguished from ExpressionAttribute so the
+ * emitter can validate the on* naming convention and so ui.EventBinding has an
+ * unambiguous target.
+ */
+class EventAttribute extends JsxAttribute {
+    contains CodeBlock handler
+}
+
+/* {...expression} */
+class SpreadAttribute extends JsxAttribute {
+    contains CodeBlock expression
+}
+
