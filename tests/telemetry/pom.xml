@@ -11,6 +11,19 @@
 	<packaging>jar</packaging>
 	<name>Telemetry</name>
 	<description>Telemetry tests with SDK</description>
+
+	<dependencyManagement>
+		<dependencies>
+			<dependency>
+				<groupId>org.nasdanika.sdk.runtime</groupId>
+				<artifactId>bom</artifactId>
+				<version>${project.version}</version>
+				<type>pom</type>
+				<scope>import</scope>
+			</dependency>
+		</dependencies>
+	</dependencyManagement>
+
 	<dependencies>
 		<dependency>
 			<groupId>org.nasdanika.sdk.runtime</groupId>
