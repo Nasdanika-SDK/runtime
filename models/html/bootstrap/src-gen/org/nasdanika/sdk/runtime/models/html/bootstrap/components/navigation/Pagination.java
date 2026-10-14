@@ -1,0 +1,98 @@
+/**
+ */
+package org.nasdanika.sdk.runtime.models.html.bootstrap.components.navigation;
+
+import org.eclipse.emf.common.util.EList;
+
+import org.nasdanika.sdk.runtime.models.html.bootstrap.BootstrapElement;
+import org.nasdanika.sdk.runtime.models.html.bootstrap.Size;
+
+/**
+ * <!-- begin-user-doc -->
+ * A representation of the model object '<em><b>Pagination</b></em>'.
+ * <!-- end-user-doc -->
+ *
+ * <!-- begin-model-doc -->
+ *  aria-label is Pagination unless set with attributes
+ * <!-- end-model-doc -->
+ *
+ * <p>
+ * The following features are supported:
+ * </p>
+ * <ul>
+ *   <li>{@link org.nasdanika.sdk.runtime.models.html.bootstrap.components.navigation.Pagination#getSize <em>Size</em>}</li>
+ *   <li>{@link org.nasdanika.sdk.runtime.models.html.bootstrap.components.navigation.Pagination#getEntries <em>Entries</em>}</li>
+ * </ul>
+ *
+ * @see org.nasdanika.sdk.runtime.models.html.bootstrap.components.navigation.NavigationPackage#getPagination()
+ * @model annotation="urn:org.nasdanika:html tag='nav' attributes='aria-label=Pagination'"
+ * @generated
+ */
+public interface Pagination extends BootstrapElement {
+	/**
+	 * Returns the value of the '<em><b>Size</b></em>' attribute.
+	 * The literals are from the enumeration {@link org.nasdanika.sdk.runtime.models.html.bootstrap.Size}.
+	 * <!-- begin-user-doc -->
+	 * <!-- end-user-doc -->
+	 * @return the value of the '<em>Size</em>' attribute.
+	 * @see org.nasdanika.sdk.runtime.models.html.bootstrap.Size
+	 * @see #isSetSize()
+	 * @see #unsetSize()
+	 * @see #setSize(Size)
+	 * @see org.nasdanika.sdk.runtime.models.html.bootstrap.components.navigation.NavigationPackage#getPagination_Size()
+	 * @model unique="false" unsettable="true"
+	 *        annotation="urn:org.nasdanika:html logical='true'"
+	 * @generated
+	 */
+	Size getSize();
+
+	/**
+	 * Sets the value of the '{@link org.nasdanika.sdk.runtime.models.html.bootstrap.components.navigation.Pagination#getSize <em>Size</em>}' attribute.
+	 * <!-- begin-user-doc -->
+	 * <!-- end-user-doc -->
+	 * @param value the new value of the '<em>Size</em>' attribute.
+	 * @see org.nasdanika.sdk.runtime.models.html.bootstrap.Size
+	 * @see #isSetSize()
+	 * @see #unsetSize()
+	 * @see #getSize()
+	 * @generated
+	 */
+	void setSize(Size value);
+
+	/**
+	 * Unsets the value of the '{@link org.nasdanika.sdk.runtime.models.html.bootstrap.components.navigation.Pagination#getSize <em>Size</em>}' attribute.
+	 * <!-- begin-user-doc -->
+	 * <!-- end-user-doc -->
+	 * @see #isSetSize()
+	 * @see #getSize()
+	 * @see #setSize(Size)
+	 * @generated
+	 */
+	void unsetSize();
+
+	/**
+	 * Returns whether the value of the '{@link org.nasdanika.sdk.runtime.models.html.bootstrap.components.navigation.Pagination#getSize <em>Size</em>}' attribute is set.
+	 * <!-- begin-user-doc -->
+	 * <!-- end-user-doc -->
+	 * @return whether the value of the '<em>Size</em>' attribute is set.
+	 * @see #unsetSize()
+	 * @see #getSize()
+	 * @see #setSize(Size)
+	 * @generated
+	 */
+	boolean isSetSize();
+
+	/**
+	 * Returns the value of the '<em><b>Entries</b></em>' containment reference list.
+	 * The list contents are of type {@link org.nasdanika.sdk.runtime.models.html.bootstrap.components.navigation.PaginationEntry}.
+	 * <!-- begin-user-doc -->
+	 * <!-- end-user-doc -->
+	 * @return the value of the '<em>Entries</em>' containment reference list.
+	 * @see org.nasdanika.sdk.runtime.models.html.bootstrap.components.navigation.NavigationPackage#getPagination_Entries()
+	 * @model containment="true"
+	 *        annotation="urn:org.nasdanika:html logical='true'"
+	 * @generated
+	 */
+	EList<PaginationEntry> getEntries();
+
+} // Pagination

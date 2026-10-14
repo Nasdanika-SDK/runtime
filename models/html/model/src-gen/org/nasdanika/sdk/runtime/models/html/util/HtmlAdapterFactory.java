@@ -86,6 +86,10 @@ public class HtmlAdapterFactory extends AdapterFactoryImpl {
 				return createCommentAdapter();
 			}
 			@Override
+			public Adapter caseNodeReference(NodeReference object) {
+				return createNodeReferenceAdapter();
+			}
+			@Override
 			public Adapter caseContainer(Container object) {
 				return createContainerAdapter();
 			}
@@ -104,6 +108,10 @@ public class HtmlAdapterFactory extends AdapterFactoryImpl {
 			@Override
 			public Adapter caseGenericVoidElement(GenericVoidElement object) {
 				return createGenericVoidElementAdapter();
+			}
+			@Override
+			public Adapter caseLibraryElement(LibraryElement object) {
+				return createLibraryElementAdapter();
 			}
 			@Override
 			public Adapter caseDocument(Document object) {
@@ -438,6 +446,20 @@ public class HtmlAdapterFactory extends AdapterFactoryImpl {
 	}
 
 	/**
+	 * Creates a new adapter for an object of class '{@link org.nasdanika.sdk.runtime.models.html.NodeReference <em>Node Reference</em>}'.
+	 * <!-- begin-user-doc -->
+	 * This default implementation returns null so that we can easily ignore cases;
+	 * it's useful to ignore a case when inheritance will catch all the cases anyway.
+	 * <!-- end-user-doc -->
+	 * @return the new adapter.
+	 * @see org.nasdanika.sdk.runtime.models.html.NodeReference
+	 * @generated
+	 */
+	public Adapter createNodeReferenceAdapter() {
+		return null;
+	}
+
+	/**
 	 * Creates a new adapter for an object of class '{@link org.nasdanika.sdk.runtime.models.html.Container <em>Container</em>}'.
 	 * <!-- begin-user-doc -->
 	 * This default implementation returns null so that we can easily ignore cases;
@@ -504,6 +526,20 @@ public class HtmlAdapterFactory extends AdapterFactoryImpl {
 	 * @generated
 	 */
 	public Adapter createGenericVoidElementAdapter() {
+		return null;
+	}
+
+	/**
+	 * Creates a new adapter for an object of class '{@link org.nasdanika.sdk.runtime.models.html.LibraryElement <em>Library Element</em>}'.
+	 * <!-- begin-user-doc -->
+	 * This default implementation returns null so that we can easily ignore cases;
+	 * it's useful to ignore a case when inheritance will catch all the cases anyway.
+	 * <!-- end-user-doc -->
+	 * @return the new adapter.
+	 * @see org.nasdanika.sdk.runtime.models.html.LibraryElement
+	 * @generated
+	 */
+	public Adapter createLibraryElementAdapter() {
 		return null;
 	}
 

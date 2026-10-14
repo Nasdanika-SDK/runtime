@@ -16,8 +16,9 @@ import org.nasdanika.sdk.runtime.models.html.Head;
 import org.nasdanika.sdk.runtime.models.html.ImportMap;
 import org.nasdanika.sdk.runtime.models.html.Meta;
 import org.nasdanika.sdk.runtime.models.html.Script;
-import org.nasdanika.sdk.runtime.models.html.Stylesheet;
-import org.nasdanika.sdk.runtime.models.html.generator.Generator;
+import org.nasdanika.sdk.runtime.models.html.bootstrap.BootstrapDocument;
+import org.nasdanika.sdk.runtime.models.html.bootstrap.Theme;
+import org.nasdanika.sdk.runtime.models.html.bootstrap.generator.BootstrapStructure;
 import org.nasdanika.sdk.runtime.models.react.ComponentDeclaration;
 import org.nasdanika.sdk.runtime.models.react.bootstrap.tests.Bootstrap;
 import org.nasdanika.sdk.runtime.models.typescript.CodeBlock;
@@ -50,8 +51,6 @@ final class SiteSupport {
 
 	static final String REACT_BOOTSTRAP_VERSION = "2.10.10";
 
-	static final String BOOTSTRAP_CSS = "https://cdn.jsdelivr.net/npm/bootstrap@5.3.3/dist/css/bootstrap.min.css";
-
 	/**
 	 * <code>?external=</code> keeps react-dom and react-bootstrap importing bare React
 	 * specifiers, so the import map resolves all of them to one React instance.
@@ -69,13 +68,20 @@ final class SiteSupport {
 	private SiteSupport() {
 	}
 
-	/**
-	 * A page with Bootstrap CSS, the import map, a mount point, and a module script calling
-	 * <code>mount</code> of the module at modules/{name}.js.
-	 */
 	static Document page(String title, String name) {
-		Document page = HTML.createDocument();
+		return page(title, name, Theme.BOOTSTRAP);
+	}
+
+	/**
+	 * A Bootstrap document of the HTML Bootstrap model with the theme, the import map, a mount
+	 * point, and a module script calling <code>mount</code> of the module at modules/{name}.js.
+	 * The Bootstrap JavaScript bundle is not loaded - React Bootstrap implements the behavior.
+	 */
+	static Document page(String title, String name, Theme theme) {
+		BootstrapDocument page = org.nasdanika.sdk.runtime.models.html.bootstrap.BootstrapFactory.eINSTANCE.createBootstrapDocument();
 		page.setLang("en");
+		page.setTheme(theme);
+		page.setJavaScript(false);
 
 		Head head = HTML.createHead();
 		page.setHead(head);
@@ -84,9 +90,6 @@ final class SiteSupport {
 		viewport.setName("viewport");
 		viewport.setContent("width=device-width, initial-scale=1");
 		head.getMetas().add(viewport);
-		Stylesheet bootstrap = HTML.createStylesheet();
-		bootstrap.setHref(BOOTSTRAP_CSS);
-		head.getStylesheets().add(bootstrap);
 		ImportMap importMap = HTML.createImportMap();
 		importMap.getImports().putAll(IMPORT_MAP);
 		head.setImportMap(importMap);
@@ -133,7 +136,7 @@ final class SiteSupport {
 	}
 
 	static String html(Document page) {
-		return new Generator().generate(page) + "\n";
+		return BootstrapStructure.generate(page) + "\n";
 	}
 
 	static void write(Path path, String content) throws IOException {

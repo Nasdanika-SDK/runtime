@@ -183,6 +183,14 @@ public class ReactAdapterFactory extends AdapterFactoryImpl {
 				return createLibraryComponentAdapter();
 			}
 			@Override
+			public Adapter caseLibraryHook(LibraryHook object) {
+				return createLibraryHookAdapter();
+			}
+			@Override
+			public Adapter caseValueBlock(ValueBlock object) {
+				return createValueBlockAdapter();
+			}
+			@Override
 			public Adapter caseJsxAttribute(JsxAttribute object) {
 				return createJsxAttributeAdapter();
 			}
@@ -621,6 +629,34 @@ public class ReactAdapterFactory extends AdapterFactoryImpl {
 	 * @generated
 	 */
 	public Adapter createLibraryComponentAdapter() {
+		return null;
+	}
+
+	/**
+	 * Creates a new adapter for an object of class '{@link org.nasdanika.sdk.runtime.models.react.LibraryHook <em>Library Hook</em>}'.
+	 * <!-- begin-user-doc -->
+	 * This default implementation returns null so that we can easily ignore cases;
+	 * it's useful to ignore a case when inheritance will catch all the cases anyway.
+	 * <!-- end-user-doc -->
+	 * @return the new adapter.
+	 * @see org.nasdanika.sdk.runtime.models.react.LibraryHook
+	 * @generated
+	 */
+	public Adapter createLibraryHookAdapter() {
+		return null;
+	}
+
+	/**
+	 * Creates a new adapter for an object of class '{@link org.nasdanika.sdk.runtime.models.react.ValueBlock <em>Value Block</em>}'.
+	 * <!-- begin-user-doc -->
+	 * This default implementation returns null so that we can easily ignore cases;
+	 * it's useful to ignore a case when inheritance will catch all the cases anyway.
+	 * <!-- end-user-doc -->
+	 * @return the new adapter.
+	 * @see org.nasdanika.sdk.runtime.models.react.ValueBlock
+	 * @generated
+	 */
+	public Adapter createValueBlockAdapter() {
 		return null;
 	}
 

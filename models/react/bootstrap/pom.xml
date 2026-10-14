@@ -14,14 +14,6 @@
 
     <build>
         <plugins>
-            <plugin>
-                <groupId>org.eclipse.xtext</groupId>
-                <artifactId>xtext-maven-plugin</artifactId>
-            </plugin>
-            <plugin>
-                <groupId>org.codehaus.mojo</groupId>
-                <artifactId>build-helper-maven-plugin</artifactId>
-            </plugin>
             <!--
                 Tests are patched into org.nasdanika.sdk.runtime.models.react.bootstrap on the
                 module path. The demos write static sites only, but the test module reads
@@ -69,7 +61,7 @@
         </dependency>
         <dependency>
             <groupId>org.nasdanika.sdk.runtime.models.html</groupId>
-            <artifactId>model</artifactId>
+            <artifactId>bootstrap</artifactId>
         </dependency>
     </dependencies>
 </project>

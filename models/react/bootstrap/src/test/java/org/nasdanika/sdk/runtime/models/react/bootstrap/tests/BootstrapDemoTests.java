@@ -66,6 +66,8 @@ import org.nasdanika.sdk.runtime.models.react.bootstrap.forms.FeedbackType;
 import org.nasdanika.sdk.runtime.models.react.bootstrap.forms.FormControl;
 import org.nasdanika.sdk.runtime.models.react.bootstrap.forms.FormGroup;
 import org.nasdanika.sdk.runtime.models.react.generator.ReactGenerator;
+import org.nasdanika.sdk.runtime.models.html.bootstrap.Theme;
+import org.nasdanika.sdk.runtime.models.html.bootstrap.generator.BootstrapStructure;
 import org.nasdanika.sdk.runtime.models.typescript.Module;
 
 /**
@@ -80,15 +82,24 @@ import org.nasdanika.sdk.runtime.models.typescript.Module;
  */
 public class BootstrapDemoTests {
 
-	private record Demo(String name, String title, String description) {}
+	private record Demo(String name, String title, String description, Theme theme) {}
 
 	private static final String INDEX_TITLE = "React Bootstrap model demos";
 
 	private static final List<Demo> DEMOS = List.of(
-			new Demo("content", "Layout and content", "Grid, cards, alerts, badges, list groups, progress, tables, accordion, carousel"),
-			new Demo("forms", "Forms", "Validated form with groups, floating labels, input groups, selects, checks and ranges"),
-			new Demo("navigation", "Navigation", "Navbar, breadcrumb, tabs, pills, pagination and dropdowns"),
-			new Demo("overlays", "Overlays", "Modal, offcanvas, toast, tooltip and popover"));
+			new Demo("content", "Layout and content", "Grid, cards, alerts, badges, list groups, progress, tables, accordion, carousel", Theme.BOOTSTRAP),
+			new Demo("forms", "Forms", "Validated form with groups, floating labels, input groups, selects, checks and ranges", Theme.BOOTSTRAP),
+			new Demo("navigation", "Navigation", "Navbar, breadcrumb, tabs, pills, pagination and dropdowns", Theme.BOOTSTRAP),
+			new Demo("overlays", "Overlays", "Modal, offcanvas, toast, tooltip and popover", Theme.BOOTSTRAP),
+			new Demo("mixed", "With static Bootstrap", "React Bootstrap tabs and state around static Bootstrap cards, list groups and tables, in the Zephyr Bootswatch theme", Theme.ZEPHYR));
+
+	/**
+	 * Renders React Bootstrap components, and static Bootstrap elements of the HTML Bootstrap
+	 * model used as intrinsics.
+	 */
+	private static ReactGenerator generator() {
+		return new ReactGenerator(new BootstrapStructure());
+	}
 
 	/**
 	 * Writes the page and module of a demo, the TSX version of the module, and the index.
@@ -96,15 +107,15 @@ public class BootstrapDemoTests {
 	private static String site(String name, Supplier<ComponentDeclaration> app) throws IOException {
 		Demo demo = DEMOS.stream().filter(d -> d.name().equals(name)).findFirst().orElseThrow();
 		Module module = SiteSupport.module(Bootstrap.TS.createModule(), name, app.get());
-		String source = new ReactGenerator().generate(module);
+		String source = generator().generate(module);
 		SiteSupport.write(SiteSupport.SITE.resolve("modules/" + name + ".js"), source);
-		SiteSupport.write(SiteSupport.SITE.resolve(name + ".html"), SiteSupport.html(SiteSupport.page(demo.title(), name)));
+		SiteSupport.write(SiteSupport.SITE.resolve(name + ".html"), SiteSupport.html(SiteSupport.page(demo.title(), name, demo.theme())));
 
 		Module tsxModule = SiteSupport.module(REACT.createTsxModule(), name, app.get());
-		SiteSupport.write(SiteSupport.TSX.resolve(name + ".tsx"), new ReactGenerator().generate(tsxModule));
+		SiteSupport.write(SiteSupport.TSX.resolve(name + ".tsx"), generator().generate(tsxModule));
 
 		SiteSupport.write(SiteSupport.SITE.resolve("index.html"), SiteSupport.html(SiteSupport.page(INDEX_TITLE, "index")));
-		SiteSupport.write(SiteSupport.SITE.resolve("modules/index.js"), new ReactGenerator().generate(SiteSupport.module(Bootstrap.TS.createModule(), "index", index())));
+		SiteSupport.write(SiteSupport.SITE.resolve("modules/index.js"), generator().generate(SiteSupport.module(Bootstrap.TS.createModule(), "index", index())));
 
 		assertTrue(source.contains("export function mount(element)"), source);
 		assertTrue(source.contains("from \"react-bootstrap\""), source);
@@ -713,6 +724,83 @@ public class BootstrapDemoTests {
 	public void testOverlays() throws IOException {
 		String source = site("overlays", BootstrapDemoTests::overlaysApp);
 		assertTrue(source.contains("OverlayTrigger"), source);
+	}
+
+	// --- Mixed: React Bootstrap with static Bootstrap -------------------------------
+
+	private static final org.nasdanika.sdk.runtime.models.html.bootstrap.components.content.ContentFactory STATIC_CONTENT =
+			org.nasdanika.sdk.runtime.models.html.bootstrap.components.content.ContentFactory.eINSTANCE;
+
+	/**
+	 * A static Bootstrap card with a list group, from the HTML Bootstrap model.
+	 */
+	private static org.nasdanika.sdk.runtime.models.html.bootstrap.components.content.Card staticCard(String title, String text, String... items) {
+		return with(STATIC_CONTENT.createCard(), card -> {
+			card.setHeader(with(STATIC_CONTENT.createCardHeader(), h -> h.setContent("Static Bootstrap")));
+			card.getBodies().add(with(STATIC_CONTENT.createCardBody(), body -> {
+				body.setTitle(with(STATIC_CONTENT.createCardTitle(), t -> t.setContent(title)));
+				body.getTexts().add(with(STATIC_CONTENT.createCardText(), t -> t.setContent(text)));
+				body.getContents().add(with(STATIC_CONTENT.createListGroup(), list -> {
+					list.setFlush(true);
+					for (String item: items) {
+						list.getItems().add(with(STATIC_CONTENT.createListGroupItem(), i -> i.setContent(item)));
+					}
+				}));
+			}));
+		});
+	}
+
+	private static ComponentDeclaration mixedApp() {
+		ComponentDeclaration app = app("MixedDemo", null);
+		app.getHooks().add(state("selected", "setSelected", "\"html\""));
+
+		String[][] models = {
+				{ "html", "HTML", "Documents and elements generated to HTML text.", "Elements", "Attributes", "Text generator" },
+				{ "bootstrap", "Bootstrap", "Static Bootstrap, expanded to plain HTML - these cards.", "Grid", "Components", "Bootswatch themes" },
+				{ "react", "React Bootstrap", "Interactive components with state - these tabs.", "Hooks", "JSX", "createElement" } };
+		var tabs = attributes(
+				with(NAVIGATION.createTabs(), t -> {
+					t.setElementId("mixed-tabs");
+					t.getClasses().add("mb-3");
+					for (String[] model: models) {
+						t.getTabs().add(with(NAVIGATION.createTab(), tab -> {
+							tab.setEventKey(model[0]);
+							tab.setTitle(model[1]);
+							tab.getChildren().add(intrinsic(staticCard(model[1], model[2], model[3], model[4], model[5])));
+						}));
+					}
+				}),
+				attribute("activeKey", "selected"),
+				event("onSelect", "key => setSelected(key ?? \"html\")"));
+
+		// React Bootstrap badge showing state, next to a static progress bar
+		var selected = children(
+				with(CONTENT.createBadge(), b -> b.setBg(org.nasdanika.sdk.runtime.models.react.bootstrap.Variant.PRIMARY)),
+				expression("selected"));
+		var progress = with(STATIC_CONTENT.createProgressBar(), p -> { p.setNow(66); p.setLabel("Two thirds static"); p.setStriped(true); });
+
+		app.setRender(container(
+				"With static Bootstrap",
+				"React Bootstrap components and state, with static Bootstrap elements of the HTML Bootstrap model as intrinsics",
+				tabs,
+				with(CORE.createStack(), s -> {
+					s.setDirection(Direction.HORIZONTAL);
+					s.setGap(2);
+					s.getClasses().add("mb-3");
+					s.getChildren().add(text("Selected:"));
+					s.getChildren().add(selected);
+				}),
+				intrinsic(progress)));
+		return app;
+	}
+
+	@Test
+	public void testMixed() throws IOException {
+		String source = site("mixed", BootstrapDemoTests::mixedApp);
+		assertTrue(source.contains("createElement(\"div\", { className: \"card\" }"), source);
+		assertTrue(source.contains("Tabs"), source);
+		String page = java.nio.file.Files.readString(SiteSupport.SITE.resolve("mixed.html"));
+		assertTrue(page.contains("bootswatch@5.3.8/dist/zephyr/bootstrap.min.css"), page);
 	}
 
 	@Test

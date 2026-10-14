@@ -448,6 +448,35 @@ public class ReactSwitch<T> extends Switch<T> {
 				if (result == null) result = defaultCase(theEObject);
 				return result;
 			}
+			case ReactPackage.LIBRARY_HOOK: {
+				LibraryHook libraryHook = (LibraryHook)theEObject;
+				T result = caseLibraryHook(libraryHook);
+				if (result == null) result = caseHook(libraryHook);
+				if (result == null) result = caseReactElement(libraryHook);
+				if (result == null) result = caseTypeScriptElement(libraryHook);
+				if (result == null) result = caseNamedElement(libraryHook);
+				if (result == null) result = caseModelElement(libraryHook);
+				if (result == null) result = caseStringIdentity(libraryHook);
+				if (result == null) result = caseDocumented(libraryHook);
+				if (result == null) result = caseMarked(libraryHook);
+				if (result == null) result = caseReferrable(libraryHook);
+				if (result == null) result = defaultCase(theEObject);
+				return result;
+			}
+			case ReactPackage.VALUE_BLOCK: {
+				ValueBlock valueBlock = (ValueBlock)theEObject;
+				T result = caseValueBlock(valueBlock);
+				if (result == null) result = caseCodeBlock(valueBlock);
+				if (result == null) result = caseTypeScriptElement(valueBlock);
+				if (result == null) result = caseNamedElement(valueBlock);
+				if (result == null) result = caseModelElement(valueBlock);
+				if (result == null) result = caseStringIdentity(valueBlock);
+				if (result == null) result = caseDocumented(valueBlock);
+				if (result == null) result = caseMarked(valueBlock);
+				if (result == null) result = caseReferrable(valueBlock);
+				if (result == null) result = defaultCase(theEObject);
+				return result;
+			}
 			case ReactPackage.JSX_ATTRIBUTE: {
 				JsxAttribute jsxAttribute = (JsxAttribute)theEObject;
 				T result = caseJsxAttribute(jsxAttribute);
@@ -898,6 +927,36 @@ public class ReactSwitch<T> extends Switch<T> {
 	 * @generated
 	 */
 	public T caseLibraryComponent(LibraryComponent object) {
+		return null;
+	}
+
+	/**
+	 * Returns the result of interpreting the object as an instance of '<em>Library Hook</em>'.
+	 * <!-- begin-user-doc -->
+	 * This implementation returns null;
+	 * returning a non-null result will terminate the switch.
+	 * <!-- end-user-doc -->
+	 * @param object the target of the switch.
+	 * @return the result of interpreting the object as an instance of '<em>Library Hook</em>'.
+	 * @see #doSwitch(org.eclipse.emf.ecore.EObject) doSwitch(EObject)
+	 * @generated
+	 */
+	public T caseLibraryHook(LibraryHook object) {
+		return null;
+	}
+
+	/**
+	 * Returns the result of interpreting the object as an instance of '<em>Value Block</em>'.
+	 * <!-- begin-user-doc -->
+	 * This implementation returns null;
+	 * returning a non-null result will terminate the switch.
+	 * <!-- end-user-doc -->
+	 * @param object the target of the switch.
+	 * @return the result of interpreting the object as an instance of '<em>Value Block</em>'.
+	 * @see #doSwitch(org.eclipse.emf.ecore.EObject) doSwitch(EObject)
+	 * @generated
+	 */
+	public T caseValueBlock(ValueBlock object) {
 		return null;
 	}
 

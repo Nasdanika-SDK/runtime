@@ -48,6 +48,8 @@ import org.nasdanika.sdk.runtime.models.react.JsxIterator;
 import org.nasdanika.sdk.runtime.models.react.JsxNode;
 import org.nasdanika.sdk.runtime.models.react.JsxText;
 import org.nasdanika.sdk.runtime.models.react.LibraryComponent;
+import org.nasdanika.sdk.runtime.models.react.LibraryHook;
+import org.nasdanika.sdk.runtime.models.react.ValueBlock;
 import org.nasdanika.sdk.runtime.models.react.LiteralAttribute;
 import org.nasdanika.sdk.runtime.models.react.ReactPackage;
 import org.nasdanika.sdk.runtime.models.react.MemoHook;
@@ -109,6 +111,10 @@ public class ReactGenerator extends Generator {
 	public static final String JOIN_KEY = "join";
 	public static final String STYLE_KEY = "style";
 	public static final String KEY_KEY = "key";
+	public static final String REQUIRED_KEY = "required";
+	public static final String REF_KEY = "ref";
+	public static final String ENUM_KEY = "enum";
+	public static final String HOOK_KEY = "hook";
 
 	/**
 	 * HTML attribute names which differ from React prop names, other than class.
@@ -152,6 +158,17 @@ public class ReactGenerator extends Generator {
 	 * Input types whose value attribute is not the current value.
 	 */
 	private static final Set<String> STATIC_VALUE_INPUT_TYPES = Set.of("checkbox", "radio", "submit", "button", "reset", "hidden", "image");
+
+	/**
+	 * Props which React DOM types as numbers. Numeric values of these props are rendered as
+	 * numbers, so generated TSX type checks.
+	 */
+	public static final Set<String> NUMERIC_PROPS = Set.of(
+			"tabIndex", "colSpan", "rowSpan", "span", "rows", "cols", "size", "start", "maxLength", "minLength",
+			"aria-valuenow", "aria-valuemin", "aria-valuemax", "aria-level", "aria-posinset", "aria-setsize",
+			"aria-colcount", "aria-colindex", "aria-colspan", "aria-rowcount", "aria-rowindex", "aria-rowspan");
+
+	private static final Pattern NUMBER = Pattern.compile("-?\\d+(\\.\\d+)?");
 
 	private static final Pattern SIMPLE_EXPRESSION = Pattern.compile("!?[A-Za-z_$][\\w$]*(\\.[A-Za-z_$][\\w$]*)*(\\(\\))?");
 
@@ -256,8 +273,57 @@ public class ReactGenerator extends Generator {
 				// A keyed fragment is written as Fragment in both syntaxes
 				addReact(ret, seen, "Fragment");
 			}
+			if (next instanceof LibraryHook hook) {
+				String[] name = hookName(hook.eClass());
+				if (seen.add(name[1] + ":" + name[0])) {
+					ret.add(new ImplicitReference(external(name[0], name[1]), false));
+				}
+			}
+			if (isReflective(next)) {
+				for (EAttribute attribute: next.eClass().getEAllAttributes()) {
+					String tsEnum = annotation(attribute, ENUM_KEY);
+					boolean rendered = next.eIsSet(attribute) || "true".equals(annotation(attribute, REQUIRED_KEY));
+					if (tsEnum != null && rendered && seen.add(annotation(attribute, MODULE_KEY) + ":" + tsEnum)) {
+						ret.add(new ImplicitReference(external(tsEnum, annotation(attribute, MODULE_KEY)), false));
+					}
+				}
+				for (EReference reference: next.eClass().getEAllReferences()) {
+					if (!reference.isContainment() && !reference.isContainer() && next.eIsSet(reference)) {
+						Object value = next.eGet(reference);
+						for (Object target: reference.isMany() ? (List<?>) value : List.of(value)) {
+							if (target instanceof Declaration declaration) {
+								addTarget(ret, seen, declaration, false);
+							}
+						}
+					}
+				}
+			}
 		}
 		return ret;
+	}
+
+	/**
+	 * @return true for library components, library hooks, and objects rendered by them or by value blocks
+	 */
+	private static boolean isReflective(EObject eObject) {
+		for (EObject current = eObject; current != null; current = current.eContainer()) {
+			if (current instanceof LibraryComponent || current instanceof LibraryHook || current instanceof ValueBlock) {
+				return true;
+			}
+		}
+		return false;
+	}
+
+	/**
+	 * @return Hook function name and module of a library hook class
+	 */
+	protected static String[] hookName(EClass eClass) {
+		String hook = classAnnotation(eClass, HOOK_KEY);
+		String module = classAnnotation(eClass, MODULE_KEY);
+		if (isBlank(hook) || isBlank(module)) {
+			throw new NasdanikaException("Library hook class without hook name or module annotation: " + eClass.getName());
+		}
+		return new String[] { hook, module };
 	}
 
 	private static void addReact(List<ImplicitReference> references, Set<Object> seen, String name) {
@@ -441,6 +507,14 @@ public class ReactGenerator extends Generator {
 				yield assign(bindings) + react("useRef", im) + typeArgument(ref.getRefType(), im) + "(" + (isBlank(initialValue) ? "null" : initialValue) + ");";
 			}
 			case OpaqueHook opaque -> normalize(opaque.getText());
+			case LibraryHook library -> {
+				Jsx jsx = new Jsx(library, im);
+				Map<String, Prop> arguments = new LinkedHashMap<>();
+				jsx.featureProps(library, ReactPackage.Literals.LIBRARY_HOOK, null, arguments, null);
+				String[] name = hookName(library.eClass());
+				yield assign(bindings) + im.localName(external(name[0], name[1]))
+						+ "(" + String.join(", ", arguments.values().stream().map(jsx::value).toList()) + ");";
+			}
 			default -> throw new NasdanikaException("Unsupported hook: " + hook.eClass().getName());
 		};
 	}
@@ -512,6 +586,14 @@ public class ReactGenerator extends Generator {
 				throw new NasdanikaException("A JSX block with a prelude cannot be used as an expression: " + block);
 			}
 			return jsxBlock.getRoot() == null ? "null" : expression(jsxBlock.getRoot(), im);
+		}
+		if (block instanceof ValueBlock valueBlock) {
+			if (valueBlock.getValue() == null) {
+				return asBody ? "return undefined;" : "undefined";
+			}
+			Jsx jsx = new Jsx(valueBlock, im);
+			String value = jsx.value(jsx.valueObject("value", valueBlock.getValue(), null));
+			return asBody ? "return " + value + ";" : value;
 		}
 		return super.code(block, asBody, im);
 	}
@@ -680,7 +762,7 @@ public class ReactGenerator extends Generator {
 		}
 
 		Out html(org.nasdanika.sdk.runtime.models.html.Node node) {
-			return switch (node) {
+			return switch (htmlStructure.expandAll(node)) {
 				case org.nasdanika.sdk.runtime.models.html.Text text -> new Txt(orEmpty(text.getContent()));
 				case org.nasdanika.sdk.runtime.models.html.Comment comment -> new Remark(orEmpty(comment.getContent()));
 				case JsxContent content -> {
@@ -695,17 +777,23 @@ public class ReactGenerator extends Generator {
 			};
 		}
 
-		Elem intrinsic(Element element, List<JsxAttribute> jsxAttributes, List<JsxNode> jsxChildren) {
-			if (element == null) {
+		Elem intrinsic(Element intrinsicElement, List<JsxAttribute> jsxAttributes, List<JsxNode> jsxChildren) {
+			if (intrinsicElement == null) {
 				throw new NasdanikaException("Intrinsic without element");
+			}
+			// Library elements, e.g. Bootstrap, expand to plain HTML
+			if (!(htmlStructure.expandAll(intrinsicElement) instanceof Element element)) {
+				throw new NasdanikaException("Intrinsic element does not expand to an element: " + intrinsicElement);
 			}
 			String tag = htmlStructure.tagName(element);
 			Map<String, Prop> props = new LinkedHashMap<>();
-			if (element.getId() != null) {
-				props.put("id", new Prop("id", PropKind.STRING, element.getId()));
+			String id = htmlStructure.id(element);
+			if (id != null) {
+				props.put("id", new Prop("id", PropKind.STRING, id));
 			}
-			if (!element.getClasses().isEmpty()) {
-				props.put("className", new Prop("className", PropKind.STRING, String.join(" ", element.getClasses())));
+			List<String> classes = htmlStructure.classes(element);
+			if (!classes.isEmpty()) {
+				props.put("className", new Prop("className", PropKind.STRING, String.join(" ", classes)));
 			}
 			for (Map.Entry<String, Object> attribute: htmlStructure.attributes(element).entrySet()) {
 				String name = propName(attribute.getKey());
@@ -719,7 +807,13 @@ public class ReactGenerator extends Generator {
 						name = "defaultValue";
 					}
 				}
-				props.put(name, attribute.getValue() instanceof String value ? new Prop(name, PropKind.STRING, value) : new Prop(name, PropKind.TRUE, null));
+				if (attribute.getValue() instanceof String value) {
+					// React DOM types numeric props as numbers
+					boolean numeric = NUMERIC_PROPS.contains(name) && NUMBER.matcher(value).matches();
+					props.put(name, new Prop(name, numeric ? PropKind.CODE : PropKind.STRING, value));
+				} else {
+					props.put(name, new Prop(name, PropKind.TRUE, null));
+				}
 			}
 			if (element instanceof Select select) {
 				List<String> selected = new ArrayList<>();
@@ -780,33 +874,78 @@ public class ReactGenerator extends Generator {
 			String type = im.localName(external(name[0], name[1]));
 			Map<String, Prop> props = new LinkedHashMap<>();
 			List<Out> children = new ArrayList<>();
-			featureProps(component, null, props, children);
+			featureProps(component, ReactPackage.Literals.LIBRARY_COMPONENT, null, props, children);
 			attributes(component.getAttributes(), props);
 			children.addAll(children(component.getChildren()));
 			return new Elem(type, false, new ArrayList<>(props.values()), children);
 		}
 
 		/**
-		 * Props and children of the features of a library component or a value object.
+		 * Props and children of the features of a library component, a library hook or a value object.
 		 * Text children follow the children of containment features.
 		 *
+		 * @param base Class whose features are not props, e.g. LibraryComponent, null for value objects
 		 * @param exclude Key feature of a value object, not a prop
-		 * @param children Null for value objects, which have no children
+		 * @param children Null for value objects and hooks, which have no children
 		 */
-		void featureProps(EObject object, EStructuralFeature exclude, Map<String, Prop> props, List<Out> children) {
+		void featureProps(EObject object, EClass base, EStructuralFeature exclude, Map<String, Prop> props, List<Out> children) {
 			List<Out> texts = new ArrayList<>();
 			for (EStructuralFeature feature: object.eClass().getEAllStructuralFeatures()) {
 				if (feature == exclude
-						|| ReactPackage.Literals.LIBRARY_COMPONENT.getEAllStructuralFeatures().contains(feature)
-						|| "true".equals(annotation(feature, LOGICAL_KEY))
-						|| !object.eIsSet(feature)) {
+						|| (base != null && base.getEAllStructuralFeatures().contains(feature))
+						|| "true".equals(annotation(feature, LOGICAL_KEY))) {
 					continue;
 				}
 				String propName = annotation(feature, PROP_KEY);
 				if (propName == null) {
 					propName = feature.getName();
 				}
+				if (!object.eIsSet(feature)) {
+					if ("true".equals(annotation(feature, REQUIRED_KEY))) {
+						// Default value of an attribute, an empty array, an empty object, or undefined
+						Prop required;
+						if (feature.isMany()) {
+							required = new Prop(propName, PropKind.CODE, "[]");
+						} else if (feature instanceof EAttribute attribute) {
+							required = attributeProp(attribute, propName, object.eGet(attribute));
+						} else if (feature instanceof EReference reference
+								&& !ReactPackage.Literals.JSX_NODE.isSuperTypeOf(reference.getEReferenceType())
+								&& !org.nasdanika.sdk.runtime.models.typescript.TypescriptPackage.Literals.CODE_BLOCK.isSuperTypeOf(reference.getEReferenceType())) {
+							required = new Prop(propName, PropKind.CODE, "{}");
+						} else {
+							required = new Prop(propName, PropKind.CODE, "undefined");
+						}
+						if (required != null) {
+							props.put(propName, required);
+						}
+					}
+					continue;
+				}
 				Object value = object.eGet(feature);
+				if (feature instanceof EReference reference && !reference.isContainment()) {
+					List<String> targets = new ArrayList<>();
+					for (Object target: reference.isMany() ? (List<?>) value : List.of(value)) {
+						targets.add(referenceValue(reference, (EObject) target));
+					}
+					props.put(propName, new Prop(propName, PropKind.CODE, reference.isMany() ? array(targets) : targets.get(0)));
+					continue;
+				}
+				if (feature instanceof EReference reference && reference.isMany() && annotation(reference, KEY_KEY) == null) {
+					// Arrays of values: value objects, code blocks, JSX node props
+					List<?> values = (List<?>) value;
+					if (!values.isEmpty() && values.stream().allMatch(v -> isValue(reference, v))) {
+						List<String> items = new ArrayList<>();
+						for (Object v: values) {
+							items.add(value(singleValue(reference, propName, (EObject) v)));
+						}
+						props.put(propName, new Prop(propName, PropKind.CODE, array(items)));
+						continue;
+					}
+				}
+				if (feature instanceof EReference reference && !reference.isMany() && isValue(reference, value)) {
+					props.put(propName, singleValue(reference, propName, (EObject) value));
+					continue;
+				}
 				if (feature instanceof EAttribute attribute) {
 					if ("true".equals(annotation(attribute, CHILD_KEY))) {
 						if (children == null) {
@@ -876,9 +1015,72 @@ public class ReactGenerator extends Generator {
 		}
 
 		/**
+		 * A value of a containment which is a prop value rather than a child: a code block, a JSX node with
+		 * a prop annotation, or a value object.
+		 */
+		boolean isValue(EReference reference, Object value) {
+			return switch (value) {
+				case CodeBlock block -> true;
+				case JsxNode node -> annotation(reference, PROP_KEY) != null;
+				case org.nasdanika.sdk.runtime.models.html.Node node -> false;
+				case NamedTypeReference typeReference -> false;
+				case EObject eObject -> !Map.Entry.class.equals(reference.getEReferenceType().getInstanceClass());
+				default -> false;
+			};
+		}
+
+		Prop singleValue(EReference reference, String propName, EObject value) {
+			return switch (value) {
+				case CodeBlock block -> new Prop(propName, PropKind.CODE, orEmpty(expression(block, im)));
+				case JsxNode node -> new Prop(propName, PropKind.CODE, print(out(node), 0));
+				default -> valueObject(propName, value, null);
+			};
+		}
+
+		/**
+		 * A declaration - its local name, or the attribute of the target named by the ref annotation.
+		 */
+		String referenceValue(EReference reference, EObject target) {
+			if (target instanceof Declaration declaration) {
+				return localName(declaration, im);
+			}
+			String ref = annotation(reference, REF_KEY);
+			if (ref == null) {
+				throw new NasdanikaException("Reference without ref annotation: " + reference);
+			}
+			EStructuralFeature refFeature = target.eClass().getEStructuralFeature(ref);
+			Object refValue = refFeature == null ? null : target.eGet(refFeature);
+			if (refValue == null) {
+				throw new NasdanikaException("Target of " + reference.getName() + " without " + ref + ": " + target);
+			}
+			return literal(refValue);
+		}
+
+		/**
+		 * Array literal, items on their own lines if they do not fit on one.
+		 */
+		String array(List<String> items) {
+			String inline = "[" + String.join(", ", items) + "]";
+			if (inline.length() < LINE_LENGTH && !inline.contains("\n")) {
+				return inline;
+			}
+			String pad = getIndent();
+			return "[\n" + pad + String.join(",\n" + pad, items.stream().map(item -> item.replace("\n", "\n" + pad)).toList()) + "\n]";
+		}
+
+		/**
 		 * @return Null if the attribute does not render, e.g. a false boolean of a not unsettable attribute
 		 */
 		Prop attributeProp(EAttribute attribute, String name, Object value) {
+			String tsEnum = annotation(attribute, ENUM_KEY);
+			if (tsEnum != null) {
+				String enumName = im.localName(external(tsEnum, annotation(attribute, MODULE_KEY)));
+				List<String> members = new ArrayList<>();
+				for (Object v: attribute.isMany() ? (List<?>) value : List.of(value)) {
+					members.add(enumName + "." + ((Enumerator) v).getName());
+				}
+				return new Prop(name, PropKind.CODE, attribute.isMany() ? array(members) : members.get(0));
+			}
 			if (attribute.isMany()) {
 				List<?> values = (List<?>) value;
 				String join = annotation(attribute, JOIN_KEY);
@@ -895,7 +1097,7 @@ public class ReactGenerator extends Generator {
 				return attribute.isUnsettable() && trueValue == null ? new Prop(name, PropKind.CODE, "false") : null;
 			}
 			if (value instanceof Number) {
-				return new Prop(name, PropKind.CODE, String.valueOf(value));
+				return new Prop(name, PropKind.CODE, number((Number) value));
 			}
 			return new Prop(name, PropKind.STRING, literalString(value));
 		}
@@ -905,7 +1107,20 @@ public class ReactGenerator extends Generator {
 		}
 
 		String literal(Object value) {
-			return value instanceof Number || value instanceof Boolean ? String.valueOf(value) : quote(literalString(value));
+			if (value instanceof Number number) {
+				return number(number);
+			}
+			return value instanceof Boolean ? String.valueOf(value) : quote(literalString(value));
+		}
+
+		/**
+		 * Integral doubles without a fraction: 16, not 16.0.
+		 */
+		String number(Number number) {
+			if ((number instanceof Double || number instanceof Float) && number.doubleValue() == Math.rint(number.doubleValue()) && !Double.isInfinite(number.doubleValue())) {
+				return String.valueOf(number.longValue());
+			}
+			return String.valueOf(number);
 		}
 
 		/**
@@ -914,7 +1129,7 @@ public class ReactGenerator extends Generator {
 		 */
 		Prop valueObject(String name, EObject valueObject, EStructuralFeature keyFeature) {
 			Map<String, Prop> props = new LinkedHashMap<>();
-			featureProps(valueObject, keyFeature, props, null);
+			featureProps(valueObject, null, keyFeature, props, null);
 			String shorthand = classAnnotation(valueObject.eClass(), SHORTHAND_KEY);
 			if (props.size() == 1 && props.containsKey(shorthand)) {
 				Prop prop = props.get(shorthand);
@@ -1026,17 +1241,37 @@ public class ReactGenerator extends Generator {
 		String jsxElement(Elem elem, int depth) {
 			String type = elem.type() == null ? "" : elem.type();
 			StringBuilder ret = new StringBuilder("<").append(type);
-			for (Prop prop: elem.props()) {
-				ret.append(" ").append(switch (prop.kind()) {
-					case STRING -> prop.name() + "=" + jsxString(prop.value());
-					case CODE -> prop.name() + "={" + prop.value().replace("\n", "\n" + getIndent().repeat(depth)) + "}";
-					case TRUE -> prop.name();
-					case SPREAD -> "{..." + prop.value() + "}";
-				});
+			List<String> props = new ArrayList<>();
+			for (int propDepth: new int[] { depth, depth + 1 }) {
+				props.clear();
+				for (Prop prop: elem.props()) {
+					props.add(switch (prop.kind()) {
+						case STRING -> prop.name() + "=" + jsxString(prop.value());
+						case CODE -> prop.name() + "={" + prop.value().replace("\n", "\n" + getIndent().repeat(propDepth)) + "}";
+						case TRUE -> prop.name();
+						case SPREAD -> "{..." + prop.value() + "}";
+					});
+				}
+				if (propDepth == depth && (props.size() < 2 || type.length() + String.join(" ", props).length() + 3 < LINE_LENGTH)) {
+					break;
+				}
 			}
 			List<Out> children = elem.children();
+			// Props of a long tag on their own lines
+			boolean wrapProps = props.size() > 1 && type.length() + String.join(" ", props).length() + 3 >= LINE_LENGTH;
+			if (wrapProps) {
+				String pad = getIndent().repeat(depth + 1);
+				for (String prop: props) {
+					ret.append("\n").append(pad).append(prop);
+				}
+				ret.append("\n").append(getIndent().repeat(depth));
+			} else {
+				for (String prop: props) {
+					ret.append(" ").append(prop);
+				}
+			}
 			if (children.isEmpty()) {
-				return ret.append(elem.type() == null ? "></>" : " />").toString();
+				return ret.append(elem.type() == null ? "></>" : wrapProps ? "/>" : " />").toString();
 			}
 			ret.append(">");
 			List<String> printed = new ArrayList<>();
@@ -1088,22 +1323,38 @@ public class ReactGenerator extends Generator {
 			return value.chars().anyMatch(c -> "\"&\\\n\r".indexOf(c) != -1) ? "{" + quote(value) + "}" : "\"" + value + "\"";
 		}
 
+		/**
+		 * Entries of a createElement props object, continuation lines indented by depth.
+		 */
+		List<String> props(Elem elem, int depth) {
+			List<String> props = new ArrayList<>();
+			for (Prop prop: elem.props()) {
+				props.add(switch (prop.kind()) {
+					case STRING -> key(prop.name()) + ": " + quote(prop.value());
+					case CODE -> key(prop.name()) + ": " + prop.value().replace("\n", "\n" + getIndent().repeat(depth));
+					case TRUE -> key(prop.name()) + ": true";
+					case SPREAD -> "..." + prop.value();
+				});
+			}
+			return props;
+		}
+
 		String createElement(Elem elem, int depth) {
 			String type = elem.type() == null ? react("Fragment", im) : elem.intrinsic() ? quote(elem.type()) : elem.type();
 			StringBuilder ret = new StringBuilder(react("createElement", im)).append("(").append(type).append(", ");
 			if (elem.props().isEmpty()) {
 				ret.append("null");
 			} else {
-				List<String> props = new ArrayList<>();
-				for (Prop prop: elem.props()) {
-					props.add(switch (prop.kind()) {
-						case STRING -> key(prop.name()) + ": " + quote(prop.value());
-						case CODE -> key(prop.name()) + ": " + prop.value().replace("\n", "\n" + getIndent().repeat(depth));
-						case TRUE -> key(prop.name()) + ": true";
-						case SPREAD -> "..." + prop.value();
-					});
+				// Props of a long props object on their own lines
+				String inline = "{ " + String.join(", ", props(elem, depth)) + " }";
+				if (elem.props().size() > 1 && (inline.length() + type.length() >= LINE_LENGTH)) {
+					String pad = getIndent().repeat(depth + 1);
+					ret.append("{\n").append(pad)
+						.append(String.join(",\n" + pad, props(elem, depth + 1)))
+						.append("\n").append(getIndent().repeat(depth)).append("}");
+				} else {
+					ret.append(inline);
 				}
-				ret.append("{ ").append(String.join(", ", props)).append(" }");
 			}
 			List<String> printed = new ArrayList<>();
 			int length = ret.length();

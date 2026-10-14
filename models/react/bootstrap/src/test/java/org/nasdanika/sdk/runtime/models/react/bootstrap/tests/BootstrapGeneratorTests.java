@@ -134,7 +134,12 @@ public class BootstrapGeneratorTests {
 				          <Card.Link href="#more">More</Card.Link>
 				        </Card.Body>
 				      </Card>
-				      <Alert variant="warning" dismissible show={visible} onClose={() => setVisible(false)}><Alert.Heading>Heads up</Alert.Heading>Hidden until shown</Alert>
+				      <Alert
+				        variant="warning"
+				        dismissible
+				        show={visible}
+				        onClose={() => setVisible(false)}
+				      ><Alert.Heading>Heads up</Alert.Heading>Hidden until shown</Alert>
 				    </Stack>
 				  );
 				}
@@ -153,7 +158,12 @@ public class BootstrapGeneratorTests {
 				        createElement(Card.Title, null, "Title"),
 				        createElement(Card.Text, null, "Text & more"),
 				        createElement(Card.Link, { href: "#more" }, "More"))),
-				    createElement(Alert, { variant: "warning", dismissible: true, show: visible, onClose: () => setVisible(false) },
+				    createElement(Alert, {
+				      variant: "warning",
+				      dismissible: true,
+				      show: visible,
+				      onClose: () => setVisible(false)
+				    },
 				      createElement(Alert.Heading, null, "Heads up"),
 				      "Hidden until shown"));
 				}
@@ -280,7 +290,11 @@ public class BootstrapGeneratorTests {
 				function Demo() {
 				  return (
 				    <Stack>
-				      <OverlayTrigger placement="right-start" trigger={["hover", "focus"]} overlay={<Tooltip id="tip">Tooltip</Tooltip>}>
+				      <OverlayTrigger
+				        placement="right-start"
+				        trigger={["hover", "focus"]}
+				        overlay={<Tooltip id="tip">Tooltip</Tooltip>}
+				      >
 				        <Button>Hover me</Button>
 				      </OverlayTrigger>
 				      <Modal centered show={show} onHide={() => setShow(false)}>

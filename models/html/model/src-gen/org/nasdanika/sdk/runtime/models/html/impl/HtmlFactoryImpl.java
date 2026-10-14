@@ -59,6 +59,7 @@ public class HtmlFactoryImpl extends EFactoryImpl implements HtmlFactory {
 			case HtmlPackage.TEXT: return createText();
 			case HtmlPackage.MARKUP: return createMarkup();
 			case HtmlPackage.COMMENT: return createComment();
+			case HtmlPackage.NODE_REFERENCE: return createNodeReference();
 			case HtmlPackage.GENERIC_ELEMENT: return createGenericElement();
 			case HtmlPackage.GENERIC_VOID_ELEMENT: return createGenericVoidElement();
 			case HtmlPackage.DOCUMENT: return createDocument();
@@ -153,6 +154,16 @@ public class HtmlFactoryImpl extends EFactoryImpl implements HtmlFactory {
 	public Comment createComment() {
 		CommentImpl comment = new CommentImpl();
 		return comment;
+	}
+
+	/**
+	 * <!-- begin-user-doc -->
+	 * <!-- end-user-doc -->
+	 * @generated
+	 */
+	public NodeReference createNodeReference() {
+		NodeReferenceImpl nodeReference = new NodeReferenceImpl();
+		return nodeReference;
 	}
 
 	/**

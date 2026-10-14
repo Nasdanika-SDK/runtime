@@ -1,0 +1,172 @@
+/**
+ */
+package org.nasdanika.sdk.runtime.models.html.bootstrap.components.navigation;
+
+import org.eclipse.emf.common.util.EList;
+
+import org.nasdanika.sdk.runtime.models.html.bootstrap.BootstrapElement;
+
+/**
+ * <!-- begin-user-doc -->
+ * A representation of the model object '<em><b>Tabs</b></em>'.
+ * <!-- end-user-doc -->
+ *
+ * <!-- begin-model-doc -->
+ * Nav with tab buttons followed by tab panes. The id of the tabs is generated if not set.
+ * <!-- end-model-doc -->
+ *
+ * <p>
+ * The following features are supported:
+ * </p>
+ * <ul>
+ *   <li>{@link org.nasdanika.sdk.runtime.models.html.bootstrap.components.navigation.Tabs#getDefaultActiveKey <em>Default Active Key</em>}</li>
+ *   <li>{@link org.nasdanika.sdk.runtime.models.html.bootstrap.components.navigation.Tabs#getVariant <em>Variant</em>}</li>
+ *   <li>{@link org.nasdanika.sdk.runtime.models.html.bootstrap.components.navigation.Tabs#isFill <em>Fill</em>}</li>
+ *   <li>{@link org.nasdanika.sdk.runtime.models.html.bootstrap.components.navigation.Tabs#isJustify <em>Justify</em>}</li>
+ *   <li>{@link org.nasdanika.sdk.runtime.models.html.bootstrap.components.navigation.Tabs#getTabs <em>Tabs</em>}</li>
+ * </ul>
+ *
+ * @see org.nasdanika.sdk.runtime.models.html.bootstrap.components.navigation.NavigationPackage#getTabs()
+ * @model annotation="urn:org.nasdanika:html tag='div'"
+ * @generated
+ */
+public interface Tabs extends BootstrapElement {
+	/**
+	 * Returns the value of the '<em><b>Default Active Key</b></em>' attribute.
+	 * <!-- begin-user-doc -->
+	 * <!-- end-user-doc -->
+	 * <!-- begin-model-doc -->
+	 *  Event key of the tab active initially, the first if not set
+	 * <!-- end-model-doc -->
+	 * @return the value of the '<em>Default Active Key</em>' attribute.
+	 * @see #setDefaultActiveKey(String)
+	 * @see org.nasdanika.sdk.runtime.models.html.bootstrap.components.navigation.NavigationPackage#getTabs_DefaultActiveKey()
+	 * @model unique="false"
+	 *        annotation="urn:org.nasdanika:html logical='true'"
+	 * @generated
+	 */
+	String getDefaultActiveKey();
+
+	/**
+	 * Sets the value of the '{@link org.nasdanika.sdk.runtime.models.html.bootstrap.components.navigation.Tabs#getDefaultActiveKey <em>Default Active Key</em>}' attribute.
+	 * <!-- begin-user-doc -->
+	 * <!-- end-user-doc -->
+	 * @param value the new value of the '<em>Default Active Key</em>' attribute.
+	 * @see #getDefaultActiveKey()
+	 * @generated
+	 */
+	void setDefaultActiveKey(String value);
+
+	/**
+	 * Returns the value of the '<em><b>Variant</b></em>' attribute.
+	 * The literals are from the enumeration {@link org.nasdanika.sdk.runtime.models.html.bootstrap.components.navigation.NavVariant}.
+	 * <!-- begin-user-doc -->
+	 * <!-- end-user-doc -->
+	 * @return the value of the '<em>Variant</em>' attribute.
+	 * @see org.nasdanika.sdk.runtime.models.html.bootstrap.components.navigation.NavVariant
+	 * @see #isSetVariant()
+	 * @see #unsetVariant()
+	 * @see #setVariant(NavVariant)
+	 * @see org.nasdanika.sdk.runtime.models.html.bootstrap.components.navigation.NavigationPackage#getTabs_Variant()
+	 * @model unique="false" unsettable="true"
+	 *        annotation="urn:org.nasdanika:html logical='true'"
+	 * @generated
+	 */
+	NavVariant getVariant();
+
+	/**
+	 * Sets the value of the '{@link org.nasdanika.sdk.runtime.models.html.bootstrap.components.navigation.Tabs#getVariant <em>Variant</em>}' attribute.
+	 * <!-- begin-user-doc -->
+	 * <!-- end-user-doc -->
+	 * @param value the new value of the '<em>Variant</em>' attribute.
+	 * @see org.nasdanika.sdk.runtime.models.html.bootstrap.components.navigation.NavVariant
+	 * @see #isSetVariant()
+	 * @see #unsetVariant()
+	 * @see #getVariant()
+	 * @generated
+	 */
+	void setVariant(NavVariant value);
+
+	/**
+	 * Unsets the value of the '{@link org.nasdanika.sdk.runtime.models.html.bootstrap.components.navigation.Tabs#getVariant <em>Variant</em>}' attribute.
+	 * <!-- begin-user-doc -->
+	 * <!-- end-user-doc -->
+	 * @see #isSetVariant()
+	 * @see #getVariant()
+	 * @see #setVariant(NavVariant)
+	 * @generated
+	 */
+	void unsetVariant();
+
+	/**
+	 * Returns whether the value of the '{@link org.nasdanika.sdk.runtime.models.html.bootstrap.components.navigation.Tabs#getVariant <em>Variant</em>}' attribute is set.
+	 * <!-- begin-user-doc -->
+	 * <!-- end-user-doc -->
+	 * @return whether the value of the '<em>Variant</em>' attribute is set.
+	 * @see #unsetVariant()
+	 * @see #getVariant()
+	 * @see #setVariant(NavVariant)
+	 * @generated
+	 */
+	boolean isSetVariant();
+
+	/**
+	 * Returns the value of the '<em><b>Fill</b></em>' attribute.
+	 * <!-- begin-user-doc -->
+	 * <!-- end-user-doc -->
+	 * @return the value of the '<em>Fill</em>' attribute.
+	 * @see #setFill(boolean)
+	 * @see org.nasdanika.sdk.runtime.models.html.bootstrap.components.navigation.NavigationPackage#getTabs_Fill()
+	 * @model unique="false"
+	 *        annotation="urn:org.nasdanika:html logical='true'"
+	 * @generated
+	 */
+	boolean isFill();
+
+	/**
+	 * Sets the value of the '{@link org.nasdanika.sdk.runtime.models.html.bootstrap.components.navigation.Tabs#isFill <em>Fill</em>}' attribute.
+	 * <!-- begin-user-doc -->
+	 * <!-- end-user-doc -->
+	 * @param value the new value of the '<em>Fill</em>' attribute.
+	 * @see #isFill()
+	 * @generated
+	 */
+	void setFill(boolean value);
+
+	/**
+	 * Returns the value of the '<em><b>Justify</b></em>' attribute.
+	 * <!-- begin-user-doc -->
+	 * <!-- end-user-doc -->
+	 * @return the value of the '<em>Justify</em>' attribute.
+	 * @see #setJustify(boolean)
+	 * @see org.nasdanika.sdk.runtime.models.html.bootstrap.components.navigation.NavigationPackage#getTabs_Justify()
+	 * @model unique="false"
+	 *        annotation="urn:org.nasdanika:html logical='true'"
+	 * @generated
+	 */
+	boolean isJustify();
+
+	/**
+	 * Sets the value of the '{@link org.nasdanika.sdk.runtime.models.html.bootstrap.components.navigation.Tabs#isJustify <em>Justify</em>}' attribute.
+	 * <!-- begin-user-doc -->
+	 * <!-- end-user-doc -->
+	 * @param value the new value of the '<em>Justify</em>' attribute.
+	 * @see #isJustify()
+	 * @generated
+	 */
+	void setJustify(boolean value);
+
+	/**
+	 * Returns the value of the '<em><b>Tabs</b></em>' containment reference list.
+	 * The list contents are of type {@link org.nasdanika.sdk.runtime.models.html.bootstrap.components.navigation.Tab}.
+	 * <!-- begin-user-doc -->
+	 * <!-- end-user-doc -->
+	 * @return the value of the '<em>Tabs</em>' containment reference list.
+	 * @see org.nasdanika.sdk.runtime.models.html.bootstrap.components.navigation.NavigationPackage#getTabs_Tabs()
+	 * @model containment="true"
+	 *        annotation="urn:org.nasdanika:html logical='true'"
+	 * @generated
+	 */
+	EList<Tab> getTabs();
+
+} // Tabs

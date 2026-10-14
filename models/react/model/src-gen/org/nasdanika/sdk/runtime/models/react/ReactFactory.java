@@ -202,6 +202,15 @@ public interface ReactFactory extends EFactory {
 	JsxContent createJsxContent();
 
 	/**
+	 * Returns a new object of class '<em>Value Block</em>'.
+	 * <!-- begin-user-doc -->
+	 * <!-- end-user-doc -->
+	 * @return a new object of class '<em>Value Block</em>'.
+	 * @generated
+	 */
+	ValueBlock createValueBlock();
+
+	/**
 	 * Returns a new object of class '<em>Literal Attribute</em>'.
 	 * <!-- begin-user-doc -->
 	 * <!-- end-user-doc -->

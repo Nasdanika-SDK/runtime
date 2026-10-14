@@ -28,6 +28,8 @@ module org.nasdanika.sdk.runtime.models.react.bootstrap {
 	exports org.nasdanika.sdk.runtime.models.react.bootstrap.components.overlays.util;
 	
 	requires transitive org.nasdanika.sdk.runtime.models.react;
+	/* Themes and documents of React Bootstrap pages; static Bootstrap elements as intrinsics */
+	requires transitive org.nasdanika.sdk.runtime.models.html.bootstrap;
 	requires java.net.http;
 	requires jdk.httpserver;
 	

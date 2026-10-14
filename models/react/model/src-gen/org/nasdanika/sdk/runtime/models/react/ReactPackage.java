@@ -4021,6 +4021,314 @@ public interface ReactPackage extends EPackage {
 	int LIBRARY_COMPONENT_OPERATION_COUNT = JSX_CONTAINER_OPERATION_COUNT + 0;
 
 	/**
+	 * The meta object id for the '{@link org.nasdanika.sdk.runtime.models.react.impl.LibraryHookImpl <em>Library Hook</em>}' class.
+	 * <!-- begin-user-doc -->
+	 * <!-- end-user-doc -->
+	 * @see org.nasdanika.sdk.runtime.models.react.impl.LibraryHookImpl
+	 * @see org.nasdanika.sdk.runtime.models.react.impl.ReactPackageImpl#getLibraryHook()
+	 * @generated
+	 */
+	int LIBRARY_HOOK = 25;
+
+	/**
+	 * The feature id for the '<em><b>Id</b></em>' attribute.
+	 * <!-- begin-user-doc -->
+	 * <!-- end-user-doc -->
+	 * @generated
+	 * @ordered
+	 */
+	int LIBRARY_HOOK__ID = HOOK__ID;
+
+	/**
+	 * The feature id for the '<em><b>Documentation</b></em>' attribute.
+	 * <!-- begin-user-doc -->
+	 * <!-- end-user-doc -->
+	 * @generated
+	 * @ordered
+	 */
+	int LIBRARY_HOOK__DOCUMENTATION = HOOK__DOCUMENTATION;
+
+	/**
+	 * The feature id for the '<em><b>Doc Ref</b></em>' attribute.
+	 * <!-- begin-user-doc -->
+	 * <!-- end-user-doc -->
+	 * @generated
+	 * @ordered
+	 */
+	int LIBRARY_HOOK__DOC_REF = HOOK__DOC_REF;
+
+	/**
+	 * The feature id for the '<em><b>Doc Format</b></em>' attribute.
+	 * <!-- begin-user-doc -->
+	 * <!-- end-user-doc -->
+	 * @generated
+	 * @ordered
+	 */
+	int LIBRARY_HOOK__DOC_FORMAT = HOOK__DOC_FORMAT;
+
+	/**
+	 * The feature id for the '<em><b>Doc Contents</b></em>' containment reference list.
+	 * <!-- begin-user-doc -->
+	 * <!-- end-user-doc -->
+	 * @generated
+	 * @ordered
+	 */
+	int LIBRARY_HOOK__DOC_CONTENTS = HOOK__DOC_CONTENTS;
+
+	/**
+	 * The feature id for the '<em><b>Doc Sections</b></em>' containment reference list.
+	 * <!-- begin-user-doc -->
+	 * <!-- end-user-doc -->
+	 * @generated
+	 * @ordered
+	 */
+	int LIBRARY_HOOK__DOC_SECTIONS = HOOK__DOC_SECTIONS;
+
+	/**
+	 * The feature id for the '<em><b>Markers</b></em>' containment reference list.
+	 * <!-- begin-user-doc -->
+	 * <!-- end-user-doc -->
+	 * @generated
+	 * @ordered
+	 */
+	int LIBRARY_HOOK__MARKERS = HOOK__MARKERS;
+
+	/**
+	 * The feature id for the '<em><b>Icon</b></em>' attribute.
+	 * <!-- begin-user-doc -->
+	 * <!-- end-user-doc -->
+	 * @generated
+	 * @ordered
+	 */
+	int LIBRARY_HOOK__ICON = HOOK__ICON;
+
+	/**
+	 * The feature id for the '<em><b>Uris</b></em>' attribute list.
+	 * <!-- begin-user-doc -->
+	 * <!-- end-user-doc -->
+	 * @generated
+	 * @ordered
+	 */
+	int LIBRARY_HOOK__URIS = HOOK__URIS;
+
+	/**
+	 * The feature id for the '<em><b>Name</b></em>' attribute.
+	 * <!-- begin-user-doc -->
+	 * <!-- end-user-doc -->
+	 * @generated
+	 * @ordered
+	 */
+	int LIBRARY_HOOK__NAME = HOOK__NAME;
+
+	/**
+	 * The feature id for the '<em><b>Bindings</b></em>' attribute list.
+	 * <!-- begin-user-doc -->
+	 * <!-- end-user-doc -->
+	 * @generated
+	 * @ordered
+	 */
+	int LIBRARY_HOOK__BINDINGS = HOOK__BINDINGS;
+
+	/**
+	 * The number of structural features of the '<em>Library Hook</em>' class.
+	 * <!-- begin-user-doc -->
+	 * <!-- end-user-doc -->
+	 * @generated
+	 * @ordered
+	 */
+	int LIBRARY_HOOK_FEATURE_COUNT = HOOK_FEATURE_COUNT + 0;
+
+	/**
+	 * The operation id for the '<em>Collect</em>' operation.
+	 * <!-- begin-user-doc -->
+	 * <!-- end-user-doc -->
+	 * @generated
+	 * @ordered
+	 */
+	int LIBRARY_HOOK___COLLECT__OBJECT_EREFERENCE_ELIST = HOOK___COLLECT__OBJECT_EREFERENCE_ELIST;
+
+	/**
+	 * The operation id for the '<em>Get Referrers</em>' operation.
+	 * <!-- begin-user-doc -->
+	 * <!-- end-user-doc -->
+	 * @generated
+	 * @ordered
+	 */
+	int LIBRARY_HOOK___GET_REFERRERS__EREFERENCE = HOOK___GET_REFERRERS__EREFERENCE;
+
+	/**
+	 * The number of operations of the '<em>Library Hook</em>' class.
+	 * <!-- begin-user-doc -->
+	 * <!-- end-user-doc -->
+	 * @generated
+	 * @ordered
+	 */
+	int LIBRARY_HOOK_OPERATION_COUNT = HOOK_OPERATION_COUNT + 0;
+
+	/**
+	 * The meta object id for the '{@link org.nasdanika.sdk.runtime.models.react.impl.ValueBlockImpl <em>Value Block</em>}' class.
+	 * <!-- begin-user-doc -->
+	 * <!-- end-user-doc -->
+	 * @see org.nasdanika.sdk.runtime.models.react.impl.ValueBlockImpl
+	 * @see org.nasdanika.sdk.runtime.models.react.impl.ReactPackageImpl#getValueBlock()
+	 * @generated
+	 */
+	int VALUE_BLOCK = 26;
+
+	/**
+	 * The feature id for the '<em><b>Id</b></em>' attribute.
+	 * <!-- begin-user-doc -->
+	 * <!-- end-user-doc -->
+	 * @generated
+	 * @ordered
+	 */
+	int VALUE_BLOCK__ID = TypescriptPackage.CODE_BLOCK__ID;
+
+	/**
+	 * The feature id for the '<em><b>Documentation</b></em>' attribute.
+	 * <!-- begin-user-doc -->
+	 * <!-- end-user-doc -->
+	 * @generated
+	 * @ordered
+	 */
+	int VALUE_BLOCK__DOCUMENTATION = TypescriptPackage.CODE_BLOCK__DOCUMENTATION;
+
+	/**
+	 * The feature id for the '<em><b>Doc Ref</b></em>' attribute.
+	 * <!-- begin-user-doc -->
+	 * <!-- end-user-doc -->
+	 * @generated
+	 * @ordered
+	 */
+	int VALUE_BLOCK__DOC_REF = TypescriptPackage.CODE_BLOCK__DOC_REF;
+
+	/**
+	 * The feature id for the '<em><b>Doc Format</b></em>' attribute.
+	 * <!-- begin-user-doc -->
+	 * <!-- end-user-doc -->
+	 * @generated
+	 * @ordered
+	 */
+	int VALUE_BLOCK__DOC_FORMAT = TypescriptPackage.CODE_BLOCK__DOC_FORMAT;
+
+	/**
+	 * The feature id for the '<em><b>Doc Contents</b></em>' containment reference list.
+	 * <!-- begin-user-doc -->
+	 * <!-- end-user-doc -->
+	 * @generated
+	 * @ordered
+	 */
+	int VALUE_BLOCK__DOC_CONTENTS = TypescriptPackage.CODE_BLOCK__DOC_CONTENTS;
+
+	/**
+	 * The feature id for the '<em><b>Doc Sections</b></em>' containment reference list.
+	 * <!-- begin-user-doc -->
+	 * <!-- end-user-doc -->
+	 * @generated
+	 * @ordered
+	 */
+	int VALUE_BLOCK__DOC_SECTIONS = TypescriptPackage.CODE_BLOCK__DOC_SECTIONS;
+
+	/**
+	 * The feature id for the '<em><b>Markers</b></em>' containment reference list.
+	 * <!-- begin-user-doc -->
+	 * <!-- end-user-doc -->
+	 * @generated
+	 * @ordered
+	 */
+	int VALUE_BLOCK__MARKERS = TypescriptPackage.CODE_BLOCK__MARKERS;
+
+	/**
+	 * The feature id for the '<em><b>Icon</b></em>' attribute.
+	 * <!-- begin-user-doc -->
+	 * <!-- end-user-doc -->
+	 * @generated
+	 * @ordered
+	 */
+	int VALUE_BLOCK__ICON = TypescriptPackage.CODE_BLOCK__ICON;
+
+	/**
+	 * The feature id for the '<em><b>Uris</b></em>' attribute list.
+	 * <!-- begin-user-doc -->
+	 * <!-- end-user-doc -->
+	 * @generated
+	 * @ordered
+	 */
+	int VALUE_BLOCK__URIS = TypescriptPackage.CODE_BLOCK__URIS;
+
+	/**
+	 * The feature id for the '<em><b>Name</b></em>' attribute.
+	 * <!-- begin-user-doc -->
+	 * <!-- end-user-doc -->
+	 * @generated
+	 * @ordered
+	 */
+	int VALUE_BLOCK__NAME = TypescriptPackage.CODE_BLOCK__NAME;
+
+	/**
+	 * The feature id for the '<em><b>Text</b></em>' attribute.
+	 * <!-- begin-user-doc -->
+	 * <!-- end-user-doc -->
+	 * @generated
+	 * @ordered
+	 */
+	int VALUE_BLOCK__TEXT = TypescriptPackage.CODE_BLOCK__TEXT;
+
+	/**
+	 * The feature id for the '<em><b>References</b></em>' containment reference list.
+	 * <!-- begin-user-doc -->
+	 * <!-- end-user-doc -->
+	 * @generated
+	 * @ordered
+	 */
+	int VALUE_BLOCK__REFERENCES = TypescriptPackage.CODE_BLOCK__REFERENCES;
+
+	/**
+	 * The feature id for the '<em><b>Value</b></em>' containment reference.
+	 * <!-- begin-user-doc -->
+	 * <!-- end-user-doc -->
+	 * @generated
+	 * @ordered
+	 */
+	int VALUE_BLOCK__VALUE = TypescriptPackage.CODE_BLOCK_FEATURE_COUNT + 0;
+
+	/**
+	 * The number of structural features of the '<em>Value Block</em>' class.
+	 * <!-- begin-user-doc -->
+	 * <!-- end-user-doc -->
+	 * @generated
+	 * @ordered
+	 */
+	int VALUE_BLOCK_FEATURE_COUNT = TypescriptPackage.CODE_BLOCK_FEATURE_COUNT + 1;
+
+	/**
+	 * The operation id for the '<em>Collect</em>' operation.
+	 * <!-- begin-user-doc -->
+	 * <!-- end-user-doc -->
+	 * @generated
+	 * @ordered
+	 */
+	int VALUE_BLOCK___COLLECT__OBJECT_EREFERENCE_ELIST = TypescriptPackage.CODE_BLOCK___COLLECT__OBJECT_EREFERENCE_ELIST;
+
+	/**
+	 * The operation id for the '<em>Get Referrers</em>' operation.
+	 * <!-- begin-user-doc -->
+	 * <!-- end-user-doc -->
+	 * @generated
+	 * @ordered
+	 */
+	int VALUE_BLOCK___GET_REFERRERS__EREFERENCE = TypescriptPackage.CODE_BLOCK___GET_REFERRERS__EREFERENCE;
+
+	/**
+	 * The number of operations of the '<em>Value Block</em>' class.
+	 * <!-- begin-user-doc -->
+	 * <!-- end-user-doc -->
+	 * @generated
+	 * @ordered
+	 */
+	int VALUE_BLOCK_OPERATION_COUNT = TypescriptPackage.CODE_BLOCK_OPERATION_COUNT + 0;
+
+	/**
 	 * The meta object id for the '{@link org.nasdanika.sdk.runtime.models.react.impl.JsxAttributeImpl <em>Jsx Attribute</em>}' class.
 	 * <!-- begin-user-doc -->
 	 * <!-- end-user-doc -->
@@ -4028,7 +4336,7 @@ public interface ReactPackage extends EPackage {
 	 * @see org.nasdanika.sdk.runtime.models.react.impl.ReactPackageImpl#getJsxAttribute()
 	 * @generated
 	 */
-	int JSX_ATTRIBUTE = 25;
+	int JSX_ATTRIBUTE = 27;
 
 	/**
 	 * The feature id for the '<em><b>Id</b></em>' attribute.
@@ -4173,7 +4481,7 @@ public interface ReactPackage extends EPackage {
 	 * @see org.nasdanika.sdk.runtime.models.react.impl.ReactPackageImpl#getLiteralAttribute()
 	 * @generated
 	 */
-	int LITERAL_ATTRIBUTE = 26;
+	int LITERAL_ATTRIBUTE = 28;
 
 	/**
 	 * The feature id for the '<em><b>Id</b></em>' attribute.
@@ -4327,7 +4635,7 @@ public interface ReactPackage extends EPackage {
 	 * @see org.nasdanika.sdk.runtime.models.react.impl.ReactPackageImpl#getExpressionAttribute()
 	 * @generated
 	 */
-	int EXPRESSION_ATTRIBUTE = 27;
+	int EXPRESSION_ATTRIBUTE = 29;
 
 	/**
 	 * The feature id for the '<em><b>Id</b></em>' attribute.
@@ -4481,7 +4789,7 @@ public interface ReactPackage extends EPackage {
 	 * @see org.nasdanika.sdk.runtime.models.react.impl.ReactPackageImpl#getEventAttribute()
 	 * @generated
 	 */
-	int EVENT_ATTRIBUTE = 28;
+	int EVENT_ATTRIBUTE = 30;
 
 	/**
 	 * The feature id for the '<em><b>Id</b></em>' attribute.
@@ -4635,7 +4943,7 @@ public interface ReactPackage extends EPackage {
 	 * @see org.nasdanika.sdk.runtime.models.react.impl.ReactPackageImpl#getSpreadAttribute()
 	 * @generated
 	 */
-	int SPREAD_ATTRIBUTE = 29;
+	int SPREAD_ATTRIBUTE = 31;
 
 	/**
 	 * The feature id for the '<em><b>Id</b></em>' attribute.
@@ -5517,6 +5825,37 @@ public interface ReactPackage extends EPackage {
 	EReference getLibraryComponent_Attributes();
 
 	/**
+	 * Returns the meta object for class '{@link org.nasdanika.sdk.runtime.models.react.LibraryHook <em>Library Hook</em>}'.
+	 * <!-- begin-user-doc -->
+	 * <!-- end-user-doc -->
+	 * @return the meta object for class '<em>Library Hook</em>'.
+	 * @see org.nasdanika.sdk.runtime.models.react.LibraryHook
+	 * @generated
+	 */
+	EClass getLibraryHook();
+
+	/**
+	 * Returns the meta object for class '{@link org.nasdanika.sdk.runtime.models.react.ValueBlock <em>Value Block</em>}'.
+	 * <!-- begin-user-doc -->
+	 * <!-- end-user-doc -->
+	 * @return the meta object for class '<em>Value Block</em>'.
+	 * @see org.nasdanika.sdk.runtime.models.react.ValueBlock
+	 * @generated
+	 */
+	EClass getValueBlock();
+
+	/**
+	 * Returns the meta object for the containment reference '{@link org.nasdanika.sdk.runtime.models.react.ValueBlock#getValue <em>Value</em>}'.
+	 * <!-- begin-user-doc -->
+	 * <!-- end-user-doc -->
+	 * @return the meta object for the containment reference '<em>Value</em>'.
+	 * @see org.nasdanika.sdk.runtime.models.react.ValueBlock#getValue()
+	 * @see #getValueBlock()
+	 * @generated
+	 */
+	EReference getValueBlock_Value();
+
+	/**
 	 * Returns the meta object for class '{@link org.nasdanika.sdk.runtime.models.react.JsxAttribute <em>Jsx Attribute</em>}'.
 	 * <!-- begin-user-doc -->
 	 * <!-- end-user-doc -->
@@ -6245,6 +6584,34 @@ public interface ReactPackage extends EPackage {
 		 * @generated
 		 */
 		EReference LIBRARY_COMPONENT__ATTRIBUTES = eINSTANCE.getLibraryComponent_Attributes();
+
+		/**
+		 * The meta object literal for the '{@link org.nasdanika.sdk.runtime.models.react.impl.LibraryHookImpl <em>Library Hook</em>}' class.
+		 * <!-- begin-user-doc -->
+		 * <!-- end-user-doc -->
+		 * @see org.nasdanika.sdk.runtime.models.react.impl.LibraryHookImpl
+		 * @see org.nasdanika.sdk.runtime.models.react.impl.ReactPackageImpl#getLibraryHook()
+		 * @generated
+		 */
+		EClass LIBRARY_HOOK = eINSTANCE.getLibraryHook();
+
+		/**
+		 * The meta object literal for the '{@link org.nasdanika.sdk.runtime.models.react.impl.ValueBlockImpl <em>Value Block</em>}' class.
+		 * <!-- begin-user-doc -->
+		 * <!-- end-user-doc -->
+		 * @see org.nasdanika.sdk.runtime.models.react.impl.ValueBlockImpl
+		 * @see org.nasdanika.sdk.runtime.models.react.impl.ReactPackageImpl#getValueBlock()
+		 * @generated
+		 */
+		EClass VALUE_BLOCK = eINSTANCE.getValueBlock();
+
+		/**
+		 * The meta object literal for the '<em><b>Value</b></em>' containment reference feature.
+		 * <!-- begin-user-doc -->
+		 * <!-- end-user-doc -->
+		 * @generated
+		 */
+		EReference VALUE_BLOCK__VALUE = eINSTANCE.getValueBlock_Value();
 
 		/**
 		 * The meta object literal for the '{@link org.nasdanika.sdk.runtime.models.react.impl.JsxAttributeImpl <em>Jsx Attribute</em>}' class.

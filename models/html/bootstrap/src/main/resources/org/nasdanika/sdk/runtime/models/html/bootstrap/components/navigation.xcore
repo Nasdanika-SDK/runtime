@@ -1,0 +1,391 @@
+@Ecore(
+    nsURI="https://runtime.sdk.nasdanika.org/models/html/bootstrap/components/navigation",
+	nsPrefix="org.nasdanika.sdk.runtime.models.html.bootstrap.components.navigation")
+
+@GenModel(
+	modelDirectory="/bootstrap/src-gen",
+    featureDelegation="Dynamic",
+    complianceLevel="25",
+    suppressGenModelAnnotations="false",
+    copyrightFields="false",
+    operationReflection="true",
+    importOrganizing="true"
+)
+/*
+ * Bootstrap navigation components: navs, navbars, tabs, breadcrumbs, pagination
+ * and dropdowns. https://getbootstrap.com/docs/5.3/components/navs-tabs/
+ *
+ * Dropdowns, collapsing navbars and tabs need the Bootstrap JavaScript bundle.
+ */
+package org.nasdanika.sdk.runtime.models.html.bootstrap.components.navigation
+
+import org.nasdanika.sdk.runtime.models.html.Node
+import org.nasdanika.sdk.runtime.models.html.bootstrap.BootstrapElement
+import org.nasdanika.sdk.runtime.models.html.bootstrap.Breakpoint
+import org.nasdanika.sdk.runtime.models.html.bootstrap.ButtonVariant
+import org.nasdanika.sdk.runtime.models.html.bootstrap.ColorMode
+import org.nasdanika.sdk.runtime.models.html.bootstrap.Size
+import org.nasdanika.sdk.runtime.models.html.bootstrap.TextContent
+import org.nasdanika.sdk.runtime.models.html.bootstrap.Variant
+
+annotation "http://www.eclipse.org/emf/2002/Ecore" as Ecore
+annotation "http://www.eclipse.org/emf/2002/GenModel" as GenModel
+annotation "urn:org.nasdanika:html" as Html
+
+// --- Navs ----------------------------------------------------------------
+
+enum NavVariant {
+	tabs
+	pills
+	underline
+}
+
+/*
+ * Nav.Item, Nav.Link or NavDropdown in a Nav.
+ */
+interface NavEntry {
+}
+
+/*
+ * ul.nav, or ul.navbar-nav in a navbar. Links which are entries are wrapped in nav items.
+ * Vertical nav: classes flex-column.
+ */
+@Html(tag="ul")
+class Nav extends BootstrapElement {
+	@Html(classes="nav-{}")
+	unsettable NavVariant variant
+
+	@Html(classes="nav-fill")
+	boolean fill
+
+	@Html(classes="nav-justified")
+	boolean justify
+
+	contains NavEntry[] entries
+}
+
+@Html(tag="li", classes="nav-item")
+class NavItem extends BootstrapElement, NavEntry {
+	contains NavLink link
+}
+
+@Html(tag="a", classes="nav-link")
+class NavLink extends BootstrapElement, TextContent, NavEntry {
+	String href
+
+	@Html(classes="active")
+	boolean active
+
+	@Html(classes="disabled")
+	boolean disabled
+}
+
+/*
+ * Nav item with a dropdown menu.
+ */
+@Html(tag="li", classes="nav-item dropdown")
+class NavDropdown extends BootstrapElement, NavEntry {
+	@Html(logical="true")
+	String title
+
+	/* Title with markup. Wins over title. */
+	@Html(logical="true")
+	contains Node titleNode
+
+	@Html(logical="true")
+	boolean menuEnd
+
+	@Html(logical="true")
+	contains DropdownEntry[] entries
+}
+
+// --- Navbar --------------------------------------------------------------
+
+enum Fixed {
+	top
+	bottom
+}
+
+@Html(tag="nav", classes="navbar")
+class Navbar extends BootstrapElement {
+	@Html(classes="bg-{}")
+	unsettable Variant bg
+
+	/* Color scheme of the content */
+	@Html(attribute="data-bs-theme")
+	unsettable ColorMode theme
+
+	/* Always expanded */
+	@Html(classes="navbar-expand")
+	boolean alwaysExpanded
+
+	/* Expanded from the breakpoint up */
+	@Html(classes="navbar-expand-{}")
+	unsettable Breakpoint expand
+
+	@Html(classes="fixed-{}")
+	unsettable Fixed fixed
+
+	@Html(classes="sticky-{}")
+	unsettable Fixed sticky
+
+	/* Usually a Container with brand, toggle and collapse */
+	contains Node[] content
+}
+
+@Html(tag="a", classes="navbar-brand")
+class NavbarBrand extends BootstrapElement, TextContent {
+	String href
+}
+
+/*
+ * Button toggling the collapse of a navbar.
+ */
+@Html(tag="button", classes="navbar-toggler", attributes="type=button;data-bs-toggle=collapse;aria-expanded=false;aria-label=Toggle navigation")
+class NavbarToggle extends BootstrapElement {
+	/* Id of the collapse */
+	@Html(logical="true")
+	String controls
+}
+
+@Html(tag="div", classes="collapse navbar-collapse")
+class NavbarCollapse extends BootstrapElement {
+	contains Node[] content
+}
+
+@Html(tag="span", classes="navbar-text")
+class NavbarText extends BootstrapElement, TextContent {
+}
+
+// --- Tabs ----------------------------------------------------------------
+
+/*
+ * Nav with tab buttons followed by tab panes. The id of the tabs is generated if not set.
+ */
+@Html(tag="div")
+class Tabs extends BootstrapElement {
+	/* Event key of the tab active initially, the first if not set */
+	@Html(logical="true")
+	String defaultActiveKey
+
+	@Html(logical="true")
+	unsettable NavVariant variant
+
+	@Html(logical="true")
+	boolean fill
+
+	@Html(logical="true")
+	boolean justify
+
+	@Html(logical="true")
+	contains Tab[] tabs
+}
+
+/*
+ * A tab and its pane. The pane content is the text content and contents.
+ */
+@Html(tag="div")
+class Tab extends BootstrapElement, TextContent {
+	/* The index of the tab if not set */
+	@Html(logical="true")
+	String eventKey
+
+	@Html(logical="true")
+	String title
+
+	@Html(logical="true")
+	contains Node titleNode
+
+	@Html(logical="true")
+	boolean disabled
+}
+
+// --- Breadcrumb ----------------------------------------------------------
+
+@Html(tag="nav", attributes="aria-label=breadcrumb")
+class Breadcrumb extends BootstrapElement {
+	@Html(logical="true")
+	contains BreadcrumbItem[] items
+}
+
+/*
+ * A link, or text if active or without href.
+ */
+@Html(tag="li", classes="breadcrumb-item")
+class BreadcrumbItem extends BootstrapElement, TextContent {
+	@Html(logical="true")
+	String href
+
+	@Html(classes="active")
+	boolean active
+}
+
+// --- Pagination ----------------------------------------------------------
+
+/*
+ * Pagination.Item or one of the navigation items.
+ */
+interface PaginationEntry {
+}
+
+/* aria-label is Pagination unless set with attributes */
+@Html(tag="nav", attributes="aria-label=Pagination")
+class Pagination extends BootstrapElement {
+	@Html(logical="true")
+	unsettable Size size
+
+	@Html(logical="true")
+	contains PaginationEntry[] entries
+}
+
+/*
+ * li.page-item with a page link. Navigation items have default content and labels.
+ */
+@Html(tag="li", classes="page-item")
+abstract class PaginationLink extends BootstrapElement, TextContent, PaginationEntry {
+	@Html(logical="true")
+	String href
+
+	@Html(classes="active")
+	boolean active
+
+	@Html(classes="disabled")
+	boolean disabled
+}
+
+class PaginationItem extends PaginationLink {
+}
+
+class PaginationFirst extends PaginationLink {
+}
+
+class PaginationPrev extends PaginationLink {
+}
+
+class PaginationEllipsis extends PaginationLink {
+}
+
+class PaginationNext extends PaginationLink {
+}
+
+class PaginationLast extends PaginationLink {
+}
+
+// --- Dropdowns -----------------------------------------------------------
+
+/*
+ * Item, header, divider or item text of a dropdown menu, wrapped in li.
+ */
+interface DropdownEntry {
+}
+
+/*
+ * Literals are the classes of the dropdown element.
+ */
+enum Drop {
+	down as "dropdown"
+	downCentered as "dropdown-center"
+	up as "dropup"
+	upCentered as "dropup dropup-center"
+	start as "dropstart"
+	end as "dropend"
+}
+
+enum Align {
+	start
+	end
+}
+
+@Html(tag="div")
+class Dropdown extends BootstrapElement {
+	@Html(classes="{}", ^default="dropdown")
+	unsettable Drop drop
+
+	/* Alignment of the menu */
+	@Html(logical="true")
+	unsettable Align align
+
+	contains DropdownToggle toggle
+
+	contains DropdownMenu menu
+}
+
+@Html(tag="button", classes="btn dropdown-toggle", attributes="type=button;data-bs-toggle=dropdown;aria-expanded=false")
+class DropdownToggle extends BootstrapElement, TextContent {
+	@Html(classes="btn-{}", ^default="primary")
+	unsettable ButtonVariant variant
+
+	@Html(classes="btn-{}")
+	unsettable Size size
+}
+
+enum MenuVariant {
+	dark
+}
+
+@Html(tag="ul", classes="dropdown-menu")
+class DropdownMenu extends BootstrapElement {
+	@Html(classes="dropdown-menu-{}")
+	unsettable MenuVariant variant
+
+	@Html(classes="dropdown-menu-{}")
+	unsettable Align align
+
+	contains DropdownEntry[] entries
+}
+
+@Html(tag="a", classes="dropdown-item")
+class DropdownItem extends BootstrapElement, TextContent, DropdownEntry {
+	String href
+
+	@Html(classes="active")
+	boolean active
+
+	@Html(classes="disabled")
+	boolean disabled
+}
+
+@Html(tag="h6", classes="dropdown-header")
+class DropdownHeader extends BootstrapElement, TextContent, DropdownEntry {
+}
+
+@Html(tag="hr", classes="dropdown-divider", voidElement="true")
+class DropdownDivider extends BootstrapElement, DropdownEntry {
+}
+
+@Html(tag="span", classes="dropdown-item-text")
+class DropdownItemText extends BootstrapElement, TextContent, DropdownEntry {
+}
+
+/*
+ * Dropdown with a button toggle in one element.
+ */
+@Html(tag="div")
+class DropdownButton extends BootstrapElement {
+	@Html(logical="true")
+	String title
+
+	@Html(logical="true")
+	contains Node titleNode
+
+	@Html(logical="true")
+	unsettable ButtonVariant variant
+
+	@Html(logical="true")
+	unsettable Size size
+
+	@Html(classes="{}", ^default="dropdown")
+	unsettable Drop drop
+
+	@Html(logical="true")
+	contains DropdownEntry[] entries
+}
+
+/*
+ * Button with a separate dropdown toggle. A link if href is set.
+ */
+@Html(classes="btn-group")
+class SplitButton extends DropdownButton {
+	@Html(logical="true")
+	String href
+}

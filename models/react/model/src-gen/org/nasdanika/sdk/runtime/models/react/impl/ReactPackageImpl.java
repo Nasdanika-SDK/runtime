@@ -35,6 +35,7 @@ import org.nasdanika.sdk.runtime.models.react.JsxIterator;
 import org.nasdanika.sdk.runtime.models.react.JsxNode;
 import org.nasdanika.sdk.runtime.models.react.JsxText;
 import org.nasdanika.sdk.runtime.models.react.LibraryComponent;
+import org.nasdanika.sdk.runtime.models.react.LibraryHook;
 import org.nasdanika.sdk.runtime.models.react.LiteralAttribute;
 import org.nasdanika.sdk.runtime.models.react.MemoHook;
 import org.nasdanika.sdk.runtime.models.react.OpaqueHook;
@@ -46,6 +47,7 @@ import org.nasdanika.sdk.runtime.models.react.RefHook;
 import org.nasdanika.sdk.runtime.models.react.SpreadAttribute;
 import org.nasdanika.sdk.runtime.models.react.StateHook;
 import org.nasdanika.sdk.runtime.models.react.TsxModule;
+import org.nasdanika.sdk.runtime.models.react.ValueBlock;
 
 import org.nasdanika.sdk.runtime.models.typescript.TypescriptPackage;
 
@@ -230,6 +232,20 @@ public class ReactPackageImpl extends EPackageImpl implements ReactPackage {
 	 * @generated
 	 */
 	private EClass libraryComponentEClass = null;
+
+	/**
+	 * <!-- begin-user-doc -->
+	 * <!-- end-user-doc -->
+	 * @generated
+	 */
+	private EClass libraryHookEClass = null;
+
+	/**
+	 * <!-- begin-user-doc -->
+	 * <!-- end-user-doc -->
+	 * @generated
+	 */
+	private EClass valueBlockEClass = null;
 
 	/**
 	 * <!-- begin-user-doc -->
@@ -958,6 +974,33 @@ public class ReactPackageImpl extends EPackageImpl implements ReactPackage {
 	 * <!-- end-user-doc -->
 	 * @generated
 	 */
+	public EClass getLibraryHook() {
+		return libraryHookEClass;
+	}
+
+	/**
+	 * <!-- begin-user-doc -->
+	 * <!-- end-user-doc -->
+	 * @generated
+	 */
+	public EClass getValueBlock() {
+		return valueBlockEClass;
+	}
+
+	/**
+	 * <!-- begin-user-doc -->
+	 * <!-- end-user-doc -->
+	 * @generated
+	 */
+	public EReference getValueBlock_Value() {
+		return (EReference)valueBlockEClass.getEStructuralFeatures().get(0);
+	}
+
+	/**
+	 * <!-- begin-user-doc -->
+	 * <!-- end-user-doc -->
+	 * @generated
+	 */
 	public EClass getJsxAttribute() {
 		return jsxAttributeEClass;
 	}
@@ -1165,6 +1208,11 @@ public class ReactPackageImpl extends EPackageImpl implements ReactPackage {
 		libraryComponentEClass = createEClass(LIBRARY_COMPONENT);
 		createEReference(libraryComponentEClass, LIBRARY_COMPONENT__ATTRIBUTES);
 
+		libraryHookEClass = createEClass(LIBRARY_HOOK);
+
+		valueBlockEClass = createEClass(VALUE_BLOCK);
+		createEReference(valueBlockEClass, VALUE_BLOCK__VALUE);
+
 		jsxAttributeEClass = createEClass(JSX_ATTRIBUTE);
 		createEAttribute(jsxAttributeEClass, JSX_ATTRIBUTE__ATTRIBUTE_NAME);
 
@@ -1239,6 +1287,8 @@ public class ReactPackageImpl extends EPackageImpl implements ReactPackage {
 		intrinsicEClass.getESuperTypes().add(this.getJsxContainer());
 		jsxContentEClass.getESuperTypes().add(theHtmlPackage.getNode());
 		libraryComponentEClass.getESuperTypes().add(this.getJsxContainer());
+		libraryHookEClass.getESuperTypes().add(this.getHook());
+		valueBlockEClass.getESuperTypes().add(theTypescriptPackage.getCodeBlock());
 		jsxAttributeEClass.getESuperTypes().add(this.getReactElement());
 		literalAttributeEClass.getESuperTypes().add(this.getJsxAttribute());
 		expressionAttributeEClass.getESuperTypes().add(this.getJsxAttribute());
@@ -1339,6 +1389,11 @@ public class ReactPackageImpl extends EPackageImpl implements ReactPackage {
 
 		initEClass(libraryComponentEClass, LibraryComponent.class, "LibraryComponent", IS_ABSTRACT, !IS_INTERFACE, IS_GENERATED_INSTANCE_CLASS);
 		initEReference(getLibraryComponent_Attributes(), this.getJsxAttribute(), null, "attributes", null, 0, -1, LibraryComponent.class, !IS_TRANSIENT, !IS_VOLATILE, IS_CHANGEABLE, IS_COMPOSITE, !IS_RESOLVE_PROXIES, !IS_UNSETTABLE, IS_UNIQUE, !IS_DERIVED, IS_ORDERED);
+
+		initEClass(libraryHookEClass, LibraryHook.class, "LibraryHook", IS_ABSTRACT, !IS_INTERFACE, IS_GENERATED_INSTANCE_CLASS);
+
+		initEClass(valueBlockEClass, ValueBlock.class, "ValueBlock", !IS_ABSTRACT, !IS_INTERFACE, IS_GENERATED_INSTANCE_CLASS);
+		initEReference(getValueBlock_Value(), theEcorePackage.getEObject(), null, "value", null, 0, 1, ValueBlock.class, !IS_TRANSIENT, !IS_VOLATILE, IS_CHANGEABLE, IS_COMPOSITE, !IS_RESOLVE_PROXIES, !IS_UNSETTABLE, IS_UNIQUE, !IS_DERIVED, IS_ORDERED);
 
 		initEClass(jsxAttributeEClass, JsxAttribute.class, "JsxAttribute", IS_ABSTRACT, !IS_INTERFACE, IS_GENERATED_INSTANCE_CLASS);
 		initEAttribute(getJsxAttribute_AttributeName(), theEcorePackage.getEString(), "attributeName", null, 0, 1, JsxAttribute.class, !IS_TRANSIENT, !IS_VOLATILE, IS_CHANGEABLE, !IS_UNSETTABLE, !IS_ID, !IS_UNIQUE, !IS_DERIVED, IS_ORDERED);
@@ -1541,6 +1596,18 @@ public class ReactPackageImpl extends EPackageImpl implements ReactPackage {
 		   source,
 		   new String[] {
 			   "documentation", " ---------------------------------------------------------------------------\nComponent libraries\n---------------------------------------------------------------------------"
+		   });
+		addAnnotation
+		  (libraryHookEClass,
+		   source,
+		   new String[] {
+			   "documentation", "More feature rules of library components, value objects, hooks and value blocks:\n- Many-valued containments of value objects without a key are arrays.\n- Containments of code blocks are expressions, e.g. a typed event handler.\n- Non-containment references to declarations render the local name of the declaration,\n  which is imported if it is in another module, e.g. nodeTypes={nodeTypes}. Other\n  non-containment references need a ref annotation - the name of the attribute of the\n  target to render, e.g. ref=\"id\" for source=\"a\".\n- enum and module on an enum attribute: the value is a member of an exported TypeScript\n  enum named by the enum literal name, e.g. position={Position.Top}. The enum is imported.\n- required=\"true\": an unset feature renders as an empty array or undefined."
+		   });
+		addAnnotation
+		  (valueBlockEClass,
+		   source,
+		   new String[] {
+			   "documentation", "An expression which is a model object rendered as a JavaScript value - an object literal of\nits features, rendered like library component props. E.g. the initializer of a module level\nconstant whose value has to be stable across renders, such as React Flow nodeTypes."
 		   });
 		addAnnotation
 		  (jsxAttributeEClass,

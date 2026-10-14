@@ -1,0 +1,264 @@
+@Ecore(
+    nsURI="https://runtime.sdk.nasdanika.org/models/html/bootstrap/forms",
+	nsPrefix="org.nasdanika.sdk.runtime.models.html.bootstrap.forms")
+
+@GenModel(
+	modelDirectory="/bootstrap/src-gen",
+    featureDelegation="Dynamic",
+    complianceLevel="25",
+    suppressGenModelAnnotations="false",
+    copyrightFields="false",
+    operationReflection="true",
+    importOrganizing="true"
+)
+/*
+ * Bootstrap forms: https://getbootstrap.com/docs/5.3/forms/overview/
+ *
+ * As in React Bootstrap, a form group or a floating label with a controlId gives it to its
+ * label as for and to its field as id, unless they have their own.
+ */
+package org.nasdanika.sdk.runtime.models.html.bootstrap.forms
+
+import org.nasdanika.sdk.runtime.models.html.Node
+import org.nasdanika.sdk.runtime.models.html.Option
+import org.nasdanika.sdk.runtime.models.html.bootstrap.BootstrapElement
+import org.nasdanika.sdk.runtime.models.html.bootstrap.ColumnSize
+import org.nasdanika.sdk.runtime.models.html.bootstrap.Size
+import org.nasdanika.sdk.runtime.models.html.bootstrap.TextContent
+
+annotation "http://www.eclipse.org/emf/2002/Ecore" as Ecore
+annotation "http://www.eclipse.org/emf/2002/GenModel" as GenModel
+annotation "urn:org.nasdanika:html" as Html
+
+/*
+ * Validation state of a field, shown when the form is not validated by the browser.
+ */
+interface Validated {
+	@Html(classes="is-valid")
+	boolean isValid
+
+	@Html(classes="is-invalid")
+	boolean isInvalid
+}
+
+/*
+ * Attributes of form fields.
+ */
+interface Field extends Validated {
+	String name
+
+	boolean disabled
+
+	boolean required
+}
+
+@Html(tag="form")
+class Form extends BootstrapElement {
+	String action
+
+	String method
+
+	String enctype
+
+	/* Shows validation feedback */
+	@Html(classes="was-validated")
+	boolean validated
+
+	/* Disables browser validation in favor of Bootstrap styles */
+	boolean novalidate
+
+	contains FormGroup[] groups
+}
+
+/*
+ * A label, controls, help text and feedback.
+ */
+@Html(tag="div")
+class FormGroup extends BootstrapElement {
+	/* for of the label and id of the first field without them */
+	@Html(logical="true")
+	String controlId
+
+	contains FormLabel label
+
+	contains Node[] controls
+
+	contains FormText text
+
+	contains FormFeedback[] feedback
+}
+
+/*
+ * form-label, or col-form-label with column sizes in a horizontal form.
+ */
+@Html(tag="label")
+class FormLabel extends BootstrapElement, TextContent {
+	@Html(attribute="for")
+	String htmlFor
+
+	@Html(logical="true")
+	boolean column
+
+	@Html(logical="true")
+	contains ColumnSize[] sizes
+
+	@Html(classes="col-form-label-{}")
+	unsettable Size size
+
+	@Html(classes="visually-hidden")
+	boolean visuallyHidden
+}
+
+/*
+ * form-control input, or form-control-plaintext.
+ */
+/* type defaults to text */
+@Html(tag="input", voidElement="true", attributes="type=text")
+class FormControl extends BootstrapElement, Field {
+	/* Input type: text, email, password, number, date, color, file, ... */
+	String ^type
+
+	String placeholder
+
+	String value
+
+	@Html(classes="form-control-{}")
+	unsettable Size size
+
+	/* Read only value rendered as plain text */
+	@Html(logical="true")
+	boolean plaintext
+
+	boolean ^readonly
+
+	String autocomplete
+}
+
+@Html(tag="textarea", classes="form-control")
+class FormTextArea extends BootstrapElement, Field, TextContent {
+	String placeholder
+
+	unsettable int rows
+
+	@Html(classes="form-control-{}")
+	unsettable Size size
+
+	boolean ^readonly
+}
+
+@Html(tag="select", classes="form-select")
+class FormSelect extends BootstrapElement, Field {
+	@Html(classes="form-select-{}")
+	unsettable Size size
+
+	boolean multiple
+
+	/* HTML options and option groups */
+	contains Option[] options
+}
+
+enum CheckType {
+	checkbox
+	radio
+	^switch
+}
+
+enum FeedbackType {
+	invalid
+	valid
+}
+
+/*
+ * form-check with an input and a label.
+ */
+@Html(tag="div", classes="form-check")
+class FormCheck extends BootstrapElement, Field {
+	@Html(logical="true")
+	unsettable CheckType ^type
+
+	/* id of the input, generated if not set */
+	@Html(logical="true")
+	String inputId
+
+	@Html(logical="true")
+	String label
+
+	@Html(logical="true")
+	String value
+
+	@Html(classes="form-check-inline")
+	boolean inline
+
+	@Html(classes="form-check-reverse")
+	boolean reverse
+
+	@Html(logical="true")
+	boolean checked
+
+	/* Feedback text shown under the check */
+	@Html(logical="true")
+	String feedback
+
+	@Html(logical="true")
+	unsettable FeedbackType feedbackType
+}
+
+@Html(tag="input", classes="form-range", voidElement="true", attributes="type=range")
+class FormRange extends BootstrapElement, Field {
+	unsettable int min
+
+	unsettable int max
+
+	unsettable int step
+
+	String value
+}
+
+/*
+ * Help text under a field.
+ */
+@Html(tag="div", classes="form-text")
+class FormText extends BootstrapElement, TextContent {
+}
+
+/*
+ * invalid-feedback, valid-feedback, or invalid-tooltip and valid-tooltip.
+ */
+@Html(tag="div")
+class FormFeedback extends BootstrapElement, TextContent {
+	@Html(logical="true")
+	unsettable FeedbackType ^type
+
+	@Html(logical="true")
+	boolean tooltip
+}
+
+/*
+ * Label floating over its field - the field has to have a placeholder.
+ */
+@Html(tag="div", classes="form-floating")
+class FloatingLabel extends BootstrapElement {
+	@Html(logical="true")
+	String controlId
+
+	@Html(logical="true")
+	String label
+
+	contains Node control
+}
+
+@Html(tag="div", classes="input-group")
+class InputGroup extends BootstrapElement {
+	@Html(classes="input-group-{}")
+	unsettable Size size
+
+	@Html(classes="has-validation")
+	boolean hasValidation
+
+	/* Texts, fields, buttons and dropdowns, in order */
+	contains Node[] items
+}
+
+@Html(tag="span", classes="input-group-text")
+class InputGroupText extends BootstrapElement, TextContent {
+}

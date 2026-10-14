@@ -27,6 +27,8 @@ annotation "http://www.eclipse.org/emf/2002/GenModel" as GenModel
  *
  * Every other EAttribute of an element class is rendered as an HTML attribute when set:
  * strings and numbers as name="value", booleans as a bare attribute when true.
+ *
+ * Library elements use more keys - see LibraryElement.
  */
 annotation "urn:org.nasdanika:html" as Html
 
@@ -58,6 +60,14 @@ class Markup extends Node {
 
 class Comment extends Node {
 	String content
+}
+
+/*
+ * Renders another node, which is contained elsewhere - the same fragment in several
+ * places, or a node of the model inside HTML expanded from a library element.
+ */
+class NodeReference extends Node {
+	refers Node target
 }
 
 /*
@@ -110,6 +120,46 @@ class GenericVoidElement extends VoidElement {
 
 	op String tagName() {
 		name
+	}
+}
+
+/*
+ * An element of a library built on top of HTML, e.g. Bootstrap, modeled as an EClass and
+ * rendered reflectively from "urn:org.nasdanika:html" annotations - the HTML counterpart
+ * of the React model LibraryComponent.
+ *
+ * On classes, looked up on the class and then its supertypes:
+ * - tag: tag name, e.g. "div".
+ * - classes: space separated classes of every element of the class, e.g. "card".
+ * - voidElement: "true" for elements without content, e.g. "img".
+ *
+ * Features of subclasses, in feature order:
+ * - Attributes are HTML attributes, as for other elements: attribute renames, logical skips.
+ * - classes: a class pattern - the attribute contributes a class instead of an attribute.
+ *   {} is replaced with the value, an enum literal or a number: "btn-{}". A true boolean
+ *   contributes the pattern as is: "active".
+ * - child: "true" for a string attribute rendered as a text child, after the children of
+ *   containment features and before contents.
+ * - Containments of nodes are children, followed by contents.
+ *
+ * Elements which do not map to a single element - modals, accordions, form checks - are
+ * expanded to plain HTML by an HtmlStructure subclass, e.g. the Bootstrap structure.
+ */
+abstract class LibraryElement extends Element, Container {
+	op String tagName() {
+		// Breadth first, nearest class first
+		val queue = new java.util.ArrayList<org.eclipse.emf.ecore.EClass>()
+		queue.add(eClass())
+		var i = 0
+		while (i < queue.size()) {
+			val htmlAnnotation = queue.get(i).getEAnnotation("urn:org.nasdanika:html")
+			if (htmlAnnotation !== null && htmlAnnotation.getDetails().containsKey("tag")) {
+				return htmlAnnotation.getDetails().get("tag")
+			}
+			queue.addAll(queue.get(i).getESuperTypes())
+			i = i + 1
+		}
+		return null
 	}
 }
 

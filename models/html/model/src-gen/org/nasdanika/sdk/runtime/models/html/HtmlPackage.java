@@ -237,6 +237,52 @@ public interface HtmlPackage extends EPackage {
 	int COMMENT_OPERATION_COUNT = NODE_OPERATION_COUNT + 0;
 
 	/**
+	 * The meta object id for the '{@link org.nasdanika.sdk.runtime.models.html.impl.NodeReferenceImpl <em>Node Reference</em>}' class.
+	 * <!-- begin-user-doc -->
+	 * <!-- end-user-doc -->
+	 * @see org.nasdanika.sdk.runtime.models.html.impl.NodeReferenceImpl
+	 * @see org.nasdanika.sdk.runtime.models.html.impl.HtmlPackageImpl#getNodeReference()
+	 * @generated
+	 */
+	int NODE_REFERENCE = 4;
+
+	/**
+	 * The feature id for the '<em><b>Markers</b></em>' containment reference list.
+	 * <!-- begin-user-doc -->
+	 * <!-- end-user-doc -->
+	 * @generated
+	 * @ordered
+	 */
+	int NODE_REFERENCE__MARKERS = NODE__MARKERS;
+
+	/**
+	 * The feature id for the '<em><b>Target</b></em>' reference.
+	 * <!-- begin-user-doc -->
+	 * <!-- end-user-doc -->
+	 * @generated
+	 * @ordered
+	 */
+	int NODE_REFERENCE__TARGET = NODE_FEATURE_COUNT + 0;
+
+	/**
+	 * The number of structural features of the '<em>Node Reference</em>' class.
+	 * <!-- begin-user-doc -->
+	 * <!-- end-user-doc -->
+	 * @generated
+	 * @ordered
+	 */
+	int NODE_REFERENCE_FEATURE_COUNT = NODE_FEATURE_COUNT + 1;
+
+	/**
+	 * The number of operations of the '<em>Node Reference</em>' class.
+	 * <!-- begin-user-doc -->
+	 * <!-- end-user-doc -->
+	 * @generated
+	 * @ordered
+	 */
+	int NODE_REFERENCE_OPERATION_COUNT = NODE_OPERATION_COUNT + 0;
+
+	/**
 	 * The meta object id for the '{@link org.nasdanika.sdk.runtime.models.html.Container <em>Container</em>}' class.
 	 * <!-- begin-user-doc -->
 	 * <!-- end-user-doc -->
@@ -244,7 +290,7 @@ public interface HtmlPackage extends EPackage {
 	 * @see org.nasdanika.sdk.runtime.models.html.impl.HtmlPackageImpl#getContainer()
 	 * @generated
 	 */
-	int CONTAINER = 4;
+	int CONTAINER = 5;
 
 	/**
 	 * The feature id for the '<em><b>Contents</b></em>' containment reference list.
@@ -281,7 +327,7 @@ public interface HtmlPackage extends EPackage {
 	 * @see org.nasdanika.sdk.runtime.models.html.impl.HtmlPackageImpl#getElement()
 	 * @generated
 	 */
-	int ELEMENT = 5;
+	int ELEMENT = 6;
 
 	/**
 	 * The feature id for the '<em><b>Markers</b></em>' containment reference list.
@@ -363,7 +409,7 @@ public interface HtmlPackage extends EPackage {
 	 * @see org.nasdanika.sdk.runtime.models.html.impl.HtmlPackageImpl#getVoidElement()
 	 * @generated
 	 */
-	int VOID_ELEMENT = 6;
+	int VOID_ELEMENT = 7;
 
 	/**
 	 * The feature id for the '<em><b>Markers</b></em>' containment reference list.
@@ -445,7 +491,7 @@ public interface HtmlPackage extends EPackage {
 	 * @see org.nasdanika.sdk.runtime.models.html.impl.HtmlPackageImpl#getGenericElement()
 	 * @generated
 	 */
-	int GENERIC_ELEMENT = 7;
+	int GENERIC_ELEMENT = 8;
 
 	/**
 	 * The feature id for the '<em><b>Markers</b></em>' containment reference list.
@@ -545,7 +591,7 @@ public interface HtmlPackage extends EPackage {
 	 * @see org.nasdanika.sdk.runtime.models.html.impl.HtmlPackageImpl#getGenericVoidElement()
 	 * @generated
 	 */
-	int GENERIC_VOID_ELEMENT = 8;
+	int GENERIC_VOID_ELEMENT = 9;
 
 	/**
 	 * The feature id for the '<em><b>Markers</b></em>' containment reference list.
@@ -629,6 +675,97 @@ public interface HtmlPackage extends EPackage {
 	int GENERIC_VOID_ELEMENT_OPERATION_COUNT = VOID_ELEMENT_OPERATION_COUNT + 1;
 
 	/**
+	 * The meta object id for the '{@link org.nasdanika.sdk.runtime.models.html.impl.LibraryElementImpl <em>Library Element</em>}' class.
+	 * <!-- begin-user-doc -->
+	 * <!-- end-user-doc -->
+	 * @see org.nasdanika.sdk.runtime.models.html.impl.LibraryElementImpl
+	 * @see org.nasdanika.sdk.runtime.models.html.impl.HtmlPackageImpl#getLibraryElement()
+	 * @generated
+	 */
+	int LIBRARY_ELEMENT = 10;
+
+	/**
+	 * The feature id for the '<em><b>Markers</b></em>' containment reference list.
+	 * <!-- begin-user-doc -->
+	 * <!-- end-user-doc -->
+	 * @generated
+	 * @ordered
+	 */
+	int LIBRARY_ELEMENT__MARKERS = ELEMENT__MARKERS;
+
+	/**
+	 * The feature id for the '<em><b>Id</b></em>' attribute.
+	 * <!-- begin-user-doc -->
+	 * <!-- end-user-doc -->
+	 * @generated
+	 * @ordered
+	 */
+	int LIBRARY_ELEMENT__ID = ELEMENT__ID;
+
+	/**
+	 * The feature id for the '<em><b>Classes</b></em>' attribute list.
+	 * <!-- begin-user-doc -->
+	 * <!-- end-user-doc -->
+	 * @generated
+	 * @ordered
+	 */
+	int LIBRARY_ELEMENT__CLASSES = ELEMENT__CLASSES;
+
+	/**
+	 * The feature id for the '<em><b>Style</b></em>' map.
+	 * <!-- begin-user-doc -->
+	 * <!-- end-user-doc -->
+	 * @generated
+	 * @ordered
+	 */
+	int LIBRARY_ELEMENT__STYLE = ELEMENT__STYLE;
+
+	/**
+	 * The feature id for the '<em><b>Attributes</b></em>' map.
+	 * <!-- begin-user-doc -->
+	 * <!-- end-user-doc -->
+	 * @generated
+	 * @ordered
+	 */
+	int LIBRARY_ELEMENT__ATTRIBUTES = ELEMENT__ATTRIBUTES;
+
+	/**
+	 * The feature id for the '<em><b>Contents</b></em>' containment reference list.
+	 * <!-- begin-user-doc -->
+	 * <!-- end-user-doc -->
+	 * @generated
+	 * @ordered
+	 */
+	int LIBRARY_ELEMENT__CONTENTS = ELEMENT_FEATURE_COUNT + 0;
+
+	/**
+	 * The number of structural features of the '<em>Library Element</em>' class.
+	 * <!-- begin-user-doc -->
+	 * <!-- end-user-doc -->
+	 * @generated
+	 * @ordered
+	 */
+	int LIBRARY_ELEMENT_FEATURE_COUNT = ELEMENT_FEATURE_COUNT + 1;
+
+	/**
+	 * The operation id for the '<em>Tag Name</em>' operation.
+	 * <!-- begin-user-doc -->
+	 * <!-- end-user-doc -->
+	 * @generated
+	 * @ordered
+	 */
+	int LIBRARY_ELEMENT___TAG_NAME = ELEMENT_OPERATION_COUNT + 0;
+
+	/**
+	 * The number of operations of the '<em>Library Element</em>' class.
+	 * <!-- begin-user-doc -->
+	 * <!-- end-user-doc -->
+	 * @generated
+	 * @ordered
+	 */
+	int LIBRARY_ELEMENT_OPERATION_COUNT = ELEMENT_OPERATION_COUNT + 1;
+
+	/**
 	 * The meta object id for the '{@link org.nasdanika.sdk.runtime.models.html.impl.DocumentImpl <em>Document</em>}' class.
 	 * <!-- begin-user-doc -->
 	 * <!-- end-user-doc -->
@@ -636,7 +773,7 @@ public interface HtmlPackage extends EPackage {
 	 * @see org.nasdanika.sdk.runtime.models.html.impl.HtmlPackageImpl#getDocument()
 	 * @generated
 	 */
-	int DOCUMENT = 9;
+	int DOCUMENT = 11;
 
 	/**
 	 * The feature id for the '<em><b>Markers</b></em>' containment reference list.
@@ -754,7 +891,7 @@ public interface HtmlPackage extends EPackage {
 	 * @see org.nasdanika.sdk.runtime.models.html.impl.HtmlPackageImpl#getHead()
 	 * @generated
 	 */
-	int HEAD = 10;
+	int HEAD = 12;
 
 	/**
 	 * The feature id for the '<em><b>Markers</b></em>' containment reference list.
@@ -917,7 +1054,7 @@ public interface HtmlPackage extends EPackage {
 	 * @see org.nasdanika.sdk.runtime.models.html.impl.HtmlPackageImpl#getBody()
 	 * @generated
 	 */
-	int BODY = 11;
+	int BODY = 13;
 
 	/**
 	 * The feature id for the '<em><b>Markers</b></em>' containment reference list.
@@ -1008,7 +1145,7 @@ public interface HtmlPackage extends EPackage {
 	 * @see org.nasdanika.sdk.runtime.models.html.impl.HtmlPackageImpl#getMeta()
 	 * @generated
 	 */
-	int META = 12;
+	int META = 14;
 
 	/**
 	 * The feature id for the '<em><b>Markers</b></em>' containment reference list.
@@ -1135,7 +1272,7 @@ public interface HtmlPackage extends EPackage {
 	 * @see org.nasdanika.sdk.runtime.models.html.impl.HtmlPackageImpl#getLink()
 	 * @generated
 	 */
-	int LINK = 13;
+	int LINK = 15;
 
 	/**
 	 * The feature id for the '<em><b>Markers</b></em>' containment reference list.
@@ -1280,7 +1417,7 @@ public interface HtmlPackage extends EPackage {
 	 * @see org.nasdanika.sdk.runtime.models.html.impl.HtmlPackageImpl#getStylesheet()
 	 * @generated
 	 */
-	int STYLESHEET = 14;
+	int STYLESHEET = 16;
 
 	/**
 	 * The feature id for the '<em><b>Markers</b></em>' containment reference list.
@@ -1407,7 +1544,7 @@ public interface HtmlPackage extends EPackage {
 	 * @see org.nasdanika.sdk.runtime.models.html.impl.HtmlPackageImpl#getScript()
 	 * @generated
 	 */
-	int SCRIPT = 15;
+	int SCRIPT = 17;
 
 	/**
 	 * The feature id for the '<em><b>Markers</b></em>' containment reference list.
@@ -1561,7 +1698,7 @@ public interface HtmlPackage extends EPackage {
 	 * @see org.nasdanika.sdk.runtime.models.html.impl.HtmlPackageImpl#getImportMap()
 	 * @generated
 	 */
-	int IMPORT_MAP = 16;
+	int IMPORT_MAP = 18;
 
 	/**
 	 * The feature id for the '<em><b>Markers</b></em>' containment reference list.
@@ -1661,7 +1798,7 @@ public interface HtmlPackage extends EPackage {
 	 * @see org.nasdanika.sdk.runtime.models.html.impl.HtmlPackageImpl#getImportMapScope()
 	 * @generated
 	 */
-	int IMPORT_MAP_SCOPE = 17;
+	int IMPORT_MAP_SCOPE = 19;
 
 	/**
 	 * The feature id for the '<em><b>Prefix</b></em>' attribute.
@@ -1707,7 +1844,7 @@ public interface HtmlPackage extends EPackage {
 	 * @see org.nasdanika.sdk.runtime.models.html.impl.HtmlPackageImpl#getDiv()
 	 * @generated
 	 */
-	int DIV = 18;
+	int DIV = 20;
 
 	/**
 	 * The feature id for the '<em><b>Markers</b></em>' containment reference list.
@@ -1798,7 +1935,7 @@ public interface HtmlPackage extends EPackage {
 	 * @see org.nasdanika.sdk.runtime.models.html.impl.HtmlPackageImpl#getSpan()
 	 * @generated
 	 */
-	int SPAN = 19;
+	int SPAN = 21;
 
 	/**
 	 * The feature id for the '<em><b>Markers</b></em>' containment reference list.
@@ -1889,7 +2026,7 @@ public interface HtmlPackage extends EPackage {
 	 * @see org.nasdanika.sdk.runtime.models.html.impl.HtmlPackageImpl#getParagraph()
 	 * @generated
 	 */
-	int PARAGRAPH = 20;
+	int PARAGRAPH = 22;
 
 	/**
 	 * The feature id for the '<em><b>Markers</b></em>' containment reference list.
@@ -1980,7 +2117,7 @@ public interface HtmlPackage extends EPackage {
 	 * @see org.nasdanika.sdk.runtime.models.html.impl.HtmlPackageImpl#getHeading()
 	 * @generated
 	 */
-	int HEADING = 21;
+	int HEADING = 23;
 
 	/**
 	 * The feature id for the '<em><b>Markers</b></em>' containment reference list.
@@ -2080,7 +2217,7 @@ public interface HtmlPackage extends EPackage {
 	 * @see org.nasdanika.sdk.runtime.models.html.impl.HtmlPackageImpl#getHeader()
 	 * @generated
 	 */
-	int HEADER = 22;
+	int HEADER = 24;
 
 	/**
 	 * The feature id for the '<em><b>Markers</b></em>' containment reference list.
@@ -2171,7 +2308,7 @@ public interface HtmlPackage extends EPackage {
 	 * @see org.nasdanika.sdk.runtime.models.html.impl.HtmlPackageImpl#getFooter()
 	 * @generated
 	 */
-	int FOOTER = 23;
+	int FOOTER = 25;
 
 	/**
 	 * The feature id for the '<em><b>Markers</b></em>' containment reference list.
@@ -2262,7 +2399,7 @@ public interface HtmlPackage extends EPackage {
 	 * @see org.nasdanika.sdk.runtime.models.html.impl.HtmlPackageImpl#getMain()
 	 * @generated
 	 */
-	int MAIN = 24;
+	int MAIN = 26;
 
 	/**
 	 * The feature id for the '<em><b>Markers</b></em>' containment reference list.
@@ -2353,7 +2490,7 @@ public interface HtmlPackage extends EPackage {
 	 * @see org.nasdanika.sdk.runtime.models.html.impl.HtmlPackageImpl#getNav()
 	 * @generated
 	 */
-	int NAV = 25;
+	int NAV = 27;
 
 	/**
 	 * The feature id for the '<em><b>Markers</b></em>' containment reference list.
@@ -2444,7 +2581,7 @@ public interface HtmlPackage extends EPackage {
 	 * @see org.nasdanika.sdk.runtime.models.html.impl.HtmlPackageImpl#getSection()
 	 * @generated
 	 */
-	int SECTION = 26;
+	int SECTION = 28;
 
 	/**
 	 * The feature id for the '<em><b>Markers</b></em>' containment reference list.
@@ -2535,7 +2672,7 @@ public interface HtmlPackage extends EPackage {
 	 * @see org.nasdanika.sdk.runtime.models.html.impl.HtmlPackageImpl#getArticle()
 	 * @generated
 	 */
-	int ARTICLE = 27;
+	int ARTICLE = 29;
 
 	/**
 	 * The feature id for the '<em><b>Markers</b></em>' containment reference list.
@@ -2626,7 +2763,7 @@ public interface HtmlPackage extends EPackage {
 	 * @see org.nasdanika.sdk.runtime.models.html.impl.HtmlPackageImpl#getAside()
 	 * @generated
 	 */
-	int ASIDE = 28;
+	int ASIDE = 30;
 
 	/**
 	 * The feature id for the '<em><b>Markers</b></em>' containment reference list.
@@ -2717,7 +2854,7 @@ public interface HtmlPackage extends EPackage {
 	 * @see org.nasdanika.sdk.runtime.models.html.impl.HtmlPackageImpl#getBlockquote()
 	 * @generated
 	 */
-	int BLOCKQUOTE = 29;
+	int BLOCKQUOTE = 31;
 
 	/**
 	 * The feature id for the '<em><b>Markers</b></em>' containment reference list.
@@ -2817,7 +2954,7 @@ public interface HtmlPackage extends EPackage {
 	 * @see org.nasdanika.sdk.runtime.models.html.impl.HtmlPackageImpl#getPre()
 	 * @generated
 	 */
-	int PRE = 30;
+	int PRE = 32;
 
 	/**
 	 * The feature id for the '<em><b>Markers</b></em>' containment reference list.
@@ -2908,7 +3045,7 @@ public interface HtmlPackage extends EPackage {
 	 * @see org.nasdanika.sdk.runtime.models.html.impl.HtmlPackageImpl#getFigure()
 	 * @generated
 	 */
-	int FIGURE = 31;
+	int FIGURE = 33;
 
 	/**
 	 * The feature id for the '<em><b>Markers</b></em>' containment reference list.
@@ -2999,7 +3136,7 @@ public interface HtmlPackage extends EPackage {
 	 * @see org.nasdanika.sdk.runtime.models.html.impl.HtmlPackageImpl#getFigureCaption()
 	 * @generated
 	 */
-	int FIGURE_CAPTION = 32;
+	int FIGURE_CAPTION = 34;
 
 	/**
 	 * The feature id for the '<em><b>Markers</b></em>' containment reference list.
@@ -3090,7 +3227,7 @@ public interface HtmlPackage extends EPackage {
 	 * @see org.nasdanika.sdk.runtime.models.html.impl.HtmlPackageImpl#getDetails()
 	 * @generated
 	 */
-	int DETAILS = 33;
+	int DETAILS = 35;
 
 	/**
 	 * The feature id for the '<em><b>Markers</b></em>' containment reference list.
@@ -3199,7 +3336,7 @@ public interface HtmlPackage extends EPackage {
 	 * @see org.nasdanika.sdk.runtime.models.html.impl.HtmlPackageImpl#getSummary()
 	 * @generated
 	 */
-	int SUMMARY = 34;
+	int SUMMARY = 36;
 
 	/**
 	 * The feature id for the '<em><b>Markers</b></em>' containment reference list.
@@ -3290,7 +3427,7 @@ public interface HtmlPackage extends EPackage {
 	 * @see org.nasdanika.sdk.runtime.models.html.impl.HtmlPackageImpl#getHorizontalRule()
 	 * @generated
 	 */
-	int HORIZONTAL_RULE = 35;
+	int HORIZONTAL_RULE = 37;
 
 	/**
 	 * The feature id for the '<em><b>Markers</b></em>' containment reference list.
@@ -3372,7 +3509,7 @@ public interface HtmlPackage extends EPackage {
 	 * @see org.nasdanika.sdk.runtime.models.html.impl.HtmlPackageImpl#getLineBreak()
 	 * @generated
 	 */
-	int LINE_BREAK = 36;
+	int LINE_BREAK = 38;
 
 	/**
 	 * The feature id for the '<em><b>Markers</b></em>' containment reference list.
@@ -3454,7 +3591,7 @@ public interface HtmlPackage extends EPackage {
 	 * @see org.nasdanika.sdk.runtime.models.html.impl.HtmlPackageImpl#getAnchor()
 	 * @generated
 	 */
-	int ANCHOR = 37;
+	int ANCHOR = 39;
 
 	/**
 	 * The feature id for the '<em><b>Markers</b></em>' containment reference list.
@@ -3581,7 +3718,7 @@ public interface HtmlPackage extends EPackage {
 	 * @see org.nasdanika.sdk.runtime.models.html.impl.HtmlPackageImpl#getStrong()
 	 * @generated
 	 */
-	int STRONG = 38;
+	int STRONG = 40;
 
 	/**
 	 * The feature id for the '<em><b>Markers</b></em>' containment reference list.
@@ -3672,7 +3809,7 @@ public interface HtmlPackage extends EPackage {
 	 * @see org.nasdanika.sdk.runtime.models.html.impl.HtmlPackageImpl#getEmphasis()
 	 * @generated
 	 */
-	int EMPHASIS = 39;
+	int EMPHASIS = 41;
 
 	/**
 	 * The feature id for the '<em><b>Markers</b></em>' containment reference list.
@@ -3763,7 +3900,7 @@ public interface HtmlPackage extends EPackage {
 	 * @see org.nasdanika.sdk.runtime.models.html.impl.HtmlPackageImpl#getCode()
 	 * @generated
 	 */
-	int CODE = 40;
+	int CODE = 42;
 
 	/**
 	 * The feature id for the '<em><b>Markers</b></em>' containment reference list.
@@ -3854,7 +3991,7 @@ public interface HtmlPackage extends EPackage {
 	 * @see org.nasdanika.sdk.runtime.models.html.impl.HtmlPackageImpl#getImage()
 	 * @generated
 	 */
-	int IMAGE = 41;
+	int IMAGE = 43;
 
 	/**
 	 * The feature id for the '<em><b>Markers</b></em>' containment reference list.
@@ -3999,7 +4136,7 @@ public interface HtmlPackage extends EPackage {
 	 * @see org.nasdanika.sdk.runtime.models.html.impl.HtmlPackageImpl#getInlineFrame()
 	 * @generated
 	 */
-	int INLINE_FRAME = 42;
+	int INLINE_FRAME = 44;
 
 	/**
 	 * The feature id for the '<em><b>Markers</b></em>' containment reference list.
@@ -4135,7 +4272,7 @@ public interface HtmlPackage extends EPackage {
 	 * @see org.nasdanika.sdk.runtime.models.html.impl.HtmlPackageImpl#getItemList()
 	 * @generated
 	 */
-	int ITEM_LIST = 43;
+	int ITEM_LIST = 45;
 
 	/**
 	 * The feature id for the '<em><b>Items</b></em>' containment reference list.
@@ -4172,7 +4309,7 @@ public interface HtmlPackage extends EPackage {
 	 * @see org.nasdanika.sdk.runtime.models.html.impl.HtmlPackageImpl#getUnorderedList()
 	 * @generated
 	 */
-	int UNORDERED_LIST = 44;
+	int UNORDERED_LIST = 46;
 
 	/**
 	 * The feature id for the '<em><b>Markers</b></em>' containment reference list.
@@ -4263,7 +4400,7 @@ public interface HtmlPackage extends EPackage {
 	 * @see org.nasdanika.sdk.runtime.models.html.impl.HtmlPackageImpl#getOrderedList()
 	 * @generated
 	 */
-	int ORDERED_LIST = 45;
+	int ORDERED_LIST = 47;
 
 	/**
 	 * The feature id for the '<em><b>Markers</b></em>' containment reference list.
@@ -4381,7 +4518,7 @@ public interface HtmlPackage extends EPackage {
 	 * @see org.nasdanika.sdk.runtime.models.html.impl.HtmlPackageImpl#getListItem()
 	 * @generated
 	 */
-	int LIST_ITEM = 46;
+	int LIST_ITEM = 48;
 
 	/**
 	 * The feature id for the '<em><b>Markers</b></em>' containment reference list.
@@ -4481,7 +4618,7 @@ public interface HtmlPackage extends EPackage {
 	 * @see org.nasdanika.sdk.runtime.models.html.impl.HtmlPackageImpl#getDescriptionListItem()
 	 * @generated
 	 */
-	int DESCRIPTION_LIST_ITEM = 47;
+	int DESCRIPTION_LIST_ITEM = 49;
 
 	/**
 	 * The number of structural features of the '<em>Description List Item</em>' class.
@@ -4509,7 +4646,7 @@ public interface HtmlPackage extends EPackage {
 	 * @see org.nasdanika.sdk.runtime.models.html.impl.HtmlPackageImpl#getDescriptionList()
 	 * @generated
 	 */
-	int DESCRIPTION_LIST = 48;
+	int DESCRIPTION_LIST = 50;
 
 	/**
 	 * The feature id for the '<em><b>Markers</b></em>' containment reference list.
@@ -4600,7 +4737,7 @@ public interface HtmlPackage extends EPackage {
 	 * @see org.nasdanika.sdk.runtime.models.html.impl.HtmlPackageImpl#getDescriptionTerm()
 	 * @generated
 	 */
-	int DESCRIPTION_TERM = 49;
+	int DESCRIPTION_TERM = 51;
 
 	/**
 	 * The feature id for the '<em><b>Markers</b></em>' containment reference list.
@@ -4691,7 +4828,7 @@ public interface HtmlPackage extends EPackage {
 	 * @see org.nasdanika.sdk.runtime.models.html.impl.HtmlPackageImpl#getDescriptionDetails()
 	 * @generated
 	 */
-	int DESCRIPTION_DETAILS = 50;
+	int DESCRIPTION_DETAILS = 52;
 
 	/**
 	 * The feature id for the '<em><b>Markers</b></em>' containment reference list.
@@ -4782,7 +4919,7 @@ public interface HtmlPackage extends EPackage {
 	 * @see org.nasdanika.sdk.runtime.models.html.impl.HtmlPackageImpl#getTable()
 	 * @generated
 	 */
-	int TABLE = 51;
+	int TABLE = 53;
 
 	/**
 	 * The feature id for the '<em><b>Markers</b></em>' containment reference list.
@@ -4909,7 +5046,7 @@ public interface HtmlPackage extends EPackage {
 	 * @see org.nasdanika.sdk.runtime.models.html.impl.HtmlPackageImpl#getCaption()
 	 * @generated
 	 */
-	int CAPTION = 52;
+	int CAPTION = 54;
 
 	/**
 	 * The feature id for the '<em><b>Markers</b></em>' containment reference list.
@@ -5000,7 +5137,7 @@ public interface HtmlPackage extends EPackage {
 	 * @see org.nasdanika.sdk.runtime.models.html.impl.HtmlPackageImpl#getColumnGroup()
 	 * @generated
 	 */
-	int COLUMN_GROUP = 53;
+	int COLUMN_GROUP = 55;
 
 	/**
 	 * The feature id for the '<em><b>Markers</b></em>' containment reference list.
@@ -5100,7 +5237,7 @@ public interface HtmlPackage extends EPackage {
 	 * @see org.nasdanika.sdk.runtime.models.html.impl.HtmlPackageImpl#getColumn()
 	 * @generated
 	 */
-	int COLUMN = 54;
+	int COLUMN = 56;
 
 	/**
 	 * The feature id for the '<em><b>Markers</b></em>' containment reference list.
@@ -5191,7 +5328,7 @@ public interface HtmlPackage extends EPackage {
 	 * @see org.nasdanika.sdk.runtime.models.html.impl.HtmlPackageImpl#getTableSection()
 	 * @generated
 	 */
-	int TABLE_SECTION = 55;
+	int TABLE_SECTION = 57;
 
 	/**
 	 * The feature id for the '<em><b>Markers</b></em>' containment reference list.
@@ -5282,7 +5419,7 @@ public interface HtmlPackage extends EPackage {
 	 * @see org.nasdanika.sdk.runtime.models.html.impl.HtmlPackageImpl#getTableHead()
 	 * @generated
 	 */
-	int TABLE_HEAD = 56;
+	int TABLE_HEAD = 58;
 
 	/**
 	 * The feature id for the '<em><b>Markers</b></em>' containment reference list.
@@ -5373,7 +5510,7 @@ public interface HtmlPackage extends EPackage {
 	 * @see org.nasdanika.sdk.runtime.models.html.impl.HtmlPackageImpl#getTableBody()
 	 * @generated
 	 */
-	int TABLE_BODY = 57;
+	int TABLE_BODY = 59;
 
 	/**
 	 * The feature id for the '<em><b>Markers</b></em>' containment reference list.
@@ -5464,7 +5601,7 @@ public interface HtmlPackage extends EPackage {
 	 * @see org.nasdanika.sdk.runtime.models.html.impl.HtmlPackageImpl#getTableFoot()
 	 * @generated
 	 */
-	int TABLE_FOOT = 58;
+	int TABLE_FOOT = 60;
 
 	/**
 	 * The feature id for the '<em><b>Markers</b></em>' containment reference list.
@@ -5555,7 +5692,7 @@ public interface HtmlPackage extends EPackage {
 	 * @see org.nasdanika.sdk.runtime.models.html.impl.HtmlPackageImpl#getTableRow()
 	 * @generated
 	 */
-	int TABLE_ROW = 59;
+	int TABLE_ROW = 61;
 
 	/**
 	 * The feature id for the '<em><b>Markers</b></em>' containment reference list.
@@ -5646,7 +5783,7 @@ public interface HtmlPackage extends EPackage {
 	 * @see org.nasdanika.sdk.runtime.models.html.impl.HtmlPackageImpl#getTableCell()
 	 * @generated
 	 */
-	int TABLE_CELL = 60;
+	int TABLE_CELL = 62;
 
 	/**
 	 * The feature id for the '<em><b>Markers</b></em>' containment reference list.
@@ -5782,7 +5919,7 @@ public interface HtmlPackage extends EPackage {
 	 * @see org.nasdanika.sdk.runtime.models.html.impl.HtmlPackageImpl#getForm()
 	 * @generated
 	 */
-	int FORM = 61;
+	int FORM = 63;
 
 	/**
 	 * The feature id for the '<em><b>Markers</b></em>' containment reference list.
@@ -5918,7 +6055,7 @@ public interface HtmlPackage extends EPackage {
 	 * @see org.nasdanika.sdk.runtime.models.html.impl.HtmlPackageImpl#getFieldset()
 	 * @generated
 	 */
-	int FIELDSET = 62;
+	int FIELDSET = 64;
 
 	/**
 	 * The feature id for the '<em><b>Markers</b></em>' containment reference list.
@@ -6027,7 +6164,7 @@ public interface HtmlPackage extends EPackage {
 	 * @see org.nasdanika.sdk.runtime.models.html.impl.HtmlPackageImpl#getLegend()
 	 * @generated
 	 */
-	int LEGEND = 63;
+	int LEGEND = 65;
 
 	/**
 	 * The feature id for the '<em><b>Markers</b></em>' containment reference list.
@@ -6118,7 +6255,7 @@ public interface HtmlPackage extends EPackage {
 	 * @see org.nasdanika.sdk.runtime.models.html.impl.HtmlPackageImpl#getLabel()
 	 * @generated
 	 */
-	int LABEL = 64;
+	int LABEL = 66;
 
 	/**
 	 * The feature id for the '<em><b>Markers</b></em>' containment reference list.
@@ -6218,7 +6355,7 @@ public interface HtmlPackage extends EPackage {
 	 * @see org.nasdanika.sdk.runtime.models.html.impl.HtmlPackageImpl#getInput()
 	 * @generated
 	 */
-	int INPUT = 65;
+	int INPUT = 67;
 
 	/**
 	 * The feature id for the '<em><b>Markers</b></em>' containment reference list.
@@ -6381,7 +6518,7 @@ public interface HtmlPackage extends EPackage {
 	 * @see org.nasdanika.sdk.runtime.models.html.impl.HtmlPackageImpl#getButton()
 	 * @generated
 	 */
-	int BUTTON = 66;
+	int BUTTON = 68;
 
 	/**
 	 * The feature id for the '<em><b>Markers</b></em>' containment reference list.
@@ -6508,7 +6645,7 @@ public interface HtmlPackage extends EPackage {
 	 * @see org.nasdanika.sdk.runtime.models.html.impl.HtmlPackageImpl#getTextArea()
 	 * @generated
 	 */
-	int TEXT_AREA = 67;
+	int TEXT_AREA = 69;
 
 	/**
 	 * The feature id for the '<em><b>Markers</b></em>' containment reference list.
@@ -6662,7 +6799,7 @@ public interface HtmlPackage extends EPackage {
 	 * @see org.nasdanika.sdk.runtime.models.html.impl.HtmlPackageImpl#getSelectItem()
 	 * @generated
 	 */
-	int SELECT_ITEM = 68;
+	int SELECT_ITEM = 70;
 
 	/**
 	 * The number of structural features of the '<em>Select Item</em>' class.
@@ -6690,7 +6827,7 @@ public interface HtmlPackage extends EPackage {
 	 * @see org.nasdanika.sdk.runtime.models.html.impl.HtmlPackageImpl#getSelect()
 	 * @generated
 	 */
-	int SELECT = 69;
+	int SELECT = 71;
 
 	/**
 	 * The feature id for the '<em><b>Markers</b></em>' containment reference list.
@@ -6826,7 +6963,7 @@ public interface HtmlPackage extends EPackage {
 	 * @see org.nasdanika.sdk.runtime.models.html.impl.HtmlPackageImpl#getOption()
 	 * @generated
 	 */
-	int OPTION = 70;
+	int OPTION = 72;
 
 	/**
 	 * The feature id for the '<em><b>Markers</b></em>' containment reference list.
@@ -6953,7 +7090,7 @@ public interface HtmlPackage extends EPackage {
 	 * @see org.nasdanika.sdk.runtime.models.html.impl.HtmlPackageImpl#getOptionGroup()
 	 * @generated
 	 */
-	int OPTION_GROUP = 71;
+	int OPTION_GROUP = 73;
 
 	/**
 	 * The feature id for the '<em><b>Markers</b></em>' containment reference list.
@@ -7129,6 +7266,27 @@ public interface HtmlPackage extends EPackage {
 	EAttribute getComment_Content();
 
 	/**
+	 * Returns the meta object for class '{@link org.nasdanika.sdk.runtime.models.html.NodeReference <em>Node Reference</em>}'.
+	 * <!-- begin-user-doc -->
+	 * <!-- end-user-doc -->
+	 * @return the meta object for class '<em>Node Reference</em>'.
+	 * @see org.nasdanika.sdk.runtime.models.html.NodeReference
+	 * @generated
+	 */
+	EClass getNodeReference();
+
+	/**
+	 * Returns the meta object for the reference '{@link org.nasdanika.sdk.runtime.models.html.NodeReference#getTarget <em>Target</em>}'.
+	 * <!-- begin-user-doc -->
+	 * <!-- end-user-doc -->
+	 * @return the meta object for the reference '<em>Target</em>'.
+	 * @see org.nasdanika.sdk.runtime.models.html.NodeReference#getTarget()
+	 * @see #getNodeReference()
+	 * @generated
+	 */
+	EReference getNodeReference_Target();
+
+	/**
 	 * Returns the meta object for class '{@link org.nasdanika.sdk.runtime.models.html.Container <em>Container</em>}'.
 	 * <!-- begin-user-doc -->
 	 * <!-- end-user-doc -->
@@ -7284,6 +7442,26 @@ public interface HtmlPackage extends EPackage {
 	 * @generated
 	 */
 	EOperation getGenericVoidElement__TagName();
+
+	/**
+	 * Returns the meta object for class '{@link org.nasdanika.sdk.runtime.models.html.LibraryElement <em>Library Element</em>}'.
+	 * <!-- begin-user-doc -->
+	 * <!-- end-user-doc -->
+	 * @return the meta object for class '<em>Library Element</em>'.
+	 * @see org.nasdanika.sdk.runtime.models.html.LibraryElement
+	 * @generated
+	 */
+	EClass getLibraryElement();
+
+	/**
+	 * Returns the meta object for the '{@link org.nasdanika.sdk.runtime.models.html.LibraryElement#tagName() <em>Tag Name</em>}' operation.
+	 * <!-- begin-user-doc -->
+	 * <!-- end-user-doc -->
+	 * @return the meta object for the '<em>Tag Name</em>' operation.
+	 * @see org.nasdanika.sdk.runtime.models.html.LibraryElement#tagName()
+	 * @generated
+	 */
+	EOperation getLibraryElement__TagName();
 
 	/**
 	 * Returns the meta object for class '{@link org.nasdanika.sdk.runtime.models.html.Document <em>Document</em>}'.
@@ -9969,6 +10147,24 @@ public interface HtmlPackage extends EPackage {
 		EAttribute COMMENT__CONTENT = eINSTANCE.getComment_Content();
 
 		/**
+		 * The meta object literal for the '{@link org.nasdanika.sdk.runtime.models.html.impl.NodeReferenceImpl <em>Node Reference</em>}' class.
+		 * <!-- begin-user-doc -->
+		 * <!-- end-user-doc -->
+		 * @see org.nasdanika.sdk.runtime.models.html.impl.NodeReferenceImpl
+		 * @see org.nasdanika.sdk.runtime.models.html.impl.HtmlPackageImpl#getNodeReference()
+		 * @generated
+		 */
+		EClass NODE_REFERENCE = eINSTANCE.getNodeReference();
+
+		/**
+		 * The meta object literal for the '<em><b>Target</b></em>' reference feature.
+		 * <!-- begin-user-doc -->
+		 * <!-- end-user-doc -->
+		 * @generated
+		 */
+		EReference NODE_REFERENCE__TARGET = eINSTANCE.getNodeReference_Target();
+
+		/**
 		 * The meta object literal for the '{@link org.nasdanika.sdk.runtime.models.html.Container <em>Container</em>}' class.
 		 * <!-- begin-user-doc -->
 		 * <!-- end-user-doc -->
@@ -10097,6 +10293,24 @@ public interface HtmlPackage extends EPackage {
 		 * @generated
 		 */
 		EOperation GENERIC_VOID_ELEMENT___TAG_NAME = eINSTANCE.getGenericVoidElement__TagName();
+
+		/**
+		 * The meta object literal for the '{@link org.nasdanika.sdk.runtime.models.html.impl.LibraryElementImpl <em>Library Element</em>}' class.
+		 * <!-- begin-user-doc -->
+		 * <!-- end-user-doc -->
+		 * @see org.nasdanika.sdk.runtime.models.html.impl.LibraryElementImpl
+		 * @see org.nasdanika.sdk.runtime.models.html.impl.HtmlPackageImpl#getLibraryElement()
+		 * @generated
+		 */
+		EClass LIBRARY_ELEMENT = eINSTANCE.getLibraryElement();
+
+		/**
+		 * The meta object literal for the '<em><b>Tag Name</b></em>' operation.
+		 * <!-- begin-user-doc -->
+		 * <!-- end-user-doc -->
+		 * @generated
+		 */
+		EOperation LIBRARY_ELEMENT___TAG_NAME = eINSTANCE.getLibraryElement__TagName();
 
 		/**
 		 * The meta object literal for the '{@link org.nasdanika.sdk.runtime.models.html.impl.DocumentImpl <em>Document</em>}' class.

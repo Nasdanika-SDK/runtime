@@ -1,0 +1,476 @@
+@Ecore(
+    nsURI="https://runtime.sdk.nasdanika.org/models/html/bootstrap/components/content",
+	nsPrefix="org.nasdanika.sdk.runtime.models.html.bootstrap.components.content")
+
+@GenModel(
+	modelDirectory="/bootstrap/src-gen",
+    featureDelegation="Dynamic",
+    complianceLevel="25",
+    suppressGenModelAnnotations="false",
+    copyrightFields="false",
+    operationReflection="true",
+    importOrganizing="true"
+)
+/*
+ * Bootstrap content components: alerts, badges, buttons, cards, list groups, tables,
+ * progress bars, spinners, placeholders, accordions and carousels.
+ * https://getbootstrap.com/docs/5.3/components/accordion/
+ */
+package org.nasdanika.sdk.runtime.models.html.bootstrap.components.content
+
+import org.nasdanika.sdk.runtime.models.html.Node
+import org.nasdanika.sdk.runtime.models.html.TableBody
+import org.nasdanika.sdk.runtime.models.html.TableFoot
+import org.nasdanika.sdk.runtime.models.html.TableHead
+import org.nasdanika.sdk.runtime.models.html.bootstrap.BootstrapElement
+import org.nasdanika.sdk.runtime.models.html.bootstrap.Breakpoint
+import org.nasdanika.sdk.runtime.models.html.bootstrap.ButtonVariant
+import org.nasdanika.sdk.runtime.models.html.bootstrap.ColumnSize
+import org.nasdanika.sdk.runtime.models.html.bootstrap.Size
+import org.nasdanika.sdk.runtime.models.html.bootstrap.TextContent
+import org.nasdanika.sdk.runtime.models.html.bootstrap.Variant
+
+annotation "http://www.eclipse.org/emf/2002/Ecore" as Ecore
+annotation "http://www.eclipse.org/emf/2002/GenModel" as GenModel
+annotation "urn:org.nasdanika:html" as Html
+
+// --- Alerts and badges ---------------------------------------------------
+
+/*
+ * A dismissible alert gets a close button.
+ */
+@Html(tag="div", classes="alert", attributes="role=alert")
+class Alert extends BootstrapElement, TextContent {
+	@Html(classes="alert-{}", ^default="primary")
+	unsettable Variant variant
+
+	@Html(logical="true")
+	boolean dismissible
+
+	contains AlertHeading heading
+}
+
+@Html(tag="h4", classes="alert-heading")
+class AlertHeading extends BootstrapElement, TextContent {
+}
+
+@Html(tag="a", classes="alert-link")
+class AlertLink extends BootstrapElement, TextContent {
+	String href
+}
+
+@Html(tag="span", classes="badge")
+class Badge extends BootstrapElement, TextContent {
+	@Html(classes="text-bg-{}", ^default="primary")
+	unsettable Variant bg
+
+	@Html(classes="rounded-pill")
+	boolean pill
+}
+
+// --- Buttons -------------------------------------------------------------
+
+enum ButtonType {
+	button
+	submit
+	reset
+}
+
+/*
+ * button, or a link styled as a button if href is set.
+ */
+@Html(tag="button", classes="btn", attributes="type=button")
+class Button extends BootstrapElement, TextContent {
+	@Html(classes="btn-{}", ^default="primary")
+	unsettable ButtonVariant variant
+
+	@Html(classes="btn-{}")
+	unsettable Size size
+
+	@Html(attribute="type")
+	unsettable ButtonType buttonType
+
+	@Html(classes="active")
+	boolean active
+
+	boolean disabled
+
+	@Html(logical="true")
+	String href
+}
+
+/*
+ * btn-group, or btn-group-vertical.
+ */
+@Html(tag="div", attributes="role=group")
+class ButtonGroup extends BootstrapElement {
+	@Html(classes="btn-group-{}")
+	unsettable Size size
+
+	@Html(logical="true")
+	boolean vertical
+
+	contains Node[] buttons
+}
+
+@Html(tag="div", classes="btn-toolbar", attributes="role=toolbar")
+class ButtonToolbar extends BootstrapElement {
+	contains ButtonGroup[] groups
+}
+
+@Html(tag="button", classes="btn-close", attributes="type=button;aria-label=Close")
+class CloseButton extends BootstrapElement {
+	boolean disabled
+}
+
+// --- Cards ---------------------------------------------------------------
+
+@Html(tag="div", classes="card")
+class Card extends BootstrapElement {
+	@Html(classes="bg-{}")
+	unsettable Variant bg
+
+	@Html(classes="text-{}")
+	unsettable Variant textColor
+
+	@Html(classes="border-{}")
+	unsettable Variant border
+
+	contains CardHeader header
+
+	contains CardImage image
+
+	contains CardBody[] bodies
+
+	contains CardFooter footer
+}
+
+@Html(tag="div", classes="card-header")
+class CardHeader extends BootstrapElement, TextContent {
+}
+
+enum CardImageVariant {
+	top
+	bottom
+}
+
+/*
+ * card-img-top, card-img-bottom, or card-img for an overlay.
+ */
+@Html(tag="img", voidElement="true")
+class CardImage extends BootstrapElement {
+	@Html(logical="true")
+	unsettable CardImageVariant variant
+
+	String src
+
+	String alt
+}
+
+@Html(tag="div", classes="card-body")
+class CardBody extends BootstrapElement {
+	contains CardTitle title
+
+	contains CardSubtitle subtitle
+
+	contains CardText[] texts
+
+	contains CardLink[] links
+}
+
+@Html(tag="h5", classes="card-title")
+class CardTitle extends BootstrapElement, TextContent {
+}
+
+@Html(tag="h6", classes="card-subtitle mb-2 text-body-secondary")
+class CardSubtitle extends BootstrapElement, TextContent {
+}
+
+@Html(tag="p", classes="card-text")
+class CardText extends BootstrapElement, TextContent {
+}
+
+@Html(tag="a", classes="card-link")
+class CardLink extends BootstrapElement, TextContent {
+	String href
+}
+
+@Html(tag="div", classes="card-footer")
+class CardFooter extends BootstrapElement, TextContent {
+}
+
+@Html(tag="div", classes="card-group")
+class CardGroup extends BootstrapElement {
+	contains Card[] cards
+}
+
+// --- List groups ---------------------------------------------------------
+
+/*
+ * ul, or ol if numbered.
+ */
+@Html(tag="ul", classes="list-group")
+class ListGroup extends BootstrapElement {
+	@Html(classes="list-group-flush")
+	boolean flush
+
+	@Html(logical="true")
+	boolean numbered
+
+	@Html(classes="list-group-horizontal")
+	boolean horizontal
+
+	@Html(classes="list-group-horizontal-{}")
+	unsettable Breakpoint horizontalFrom
+
+	contains ListGroupItem[] items
+}
+
+/*
+ * li, or a link if href is set.
+ */
+@Html(tag="li", classes="list-group-item")
+class ListGroupItem extends BootstrapElement, TextContent {
+	@Html(classes="list-group-item-{}")
+	unsettable Variant variant
+
+	@Html(classes="list-group-item-action")
+	boolean action
+
+	@Html(classes="active")
+	boolean active
+
+	@Html(classes="disabled")
+	boolean disabled
+
+	@Html(logical="true")
+	String href
+}
+
+// --- Tables --------------------------------------------------------------
+
+/*
+ * Table with HTML sections. A responsive table is wrapped in table-responsive.
+ */
+@Html(tag="table", classes="table")
+class Table extends BootstrapElement {
+	@Html(classes="table-striped")
+	boolean striped
+
+	@Html(classes="table-bordered")
+	boolean bordered
+
+	@Html(classes="table-borderless")
+	boolean borderless
+
+	@Html(classes="table-hover")
+	boolean hover
+
+	@Html(classes="table-{}")
+	unsettable Size size
+
+	@Html(classes="table-{}")
+	unsettable Variant variant
+
+	@Html(logical="true")
+	boolean responsive
+
+	/* Responsive below the breakpoint. Wins over responsive. */
+	@Html(logical="true")
+	unsettable Breakpoint responsiveBelow
+
+	contains TableHead head
+
+	contains TableBody[] bodies
+
+	contains TableFoot foot
+}
+
+// --- Progress, spinners, placeholders ------------------------------------
+
+/*
+ * A progress bar, or a stacked progress bar of bars.
+ */
+@Html(tag="div", classes="progress")
+class ProgressBar extends BootstrapElement {
+	@Html(logical="true")
+	unsettable int now
+
+	@Html(logical="true")
+	unsettable int min
+
+	@Html(logical="true")
+	unsettable int max
+
+	@Html(logical="true")
+	String label
+
+	@Html(logical="true")
+	boolean visuallyHidden
+
+	@Html(logical="true")
+	unsettable Variant variant
+
+	@Html(logical="true")
+	boolean striped
+
+	@Html(logical="true")
+	boolean animated
+
+	/* Bars of a stacked progress bar, each with now */
+	contains ProgressBar[] bars
+}
+
+enum SpinnerAnimation {
+	border
+	grow
+}
+
+/*
+ * Spinner with its content as visually hidden text, e.g. "Loading...".
+ */
+@Html(tag="div", attributes="role=status")
+class Spinner extends BootstrapElement, TextContent {
+	@Html(logical="true")
+	unsettable SpinnerAnimation animation
+
+	@Html(classes="text-{}")
+	unsettable Variant variant
+
+	@Html(logical="true")
+	unsettable Size size
+}
+
+enum PlaceholderAnimation {
+	glow
+	wave
+}
+
+enum PlaceholderSize {
+	xs
+	sm
+	lg
+}
+
+/*
+ * Animated group of placeholders - Placeholder as="p" animation="glow" in React Bootstrap.
+ */
+@Html(tag="p")
+class PlaceholderGroup extends BootstrapElement {
+	@Html(classes="placeholder-{}")
+	unsettable PlaceholderAnimation animation
+
+	contains Placeholder[] placeholders
+}
+
+/*
+ * Loading placeholder. Width in columns with sizes, e.g. col-6.
+ */
+@Html(tag="span", classes="placeholder")
+class Placeholder extends BootstrapElement {
+	@Html(classes="bg-{}")
+	unsettable Variant bg
+
+	@Html(classes="placeholder-{}")
+	unsettable PlaceholderSize size
+
+	@Html(logical="true")
+	contains ColumnSize[] sizes
+}
+
+@Html(tag="a", classes="btn disabled placeholder", attributes="aria-disabled=true")
+class PlaceholderButton extends BootstrapElement {
+	@Html(classes="btn-{}", ^default="primary")
+	unsettable ButtonVariant variant
+
+	@Html(logical="true")
+	contains ColumnSize[] sizes
+}
+
+// --- Accordion -----------------------------------------------------------
+
+/*
+ * Items collapse into the accordion unless it is always open. The id of the accordion
+ * and of its items is generated if not set.
+ */
+@Html(tag="div", classes="accordion")
+class Accordion extends BootstrapElement {
+	/* Event key of the item open initially, the first if not set */
+	@Html(logical="true")
+	String defaultActiveKey
+
+	@Html(classes="accordion-flush")
+	boolean flush
+
+	@Html(logical="true")
+	boolean alwaysOpen
+
+	contains AccordionItem[] items
+}
+
+@Html(tag="div", classes="accordion-item")
+class AccordionItem extends BootstrapElement {
+	/* The index of the item if not set */
+	@Html(logical="true")
+	String eventKey
+
+	contains AccordionHeader header
+
+	contains AccordionBody body
+}
+
+/*
+ * The text of the toggle button of the item.
+ */
+@Html(tag="h2", classes="accordion-header")
+class AccordionHeader extends BootstrapElement, TextContent {
+}
+
+@Html(tag="div", classes="accordion-body")
+class AccordionBody extends BootstrapElement, TextContent {
+}
+
+// --- Carousel ------------------------------------------------------------
+
+enum CarouselVariant {
+	dark
+}
+
+@Html(tag="div", classes="carousel slide", attributes="data-bs-ride=carousel")
+class Carousel extends BootstrapElement {
+	@Html(logical="true")
+	unsettable boolean controls
+
+	@Html(logical="true")
+	unsettable boolean indicators
+
+	@Html(classes="carousel-fade")
+	boolean fade
+
+	/* Milliseconds between slides */
+	@Html(attribute="data-bs-interval")
+	unsettable int interval
+
+	@Html(attribute="data-bs-theme")
+	unsettable CarouselVariant variant
+
+	contains CarouselItem[] items
+}
+
+/*
+ * A slide, the first is active.
+ */
+@Html(tag="div", classes="carousel-item")
+class CarouselItem extends BootstrapElement {
+	@Html(attribute="data-bs-interval")
+	unsettable int interval
+
+	contains Node content
+
+	contains CarouselCaption caption
+}
+
+@Html(tag="div", classes="carousel-caption d-none d-md-block")
+class CarouselCaption extends BootstrapElement {
+	contains Node[] content
+}

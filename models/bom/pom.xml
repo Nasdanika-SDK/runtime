@@ -76,6 +76,12 @@
 			</dependency>
 
 			<dependency>
+				<groupId>org.nasdanika.sdk.runtime.models.html</groupId>
+				<version>${revision}</version>
+				<artifactId>bootstrap</artifactId>				
+			</dependency>
+
+			<dependency>
 				<groupId>org.nasdanika.sdk.runtime.models.typescript</groupId>
 				<version>${revision}</version>
 				<artifactId>model</artifactId>				

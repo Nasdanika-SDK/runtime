@@ -213,7 +213,12 @@ public class ReactGeneratorTests {
 				    <ThemeContext.Provider value={theme}>
 				      <div className="user-list" data-theme={theme} style={{ marginTop: "1rem" }}>
 				        <label htmlFor="filter">Filter: </label>
-				        <input id="filter" type="text" value={filter} onChange={event => setFilter(event.target.value)} />
+				        <input
+				          id="filter"
+				          type="text"
+				          value={filter}
+				          onChange={event => setFilter(event.target.value)}
+				        />
 				        <ul>
 				          {visible.map(user => <li key={user.id}><Badge name={user.name} />{" & friends"}</li>)}
 				        </ul>
@@ -264,9 +269,18 @@ public class ReactGeneratorTests {
 				  const theme = useContext(ThemeContext);
 				  const visible = useMemo(() => (props.users.filter(user => user.name.includes(filter))), [props.users, filter]);
 				  return createElement(ThemeContext.Provider, { value: theme },
-				    createElement("div", { className: "user-list", "data-theme": theme, style: { marginTop: "1rem" } },
+				    createElement("div", {
+				      className: "user-list",
+				      "data-theme": theme,
+				      style: { marginTop: "1rem" }
+				    },
 				      createElement("label", { htmlFor: "filter" }, "Filter: "),
-				      createElement("input", { id: "filter", type: "text", value: filter, onChange: event => setFilter(event.target.value) }),
+				      createElement("input", {
+				        id: "filter",
+				        type: "text",
+				        value: filter,
+				        onChange: event => setFilter(event.target.value)
+				      }),
 				      createElement("ul", null,
 				        visible.map(user => createElement("li", { key: user.id },
 				          createElement(Badge, { name: user.name }),

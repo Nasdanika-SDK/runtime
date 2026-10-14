@@ -284,6 +284,42 @@ abstract class LibraryComponent extends JsxContainer {
     contains JsxAttribute[] attributes
 }
 
+/*
+ * More feature rules of library components, value objects, hooks and value blocks:
+ * - Many-valued containments of value objects without a key are arrays.
+ * - Containments of code blocks are expressions, e.g. a typed event handler.
+ * - Non-containment references to declarations render the local name of the declaration,
+ *   which is imported if it is in another module, e.g. nodeTypes={nodeTypes}. Other
+ *   non-containment references need a ref annotation - the name of the attribute of the
+ *   target to render, e.g. ref="id" for source="a".
+ * - enum and module on an enum attribute: the value is a member of an exported TypeScript
+ *   enum named by the enum literal name, e.g. position={Position.Top}. The enum is imported.
+ * - required="true": an unset feature renders as an empty array or undefined.
+ */
+
+/*
+ * A hook of a component library, e.g. useNodesState of React Flow, rendered reflectively:
+ * const [bindings] = hook(arguments).
+ *
+ * On classes, looked up on the class and then its supertypes:
+ * - hook: hook function name.
+ * - module: module specifier to import the hook from.
+ *
+ * Arguments are the features of the subclass which are set, or required, in feature order,
+ * rendered like library component props.
+ */
+abstract class LibraryHook extends Hook {
+}
+
+/*
+ * An expression which is a model object rendered as a JavaScript value - an object literal of
+ * its features, rendered like library component props. E.g. the initializer of a module level
+ * constant whose value has to be stable across renders, such as React Flow nodeTypes.
+ */
+class ValueBlock extends CodeBlock {
+    contains org.eclipse.emf.ecore.EObject value
+}
+
 /* ---------------------------------------------------------------------------
  * Attributes
  * --------------------------------------------------------------------------- */

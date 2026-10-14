@@ -99,6 +99,14 @@ public class HtmlSwitch<T> extends Switch<T> {
 				if (result == null) result = defaultCase(theEObject);
 				return result;
 			}
+			case HtmlPackage.NODE_REFERENCE: {
+				NodeReference nodeReference = (NodeReference)theEObject;
+				T result = caseNodeReference(nodeReference);
+				if (result == null) result = caseNode(nodeReference);
+				if (result == null) result = caseMarked(nodeReference);
+				if (result == null) result = defaultCase(theEObject);
+				return result;
+			}
 			case HtmlPackage.CONTAINER: {
 				Container container = (Container)theEObject;
 				T result = caseContainer(container);
@@ -139,6 +147,16 @@ public class HtmlSwitch<T> extends Switch<T> {
 				if (result == null) result = caseElement(genericVoidElement);
 				if (result == null) result = caseNode(genericVoidElement);
 				if (result == null) result = caseMarked(genericVoidElement);
+				if (result == null) result = defaultCase(theEObject);
+				return result;
+			}
+			case HtmlPackage.LIBRARY_ELEMENT: {
+				LibraryElement libraryElement = (LibraryElement)theEObject;
+				T result = caseLibraryElement(libraryElement);
+				if (result == null) result = caseElement(libraryElement);
+				if (result == null) result = caseContainer(libraryElement);
+				if (result == null) result = caseNode(libraryElement);
+				if (result == null) result = caseMarked(libraryElement);
 				if (result == null) result = defaultCase(theEObject);
 				return result;
 			}
@@ -811,6 +829,21 @@ public class HtmlSwitch<T> extends Switch<T> {
 	}
 
 	/**
+	 * Returns the result of interpreting the object as an instance of '<em>Node Reference</em>'.
+	 * <!-- begin-user-doc -->
+	 * This implementation returns null;
+	 * returning a non-null result will terminate the switch.
+	 * <!-- end-user-doc -->
+	 * @param object the target of the switch.
+	 * @return the result of interpreting the object as an instance of '<em>Node Reference</em>'.
+	 * @see #doSwitch(org.eclipse.emf.ecore.EObject) doSwitch(EObject)
+	 * @generated
+	 */
+	public T caseNodeReference(NodeReference object) {
+		return null;
+	}
+
+	/**
 	 * Returns the result of interpreting the object as an instance of '<em>Container</em>'.
 	 * <!-- begin-user-doc -->
 	 * This implementation returns null;
@@ -882,6 +915,21 @@ public class HtmlSwitch<T> extends Switch<T> {
 	 * @generated
 	 */
 	public T caseGenericVoidElement(GenericVoidElement object) {
+		return null;
+	}
+
+	/**
+	 * Returns the result of interpreting the object as an instance of '<em>Library Element</em>'.
+	 * <!-- begin-user-doc -->
+	 * This implementation returns null;
+	 * returning a non-null result will terminate the switch.
+	 * <!-- end-user-doc -->
+	 * @param object the target of the switch.
+	 * @return the result of interpreting the object as an instance of '<em>Library Element</em>'.
+	 * @see #doSwitch(org.eclipse.emf.ecore.EObject) doSwitch(EObject)
+	 * @generated
+	 */
+	public T caseLibraryElement(LibraryElement object) {
 		return null;
 	}
 

@@ -49,6 +49,15 @@ public interface HtmlFactory extends EFactory {
 	Comment createComment();
 
 	/**
+	 * Returns a new object of class '<em>Node Reference</em>'.
+	 * <!-- begin-user-doc -->
+	 * <!-- end-user-doc -->
+	 * @return a new object of class '<em>Node Reference</em>'.
+	 * @generated
+	 */
+	NodeReference createNodeReference();
+
+	/**
 	 * Returns a new object of class '<em>Generic Element</em>'.
 	 * <!-- begin-user-doc -->
 	 * <!-- end-user-doc -->

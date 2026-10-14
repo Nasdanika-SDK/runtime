@@ -100,7 +100,7 @@ public class Generator {
 	 * @param pretty If false, no whitespace shall be added, e.g. inside pre
 	 */
 	protected void node(Node node, int depth, boolean pretty) {
-		switch (node) {
+		switch (structure.expandAll(node)) {
 			case Text text -> append(escapeText(text.getContent()));
 			case Markup markup -> append(markup.getContent());
 			case Comment comment -> append("<!--").append(comment.getContent()).append("-->");
@@ -135,7 +135,7 @@ public class Generator {
 			append(escapeText(text));
 		} else {
 			boolean childPretty = pretty && !(element instanceof Pre);
-			List<? extends Node> children = structure.children(element);
+			List<? extends Node> children = structure.children(element).stream().map(structure::expandAll).toList();
 			boolean block = childPretty && children.stream().allMatch(this::isBlock);
 			boolean preamble = element instanceof Head head && headPreamble(head, depth + 1, block);
 			if (block && (preamble || !children.isEmpty())) {
@@ -154,7 +154,7 @@ public class Generator {
 	}
 
 	protected boolean isBlock(Node node) {
-		return node instanceof Comment || (node instanceof Element element && BLOCK_TAGS.contains(element.tagName()));
+		return node instanceof Comment || (node instanceof Element element && BLOCK_TAGS.contains(structure.tagName(element)));
 	}
 
 	// --- Tags and attributes -------------------------------------------------
@@ -200,10 +200,11 @@ public class Generator {
 	}
 
 	protected void attributes(Element element) {
-		if (element.getId() != null) {
-			attribute("id", element.getId());
+		String id = structure.id(element);
+		if (id != null) {
+			attribute("id", id);
 		}
-		Collection<String> classes = element.getClasses();
+		Collection<String> classes = structure.classes(element);
 		if (!classes.isEmpty()) {
 			attribute("class", String.join(" ", classes));
 		}

@@ -1,0 +1,285 @@
+@Ecore(
+    nsURI="https://runtime.sdk.nasdanika.org/models/html/bootstrap/components/overlays",
+	nsPrefix="org.nasdanika.sdk.runtime.models.html.bootstrap.components.overlays")
+
+@GenModel(
+	modelDirectory="/bootstrap/src-gen",
+    featureDelegation="Dynamic",
+    complianceLevel="25",
+    suppressGenModelAnnotations="false",
+    copyrightFields="false",
+    operationReflection="true",
+    importOrganizing="true"
+)
+/*
+ * Bootstrap overlays: modals, offcanvases, toasts, tooltips and popovers.
+ * https://getbootstrap.com/docs/5.3/components/modal/
+ *
+ * Where React Bootstrap shows and hides overlays with state, static Bootstrap does it with
+ * the Bootstrap JavaScript bundle: a Toggle opens a modal or an offcanvas, close buttons
+ * dismiss it. Tooltips and popovers are initialized by the Bootstrap document.
+ */
+package org.nasdanika.sdk.runtime.models.html.bootstrap.components.overlays
+
+import org.nasdanika.sdk.runtime.models.html.Element
+import org.nasdanika.sdk.runtime.models.html.Node
+import org.nasdanika.sdk.runtime.models.html.bootstrap.BootstrapElement
+import org.nasdanika.sdk.runtime.models.html.bootstrap.TextContent
+import org.nasdanika.sdk.runtime.models.html.bootstrap.Variant
+import org.nasdanika.sdk.runtime.models.html.bootstrap.components.content.Button
+
+annotation "http://www.eclipse.org/emf/2002/Ecore" as Ecore
+annotation "http://www.eclipse.org/emf/2002/GenModel" as GenModel
+annotation "urn:org.nasdanika:html" as Html
+
+/*
+ * Button which opens a modal or an offcanvas, or toggles a collapse, e.g. a navbar collapse.
+ * The target id is generated if not set.
+ */
+class Toggle extends Button {
+	@Html(logical="true")
+	refers Element target
+}
+
+// --- Modal ---------------------------------------------------------------
+
+enum ModalSize {
+	sm
+	lg
+	xl
+}
+
+enum Fullscreen {
+	smDown as "sm-down"
+	mdDown as "md-down"
+	lgDown as "lg-down"
+	xlDown as "xl-down"
+	xxlDown as "xxl-down"
+}
+
+/*
+ * modal, modal-dialog and modal-content around the header, body and footer.
+ * The id of the modal is generated if not set.
+ */
+@Html(tag="div", classes="modal fade", attributes="tabindex=-1;aria-hidden=true")
+class Modal extends BootstrapElement {
+	@Html(logical="true")
+	unsettable ModalSize size
+
+	@Html(logical="true")
+	boolean centered
+
+	@Html(logical="true")
+	boolean scrollable
+
+	@Html(logical="true")
+	boolean fullscreen
+
+	/* Fullscreen below the breakpoint. Wins over fullscreen. */
+	@Html(logical="true")
+	unsettable Fullscreen fullscreenBelow
+
+	/* Clicking the backdrop does not close the modal */
+	@Html(logical="true")
+	boolean staticBackdrop
+
+	/* Escape closes the modal */
+	@Html(logical="true")
+	unsettable boolean keyboard
+
+	contains ModalHeader header
+
+	contains ModalBody body
+
+	contains ModalFooter footer
+}
+
+@Html(tag="div", classes="modal-header")
+class ModalHeader extends BootstrapElement {
+	@Html(logical="true")
+	boolean closeButton
+
+	contains ModalTitle title
+}
+
+@Html(tag="h1", classes="modal-title fs-5")
+class ModalTitle extends BootstrapElement, TextContent {
+}
+
+@Html(tag="div", classes="modal-body")
+class ModalBody extends BootstrapElement, TextContent {
+}
+
+@Html(tag="div", classes="modal-footer")
+class ModalFooter extends BootstrapElement {
+	contains Node[] content
+}
+
+// --- Offcanvas -----------------------------------------------------------
+
+enum OffcanvasPlacement {
+	start
+	end
+	top
+	bottom
+}
+
+/*
+ * The id of the offcanvas is generated if not set.
+ */
+@Html(tag="div", classes="offcanvas", attributes="tabindex=-1")
+class Offcanvas extends BootstrapElement {
+	@Html(classes="offcanvas-{}", ^default="start")
+	unsettable OffcanvasPlacement placement
+
+	@Html(logical="true")
+	unsettable boolean backdrop
+
+	/* Body scrolling while the offcanvas is open */
+	@Html(logical="true")
+	boolean scroll
+
+	contains OffcanvasHeader header
+
+	contains OffcanvasBody body
+}
+
+@Html(tag="div", classes="offcanvas-header")
+class OffcanvasHeader extends BootstrapElement {
+	@Html(logical="true")
+	boolean closeButton
+
+	contains OffcanvasTitle title
+}
+
+@Html(tag="h5", classes="offcanvas-title")
+class OffcanvasTitle extends BootstrapElement, TextContent {
+}
+
+@Html(tag="div", classes="offcanvas-body")
+class OffcanvasBody extends BootstrapElement, TextContent {
+}
+
+// --- Toasts --------------------------------------------------------------
+
+/*
+ * Toasts are shown with the show class, or with the Bootstrap JavaScript API.
+ */
+@Html(tag="div", classes="toast", attributes="role=alert;aria-live=assertive;aria-atomic=true")
+class Toast extends BootstrapElement {
+	@Html(classes="show")
+	boolean show
+
+	@Html(classes="text-bg-{}")
+	unsettable Variant bg
+
+	@Html(logical="true")
+	unsettable boolean autohide
+
+	/* Milliseconds before autohide */
+	@Html(attribute="data-bs-delay")
+	unsettable int delay
+
+	contains ToastHeader header
+
+	contains ToastBody body
+}
+
+/*
+ * Header with title and secondary text, followed by a close button unless closeButton is false.
+ */
+@Html(tag="div", classes="toast-header")
+class ToastHeader extends BootstrapElement {
+	@Html(logical="true")
+	unsettable boolean closeButton
+
+	contains Node[] content
+}
+
+@Html(tag="div", classes="toast-body")
+class ToastBody extends BootstrapElement, TextContent {
+}
+
+enum ToastPosition {
+	topStart as "top-start"
+	topCenter as "top-center"
+	topEnd as "top-end"
+	middleStart as "middle-start"
+	middleCenter as "middle-center"
+	middleEnd as "middle-end"
+	bottomStart as "bottom-start"
+	bottomCenter as "bottom-center"
+	bottomEnd as "bottom-end"
+}
+
+enum ToastContainment {
+	fixed
+	absolute
+	relative
+}
+
+@Html(tag="div", classes="toast-container")
+class ToastContainer extends BootstrapElement {
+	@Html(logical="true")
+	unsettable ToastPosition position
+
+	@Html(classes="position-{}")
+	unsettable ToastContainment containment
+
+	contains Toast[] toasts
+}
+
+// --- Tooltips and popovers -----------------------------------------------
+
+enum Placement {
+	auto
+	top
+	bottom
+	left
+	right
+}
+
+enum Trigger {
+	hover
+	focus
+	click
+	manual
+}
+
+/*
+ * Tooltip or popover content of an overlay trigger.
+ */
+abstract class Overlay {
+	/* Content is HTML */
+	boolean html
+}
+
+class Tooltip extends Overlay {
+	String title
+}
+
+class Popover extends Overlay {
+	String title
+
+	String content
+}
+
+/*
+ * Shows its overlay - a tooltip or a popover - for its target. Rendered as an inline block
+ * wrapper of the target with the data attributes of the overlay, which also works for
+ * disabled targets.
+ */
+@Html(tag="span", classes="d-inline-block", attributes="tabindex=0")
+class OverlayTrigger extends BootstrapElement {
+	@Html(logical="true")
+	unsettable Placement placement
+
+	/* Events showing the overlay */
+	@Html(logical="true")
+	Trigger[] trigger
+
+	@Html(logical="true")
+	contains Overlay overlay
+
+	contains Node target
+}

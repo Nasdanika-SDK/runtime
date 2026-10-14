@@ -76,6 +76,7 @@ public class ReactFactoryImpl extends EFactoryImpl implements ReactFactory {
 			case ReactPackage.OPAQUE_JSX: return createOpaqueJsx();
 			case ReactPackage.INTRINSIC: return createIntrinsic();
 			case ReactPackage.JSX_CONTENT: return createJsxContent();
+			case ReactPackage.VALUE_BLOCK: return createValueBlock();
 			case ReactPackage.LITERAL_ATTRIBUTE: return createLiteralAttribute();
 			case ReactPackage.EXPRESSION_ATTRIBUTE: return createExpressionAttribute();
 			case ReactPackage.EVENT_ATTRIBUTE: return createEventAttribute();
@@ -283,6 +284,16 @@ public class ReactFactoryImpl extends EFactoryImpl implements ReactFactory {
 	public JsxContent createJsxContent() {
 		JsxContentImpl jsxContent = new JsxContentImpl();
 		return jsxContent;
+	}
+
+	/**
+	 * <!-- begin-user-doc -->
+	 * <!-- end-user-doc -->
+	 * @generated
+	 */
+	public ValueBlock createValueBlock() {
+		ValueBlockImpl valueBlock = new ValueBlockImpl();
+		return valueBlock;
 	}
 
 	/**

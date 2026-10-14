@@ -1,9 +1,9 @@
 @Ecore(
-    nsURI="https://runtime.sdk.nasdanika.org/models/react/flow", 
+    nsURI="https://runtime.sdk.nasdanika.org/models/react/flow",
 	nsPrefix="org.nasdanika.sdk.runtime.models.react.flow")
 
 @GenModel(
-	modelDirectory="/model/src-gen",
+	modelDirectory="/flow/src-gen",
     featureDelegation="Dynamic",
     complianceLevel="25",
     suppressGenModelAnnotations="false",
@@ -11,8 +11,527 @@
     operationReflection="true",
     importOrganizing="true"
 )
+/*
+ * React Flow (https://reactflow.dev/) technology model on top of the React model:
+ * flows of nodes and edges, the React Flow component and its plugins, custom node building
+ * blocks and hooks. Targets @xyflow/react 12.
+ *
+ * Components and hooks are React model library components and library hooks, nodes and
+ * edges are value objects - all rendered reflectively from "urn:org.nasdanika:react"
+ * annotations, see LibraryComponent and LibraryHook in the React model.
+ *
+ * Uncontrolled flows: nodes and edges of the ReactFlow component are its defaultNodes and
+ * defaultEdges, and React Flow keeps their state. Controlled flows: NodesState and
+ * EdgesState hooks with initial nodes and edges, and nodes, edges and change handlers as
+ * JSX attributes of the ReactFlow component.
+ *
+ * Custom node and edge types: a module level constant initialized with a ValueBlock of
+ * FlowTypes, referenced by nodeTypes or edgeTypes - so it is the same object on every render.
+ */
 package org.nasdanika.sdk.runtime.models.react.flow
 
-class Placeholder {
-    
+import org.nasdanika.sdk.runtime.models.core.StringToStringMapEntry
+import org.nasdanika.sdk.runtime.models.react.JsxNode
+import org.nasdanika.sdk.runtime.models.react.LibraryComponent
+import org.nasdanika.sdk.runtime.models.react.LibraryHook
+import org.nasdanika.sdk.runtime.models.typescript.CodeBlock
+import org.nasdanika.sdk.runtime.models.typescript.NamedTypeReference
+import org.nasdanika.sdk.runtime.models.typescript.VariableDeclaration
+
+annotation "http://www.eclipse.org/emf/2002/Ecore" as Ecore
+annotation "http://www.eclipse.org/emf/2002/GenModel" as GenModel
+annotation "urn:org.nasdanika:react" as React
+
+// --- Vocabulary ----------------------------------------------------------
+
+/* Position enum of @xyflow/react - literal names are member names */
+enum HandlePosition {
+	Left as "left"
+	Top as "top"
+	Right as "right"
+	Bottom as "bottom"
+}
+
+/* MarkerType enum of @xyflow/react */
+enum MarkerKind {
+	Arrow as "arrow"
+	ArrowClosed as "arrowclosed"
+}
+
+/* ConnectionLineType enum of @xyflow/react */
+enum ConnectionLineType {
+	Bezier as "default"
+	Straight as "straight"
+	Step as "step"
+	SmoothStep as "smoothstep"
+	SimpleBezier as "simplebezier"
+}
+
+/* BackgroundVariant enum of @xyflow/react */
+enum BackgroundVariant {
+	Lines as "lines"
+	Dots as "dots"
+	Cross as "cross"
+}
+
+/* Built in edge types */
+enum EdgeType {
+	bezier as "default"
+	straight
+	step
+	smoothStep as "smoothstep"
+	simpleBezier as "simplebezier"
+}
+
+/* Built in node types */
+enum NodeType {
+	^default
+	input
+	output
+	group
+}
+
+enum ColorMode {
+	light
+	dark
+	system
+}
+
+enum PanelPosition {
+	topLeft as "top-left"
+	topCenter as "top-center"
+	topRight as "top-right"
+	bottomLeft as "bottom-left"
+	bottomCenter as "bottom-center"
+	bottomRight as "bottom-right"
+	centerLeft as "center-left"
+	centerRight as "center-right"
+}
+
+enum Orientation {
+	horizontal
+	vertical
+}
+
+enum HandleType {
+	source
+	target
+}
+
+enum Align {
+	start
+	center
+	end
+}
+
+// --- Nodes and edges -----------------------------------------------------
+
+class XYPosition {
+	@React(required="true")
+	double x
+
+	@React(required="true")
+	double y
+}
+
+/*
+ * Data of a node or an edge. The default node types render the label.
+ */
+class FlowData {
+	String label
+
+	/* Label with markup. Wins over label. */
+	@React(prop="label")
+	contains JsxNode labelNode
+
+	/* More data, e.g. for custom nodes: { jdk: true } */
+	@React(key="name")
+	contains DataValue[] values
+}
+
+/*
+ * A named value: a string, or an expression for numbers, booleans, arrays and objects.
+ */
+@React(shorthand="value")
+class DataValue {
+	String name
+
+	String value
+
+	/* Wins over value */
+	@React(prop="value")
+	contains CodeBlock expression
+}
+
+/*
+ * A node. id is required - edges refer to it.
+ */
+class FlowNode {
+	String ^id
+
+	/* Custom node type, a key of the nodeTypes of the flow. Wins over nodeType. */
+	@React(prop="type")
+	String customType
+
+	@React(prop="type")
+	unsettable NodeType nodeType
+
+	@React(required="true")
+	contains XYPosition position
+
+	@React(required="true")
+	contains FlowData data
+
+	@React(^enum="Position", module="@xyflow/react")
+	unsettable HandlePosition sourcePosition
+
+	@React(^enum="Position", module="@xyflow/react")
+	unsettable HandlePosition targetPosition
+
+	unsettable boolean hidden
+
+	unsettable boolean draggable
+
+	unsettable boolean selectable
+
+	unsettable boolean connectable
+
+	unsettable boolean deletable
+
+	/* Parent node of a sub flow */
+	@React(prop="parentId", ref="id")
+	refers FlowNode parent
+
+	/* "parent" keeps a child node within its parent */
+	String extent
+
+	unsettable double width
+
+	unsettable double height
+
+	unsettable int zIndex
+
+	String className
+
+	@React(style="true")
+	contains StringToStringMapEntry[] style
+}
+
+class EdgeMarker {
+	@React(^enum="MarkerType", module="@xyflow/react", required="true")
+	unsettable MarkerKind ^type
+
+	String color
+
+	unsettable double width
+
+	unsettable double height
+
+	unsettable double strokeWidth
+}
+
+/*
+ * An edge between nodes. id is required.
+ */
+class FlowEdge {
+	String ^id
+
+	@React(ref="id")
+	refers FlowNode source
+
+	@React(ref="id")
+	refers FlowNode target
+
+	String sourceHandle
+
+	String targetHandle
+
+	@React(prop="type")
+	unsettable EdgeType edgeType
+
+	/* Custom edge type, a key of the edgeTypes of the flow. Wins over edgeType. */
+	@React(prop="type")
+	String customType
+
+	String label
+
+	/* Label with markup. Wins over label. */
+	@React(prop="label")
+	contains JsxNode labelNode
+
+	unsettable boolean animated
+
+	unsettable boolean hidden
+
+	unsettable boolean deletable
+
+	unsettable boolean selectable
+
+	unsettable boolean reconnectable
+
+	contains EdgeMarker markerStart
+
+	contains EdgeMarker markerEnd
+
+	contains FlowData data
+
+	unsettable int zIndex
+
+	String className
+
+	@React(style="true")
+	contains StringToStringMapEntry[] style
+}
+
+/*
+ * Options of new edges, e.g. connected by the user.
+ */
+class EdgeOptions {
+	@React(prop="type")
+	unsettable EdgeType edgeType
+
+	@React(prop="type")
+	String customType
+
+	unsettable boolean animated
+
+	contains EdgeMarker markerEnd
+
+	@React(style="true")
+	contains StringToStringMapEntry[] style
+}
+
+class ProOptions {
+	boolean hideAttribution
+}
+
+/*
+ * Node or edge types: type name to component. The initializer of a module level constant,
+ * as a ValueBlock - see the package documentation.
+ */
+class FlowTypes {
+	@React(key="name")
+	contains FlowType[] types
+}
+
+@React(shorthand="component")
+class FlowType {
+	String name
+
+	contains NamedTypeReference component
+}
+
+// --- Components ----------------------------------------------------------
+
+@React(module="@xyflow/react")
+abstract class FlowComponent extends LibraryComponent {
+}
+
+/*
+ * Makes the React Flow instance available outside the flow, e.g. to useReactFlow in a toolbar.
+ */
+@React(component="ReactFlowProvider")
+class ReactFlowProvider extends FlowComponent {
+}
+
+/*
+ * The flow. Its parent element needs a height.
+ */
+@React(component="ReactFlow")
+class ReactFlow extends FlowComponent {
+	/* Initial nodes of an uncontrolled flow */
+	@React(prop="defaultNodes")
+	contains FlowNode[] nodes
+
+	/* Initial edges of an uncontrolled flow */
+	@React(prop="defaultEdges")
+	contains FlowEdge[] edges
+
+	/* Constant with FlowTypes of custom nodes */
+	refers VariableDeclaration nodeTypes
+
+	/* Constant with FlowTypes of custom edges */
+	refers VariableDeclaration edgeTypes
+
+	boolean fitView
+
+	unsettable double minZoom
+
+	unsettable double maxZoom
+
+	unsettable boolean nodesDraggable
+
+	unsettable boolean nodesConnectable
+
+	unsettable boolean elementsSelectable
+
+	unsettable boolean panOnDrag
+
+	unsettable boolean zoomOnScroll
+
+	unsettable boolean zoomOnDoubleClick
+
+	boolean snapToGrid
+
+	/* [x, y] */
+	int[] snapGrid
+
+	unsettable ColorMode colorMode
+
+	/* Keys deleting selected elements, e.g. Backspace and Delete */
+	String[] deleteKeyCode
+
+	@React(^enum="ConnectionLineType", module="@xyflow/react")
+	unsettable ConnectionLineType connectionLineType
+
+	contains EdgeOptions defaultEdgeOptions
+
+	contains ProOptions proOptions
+
+	contains Background background
+
+	contains Controls controls
+
+	contains MiniMap miniMap
+
+	contains Panel[] panels
+}
+
+@React(component="Background")
+class Background extends FlowComponent {
+	@React(^enum="BackgroundVariant", module="@xyflow/react")
+	unsettable BackgroundVariant variant
+
+	unsettable double gap
+
+	unsettable double size
+
+	unsettable double lineWidth
+
+	String color
+
+	String bgColor
+
+	/* Distinguishes several backgrounds of a flow */
+	@React(prop="id")
+	String backgroundId
+}
+
+@React(component="Controls")
+class Controls extends FlowComponent {
+	unsettable boolean showZoom
+
+	unsettable boolean showFitView
+
+	unsettable boolean showInteractive
+
+	unsettable PanelPosition position
+
+	unsettable Orientation orientation
+}
+
+@React(component="MiniMap")
+class MiniMap extends FlowComponent {
+	unsettable PanelPosition position
+
+	String nodeColor
+
+	String nodeStrokeColor
+
+	String maskColor
+
+	String bgColor
+
+	unsettable boolean pannable
+
+	unsettable boolean zoomable
+
+	String ariaLabel
+}
+
+/*
+ * Content over the flow, e.g. a title or a toolbar.
+ */
+@React(component="Panel")
+class Panel extends FlowComponent {
+	unsettable PanelPosition position
+}
+
+// --- Custom nodes --------------------------------------------------------
+
+/*
+ * Connection point of a custom node.
+ */
+@React(component="Handle")
+class Handle extends FlowComponent {
+	@React(prop="type", required="true")
+	unsettable HandleType handleType
+
+	@React(^enum="Position", module="@xyflow/react", required="true")
+	unsettable HandlePosition position
+
+	/* Distinguishes several handles of a type */
+	@React(prop="id")
+	String handleId
+
+	unsettable boolean isConnectable
+}
+
+/*
+ * Toolbar of a custom node, shown when the node is selected unless isVisible is set.
+ */
+@React(component="NodeToolbar")
+class NodeToolbar extends FlowComponent {
+	@React(^enum="Position", module="@xyflow/react")
+	unsettable HandlePosition position
+
+	unsettable boolean isVisible
+
+	unsettable double offset
+
+	unsettable Align align
+}
+
+@React(component="NodeResizer")
+class NodeResizer extends FlowComponent {
+	unsettable double minWidth
+
+	unsettable double minHeight
+
+	unsettable boolean isVisible
+
+	unsettable boolean keepAspectRatio
+
+	String color
+}
+
+// --- Hooks ---------------------------------------------------------------
+
+@React(module="@xyflow/react")
+abstract class FlowHook extends LibraryHook {
+}
+
+/*
+ * const [nodes, setNodes, onNodesChange] = useNodesState(initialNodes)
+ */
+@React(hook="useNodesState")
+class NodesState extends FlowHook {
+	@React(required="true")
+	contains FlowNode[] initialNodes
+}
+
+/*
+ * const [edges, setEdges, onEdgesChange] = useEdgesState(initialEdges)
+ */
+@React(hook="useEdgesState")
+class EdgesState extends FlowHook {
+	@React(required="true")
+	contains FlowEdge[] initialEdges
+}
+
+/*
+ * const flow = useReactFlow() - in a ReactFlowProvider, or in a node.
+ */
+@React(hook="useReactFlow")
+class ReactFlowInstance extends FlowHook {
 }

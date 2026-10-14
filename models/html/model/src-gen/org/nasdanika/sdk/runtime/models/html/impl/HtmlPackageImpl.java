@@ -54,6 +54,7 @@ import org.nasdanika.sdk.runtime.models.html.Input;
 import org.nasdanika.sdk.runtime.models.html.ItemList;
 import org.nasdanika.sdk.runtime.models.html.Label;
 import org.nasdanika.sdk.runtime.models.html.Legend;
+import org.nasdanika.sdk.runtime.models.html.LibraryElement;
 import org.nasdanika.sdk.runtime.models.html.LineBreak;
 import org.nasdanika.sdk.runtime.models.html.Link;
 import org.nasdanika.sdk.runtime.models.html.ListItem;
@@ -62,6 +63,7 @@ import org.nasdanika.sdk.runtime.models.html.Markup;
 import org.nasdanika.sdk.runtime.models.html.Meta;
 import org.nasdanika.sdk.runtime.models.html.Nav;
 import org.nasdanika.sdk.runtime.models.html.Node;
+import org.nasdanika.sdk.runtime.models.html.NodeReference;
 import org.nasdanika.sdk.runtime.models.html.Option;
 import org.nasdanika.sdk.runtime.models.html.OptionGroup;
 import org.nasdanika.sdk.runtime.models.html.OrderedList;
@@ -127,6 +129,13 @@ public class HtmlPackageImpl extends EPackageImpl implements HtmlPackage {
 	 * <!-- end-user-doc -->
 	 * @generated
 	 */
+	private EClass nodeReferenceEClass = null;
+
+	/**
+	 * <!-- begin-user-doc -->
+	 * <!-- end-user-doc -->
+	 * @generated
+	 */
 	private EClass containerEClass = null;
 
 	/**
@@ -156,6 +165,13 @@ public class HtmlPackageImpl extends EPackageImpl implements HtmlPackage {
 	 * @generated
 	 */
 	private EClass genericVoidElementEClass = null;
+
+	/**
+	 * <!-- begin-user-doc -->
+	 * <!-- end-user-doc -->
+	 * @generated
+	 */
+	private EClass libraryElementEClass = null;
 
 	/**
 	 * <!-- begin-user-doc -->
@@ -730,6 +746,24 @@ public class HtmlPackageImpl extends EPackageImpl implements HtmlPackage {
 	 * <!-- end-user-doc -->
 	 * @generated
 	 */
+	public EClass getNodeReference() {
+		return nodeReferenceEClass;
+	}
+
+	/**
+	 * <!-- begin-user-doc -->
+	 * <!-- end-user-doc -->
+	 * @generated
+	 */
+	public EReference getNodeReference_Target() {
+		return (EReference)nodeReferenceEClass.getEStructuralFeatures().get(0);
+	}
+
+	/**
+	 * <!-- begin-user-doc -->
+	 * <!-- end-user-doc -->
+	 * @generated
+	 */
 	public EClass getContainer() {
 		return containerEClass;
 	}
@@ -858,6 +892,24 @@ public class HtmlPackageImpl extends EPackageImpl implements HtmlPackage {
 	 */
 	public EOperation getGenericVoidElement__TagName() {
 		return genericVoidElementEClass.getEOperations().get(0);
+	}
+
+	/**
+	 * <!-- begin-user-doc -->
+	 * <!-- end-user-doc -->
+	 * @generated
+	 */
+	public EClass getLibraryElement() {
+		return libraryElementEClass;
+	}
+
+	/**
+	 * <!-- begin-user-doc -->
+	 * <!-- end-user-doc -->
+	 * @generated
+	 */
+	public EOperation getLibraryElement__TagName() {
+		return libraryElementEClass.getEOperations().get(0);
 	}
 
 	/**
@@ -3122,6 +3174,9 @@ public class HtmlPackageImpl extends EPackageImpl implements HtmlPackage {
 		commentEClass = createEClass(COMMENT);
 		createEAttribute(commentEClass, COMMENT__CONTENT);
 
+		nodeReferenceEClass = createEClass(NODE_REFERENCE);
+		createEReference(nodeReferenceEClass, NODE_REFERENCE__TARGET);
+
 		containerEClass = createEClass(CONTAINER);
 		createEReference(containerEClass, CONTAINER__CONTENTS);
 
@@ -3141,6 +3196,9 @@ public class HtmlPackageImpl extends EPackageImpl implements HtmlPackage {
 		genericVoidElementEClass = createEClass(GENERIC_VOID_ELEMENT);
 		createEAttribute(genericVoidElementEClass, GENERIC_VOID_ELEMENT__NAME);
 		createEOperation(genericVoidElementEClass, GENERIC_VOID_ELEMENT___TAG_NAME);
+
+		libraryElementEClass = createEClass(LIBRARY_ELEMENT);
+		createEOperation(libraryElementEClass, LIBRARY_ELEMENT___TAG_NAME);
 
 		documentEClass = createEClass(DOCUMENT);
 		createEAttribute(documentEClass, DOCUMENT__DOCTYPE);
@@ -3489,11 +3547,14 @@ public class HtmlPackageImpl extends EPackageImpl implements HtmlPackage {
 		textEClass.getESuperTypes().add(this.getNode());
 		markupEClass.getESuperTypes().add(this.getNode());
 		commentEClass.getESuperTypes().add(this.getNode());
+		nodeReferenceEClass.getESuperTypes().add(this.getNode());
 		elementEClass.getESuperTypes().add(this.getNode());
 		voidElementEClass.getESuperTypes().add(this.getElement());
 		genericElementEClass.getESuperTypes().add(this.getElement());
 		genericElementEClass.getESuperTypes().add(this.getContainer());
 		genericVoidElementEClass.getESuperTypes().add(this.getVoidElement());
+		libraryElementEClass.getESuperTypes().add(this.getElement());
+		libraryElementEClass.getESuperTypes().add(this.getContainer());
 		documentEClass.getESuperTypes().add(this.getElement());
 		headEClass.getESuperTypes().add(this.getElement());
 		headEClass.getESuperTypes().add(this.getContainer());
@@ -3605,6 +3666,9 @@ public class HtmlPackageImpl extends EPackageImpl implements HtmlPackage {
 		initEClass(commentEClass, Comment.class, "Comment", !IS_ABSTRACT, !IS_INTERFACE, IS_GENERATED_INSTANCE_CLASS);
 		initEAttribute(getComment_Content(), theEcorePackage.getEString(), "content", null, 0, 1, Comment.class, !IS_TRANSIENT, !IS_VOLATILE, IS_CHANGEABLE, !IS_UNSETTABLE, !IS_ID, !IS_UNIQUE, !IS_DERIVED, IS_ORDERED);
 
+		initEClass(nodeReferenceEClass, NodeReference.class, "NodeReference", !IS_ABSTRACT, !IS_INTERFACE, IS_GENERATED_INSTANCE_CLASS);
+		initEReference(getNodeReference_Target(), this.getNode(), null, "target", null, 0, 1, NodeReference.class, !IS_TRANSIENT, !IS_VOLATILE, IS_CHANGEABLE, !IS_COMPOSITE, IS_RESOLVE_PROXIES, !IS_UNSETTABLE, IS_UNIQUE, !IS_DERIVED, IS_ORDERED);
+
 		initEClass(containerEClass, org.nasdanika.sdk.runtime.models.html.Container.class, "Container", IS_ABSTRACT, IS_INTERFACE, IS_GENERATED_INSTANCE_CLASS);
 		initEReference(getContainer_Contents(), this.getNode(), null, "contents", null, 0, -1, org.nasdanika.sdk.runtime.models.html.Container.class, !IS_TRANSIENT, !IS_VOLATILE, IS_CHANGEABLE, IS_COMPOSITE, !IS_RESOLVE_PROXIES, !IS_UNSETTABLE, IS_UNIQUE, !IS_DERIVED, IS_ORDERED);
 
@@ -3627,6 +3691,10 @@ public class HtmlPackageImpl extends EPackageImpl implements HtmlPackage {
 		initEAttribute(getGenericVoidElement_Name(), theEcorePackage.getEString(), "name", null, 0, 1, GenericVoidElement.class, !IS_TRANSIENT, !IS_VOLATILE, IS_CHANGEABLE, !IS_UNSETTABLE, !IS_ID, !IS_UNIQUE, !IS_DERIVED, IS_ORDERED);
 
 		initEOperation(getGenericVoidElement__TagName(), theEcorePackage.getEString(), "tagName", 0, 1, !IS_UNIQUE, IS_ORDERED);
+
+		initEClass(libraryElementEClass, LibraryElement.class, "LibraryElement", IS_ABSTRACT, !IS_INTERFACE, IS_GENERATED_INSTANCE_CLASS);
+
+		initEOperation(getLibraryElement__TagName(), theEcorePackage.getEString(), "tagName", 0, 1, !IS_UNIQUE, IS_ORDERED);
 
 		initEClass(documentEClass, Document.class, "Document", !IS_ABSTRACT, !IS_INTERFACE, IS_GENERATED_INSTANCE_CLASS);
 		initEAttribute(getDocument_Doctype(), theEcorePackage.getEString(), "doctype", "html", 0, 1, Document.class, !IS_TRANSIENT, !IS_VOLATILE, IS_CHANGEABLE, !IS_UNSETTABLE, !IS_ID, !IS_UNIQUE, !IS_DERIVED, IS_ORDERED);
@@ -4048,6 +4116,12 @@ public class HtmlPackageImpl extends EPackageImpl implements HtmlPackage {
 			   "documentation", "Raw HTML emitted verbatim, without escaping. An escape hatch for content the model\ndoes not cover, e.g. output of a Markdown renderer."
 		   });
 		addAnnotation
+		  (nodeReferenceEClass,
+		   source,
+		   new String[] {
+			   "documentation", "Renders another node, which is contained elsewhere - the same fragment in several\nplaces, or a node of the model inside HTML expanded from a library element."
+		   });
+		addAnnotation
 		  (containerEClass,
 		   source,
 		   new String[] {
@@ -4094,6 +4168,18 @@ public class HtmlPackageImpl extends EPackageImpl implements HtmlPackage {
 		   source,
 		   new String[] {
 			   "body", "return this.getName();"
+		   });
+		addAnnotation
+		  (libraryElementEClass,
+		   source,
+		   new String[] {
+			   "documentation", "An element of a library built on top of HTML, e.g. Bootstrap, modeled as an EClass and\nrendered reflectively from \"urn:org.nasdanika:html\" annotations - the HTML counterpart\nof the React model LibraryComponent.\n\nOn classes, looked up on the class and then its supertypes:\n- tag: tag name, e.g. \"div\".\n- classes: space separated classes of every element of the class, e.g. \"card\".\n- voidElement: \"true\" for elements without content, e.g. \"img\".\n\nFeatures of subclasses, in feature order:\n- Attributes are HTML attributes, as for other elements: attribute renames, logical skips.\n- classes: a class pattern - the attribute contributes a class instead of an attribute.\n  {} is replaced with the value, an enum literal or a number: \"btn-{}\". A true boolean\n  contributes the pattern as is: \"active\".\n- child: \"true\" for a string attribute rendered as a text child, after the children of\n  containment features and before contents.\n- Containments of nodes are children, followed by contents.\n\nElements which do not map to a single element - modals, accordions, form checks - are\nexpanded to plain HTML by an HtmlStructure subclass, e.g. the Bootstrap structure."
+		   });
+		addAnnotation
+		  (getLibraryElement__TagName(),
+		   source,
+		   new String[] {
+			   "body", "final <%java.util.ArrayList%><<%org.eclipse.emf.ecore.EClass%>> queue = new <%java.util.ArrayList%><<%org.eclipse.emf.ecore.EClass%>>();\nqueue.add(this.eClass());\nint i = 0;\nwhile ((i < queue.size()))\n{\n\t{\n\t\tfinal <%org.eclipse.emf.ecore.EAnnotation%> htmlAnnotation = queue.get(i).getEAnnotation(\"urn:org.nasdanika:html\");\n\t\tif (((htmlAnnotation != null) && htmlAnnotation.getDetails().containsKey(\"tag\")))\n\t\t{\n\t\t\treturn htmlAnnotation.getDetails().get(\"tag\");\n\t\t}\n\t\tqueue.addAll(queue.get(i).getESuperTypes());\n\t\ti = (i + 1);\n\t}\n}\nreturn null;"
 		   });
 		addAnnotation
 		  (documentEClass,
