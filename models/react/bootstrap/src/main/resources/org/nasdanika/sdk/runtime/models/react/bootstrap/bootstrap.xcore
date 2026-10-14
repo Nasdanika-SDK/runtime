@@ -1,0 +1,18 @@
+@Ecore(
+    nsURI="https://runtime.sdk.nasdanika.org/models/react/bootstrap", 
+	nsPrefix="org.nasdanika.sdk.runtime.models.react.bootstrap")
+
+@GenModel(
+	modelDirectory="/model/src-gen",
+    featureDelegation="Dynamic",
+    complianceLevel="25",
+    suppressGenModelAnnotations="false",
+    copyrightFields="false",
+    operationReflection="true",
+    importOrganizing="true"
+)
+package org.nasdanika.sdk.runtime.models.react.bootstrap
+
+class Placeholder {
+    
+}

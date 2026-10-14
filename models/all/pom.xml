@@ -46,6 +46,16 @@
 		</dependency>
 
 		<dependency>
+			<groupId>org.nasdanika.sdk.runtime.models.react</groupId>
+			<artifactId>bootstrap</artifactId>				
+		</dependency>
+
+		<dependency>
+			<groupId>org.nasdanika.sdk.runtime.models.react</groupId>
+			<artifactId>flow</artifactId>				
+		</dependency>
+
+		<dependency>
 			<groupId>org.nasdanika.sdk.runtime.models.typescript</groupId>
 			<artifactId>model</artifactId>				
 		</dependency>

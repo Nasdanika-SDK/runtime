@@ -1,0 +1,7 @@
+/target/
+/build.properties
+/plugin.properties
+/plugin.xml
+/META-INF/
+
+/.$react.drawio.bkp
