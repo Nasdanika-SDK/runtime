@@ -5,6 +5,7 @@ module org.nasdanika.sdk.runtime.models.typescript {
 	
 	exports org.nasdanika.sdk.runtime.models.typescript;
 	exports org.nasdanika.sdk.runtime.models.typescript.impl;
+	exports org.nasdanika.sdk.runtime.models.typescript.util;
 	exports org.nasdanika.sdk.runtime.models.typescript.generator;
 	
 	requires transitive org.nasdanika.sdk.runtime.models.core;

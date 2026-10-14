@@ -66,6 +66,16 @@
 		</dependency>
 
 		<dependency>
+			<groupId>org.nasdanika.sdk.runtime.models.meta</groupId>
+			<artifactId>model</artifactId>				
+		</dependency>
+
+		<dependency>
+			<groupId>org.nasdanika.sdk.runtime.models.jvm</groupId>
+			<artifactId>model</artifactId>				
+		</dependency>
+
+		<dependency>
 			<groupId>org.nasdanika.sdk.runtime.models.telemetry</groupId>
 			<artifactId>model</artifactId>				
 		</dependency>

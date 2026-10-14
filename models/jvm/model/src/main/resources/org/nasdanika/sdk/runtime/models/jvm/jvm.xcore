@@ -1,0 +1,322 @@
+@Ecore(
+   	nsURI="https://runtime.sdk.nasdanika.org/models/jvm", 
+	nsPrefix="org.nasdanika.sdk.runtime.models.jvm")
+@GenModel(
+	modelDirectory="/model/src-gen",
+    featureDelegation="Dynamic",
+    complianceLevel="25",
+    suppressGenModelAnnotations="false",
+    copyrightFields="false",
+    operationReflection="true",
+    importOrganizing="true"
+)
+package org.nasdanika.sdk.runtime.models.jvm
+
+import org.nasdanika.sdk.runtime.models.core.NamedElement
+import org.nasdanika.sdk.runtime.models.core.ModelElement
+
+annotation "http://www.eclipse.org/emf/2002/Ecore" as Ecore
+annotation "http://www.eclipse.org/emf/2002/GenModel" as GenModel
+annotation "urn:org.nasdanika" as Nasdanika
+
+/* ===========================================================================
+ * ROOT AND BASE
+ * =========================================================================== */
+
+/*
+ * The shared base. Everything here is named and carries NxCore identity,
+ * documentation and markers, and a jvm-specific base gives the query surface one
+ * label that matches every element in the model.
+ */
+abstract class JvmElement extends NamedElement {
+}
+
+/*
+ * The root: one JVM, described. A live loader populates this from
+ * ModuleLayer.boot() and reflection; a build-time scan synthesizes one with the
+ * runtime features left unset and modules derived from module-info.class,
+ * Automatic-Module-Name, or the unnamed module.
+ *
+ * The distinction matters enough to be visible in the data rather than inferred:
+ * `live` says whether anything here was observed running.
+ */
+class JavaVirtualMachine extends ModelElement {
+    /* True when populated from a running VM, false for a static scan. */
+    boolean live
+    /* java.vm.name, java.vm.version, java.vm.vendor when known. */
+    String vmName
+    String vmVersion
+    String vmVendor
+    /* The Java SE specification version, e.g. "21". */
+    String specificationVersion
+
+    /*
+     * Modules are contained here rather than in a layer, because a named module
+     * belongs to a layer and an unnamed module belongs to a class loader, and one
+     * containment cannot express both. Layers and loaders reference them.
+     */
+    contains Module[] modules
+    contains Layer[] layers
+    contains ClassLoader[] classLoaders
+}
+
+/*
+ * A module layer. Most applications have one, the boot layer, and the interesting
+ * case is the one that does not: layers are the only standard mechanism for
+ * running two versions of the same module in one JVM, which makes "which version
+ * is this code actually seeing" answerable where a classpath makes it guesswork.
+ */
+class Layer extends JvmElement {
+    /* True for ModuleLayer.boot(). */
+    boolean ^boot
+    refers Layer[] parents
+    refers Module[] modules
+}
+
+/*
+ * A class loader. Orthogonal to layers: a loader may serve modules in several
+ * layers, and every loader has exactly one unnamed module holding whatever it
+ * loaded from the classpath.
+ */
+class ClassLoader extends JvmElement {
+    /* The loader's own class, as a binary name, e.g. jdk.internal.loader.ClassLoaders$AppClassLoader. */
+    String loaderTypeName
+    refers ClassLoader parent
+    refers Module unnamedModule
+}
+
+/* ===========================================================================
+ * MODULES
+ * =========================================================================== */
+
+enum ModuleModifier {
+    OPEN
+    AUTOMATIC
+    SYNTHETIC
+    MANDATED
+}
+
+/*
+ * A module, named or unnamed.
+ *
+ * The two reference sets are the reason this model is worth having. `requires` is
+ * what the module declared; `reads` is what resolution actually gave it. They
+ * diverge when `requires transitive` propagates readability, and, more
+ * interestingly, when service binding pulls a provider into the graph that
+ * nothing declared a dependency on. That second case is absent from every POM by
+ * construction, so no dependency tree can report it.
+ */
+class Module extends JvmElement {
+    /* False for a class loader's unnamed module, where name is absent. */
+    boolean named
+    /* The raw version string from the descriptor, unparsed. */
+    String version
+    ModuleModifier[] modifiers
+    /* Binary name of the main class, when declared. */
+    String mainClassName
+
+    contains Package[] packages
+    contains Requires[] requires
+    contains Exports[] exports
+    contains Opens[] opens
+    contains Provides[] provides
+    /* Binary names of service interfaces this module uses. */
+    String[] uses
+
+    /*
+     * Resolved readability, from the configuration rather than from the
+     * descriptor. The set difference against `requires` is the money query.
+     */
+    refers Module[] reads
+    refers Layer layer
+    refers ClassLoader classLoader
+}
+
+enum RequiresModifier {
+    /* Propagates readability to modules that require this one. */
+    TRANSITIVE
+    /* Compile time only, absent at run time. */
+    STATIC
+    SYNTHETIC
+    MANDATED
+}
+
+class Requires extends JvmElement {
+    RequiresModifier[] modifiers
+    /* Version recorded at compile time, when present. */
+    String compiledVersion
+    /* Resolved when the required module is in the model; name is authoritative. */
+    refers Module module
+}
+
+enum DirectiveModifier {
+    SYNTHETIC
+    MANDATED
+}
+
+/*
+ * exports a.b, or exports a.b to c.d - a qualified export, visible only to the
+ * named targets. An empty targets list means unqualified.
+ */
+class Exports extends JvmElement {
+    DirectiveModifier[] modifiers
+    /* Binary names of target modules; empty means exported to everyone. */
+    String[] targetNames
+    refers Package ^package
+    refers Module[] targets
+}
+
+/*
+ * opens a.b, differing from exports in permitting deep reflective access rather
+ * than compile-time access. The distinction is the whole point of the directive
+ * and is worth keeping as a separate class rather than a flag.
+ */
+class Opens extends JvmElement {
+    DirectiveModifier[] modifiers
+    String[] targetNames
+    refers Package ^package
+    refers Module[] targets
+}
+
+/*
+ * provides S with P1, P2. A two-ended relation between a service interface and
+ * its implementations, and the mechanism behind the readability surprises above.
+ */
+class Provides extends JvmElement {
+    /* Binary name of the service interface. */
+    String serviceName
+    /* Binary names of the providers, in declaration order. */
+    String[] providerNames
+    refers Type service
+    refers Type[] providers
+}
+
+/* ===========================================================================
+ * PACKAGES AND TYPES
+ * =========================================================================== */
+
+/*
+ * A package. `name` is the fully qualified dotted name; the unnamed package has
+ * an empty name.
+ */
+class Package extends JvmElement {
+    contains Type[] types
+}
+
+enum TypeKind {
+    CLASS
+    INTERFACE
+    ENUM
+    RECORD
+    ANNOTATION
+    /* int, boolean, void and the rest; reflection models these as classes too. */
+    PRIMITIVE
+    ARRAY
+}
+
+enum AccessLevel {
+    PUBLIC
+    PROTECTED
+    /* Package private, which has no keyword. */
+    PACKAGE
+    PRIVATE
+}
+
+/*
+ * A type: class, interface, enum, record, annotation, primitive or array.
+ *
+ * One class rather than a hierarchy, mirroring reflection, where isPrimitive and
+ * isArray are queries on Class rather than distinct types. That keeps the identity
+ * scheme uniform, since `int` and `int[]` have binary names like everything else,
+ * and it keeps the model small.
+ */
+class Type extends JvmElement {
+    TypeKind kind
+    AccessLevel access
+    /* com.foo.Bar, com.foo.Bar$Inner, [I. The identity-bearing name. */
+    String binaryName
+    /* Ljava/lang/String;, I, [I. */
+    String descriptor
+    boolean ^abstract
+    boolean final
+    boolean synthetic
+    boolean sealed
+    /*
+     * The class file major version, e.g. 61 for Java 17. Two bytes of the header,
+     * never aggregated by anything, and the basis of an estate report nobody has.
+     * -1 when unknown, which includes primitives and arrays.
+     */
+    int classFileVersion = "-1"
+
+    contains Method[] methods
+    contains Field[] fields
+
+    refers Type superType
+    refers Type[] interfaces
+    /* For arrays; null otherwise. */
+    refers Type componentType
+    /* Convenience back-reference; the containing package is the container. */
+    refers Module module
+}
+
+/* ===========================================================================
+ * MEMBERS
+ * =========================================================================== */
+
+abstract class Member extends JvmElement {
+    AccessLevel access
+    boolean ^static
+    boolean final
+    boolean synthetic
+    /* The JVM descriptor: a field's type, or a method's parameters and return. */
+    String descriptor
+}
+
+/*
+ * A method, a constructor, or a static initializer.
+ *
+ * Constructors are not a separate class. In the JVM a constructor is a method
+ * named <init> and a static initializer is <clinit>, the descriptor distinguishes
+ * overloads, and the identity scheme works uniformly across all three. Reflection
+ * separates Constructor from Method; bytecode does not, and this model follows
+ * bytecode because that is where its identity comes from.
+ */
+class Method extends Member {
+    boolean ^abstract
+    boolean ^synchronized
+    boolean native
+    boolean bridge
+    boolean varargs
+    /* An interface method with a body. */
+    boolean ^default
+    /* Ljava/lang/String;, V, I. */
+    String returnDescriptor
+
+    contains Parameter[] parameters
+    refers Type returnType
+    /* Binary names of declared checked exceptions. */
+    String[] thrownTypeNames
+    refers Type[] thrownTypes
+}
+
+class Field extends Member {
+    boolean ^transient
+    boolean ^volatile
+    boolean enumConstant
+    refers Type ^type
+}
+
+/*
+ * A parameter. `name` is present only when the class was compiled with -parameters
+ * or the information is otherwise available, so position is the reliable identity
+ * and the name is a convenience.
+ */
+class Parameter extends JvmElement {
+    int index = "-1"
+    String descriptor
+    boolean final
+    boolean synthetic
+    /* A parameter the compiler generated, such as an enum constructor's. */
+    boolean mandated
+    refers Type ^type
+}

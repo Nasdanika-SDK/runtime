@@ -1,0 +1,579 @@
+@Ecore(
+   	nsURI="https://runtime.sdk.nasdanika.org/models/meta", 
+	nsPrefix="org.nasdanika.sdk.runtime.models.meta")
+@GenModel(
+	modelDirectory="/model/src-gen",
+    featureDelegation="Dynamic",
+    complianceLevel="25",
+    suppressGenModelAnnotations="false",
+    copyrightFields="false",
+    operationReflection="true",
+    importOrganizing="true"
+)
+package org.nasdanika.sdk.runtime.models.meta
+
+import org.nasdanika.sdk.runtime.models.core.NamedElement
+import org.nasdanika.sdk.runtime.models.core.StringToStringMapEntry
+
+annotation "http://www.eclipse.org/emf/2002/Ecore" as Ecore
+annotation "http://www.eclipse.org/emf/2002/GenModel" as GenModel
+annotation "urn:org.nasdanika" as Nasdanika
+
+/*
+ * Base of everything. Inherits name, documentation-as-structure and nested
+ * markers from nxcore - markers are what let a Class say which XSD element or
+ * which JDBC table it was loaded from, which is the whole provenance story.
+ */
+abstract class ModelElement extends NamedElement {
+    /*
+     * Everything a source language expressed that this model does not. Loaders
+     * put what they cannot map here rather than dropping it silently, so a
+     * round trip back to the source stays possible even though this model is a
+     * projection.
+     */
+    contains Annotation[] annotations
+}
+
+/*
+ * Source-keyed extra data, the same bargain Ecore's EAnnotation makes. The
+ * source is a URI naming whoever owns the details, so two loaders never collide.
+ */
+class Annotation extends ModelElement {
+    /* URI identifying the owner, e.g. urn:org.nasdanika or the source schema. */
+    String source
+    contains StringToStringMapEntry[] details
+}
+
+/* ---------------------------------------------------------------------------
+ * Structure
+ * --------------------------------------------------------------------------- */
+
+/*
+ * A namespace of classifiers, and the unit of publication - one Package becomes
+ * one npm package and one Maven artifact.
+ *
+ * There are no subpackages, by design: nesting exists in Ecore and XSD but adds
+ * a dimension that neither TypeScript modules nor npm packages need. A loader
+ * flattens, recording the original path in an Annotation.
+ */
+class Package extends ModelElement {
+    /* Namespace URI - the identity of this package, and what a reference resolves against. */
+    String namespace
+    /* Short prefix, for qualified names and generated identifiers. */
+    String prefix
+    /* Version of the package this model describes, e.g. 2026.9.0. */
+    String version
+    contains Classifier[] classifiers
+}
+
+abstract class Classifier extends ModelElement {
+    /*
+     * Generics. Declared here rather than on Class alone so that a DataType may
+     * be parameterized too - which is what a loader needs for List<T> style
+     * source types.
+     */
+    contains TypeParameter[] typeParameters
+}
+
+/*
+ * A type with features. Covers what Ecore calls EClass, what Java calls a class
+ * or interface, and what JSON Schema calls an object schema.
+ *
+ * There is no separate `interface` flag. Whether a Class is realized as a
+ * TypeScript interface, a type alias or a class is a decision for the
+ * projection, not a property of the model.
+ *
+ * FLATTENING is a transformation over this model rather than a feature of it:
+ * it produces a Package whose Classes declare their inherited features and
+ * operations directly, each copied Feature carrying a nested marker back to
+ * the class that declared it. Consumers that want a flat class - JSON Schema
+ * tool schemas, agent-facing summaries - take the flattened model; consumers
+ * that want inheritance take the original.
+ *
+ * Flattening is what makes CUTTING the supertype chain lossless: once a Class
+ * declares what it inherited, a projection may stop naming the ancestors it
+ * came from without the consumer losing anything but the attribution, which
+ * the markers still carry. Subclasses are never collapsed into a supertype -
+ * removing an ancestor's name is recoverable by widening the cut, removing a
+ * distinction is not.
+ *
+ * Flattening is where member clashes have to be resolved: two supertypes
+ * contributing the same feature name with different types. Most same-name
+ * encounters are not clashes - a feature reached twice through a diamond is
+ * one feature, so dedupe by identity rather than by name - and for what is
+ * left, the most derived
+ * declaration keeps the name, the other is renamed deterministically, and the
+ * rename is recorded on the feature as an Annotation, since it is a fact about
+ * a transformation rather than about the domain. Resolving it here rather than in each
+ * emitter is not a preference: TypeScript will not compile an interface
+ * extending two interfaces that declare a member incompatibly, so the
+ * alternative is every target inventing its own spelling of the same fix.
+
+ */
+class Class extends Classifier {
+    boolean ^abstract
+    /*
+     * Supertypes as TypeReferences rather than plain references, because a
+     * supertype may be parameterized: Repository<Account, string>.
+     */
+    contains TypeReference[] superTypes
+    contains Feature[] features
+    contains Operation[] operations
+}
+
+/*
+ * A scalar type with a name of its own: Instant, Duration, EmailAddress.
+ *
+ * `representation` is how it crosses the wire and is what a projection emits -
+ * an Instant is a string. `sourceType` records where it came from and is
+ * provenance only.
+ */
+class DataType extends Classifier {
+    PrimitiveKind representation
+    /* Fully qualified type in the source language, e.g. java.time.Instant. */
+    String sourceType
+}
+
+class Enum extends Classifier {
+    contains EnumLiteral[] literals
+}
+
+class EnumLiteral extends ModelElement {
+    /*
+     * The serialized form. Unset means the name is used, which is what EMF JSON
+     * and most schema languages do.
+     */
+    String value
+    /* Position, for sources whose enums are ordinal-valued. */
+    int ordinal
+}
+
+/* ---------------------------------------------------------------------------
+ * Typed elements
+ * --------------------------------------------------------------------------- */
+
+/*
+ * Anything with a type and a multiplicity: a feature, an operation's return, a
+ * parameter.
+ */
+abstract class TypedElement extends ModelElement {
+    contains TypeReference ^type
+    /* 0 means optional. */
+    int lowerBound
+    /* 1 is single valued, -1 is unbounded. */
+    int upperBound = "1"
+    boolean ^ordered = "true"
+    boolean ^unique
+}
+
+/*
+ * State. Named Feature rather than StructuralFeature because there is no other
+ * kind here - the "structural" qualifier only earns its keep in Ecore, where it
+ * distinguishes features from operations on a common supertype.
+ */
+abstract class Feature extends TypedElement {
+    /*
+     * Computed rather than stored. Not serialized, and a projection emits it
+     * read only or omits it - a reflective loader cannot supply a value for it.
+     */
+    boolean ^derived
+    /* Emitted as readonly. Positive form of Ecore's `changeable`. */
+    boolean ^readonly
+    /* Verbatim default, in the serialized form of the type. */
+    String defaultValue
+}
+
+class Attribute extends Feature {
+    /*
+     * This attribute identifies its instance, and a reference may cite it.
+     * Not named `id`: nxcore's StringIdentity already contributes one.
+     */
+    boolean identifying
+}
+
+class Reference extends Feature {
+    /* The target is owned by this object: a tree edge rather than a graph edge. */
+    boolean containment
+    /* The other end of a bidirectional reference. */
+    refers Reference ^opposite
+    /*
+     * Attributes that identify a target within the containing list, which is
+     * what turns a positional path into //@members[id='lea'].
+     */
+    refers Attribute[] ^keys
+}
+
+/*
+ * Behaviour signature. Carried for fidelity when loading from Java or Ecore and
+ * rendered as documentation; a reflective runtime cannot implement it, so a
+ * projection emits it only when something else supplies the body.
+ */
+class Operation extends TypedElement {
+    contains TypeParameter[] typeParameters
+    contains Parameter[] parameters
+    /*
+     * Declared exceptions. TypeScript has no equivalent, so this does not
+     * project - it survives as a JSDoc @throws and as provenance for languages
+     * that do have checked exceptions.
+     */
+    contains TypeReference[] exceptions
+}
+
+class Parameter extends TypedElement {
+    /* Collects the remaining arguments: ...args. Must be last. */
+    boolean variadic
+    String defaultValue
+}
+
+/* ---------------------------------------------------------------------------
+ * Types
+ * --------------------------------------------------------------------------- */
+
+class TypeParameter extends ModelElement {
+    /* The `extends` constraint. */
+    contains TypeReference bound
+    contains TypeReference ^default
+}
+
+/*
+ * A type in a type position. Small on purpose: enough to write a declaration,
+ * with OpaqueTypeReference as the release valve.
+ */
+abstract class TypeReference extends ModelElement {
+}
+
+/*
+ * Reference to a Classifier. `target` is set within a model; `namespace` plus
+ * `classifierName` name one in a package this model does not contain, which is
+ * what lets a package be loaded and projected on its own.
+ */
+class ClassifierReference extends TypeReference {
+    refers Classifier target
+    String namespace
+    String classifierName
+    contains TypeReference[] typeArguments
+}
+
+class TypeParameterReference extends TypeReference {
+    refers TypeParameter target
+    /* Name, for when the parameter is declared outside the loaded fragment. */
+    String parameterName
+}
+
+class PrimitiveTypeReference extends TypeReference {
+    PrimitiveKind kind
+}
+
+/*
+ * One of several. Present because JSON Schema oneOf, XSD choice and TypeScript
+ * unions are all the same shape, and because optionality alone cannot express
+ * them.
+ */
+class UnionTypeReference extends TypeReference {
+    contains TypeReference[] types
+}
+
+/*
+ * Verbatim type text for what no class here covers - conditional and mapped
+ * types, tuples, intersections. `references` keeps the named types visible to a
+ * projection's import resolver, so opaque text does not silently break import
+ * management.
+ */
+class OpaqueTypeReference extends TypeReference {
+    String text
+    contains TypeReference[] references
+}
+
+/*
+ * How a value crosses the wire. Deliberately a serialization vocabulary rather
+ * than a language one: NUMBER covers every numeric width, because JSON has one
+ * number and TypeScript has one number.
+ */
+enum PrimitiveKind {
+    STRING NUMBER BOOLEAN BIGINT
+    DATE TIME DATE_TIME DURATION
+    BINARY ANY NULL VOID
+}
+
+
+/* ---------------------------------------------------------------------------
+ * Instances
+ *
+ * The M1 layer. Until now this model described types and had no way to express
+ * an instance of one, which made "metacircular by construction" true at M2 and
+ * useless at M1: a vocabulary could say that Measure is a Class and had nowhere
+ * to put the measures.
+ *
+ * PURELY REFLECTIVE, which is the whole difference from EObject. There is no
+ * generated interface per Class, no implementation class, no factory. An Object
+ * knows its type by reference and answers about itself through six operations.
+ * That is what makes it portable: a browser gets instances without a code
+ * generator, and an agent gets an interaction surface it can be taught in a
+ * paragraph.
+ *
+ * IMPLEMENTED BY PROJECTING TO ECORE. This model already generates a dynamic
+ * EPackage, so the obvious runtime is dynamic EMF instances behind this
+ * interface: EMF does resources, serialization, change recording and proxy
+ * resolution, and callers see six operations instead of thirty. The cost to
+ * watch is a wrapper per object on a large model, so the Ecore-backed
+ * implementation should be an adapter cached per instance, or dynamic EMF should
+ * implement this interface directly.
+ *
+ * WHAT IS DELIBERATELY ABSENT, and the rule that keeps it absent: an operation
+ * belongs here only if a consumer cannot compute it from the others plus the
+ * type WITHOUT LOADING DATA IT DID NOT ASK FOR. Contents are derivable from the
+ * type's containment references plus get, so there is no contents operation, and
+ * a caller wanting contents wants the data anyway. Adapters, notification and
+ * change recording belong to an implementation, not to this surface. Proxy
+ * resolution is discussed on the resolved operation below and is the one place
+ * this surface deliberately hides something real.
+ *
+ * The second clause of that rule is load bearing and was added late. It is what
+ * admits size and indexed get, and it is narrow on purpose: "this would be
+ * faster as a primitive" is not a reason, "this cannot be answered without
+ * fetching a thousand objects to count them" is.
+ * --------------------------------------------------------------------------- */
+
+/*
+ * An instance of a Class.
+ *
+ * `id` is intrinsic and independent of any identifying Attribute, which matters
+ * more than it first appears: an object may be retyped, and a type-derived
+ * identity would not survive that. It is also what a cross-resource reference
+ * cites and what a provenance marker anchors to.
+ */
+class Object {
+
+    /*
+     * The type. A REFERENCE rather than a fixed property of the instance, which
+     * is the single most consequential difference from EObject and from every
+     * class-based language.
+     *
+     * Unset means untyped, which is a legitimate state rather than an error. See
+     * the retyping note below.
+     */
+    refers Class ^type
+
+    /*
+     * Values that have no typed home yet, or no typed home at all.
+     *
+     * The same Annotation a loader uses to record what it could not map, used in
+     * the other direction. Before an object is classified there is nowhere typed
+     * to put anything, so elicited data lands here; classification then promotes
+     * what fits into features and leaves the rest where it was. Promotion in one
+     * direction, residue in the other, one mechanism.
+     */
+    contains Annotation[] annotations
+    
+    /**
+     * Object identities - zero or more. 
+     * A value object has no identity, an entity has one or more
+     */
+    op java.lang.Object[] getIdentities()
+
+    op Object getContainer()
+
+    op Feature getContainmentFeature()
+
+    /*
+     * For a many-valued feature the result is a list. Whether that list is live
+     * is an implementation decision, and this surface says it is not: mutation
+     * goes through set, add, remove and unset, because a live list leaking out
+     * of a getter is awkward in Java and worse in TypeScript.
+     */
+    op java.lang.Object ^get(Feature feature)
+
+    /*
+     * A range of a many-valued feature, without materializing the rest.
+     *
+     * The completion of size, on the same grounds and satisfying them better
+     * than the indexed get an earlier draft had: size alone tells a caller a
+     * feature holds a thousand values and leaves fetching them costing all
+     * thousand, and a one-at-a-time get fixes the data volume and not the round
+     * trips. This REPLACES indexed get rather than joining it, because
+     * get(f, i, 1) is the indexed case and a convenience wrapper belongs in a
+     * utility rather than on a surface meant to be taught in a paragraph.
+     *
+     * `count` is a maximum. Fewer values are returned near the end rather than
+     * an error, because every paging API that throws on an overlong final page
+     * is a paging API whose callers write the same clamping loop.
+     *
+     * OFFSET PAGING ASSUMES A STABLE ORDER, which is worth saying because this
+     * model makes order optional: TypedElement carries `ordered`, and over a
+     * feature that is not ordered, or over data changing underneath the caller,
+     * page two may repeat or skip what page one returned. That is the ordinary
+     * offset-versus-cursor problem and it is not solved here. It is solved where
+     * it belongs, by paging against a snapshot with a freshness policy rather
+     * than against a live source.
+     */
+    op java.lang.Object ^get(Feature feature, int from, int count)
+    
+    op void ^set(Feature feature, java.lang.Object value)
+    
+    op void ^set(Feature feature, java.lang.Object value, int index)
+
+    op void add(Feature feature, java.lang.Object value, int index)
+
+    op void remove(Feature feature, Object value)
+
+    op void remove(Feature feature, Object value, int index)
+    
+    /*
+     * Restores the unset state, which is not the same as setting a default.
+     *
+     * Kept as its own operation rather than folded into set, because set with a
+     * null value says nothing coherent about a many-valued feature, and unset is
+     * the one spelling that works for both cardinalities.
+     */
+    op void ^unset(Feature feature)
+
+    /*
+     * How many values a feature holds. Zero for unset, and for a single-valued
+     * feature the answer is only ever zero or one.
+     *
+     * THIS REPLACES A SEPARATE isSet, which an earlier draft had. Under
+     * multiplicity semantics `size == 0` and "not set" are the same statement,
+     * for both cardinalities, so carrying both operations would mean carrying
+     * two vocabularies for one fact. EMF reaches the same place from the other
+     * direction: eIsSet on a many-valued feature is already defined as "the list
+     * is not empty". Nothing is lost here because this model has no unsettable
+     * flag, so there is no third state to distinguish.
+     *
+     * It is also the first operation admitted on COST rather than on
+     * expressiveness, and the grounds are narrow: size is computable from get,
+     * but only by materializing a list the caller did not ask for, which for a
+     * lazily loaded containment or a remote surface is the whole expense. The
+     * rule the surface is held to therefore reads: an operation belongs here
+     * only if a consumer cannot compute it from the others without loading data
+     * it did not ask for.
+     *
+     * And it is the runtime counterpart to lowerBound and upperBound on
+     * TypedElement, which is what makes multiplicity validation reflective:
+     * checking a feature is size between its bounds, rather than fetching
+     * everything to count it.
+     */
+    op int size(Feature feature)
+
+    /*
+     * Where the implementation comes from is not this model's business. In this
+     * ecosystem it resolves through the capability framework, which is the same
+     * mechanism a tool catalog uses to bind an operation.
+     */
+    op Object invoke(Operation operation, java.lang.Object[] arguments)
+
+    /*
+     * Objects referencing this one, the reference they do it through, and the
+     * position within it.
+     *
+     * Not derivable from anything else, which is why it is here rather than in a
+     * utility: an object cannot see its own referrers without something
+     * maintaining a reverse index.
+     *
+     * FILTERED BY REFERENCE, because the alternative is fetching every referrer
+     * and discarding most of them, which is the pushdown problem from the graph
+     * provider contract arriving one layer down. Filtering by reference is the
+     * minimal predicate every implementation can honour, and it is exactly what
+     * a Cypher pattern like <-[:owns]- needs.
+     *
+     * An empty or null array means all references. The single-reference and
+     * no-argument flavours are conveniences and belong in a utility, for the
+     * same reason a one-element range get does: the array form subsumes them.
+     *
+     * READ ONLY, and deliberately. Incoming references are DERIVED. They change
+     * when the referring object's feature changes, and offering a mutator here
+     * would be a second way to perform the same edit with different provenance,
+     * which is how two views of one fact stop agreeing.
+     *
+     * Not on an agent's surface, though the capability is. An agent reaches this
+     * through <-[...]- in a query, which is the same thing with better
+     * ergonomics. This is the substrate; a query language is the presentation,
+     * the same split a tool definition makes between what can be called and how
+     * it is offered.
+     */
+    op IncomingReference[] getIncomingReferences(Reference[] references)
+
+    /* A page of them. Same contract as the range get above: count is a maximum. */
+    op IncomingReference[] getIncomingReferences(Reference[] references, int from, int count)
+
+    /*
+     * How many, or -1 when the question cannot be answered here.
+     *
+     * The -1 is the load bearing part. A reverse index is not always available:
+     * a lazily loaded or remote model may have no way to know who points at an
+     * object without loading everything. Returning zero in that case would be
+     * indistinguishable from "nobody references this", which is the failure the
+     * loaders already have a rule against, and -1 for "no idea" is the
+     * convention the graph provider's cardinality estimate already uses.
+     *
+     * It therefore does double duty as the capability check, and costs no extra
+     * operation to do it.
+     */
+    op int getIncomingReferenceCount(Reference[] references)
+
+    /*
+     * False when this object stands for one that has not been loaded.
+     *
+     * The one concession to proxies. An earlier draft left them out as an EMF
+     * concern, and that does not survive the federation claim: references cross
+     * resources by URI, so something has to represent "not here yet". Resolution
+     * itself stays an implementation concern; what this surface owes a caller is
+     * the ability to tell the difference before it reads a feature and gets a
+     * surprise.
+     */
+    op boolean isResolved()
+    
+}
+
+/*
+ * Who points at an object, through what, and where.
+ *
+ * A value rather than a ModelElement: it has no identity of its own, it is not
+ * documented, and it exists only as an answer. Making it an element would
+ * suggest it can be stored, and it cannot be: it is derived from the referring
+ * object's feature and changes when that does.
+ */
+class IncomingReference {
+    refers Object source
+    refers Reference reference
+    /* Position in a many-valued reference, or -1 when single-valued. */
+    int index = "-1"
+}
+
+/* ---------------------------------------------------------------------------
+ * Retyping, and why it is a feature rather than an accident
+ *
+ * Because `type` is a reference, an object may be created untyped and
+ * classified later, or reclassified. EMF cannot do this in any supported way and
+ * a class-based language cannot do it at all, and it is not a curiosity: it is
+ * the shape elicitation actually has. Somebody describes a domain loosely, a
+ * thing is named before anyone knows what kind of thing it is, and refinement
+ * proceeds by dividing. An agent drafts a classification and a human corrects
+ * it. A spreadsheet row is clearly SOMETHING before it is clearly anything.
+ *
+ * Three operations that look alike and are not, and conflating them is how data
+ * gets lost quietly:
+ *
+ * SPECIALIZATION, to a subtype. Person to Man. Always safe: every feature that
+ * was in scope still is, so nothing can be lost. This is the common case and it
+ * should be cheap and encouraged.
+ *
+ * GENERALIZATION, to a supertype. Man to Person. Loses a distinction, and per
+ * the flattening rules earlier in this model, removing a distinction is not
+ * recoverable by widening anything. Values of features declared below the new
+ * type have nowhere to live.
+ *
+ * RECLASSIFICATION, to an unrelated type. Arbitrary, and the only guarantee is
+ * that feature names may coincide while meaning does not.
+ *
+ * THE RULE, and it is the same rule this model already applies to loaders:
+ * VALUES ARE NEVER SILENTLY DROPPED. A value whose feature is no longer in scope
+ * moves to an Annotation, keeping its feature name and the type it was declared
+ * on. The object then carries a record of what it used to be able to say, which
+ * is recoverable if the classification was wrong, and classification is wrong
+ * often enough that this is not hypothetical.
+ *
+ * Provenance follows from nxcore: a marker on the object records who classified
+ * it and when. When an agent proposes and a human confirms, that distinction is
+ * worth keeping, because a model full of unreviewed machine guesses and a model
+ * full of confirmed facts look identical without it.
+ * --------------------------------------------------------------------------- */

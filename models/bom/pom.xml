@@ -88,6 +88,18 @@
 			</dependency>
 
 			<dependency>
+				<groupId>org.nasdanika.sdk.runtime.models.meta</groupId>
+				<version>${revision}</version>
+				<artifactId>model</artifactId>				
+			</dependency>
+
+			<dependency>
+				<groupId>org.nasdanika.sdk.runtime.models.jvm</groupId>
+				<version>${revision}</version>
+				<artifactId>model</artifactId>				
+			</dependency>
+
+			<dependency>
 				<groupId>org.nasdanika.sdk.runtime.models.react</groupId>
 				<version>${revision}</version>
 				<artifactId>model</artifactId>				
