@@ -68,7 +68,8 @@ public class BootstrapDemoTests {
 			new Demo("forms", "Forms", "Groups, floating labels, input groups, selects, checks, switches, ranges and validation styles"),
 			new Demo("navigation", "Navigation", "Navs, tabs, breadcrumb, pagination and dropdowns"),
 			new Demo("overlays", "Overlays", "Modal, offcanvas, toasts, tooltips and popovers"),
-			new Demo("themes", "Themes", "The same showcase in Bootstrap and every Bootswatch theme"));
+			new Demo("themes", "Themes", "The same showcase in Bootstrap and every Bootswatch theme"),
+			new Demo("tree/index", "Navigation tree", "The files of this module with a tree in a side panel, without JavaScript"));
 
 	// --- Pages -------------------------------------------------------------------
 
@@ -103,7 +104,7 @@ public class BootstrapDemoTests {
 	/**
 	 * Brand, links to the demos, and a dropdown of themes.
 	 */
-	private static Navbar navbar(String base, Theme current) {
+	static Navbar navbar(String base, Theme current) {
 		return with(NAVIGATION.createNavbar(), n -> {
 			n.setBg(Variant.PRIMARY);
 			n.setTheme(ColorMode.DARK);

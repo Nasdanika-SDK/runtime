@@ -28,6 +28,7 @@ module org.nasdanika.sdk.runtime.models.html.bootstrap {
 	exports org.nasdanika.sdk.runtime.models.html.bootstrap.components.overlays.util;
 	
 	exports org.nasdanika.sdk.runtime.models.html.bootstrap.generator;
+	exports org.nasdanika.sdk.runtime.models.html.bootstrap.builders;
 	
 	requires transitive org.nasdanika.sdk.runtime.models.html;
 	
