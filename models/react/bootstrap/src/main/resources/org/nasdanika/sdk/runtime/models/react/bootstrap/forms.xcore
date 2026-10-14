@@ -1,0 +1,226 @@
+@Ecore(
+    nsURI="https://runtime.sdk.nasdanika.org/models/react/bootstrap/forms",
+	nsPrefix="org.nasdanika.sdk.runtime.models.react.bootstrap.forms")
+
+@GenModel(
+	modelDirectory="/bootstrap/src-gen",
+    featureDelegation="Dynamic",
+    complianceLevel="25",
+    suppressGenModelAnnotations="false",
+    copyrightFields="false",
+    operationReflection="true",
+    importOrganizing="true"
+)
+/*
+ * React Bootstrap forms: https://react-bootstrap.netlify.app/docs/forms/overview
+ *
+ * Field values are uncontrolled defaults (defaultValue, defaultChecked). Controlled fields
+ * set value or checked and onChange as JSX attributes, which win over typed features.
+ */
+package org.nasdanika.sdk.runtime.models.react.bootstrap.forms
+
+import org.nasdanika.sdk.runtime.models.html.Option
+import org.nasdanika.sdk.runtime.models.react.JsxNode
+import org.nasdanika.sdk.runtime.models.react.bootstrap.BootstrapComponent
+import org.nasdanika.sdk.runtime.models.react.bootstrap.ColumnSize
+import org.nasdanika.sdk.runtime.models.react.bootstrap.Size
+import org.nasdanika.sdk.runtime.models.react.bootstrap.TextContent
+
+annotation "http://www.eclipse.org/emf/2002/Ecore" as Ecore
+annotation "http://www.eclipse.org/emf/2002/GenModel" as GenModel
+annotation "urn:org.nasdanika:react" as React
+
+/*
+ * Validation state shared by form controls.
+ */
+interface Validated {
+	boolean isValid
+	boolean isInvalid
+}
+
+/*
+ * Props of fields - controls, selects, checks and ranges.
+ */
+interface Field extends Validated {
+	@React(prop="name")
+	String fieldName
+
+	boolean disabled
+
+	boolean required
+}
+
+@React(component="Form")
+class Form extends BootstrapComponent {
+	/* Shows validation feedback - usually an expression set on submit */
+	boolean validated
+
+	/* Disables browser validation in favor of Bootstrap styles */
+	boolean noValidate
+
+	String action
+
+	String method
+
+	contains FormGroup[] groups
+}
+
+/*
+ * Form.Group - sets controlId for the label and control in it.
+ */
+@React(component="Form.Group")
+class FormGroup extends BootstrapComponent {
+	String controlId
+
+	contains FormLabel label
+
+	/* Control, select, check, range, input group or floating label */
+	contains JsxNode[] controls
+
+	contains FormText text
+
+	contains FormControlFeedback[] feedback
+}
+
+@React(component="Form.Label")
+class FormLabel extends BootstrapComponent, TextContent {
+	/* Renders a label of a horizontal form as a column */
+	boolean column
+
+	/* Column sizes of a horizontal form label, like Col sizes */
+	@React(key="breakpoint")
+	contains ColumnSize[] sizes
+
+	boolean visuallyHidden
+
+	@React(prop="htmlFor")
+	String forId
+}
+
+@React(component="Form.Control")
+class FormControl extends BootstrapComponent, Field {
+	/* Input type: text, email, password, number, date, color, file, ... */
+	String ^type
+
+	String placeholder
+
+	@React(prop="defaultValue")
+	String initialValue
+
+	unsettable Size size
+
+	/* Rendered as plain text, for read only values in forms */
+	boolean plaintext
+
+	boolean readOnly
+
+	/* Rows of a textarea - as="textarea" */
+	unsettable int rows
+
+	String autoComplete
+}
+
+@React(component="Form.Select")
+class FormSelect extends BootstrapComponent, Field {
+	unsettable Size size
+
+	boolean multiple
+
+	@React(prop="defaultValue")
+	String initialValue
+
+	/* HTML options and option groups */
+	contains Option[] options
+}
+
+enum CheckType {
+	checkbox
+	radio
+	^switch
+}
+
+@React(component="Form.Check")
+class FormCheck extends BootstrapComponent, Field {
+	unsettable CheckType ^type
+
+	String label
+
+	/* Label with markup. Wins over label. */
+	@React(prop="label")
+	contains JsxNode labelNode
+
+	String value
+
+	boolean inline
+
+	boolean reverse
+
+	boolean defaultChecked
+
+	/* Feedback text shown under the check */
+	String feedback
+
+	String feedbackType
+}
+
+@React(component="Form.Range")
+class FormRange extends BootstrapComponent, Field {
+	unsettable int min
+
+	unsettable int max
+
+	unsettable int step
+
+	@React(prop="defaultValue")
+	unsettable int initialValue
+}
+
+/*
+ * Help text under a control.
+ */
+@React(component="Form.Text")
+class FormText extends BootstrapComponent, TextContent {
+	boolean muted
+}
+
+enum FeedbackType {
+	valid
+	invalid
+}
+
+@React(component="Form.Control.Feedback")
+class FormControlFeedback extends BootstrapComponent, TextContent {
+	unsettable FeedbackType ^type
+
+	/* Styled as a tooltip */
+	boolean tooltip
+}
+
+/*
+ * Label floating over its control - the control has to have a placeholder.
+ */
+@React(component="FloatingLabel")
+class FloatingLabel extends BootstrapComponent {
+	String controlId
+
+	String label
+
+	@React(prop="label")
+	contains JsxNode labelNode
+
+	contains JsxNode control
+}
+
+@React(component="InputGroup")
+class InputGroup extends BootstrapComponent {
+	unsettable Size size
+
+	boolean hasValidation
+
+	/* Texts, controls, buttons and dropdowns, in order */
+	contains JsxNode[] items
+}
+
+@React(component="InputGroup.Text")
+class InputGroupText extends BootstrapComponent, TextContent {
+}

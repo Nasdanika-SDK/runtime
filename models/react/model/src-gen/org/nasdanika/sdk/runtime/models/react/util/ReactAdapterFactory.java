@@ -179,6 +179,10 @@ public class ReactAdapterFactory extends AdapterFactoryImpl {
 				return createJsxContentAdapter();
 			}
 			@Override
+			public Adapter caseLibraryComponent(LibraryComponent object) {
+				return createLibraryComponentAdapter();
+			}
+			@Override
 			public Adapter caseJsxAttribute(JsxAttribute object) {
 				return createJsxAttributeAdapter();
 			}
@@ -603,6 +607,20 @@ public class ReactAdapterFactory extends AdapterFactoryImpl {
 	 * @generated
 	 */
 	public Adapter createJsxContentAdapter() {
+		return null;
+	}
+
+	/**
+	 * Creates a new adapter for an object of class '{@link org.nasdanika.sdk.runtime.models.react.LibraryComponent <em>Library Component</em>}'.
+	 * <!-- begin-user-doc -->
+	 * This default implementation returns null so that we can easily ignore cases;
+	 * it's useful to ignore a case when inheritance will catch all the cases anyway.
+	 * <!-- end-user-doc -->
+	 * @return the new adapter.
+	 * @see org.nasdanika.sdk.runtime.models.react.LibraryComponent
+	 * @generated
+	 */
+	public Adapter createLibraryComponentAdapter() {
 		return null;
 	}
 

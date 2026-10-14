@@ -242,6 +242,49 @@ class JsxContent extends org.nasdanika.sdk.runtime.models.html.Node {
 }
 
 /* ---------------------------------------------------------------------------
+ * Component libraries
+ * --------------------------------------------------------------------------- */
+
+/*
+ * A component of a component library, e.g. React Bootstrap, modeled as an EClass and
+ * rendered reflectively from "urn:org.nasdanika:react" annotations, so a library model is
+ * annotated Xcore without generator code.
+ *
+ * On classes, looked up on the class and then its supertypes:
+ * - component: component name, e.g. "Card" or "Card.Header". The first segment is imported.
+ * - module: module specifier to import the component from, e.g. "react-bootstrap".
+ * - shorthand: on value object classes - see below.
+ *
+ * Features of subclasses, in feature order:
+ * - Attributes are props, rendered when set: strings and enum literals as strings, numbers
+ *   as numbers, true booleans as bare props and false booleans of unsettable attributes as
+ *   {false}, many-valued attributes as arrays.
+ * - Containments of JSX nodes are children, of HTML nodes intrinsic children,
+ *   of named type references component props, e.g. as={Col}.
+ * - Containments of other objects are value object props: object literals of their props.
+ *   If a value object class has a shorthand prop and only that prop is set, its value
+ *   is the prop value, e.g. xs={6} instead of xs={{ span: 6 }}.
+ * - Containments of string to string map entries are object props.
+ *
+ * Feature annotations:
+ * - prop: prop name if not the feature name. A JSX node containment with a prop name is a
+ *   node prop, e.g. title={<b>Title</b>}.
+ * - logical="true": not rendered.
+ * - child="true": a string attribute rendered as a text child.
+ * - value: rendered value of a true boolean, e.g. "auto".
+ * - join: many-valued attribute joined into a string with this separator, e.g. className.
+ * - style="true": map entries rendered as a style object with camel case keys.
+ * - key: on a many-valued value object containment - the attribute whose value is the prop
+ *   name of each value object, e.g. breakpoint for xs={6} md={{ span: 4, offset: 2 }}.
+ *
+ * Dynamic props - expressions, event handlers, spreads - are `attributes`, which win over
+ * features rendering a prop of the same name. `children` follow the children features.
+ */
+abstract class LibraryComponent extends JsxContainer {
+    contains JsxAttribute[] attributes
+}
+
+/* ---------------------------------------------------------------------------
  * Attributes
  * --------------------------------------------------------------------------- */
 

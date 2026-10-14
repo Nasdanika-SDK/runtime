@@ -22,13 +22,112 @@ public interface BootstrapFactory extends EFactory {
 	BootstrapFactory eINSTANCE = org.nasdanika.sdk.runtime.models.react.bootstrap.impl.BootstrapFactoryImpl.init();
 
 	/**
-	 * Returns a new object of class '<em>Placeholder</em>'.
+	 * Returns a new object of class '<em>Column Size</em>'.
 	 * <!-- begin-user-doc -->
 	 * <!-- end-user-doc -->
-	 * @return a new object of class '<em>Placeholder</em>'.
+	 * @return a new object of class '<em>Column Size</em>'.
 	 * @generated
 	 */
-	Placeholder createPlaceholder();
+	ColumnSize createColumnSize();
+
+	/**
+	 * Returns a new object of class '<em>Row Columns</em>'.
+	 * <!-- begin-user-doc -->
+	 * <!-- end-user-doc -->
+	 * @return a new object of class '<em>Row Columns</em>'.
+	 * @generated
+	 */
+	RowColumns createRowColumns();
+
+	/**
+	 * Returns a new object of class '<em>Theme Provider</em>'.
+	 * <!-- begin-user-doc -->
+	 * <!-- end-user-doc -->
+	 * @return a new object of class '<em>Theme Provider</em>'.
+	 * @generated
+	 */
+	ThemeProvider createThemeProvider();
+
+	/**
+	 * Returns a new object of class '<em>Container</em>'.
+	 * <!-- begin-user-doc -->
+	 * <!-- end-user-doc -->
+	 * @return a new object of class '<em>Container</em>'.
+	 * @generated
+	 */
+	Container createContainer();
+
+	/**
+	 * Returns a new object of class '<em>Row</em>'.
+	 * <!-- begin-user-doc -->
+	 * <!-- end-user-doc -->
+	 * @return a new object of class '<em>Row</em>'.
+	 * @generated
+	 */
+	Row createRow();
+
+	/**
+	 * Returns a new object of class '<em>Col</em>'.
+	 * <!-- begin-user-doc -->
+	 * <!-- end-user-doc -->
+	 * @return a new object of class '<em>Col</em>'.
+	 * @generated
+	 */
+	Col createCol();
+
+	/**
+	 * Returns a new object of class '<em>Stack</em>'.
+	 * <!-- begin-user-doc -->
+	 * <!-- end-user-doc -->
+	 * @return a new object of class '<em>Stack</em>'.
+	 * @generated
+	 */
+	Stack createStack();
+
+	/**
+	 * Returns a new object of class '<em>Ratio</em>'.
+	 * <!-- begin-user-doc -->
+	 * <!-- end-user-doc -->
+	 * @return a new object of class '<em>Ratio</em>'.
+	 * @generated
+	 */
+	Ratio createRatio();
+
+	/**
+	 * Returns a new object of class '<em>Image</em>'.
+	 * <!-- begin-user-doc -->
+	 * <!-- end-user-doc -->
+	 * @return a new object of class '<em>Image</em>'.
+	 * @generated
+	 */
+	Image createImage();
+
+	/**
+	 * Returns a new object of class '<em>Figure</em>'.
+	 * <!-- begin-user-doc -->
+	 * <!-- end-user-doc -->
+	 * @return a new object of class '<em>Figure</em>'.
+	 * @generated
+	 */
+	Figure createFigure();
+
+	/**
+	 * Returns a new object of class '<em>Figure Image</em>'.
+	 * <!-- begin-user-doc -->
+	 * <!-- end-user-doc -->
+	 * @return a new object of class '<em>Figure Image</em>'.
+	 * @generated
+	 */
+	FigureImage createFigureImage();
+
+	/**
+	 * Returns a new object of class '<em>Figure Caption</em>'.
+	 * <!-- begin-user-doc -->
+	 * <!-- end-user-doc -->
+	 * @return a new object of class '<em>Figure Caption</em>'.
+	 * @generated
+	 */
+	FigureCaption createFigureCaption();
 
 	/**
 	 * Returns the package supported by this factory.

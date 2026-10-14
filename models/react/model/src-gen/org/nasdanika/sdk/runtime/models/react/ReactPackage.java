@@ -3867,6 +3867,160 @@ public interface ReactPackage extends EPackage {
 	int JSX_CONTENT_OPERATION_COUNT = HtmlPackage.NODE_OPERATION_COUNT + 0;
 
 	/**
+	 * The meta object id for the '{@link org.nasdanika.sdk.runtime.models.react.impl.LibraryComponentImpl <em>Library Component</em>}' class.
+	 * <!-- begin-user-doc -->
+	 * <!-- end-user-doc -->
+	 * @see org.nasdanika.sdk.runtime.models.react.impl.LibraryComponentImpl
+	 * @see org.nasdanika.sdk.runtime.models.react.impl.ReactPackageImpl#getLibraryComponent()
+	 * @generated
+	 */
+	int LIBRARY_COMPONENT = 24;
+
+	/**
+	 * The feature id for the '<em><b>Id</b></em>' attribute.
+	 * <!-- begin-user-doc -->
+	 * <!-- end-user-doc -->
+	 * @generated
+	 * @ordered
+	 */
+	int LIBRARY_COMPONENT__ID = JSX_CONTAINER__ID;
+
+	/**
+	 * The feature id for the '<em><b>Documentation</b></em>' attribute.
+	 * <!-- begin-user-doc -->
+	 * <!-- end-user-doc -->
+	 * @generated
+	 * @ordered
+	 */
+	int LIBRARY_COMPONENT__DOCUMENTATION = JSX_CONTAINER__DOCUMENTATION;
+
+	/**
+	 * The feature id for the '<em><b>Doc Ref</b></em>' attribute.
+	 * <!-- begin-user-doc -->
+	 * <!-- end-user-doc -->
+	 * @generated
+	 * @ordered
+	 */
+	int LIBRARY_COMPONENT__DOC_REF = JSX_CONTAINER__DOC_REF;
+
+	/**
+	 * The feature id for the '<em><b>Doc Format</b></em>' attribute.
+	 * <!-- begin-user-doc -->
+	 * <!-- end-user-doc -->
+	 * @generated
+	 * @ordered
+	 */
+	int LIBRARY_COMPONENT__DOC_FORMAT = JSX_CONTAINER__DOC_FORMAT;
+
+	/**
+	 * The feature id for the '<em><b>Doc Contents</b></em>' containment reference list.
+	 * <!-- begin-user-doc -->
+	 * <!-- end-user-doc -->
+	 * @generated
+	 * @ordered
+	 */
+	int LIBRARY_COMPONENT__DOC_CONTENTS = JSX_CONTAINER__DOC_CONTENTS;
+
+	/**
+	 * The feature id for the '<em><b>Doc Sections</b></em>' containment reference list.
+	 * <!-- begin-user-doc -->
+	 * <!-- end-user-doc -->
+	 * @generated
+	 * @ordered
+	 */
+	int LIBRARY_COMPONENT__DOC_SECTIONS = JSX_CONTAINER__DOC_SECTIONS;
+
+	/**
+	 * The feature id for the '<em><b>Markers</b></em>' containment reference list.
+	 * <!-- begin-user-doc -->
+	 * <!-- end-user-doc -->
+	 * @generated
+	 * @ordered
+	 */
+	int LIBRARY_COMPONENT__MARKERS = JSX_CONTAINER__MARKERS;
+
+	/**
+	 * The feature id for the '<em><b>Icon</b></em>' attribute.
+	 * <!-- begin-user-doc -->
+	 * <!-- end-user-doc -->
+	 * @generated
+	 * @ordered
+	 */
+	int LIBRARY_COMPONENT__ICON = JSX_CONTAINER__ICON;
+
+	/**
+	 * The feature id for the '<em><b>Uris</b></em>' attribute list.
+	 * <!-- begin-user-doc -->
+	 * <!-- end-user-doc -->
+	 * @generated
+	 * @ordered
+	 */
+	int LIBRARY_COMPONENT__URIS = JSX_CONTAINER__URIS;
+
+	/**
+	 * The feature id for the '<em><b>Name</b></em>' attribute.
+	 * <!-- begin-user-doc -->
+	 * <!-- end-user-doc -->
+	 * @generated
+	 * @ordered
+	 */
+	int LIBRARY_COMPONENT__NAME = JSX_CONTAINER__NAME;
+
+	/**
+	 * The feature id for the '<em><b>Children</b></em>' containment reference list.
+	 * <!-- begin-user-doc -->
+	 * <!-- end-user-doc -->
+	 * @generated
+	 * @ordered
+	 */
+	int LIBRARY_COMPONENT__CHILDREN = JSX_CONTAINER__CHILDREN;
+
+	/**
+	 * The feature id for the '<em><b>Attributes</b></em>' containment reference list.
+	 * <!-- begin-user-doc -->
+	 * <!-- end-user-doc -->
+	 * @generated
+	 * @ordered
+	 */
+	int LIBRARY_COMPONENT__ATTRIBUTES = JSX_CONTAINER_FEATURE_COUNT + 0;
+
+	/**
+	 * The number of structural features of the '<em>Library Component</em>' class.
+	 * <!-- begin-user-doc -->
+	 * <!-- end-user-doc -->
+	 * @generated
+	 * @ordered
+	 */
+	int LIBRARY_COMPONENT_FEATURE_COUNT = JSX_CONTAINER_FEATURE_COUNT + 1;
+
+	/**
+	 * The operation id for the '<em>Collect</em>' operation.
+	 * <!-- begin-user-doc -->
+	 * <!-- end-user-doc -->
+	 * @generated
+	 * @ordered
+	 */
+	int LIBRARY_COMPONENT___COLLECT__OBJECT_EREFERENCE_ELIST = JSX_CONTAINER___COLLECT__OBJECT_EREFERENCE_ELIST;
+
+	/**
+	 * The operation id for the '<em>Get Referrers</em>' operation.
+	 * <!-- begin-user-doc -->
+	 * <!-- end-user-doc -->
+	 * @generated
+	 * @ordered
+	 */
+	int LIBRARY_COMPONENT___GET_REFERRERS__EREFERENCE = JSX_CONTAINER___GET_REFERRERS__EREFERENCE;
+
+	/**
+	 * The number of operations of the '<em>Library Component</em>' class.
+	 * <!-- begin-user-doc -->
+	 * <!-- end-user-doc -->
+	 * @generated
+	 * @ordered
+	 */
+	int LIBRARY_COMPONENT_OPERATION_COUNT = JSX_CONTAINER_OPERATION_COUNT + 0;
+
+	/**
 	 * The meta object id for the '{@link org.nasdanika.sdk.runtime.models.react.impl.JsxAttributeImpl <em>Jsx Attribute</em>}' class.
 	 * <!-- begin-user-doc -->
 	 * <!-- end-user-doc -->
@@ -3874,7 +4028,7 @@ public interface ReactPackage extends EPackage {
 	 * @see org.nasdanika.sdk.runtime.models.react.impl.ReactPackageImpl#getJsxAttribute()
 	 * @generated
 	 */
-	int JSX_ATTRIBUTE = 24;
+	int JSX_ATTRIBUTE = 25;
 
 	/**
 	 * The feature id for the '<em><b>Id</b></em>' attribute.
@@ -4019,7 +4173,7 @@ public interface ReactPackage extends EPackage {
 	 * @see org.nasdanika.sdk.runtime.models.react.impl.ReactPackageImpl#getLiteralAttribute()
 	 * @generated
 	 */
-	int LITERAL_ATTRIBUTE = 25;
+	int LITERAL_ATTRIBUTE = 26;
 
 	/**
 	 * The feature id for the '<em><b>Id</b></em>' attribute.
@@ -4173,7 +4327,7 @@ public interface ReactPackage extends EPackage {
 	 * @see org.nasdanika.sdk.runtime.models.react.impl.ReactPackageImpl#getExpressionAttribute()
 	 * @generated
 	 */
-	int EXPRESSION_ATTRIBUTE = 26;
+	int EXPRESSION_ATTRIBUTE = 27;
 
 	/**
 	 * The feature id for the '<em><b>Id</b></em>' attribute.
@@ -4327,7 +4481,7 @@ public interface ReactPackage extends EPackage {
 	 * @see org.nasdanika.sdk.runtime.models.react.impl.ReactPackageImpl#getEventAttribute()
 	 * @generated
 	 */
-	int EVENT_ATTRIBUTE = 27;
+	int EVENT_ATTRIBUTE = 28;
 
 	/**
 	 * The feature id for the '<em><b>Id</b></em>' attribute.
@@ -4481,7 +4635,7 @@ public interface ReactPackage extends EPackage {
 	 * @see org.nasdanika.sdk.runtime.models.react.impl.ReactPackageImpl#getSpreadAttribute()
 	 * @generated
 	 */
-	int SPREAD_ATTRIBUTE = 28;
+	int SPREAD_ATTRIBUTE = 29;
 
 	/**
 	 * The feature id for the '<em><b>Id</b></em>' attribute.
@@ -5342,6 +5496,27 @@ public interface ReactPackage extends EPackage {
 	EReference getJsxContent_Node();
 
 	/**
+	 * Returns the meta object for class '{@link org.nasdanika.sdk.runtime.models.react.LibraryComponent <em>Library Component</em>}'.
+	 * <!-- begin-user-doc -->
+	 * <!-- end-user-doc -->
+	 * @return the meta object for class '<em>Library Component</em>'.
+	 * @see org.nasdanika.sdk.runtime.models.react.LibraryComponent
+	 * @generated
+	 */
+	EClass getLibraryComponent();
+
+	/**
+	 * Returns the meta object for the containment reference list '{@link org.nasdanika.sdk.runtime.models.react.LibraryComponent#getAttributes <em>Attributes</em>}'.
+	 * <!-- begin-user-doc -->
+	 * <!-- end-user-doc -->
+	 * @return the meta object for the containment reference list '<em>Attributes</em>'.
+	 * @see org.nasdanika.sdk.runtime.models.react.LibraryComponent#getAttributes()
+	 * @see #getLibraryComponent()
+	 * @generated
+	 */
+	EReference getLibraryComponent_Attributes();
+
+	/**
 	 * Returns the meta object for class '{@link org.nasdanika.sdk.runtime.models.react.JsxAttribute <em>Jsx Attribute</em>}'.
 	 * <!-- begin-user-doc -->
 	 * <!-- end-user-doc -->
@@ -6052,6 +6227,24 @@ public interface ReactPackage extends EPackage {
 		 * @generated
 		 */
 		EReference JSX_CONTENT__NODE = eINSTANCE.getJsxContent_Node();
+
+		/**
+		 * The meta object literal for the '{@link org.nasdanika.sdk.runtime.models.react.impl.LibraryComponentImpl <em>Library Component</em>}' class.
+		 * <!-- begin-user-doc -->
+		 * <!-- end-user-doc -->
+		 * @see org.nasdanika.sdk.runtime.models.react.impl.LibraryComponentImpl
+		 * @see org.nasdanika.sdk.runtime.models.react.impl.ReactPackageImpl#getLibraryComponent()
+		 * @generated
+		 */
+		EClass LIBRARY_COMPONENT = eINSTANCE.getLibraryComponent();
+
+		/**
+		 * The meta object literal for the '<em><b>Attributes</b></em>' containment reference list feature.
+		 * <!-- begin-user-doc -->
+		 * <!-- end-user-doc -->
+		 * @generated
+		 */
+		EReference LIBRARY_COMPONENT__ATTRIBUTES = eINSTANCE.getLibraryComponent_Attributes();
 
 		/**
 		 * The meta object literal for the '{@link org.nasdanika.sdk.runtime.models.react.impl.JsxAttributeImpl <em>Jsx Attribute</em>}' class.

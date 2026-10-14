@@ -1,0 +1,343 @@
+@Ecore(
+    nsURI="https://runtime.sdk.nasdanika.org/models/react/bootstrap/components/navigation",
+	nsPrefix="org.nasdanika.sdk.runtime.models.react.bootstrap.components.navigation")
+
+@GenModel(
+	modelDirectory="/bootstrap/src-gen",
+    featureDelegation="Dynamic",
+    complianceLevel="25",
+    suppressGenModelAnnotations="false",
+    copyrightFields="false",
+    operationReflection="true",
+    importOrganizing="true"
+)
+/*
+ * React Bootstrap navigation components: navs, navbars, tabs, breadcrumbs, pagination
+ * and dropdowns. https://react-bootstrap.netlify.app/docs/components/navs
+ */
+package org.nasdanika.sdk.runtime.models.react.bootstrap.components.navigation
+
+import org.nasdanika.sdk.runtime.models.react.JsxNode
+import org.nasdanika.sdk.runtime.models.react.bootstrap.BootstrapComponent
+import org.nasdanika.sdk.runtime.models.react.bootstrap.Breakpoint
+import org.nasdanika.sdk.runtime.models.react.bootstrap.ButtonVariant
+import org.nasdanika.sdk.runtime.models.react.bootstrap.Size
+import org.nasdanika.sdk.runtime.models.react.bootstrap.TextContent
+import org.nasdanika.sdk.runtime.models.react.bootstrap.Variant
+
+annotation "http://www.eclipse.org/emf/2002/Ecore" as Ecore
+annotation "http://www.eclipse.org/emf/2002/GenModel" as GenModel
+annotation "urn:org.nasdanika:react" as React
+
+// --- Navs ----------------------------------------------------------------
+
+enum NavVariant {
+	tabs
+	pills
+	underline
+}
+
+/*
+ * Nav.Item, Nav.Link or NavDropdown in a Nav.
+ */
+interface NavEntry {
+}
+
+@React(component="Nav")
+class Nav extends BootstrapComponent {
+	unsettable NavVariant variant
+
+	String activeKey
+
+	String defaultActiveKey
+
+	boolean fill
+
+	boolean justify
+
+	/* Vertical nav: classes flex-column */
+	contains NavEntry[] entries
+}
+
+@React(component="Nav.Item")
+class NavItem extends BootstrapComponent, NavEntry {
+	contains NavLink link
+}
+
+@React(component="Nav.Link")
+class NavLink extends BootstrapComponent, TextContent, NavEntry {
+	String href
+
+	String eventKey
+
+	boolean active
+
+	boolean disabled
+}
+
+@React(component="NavDropdown")
+class NavDropdown extends BootstrapComponent, NavEntry {
+	String title
+
+	/* Title with markup. Wins over title. */
+	@React(prop="title")
+	contains JsxNode titleNode
+
+	contains DropdownEntry[] entries
+}
+
+// --- Navbar --------------------------------------------------------------
+
+enum NavbarTheme {
+	light
+	dark
+}
+
+enum Fixed {
+	top
+	bottom
+}
+
+@React(component="Navbar")
+class Navbar extends BootstrapComponent {
+	unsettable Variant bg
+
+	/* Color scheme of the content - data-bs-theme */
+	@React(prop="data-bs-theme")
+	unsettable NavbarTheme theme
+
+	/* Always expanded. expand wins. */
+	@React(prop="expand")
+	boolean alwaysExpanded
+
+	/* Expanded from the breakpoint up */
+	unsettable Breakpoint expand
+
+	unsettable Fixed fixed
+
+	unsettable Fixed sticky
+
+	/* Usually a Container with brand, toggle and collapse */
+	contains JsxNode[] content
+}
+
+@React(component="Navbar.Brand")
+class NavbarBrand extends BootstrapComponent, TextContent {
+	String href
+}
+
+@React(component="Navbar.Toggle")
+class NavbarToggle extends BootstrapComponent {
+	/* Id of the collapse */
+	@React(prop="aria-controls")
+	String controls
+}
+
+@React(component="Navbar.Collapse")
+class NavbarCollapse extends BootstrapComponent {
+	contains JsxNode[] content
+}
+
+@React(component="Navbar.Text")
+class NavbarText extends BootstrapComponent, TextContent {
+}
+
+// --- Tabs ----------------------------------------------------------------
+
+@React(component="Tabs")
+class Tabs extends BootstrapComponent {
+	String defaultActiveKey
+
+	String activeKey
+
+	unsettable NavVariant variant
+
+	boolean fill
+
+	boolean justify
+
+	boolean mountOnEnter
+
+	boolean unmountOnExit
+
+	contains Tab[] tabs
+}
+
+/*
+ * A tab and its pane. The pane content is children.
+ */
+@React(component="Tab")
+class Tab extends BootstrapComponent, TextContent {
+	String eventKey
+
+	String title
+
+	@React(prop="title")
+	contains JsxNode titleNode
+
+	boolean disabled
+}
+
+// --- Breadcrumb ----------------------------------------------------------
+
+@React(component="Breadcrumb")
+class Breadcrumb extends BootstrapComponent {
+	contains BreadcrumbItem[] items
+}
+
+@React(component="Breadcrumb.Item")
+class BreadcrumbItem extends BootstrapComponent, TextContent {
+	String href
+
+	boolean active
+}
+
+// --- Pagination ----------------------------------------------------------
+
+/*
+ * Pagination.Item or one of the navigation items.
+ */
+interface PaginationEntry {
+}
+
+@React(component="Pagination")
+class Pagination extends BootstrapComponent {
+	unsettable Size size
+
+	contains PaginationEntry[] entries
+}
+
+abstract class PaginationLink extends BootstrapComponent, TextContent, PaginationEntry {
+	String href
+
+	boolean active
+
+	boolean disabled
+}
+
+@React(component="Pagination.Item")
+class PaginationItem extends PaginationLink {
+}
+
+@React(component="Pagination.First")
+class PaginationFirst extends PaginationLink {
+}
+
+@React(component="Pagination.Prev")
+class PaginationPrev extends PaginationLink {
+}
+
+@React(component="Pagination.Ellipsis")
+class PaginationEllipsis extends PaginationLink {
+}
+
+@React(component="Pagination.Next")
+class PaginationNext extends PaginationLink {
+}
+
+@React(component="Pagination.Last")
+class PaginationLast extends PaginationLink {
+}
+
+// --- Dropdowns -----------------------------------------------------------
+
+/*
+ * Item, header, divider or item text of a dropdown menu.
+ */
+interface DropdownEntry {
+}
+
+enum Drop {
+	up
+	upCentered as "up-centered"
+	down
+	downCentered as "down-centered"
+	start
+	end
+}
+
+enum Align {
+	start
+	end
+}
+
+@React(component="Dropdown")
+class Dropdown extends BootstrapComponent {
+	unsettable Drop drop
+
+	unsettable Align align
+
+	contains DropdownToggle toggle
+
+	contains DropdownMenu menu
+}
+
+@React(component="Dropdown.Toggle")
+class DropdownToggle extends BootstrapComponent, TextContent {
+	unsettable ButtonVariant variant
+
+	unsettable Size size
+
+	boolean split
+}
+
+enum MenuVariant {
+	dark
+}
+
+@React(component="Dropdown.Menu")
+class DropdownMenu extends BootstrapComponent {
+	unsettable MenuVariant variant
+
+	contains DropdownEntry[] entries
+}
+
+@React(component="Dropdown.Item")
+class DropdownItem extends BootstrapComponent, TextContent, DropdownEntry {
+	String href
+
+	String eventKey
+
+	boolean active
+
+	boolean disabled
+}
+
+@React(component="Dropdown.Header")
+class DropdownHeader extends BootstrapComponent, TextContent, DropdownEntry {
+}
+
+@React(component="Dropdown.Divider")
+class DropdownDivider extends BootstrapComponent, DropdownEntry {
+}
+
+@React(component="Dropdown.ItemText")
+class DropdownItemText extends BootstrapComponent, TextContent, DropdownEntry {
+}
+
+/*
+ * Dropdown with a button toggle in one component.
+ */
+@React(component="DropdownButton")
+class DropdownButton extends BootstrapComponent {
+	String title
+
+	@React(prop="title")
+	contains JsxNode titleNode
+
+	unsettable ButtonVariant variant
+
+	unsettable Size size
+
+	unsettable Drop drop
+
+	contains DropdownEntry[] entries
+}
+
+/*
+ * Button with a separate dropdown toggle.
+ */
+@React(component="SplitButton")
+class SplitButton extends DropdownButton {
+	String href
+}

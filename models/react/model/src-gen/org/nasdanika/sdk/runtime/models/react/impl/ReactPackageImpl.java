@@ -34,6 +34,7 @@ import org.nasdanika.sdk.runtime.models.react.JsxFragment;
 import org.nasdanika.sdk.runtime.models.react.JsxIterator;
 import org.nasdanika.sdk.runtime.models.react.JsxNode;
 import org.nasdanika.sdk.runtime.models.react.JsxText;
+import org.nasdanika.sdk.runtime.models.react.LibraryComponent;
 import org.nasdanika.sdk.runtime.models.react.LiteralAttribute;
 import org.nasdanika.sdk.runtime.models.react.MemoHook;
 import org.nasdanika.sdk.runtime.models.react.OpaqueHook;
@@ -222,6 +223,13 @@ public class ReactPackageImpl extends EPackageImpl implements ReactPackage {
 	 * @generated
 	 */
 	private EClass jsxContentEClass = null;
+
+	/**
+	 * <!-- begin-user-doc -->
+	 * <!-- end-user-doc -->
+	 * @generated
+	 */
+	private EClass libraryComponentEClass = null;
 
 	/**
 	 * <!-- begin-user-doc -->
@@ -932,6 +940,24 @@ public class ReactPackageImpl extends EPackageImpl implements ReactPackage {
 	 * <!-- end-user-doc -->
 	 * @generated
 	 */
+	public EClass getLibraryComponent() {
+		return libraryComponentEClass;
+	}
+
+	/**
+	 * <!-- begin-user-doc -->
+	 * <!-- end-user-doc -->
+	 * @generated
+	 */
+	public EReference getLibraryComponent_Attributes() {
+		return (EReference)libraryComponentEClass.getEStructuralFeatures().get(0);
+	}
+
+	/**
+	 * <!-- begin-user-doc -->
+	 * <!-- end-user-doc -->
+	 * @generated
+	 */
 	public EClass getJsxAttribute() {
 		return jsxAttributeEClass;
 	}
@@ -1136,6 +1162,9 @@ public class ReactPackageImpl extends EPackageImpl implements ReactPackage {
 		jsxContentEClass = createEClass(JSX_CONTENT);
 		createEReference(jsxContentEClass, JSX_CONTENT__NODE);
 
+		libraryComponentEClass = createEClass(LIBRARY_COMPONENT);
+		createEReference(libraryComponentEClass, LIBRARY_COMPONENT__ATTRIBUTES);
+
 		jsxAttributeEClass = createEClass(JSX_ATTRIBUTE);
 		createEAttribute(jsxAttributeEClass, JSX_ATTRIBUTE__ATTRIBUTE_NAME);
 
@@ -1209,6 +1238,7 @@ public class ReactPackageImpl extends EPackageImpl implements ReactPackage {
 		opaqueJsxEClass.getESuperTypes().add(this.getJsxNode());
 		intrinsicEClass.getESuperTypes().add(this.getJsxContainer());
 		jsxContentEClass.getESuperTypes().add(theHtmlPackage.getNode());
+		libraryComponentEClass.getESuperTypes().add(this.getJsxContainer());
 		jsxAttributeEClass.getESuperTypes().add(this.getReactElement());
 		literalAttributeEClass.getESuperTypes().add(this.getJsxAttribute());
 		expressionAttributeEClass.getESuperTypes().add(this.getJsxAttribute());
@@ -1306,6 +1336,9 @@ public class ReactPackageImpl extends EPackageImpl implements ReactPackage {
 
 		initEClass(jsxContentEClass, JsxContent.class, "JsxContent", !IS_ABSTRACT, !IS_INTERFACE, IS_GENERATED_INSTANCE_CLASS);
 		initEReference(getJsxContent_Node(), this.getJsxNode(), null, "node", null, 0, 1, JsxContent.class, !IS_TRANSIENT, !IS_VOLATILE, IS_CHANGEABLE, IS_COMPOSITE, !IS_RESOLVE_PROXIES, !IS_UNSETTABLE, IS_UNIQUE, !IS_DERIVED, IS_ORDERED);
+
+		initEClass(libraryComponentEClass, LibraryComponent.class, "LibraryComponent", IS_ABSTRACT, !IS_INTERFACE, IS_GENERATED_INSTANCE_CLASS);
+		initEReference(getLibraryComponent_Attributes(), this.getJsxAttribute(), null, "attributes", null, 0, -1, LibraryComponent.class, !IS_TRANSIENT, !IS_VOLATILE, IS_CHANGEABLE, IS_COMPOSITE, !IS_RESOLVE_PROXIES, !IS_UNSETTABLE, IS_UNIQUE, !IS_DERIVED, IS_ORDERED);
 
 		initEClass(jsxAttributeEClass, JsxAttribute.class, "JsxAttribute", IS_ABSTRACT, !IS_INTERFACE, IS_GENERATED_INSTANCE_CLASS);
 		initEAttribute(getJsxAttribute_AttributeName(), theEcorePackage.getEString(), "attributeName", null, 0, 1, JsxAttribute.class, !IS_TRANSIENT, !IS_VOLATILE, IS_CHANGEABLE, !IS_UNSETTABLE, !IS_ID, !IS_UNIQUE, !IS_DERIVED, IS_ORDERED);
@@ -1502,6 +1535,12 @@ public class ReactPackageImpl extends EPackageImpl implements ReactPackage {
 		   source,
 		   new String[] {
 			   "documentation", "JSX in an HTML container: {expression}, conditionals, iterators, component elements.\nThe counterpart of Intrinsic, so the two trees nest in each other. Rendered by the JSX\nemitter only - static HTML generation rejects it."
+		   });
+		addAnnotation
+		  (libraryComponentEClass,
+		   source,
+		   new String[] {
+			   "documentation", " ---------------------------------------------------------------------------\nComponent libraries\n---------------------------------------------------------------------------"
 		   });
 		addAnnotation
 		  (jsxAttributeEClass,

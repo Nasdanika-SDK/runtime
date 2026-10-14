@@ -10,7 +10,14 @@ import java.util.Objects;
 import java.util.Set;
 import java.util.regex.Pattern;
 
+import org.eclipse.emf.common.util.Enumerator;
+import org.eclipse.emf.ecore.EAnnotation;
+import org.eclipse.emf.ecore.EAttribute;
+import org.eclipse.emf.ecore.EClass;
+import org.eclipse.emf.ecore.EModelElement;
 import org.eclipse.emf.ecore.EObject;
+import org.eclipse.emf.ecore.EReference;
+import org.eclipse.emf.ecore.EStructuralFeature;
 import org.nasdanika.sdk.runtime.common.NasdanikaException;
 import org.nasdanika.sdk.runtime.models.html.Element;
 import org.nasdanika.sdk.runtime.models.html.Input;
@@ -40,7 +47,9 @@ import org.nasdanika.sdk.runtime.models.react.JsxFragment;
 import org.nasdanika.sdk.runtime.models.react.JsxIterator;
 import org.nasdanika.sdk.runtime.models.react.JsxNode;
 import org.nasdanika.sdk.runtime.models.react.JsxText;
+import org.nasdanika.sdk.runtime.models.react.LibraryComponent;
 import org.nasdanika.sdk.runtime.models.react.LiteralAttribute;
+import org.nasdanika.sdk.runtime.models.react.ReactPackage;
 import org.nasdanika.sdk.runtime.models.react.MemoHook;
 import org.nasdanika.sdk.runtime.models.react.OpaqueHook;
 import org.nasdanika.sdk.runtime.models.react.OpaqueJsx;
@@ -85,6 +94,21 @@ public class ReactGenerator extends Generator {
 	public static final String REACT = "react";
 
 	public static final String TSX_EXTENSION = ".tsx";
+
+	/**
+	 * Source of annotations driving rendering of {@link LibraryComponent}s.
+	 */
+	public static final String REACT_ANNOTATION_SOURCE = "urn:org.nasdanika:react";
+	public static final String COMPONENT_KEY = "component";
+	public static final String MODULE_KEY = "module";
+	public static final String SHORTHAND_KEY = "shorthand";
+	public static final String PROP_KEY = "prop";
+	public static final String LOGICAL_KEY = "logical";
+	public static final String CHILD_KEY = "child";
+	public static final String VALUE_KEY = "value";
+	public static final String JOIN_KEY = "join";
+	public static final String STYLE_KEY = "style";
+	public static final String KEY_KEY = "key";
 
 	/**
 	 * HTML attribute names which differ from React prop names, other than class.
@@ -221,6 +245,13 @@ public class ReactGenerator extends Generator {
 					addReact(ret, seen, "Fragment");
 				}
 			}
+			if (next instanceof LibraryComponent component) {
+				String[] name = componentName(component.eClass());
+				String root = name[0].split("\\.")[0];
+				if (seen.add(name[1] + ":" + root)) {
+					ret.add(new ImplicitReference(external(root, name[1]), false));
+				}
+			}
 			if (next instanceof JsxIterator iterator && iterator.getTemplate() instanceof JsxFragment) {
 				// A keyed fragment is written as Fragment in both syntaxes
 				addReact(ret, seen, "Fragment");
@@ -242,10 +273,59 @@ public class ReactGenerator extends Generator {
 	}
 
 	private static NamedTypeReference react(String name) {
+		return external(name, REACT);
+	}
+
+	/**
+	 * Reference to an export of a module the generator does not own. A qualified name, e.g.
+	 * Card.Header, imports its first segment.
+	 */
+	private static NamedTypeReference external(String qualifiedName, String moduleSpecifier) {
 		NamedTypeReference ret = TypescriptFactory.eINSTANCE.createNamedTypeReference();
-		ret.setQualifiedName(name);
-		ret.setModuleSpecifier(REACT);
+		ret.setQualifiedName(qualifiedName);
+		ret.setModuleSpecifier(moduleSpecifier);
 		return ret;
+	}
+
+	// --- Annotations -----------------------------------------------------------
+
+	/**
+	 * @return Detail of the {@link #REACT_ANNOTATION_SOURCE} annotation, null if there is none
+	 */
+	protected static String annotation(EModelElement element, String key) {
+		EAnnotation annotation = element.getEAnnotation(REACT_ANNOTATION_SOURCE);
+		return annotation == null ? null : annotation.getDetails().get(key);
+	}
+
+	/**
+	 * @return Detail of the annotation of the class or of the nearest supertype which has it
+	 */
+	protected static String classAnnotation(EClass eClass, String key) {
+		List<EClass> queue = new ArrayList<>(List.of(eClass));
+		Set<EClass> visited = new HashSet<>();
+		while (!queue.isEmpty()) {
+			EClass next = queue.remove(0);
+			if (visited.add(next)) {
+				String value = annotation(next, key);
+				if (value != null) {
+					return value;
+				}
+				queue.addAll(next.getESuperTypes());
+			}
+		}
+		return null;
+	}
+
+	/**
+	 * @return Component name and module of a library component class
+	 */
+	protected static String[] componentName(EClass eClass) {
+		String component = classAnnotation(eClass, COMPONENT_KEY);
+		String module = classAnnotation(eClass, MODULE_KEY);
+		if (isBlank(component) || isBlank(module)) {
+			throw new NasdanikaException("Library component class without component name or module annotation: " + eClass.getName());
+		}
+		return new String[] { component, module };
 	}
 
 	private static NamedTypeReference target(Declaration target) {
@@ -538,6 +618,7 @@ public class ReactGenerator extends Generator {
 							conditional.getOtherwise() == null ? null : out(conditional.getOtherwise()));
 				}
 				case JsxIterator iterator -> iterator(iterator);
+				case LibraryComponent component -> component(component);
 				case OpaqueJsx opaque -> new Verbatim(normalize(opaque.getText()));
 				default -> throw new NasdanikaException("Unsupported JSX node: " + node.eClass().getName());
 			};
@@ -686,6 +767,180 @@ public class ReactGenerator extends Generator {
 				throw new NasdanikaException("Void element " + tag + " cannot have children: " + element);
 			}
 			return new Elem(tag, true, new ArrayList<>(props.values()), children);
+		}
+
+		// --- Library components ---
+
+		/**
+		 * Renders a library component reflectively, see {@link LibraryComponent}.
+		 */
+		Elem component(LibraryComponent component) {
+			String[] name = componentName(component.eClass());
+			// Qualified, e.g. Card.Header, rooted at the local name of the imported Card
+			String type = im.localName(external(name[0], name[1]));
+			Map<String, Prop> props = new LinkedHashMap<>();
+			List<Out> children = new ArrayList<>();
+			featureProps(component, null, props, children);
+			attributes(component.getAttributes(), props);
+			children.addAll(children(component.getChildren()));
+			return new Elem(type, false, new ArrayList<>(props.values()), children);
+		}
+
+		/**
+		 * Props and children of the features of a library component or a value object.
+		 * Text children follow the children of containment features.
+		 *
+		 * @param exclude Key feature of a value object, not a prop
+		 * @param children Null for value objects, which have no children
+		 */
+		void featureProps(EObject object, EStructuralFeature exclude, Map<String, Prop> props, List<Out> children) {
+			List<Out> texts = new ArrayList<>();
+			for (EStructuralFeature feature: object.eClass().getEAllStructuralFeatures()) {
+				if (feature == exclude
+						|| ReactPackage.Literals.LIBRARY_COMPONENT.getEAllStructuralFeatures().contains(feature)
+						|| "true".equals(annotation(feature, LOGICAL_KEY))
+						|| !object.eIsSet(feature)) {
+					continue;
+				}
+				String propName = annotation(feature, PROP_KEY);
+				if (propName == null) {
+					propName = feature.getName();
+				}
+				Object value = object.eGet(feature);
+				if (feature instanceof EAttribute attribute) {
+					if ("true".equals(annotation(attribute, CHILD_KEY))) {
+						if (children == null) {
+							throw new NasdanikaException("Value objects have no children: " + attribute);
+						}
+						texts.add(new Txt(String.valueOf(value)));
+					} else {
+						Prop prop = attributeProp(attribute, propName, value);
+						if (prop != null) {
+							props.put(propName, prop);
+						}
+					}
+				} else if (feature instanceof EReference reference && reference.isContainment()) {
+					List<?> values = reference.isMany() ? (List<?>) value : List.of(value);
+					if (Map.Entry.class.equals(reference.getEReferenceType().getInstanceClass())) {
+						@SuppressWarnings("unchecked")
+						List<Map.Entry<String, String>> entries = (List<Map.Entry<String, String>>) values;
+						if (!entries.isEmpty()) {
+							props.put(propName, new Prop(propName, PropKind.CODE, "true".equals(annotation(reference, STYLE_KEY)) ? style(entries) : object(entries)));
+						}
+						continue;
+					}
+					String key = annotation(reference, KEY_KEY);
+					for (Object element: values) {
+						switch (element) {
+							case JsxNode node -> {
+								if (annotation(reference, PROP_KEY) != null) {
+									props.put(propName, new Prop(propName, PropKind.CODE, print(out(node), 0)));
+								} else if (children == null) {
+									throw new NasdanikaException("A JSX node in a value object shall be a prop: " + reference);
+								} else {
+									children.add(out(node));
+								}
+							}
+							case org.nasdanika.sdk.runtime.models.html.Node node -> {
+								if (children == null) {
+									throw new NasdanikaException("Value objects have no children: " + reference);
+								}
+								children.add(html(node));
+							}
+							case NamedTypeReference typeReference -> props.put(propName, new Prop(propName, PropKind.CODE, im.localName(typeReference)));
+							case EObject valueObject -> {
+								if (key == null) {
+									props.put(propName, valueObject(propName, valueObject, null));
+								} else {
+									// The key's value even if it is the default, e.g. xs
+									EStructuralFeature keyFeature = valueObject.eClass().getEStructuralFeature(key);
+									Object keyValue = keyFeature == null ? null : valueObject.eGet(keyFeature);
+									if (keyValue == null) {
+										throw new NasdanikaException("Value object without key " + key + ": " + valueObject);
+									}
+									String name = keyValue instanceof Enumerator enumerator ? enumerator.getLiteral() : String.valueOf(keyValue);
+									props.put(name, valueObject(name, valueObject, keyFeature));
+								}
+							}
+							default -> throw new NasdanikaException("Unsupported value of " + reference + ": " + element);
+						}
+					}
+				}
+			}
+			if (!texts.isEmpty()) {
+				if (children == null) {
+					throw new NasdanikaException("Value objects have no children: " + object);
+				}
+				children.addAll(texts);
+			}
+		}
+
+		/**
+		 * @return Null if the attribute does not render, e.g. a false boolean of a not unsettable attribute
+		 */
+		Prop attributeProp(EAttribute attribute, String name, Object value) {
+			if (attribute.isMany()) {
+				List<?> values = (List<?>) value;
+				String join = annotation(attribute, JOIN_KEY);
+				if (join != null) {
+					return new Prop(name, PropKind.STRING, String.join(join, values.stream().map(this::literalString).toList()));
+				}
+				return new Prop(name, PropKind.CODE, "[" + String.join(", ", values.stream().map(this::literal).toList()) + "]");
+			}
+			if (value instanceof Boolean bValue) {
+				String trueValue = annotation(attribute, VALUE_KEY);
+				if (bValue) {
+					return trueValue == null ? new Prop(name, PropKind.TRUE, null) : new Prop(name, PropKind.STRING, trueValue);
+				}
+				return attribute.isUnsettable() && trueValue == null ? new Prop(name, PropKind.CODE, "false") : null;
+			}
+			if (value instanceof Number) {
+				return new Prop(name, PropKind.CODE, String.valueOf(value));
+			}
+			return new Prop(name, PropKind.STRING, literalString(value));
+		}
+
+		String literalString(Object value) {
+			return value instanceof Enumerator enumerator ? enumerator.getLiteral() : String.valueOf(value);
+		}
+
+		String literal(Object value) {
+			return value instanceof Number || value instanceof Boolean ? String.valueOf(value) : quote(literalString(value));
+		}
+
+		/**
+		 * Prop with an object literal of the props of a value object, or with the value of its
+		 * shorthand prop if it is the only prop.
+		 */
+		Prop valueObject(String name, EObject valueObject, EStructuralFeature keyFeature) {
+			Map<String, Prop> props = new LinkedHashMap<>();
+			featureProps(valueObject, keyFeature, props, null);
+			String shorthand = classAnnotation(valueObject.eClass(), SHORTHAND_KEY);
+			if (props.size() == 1 && props.containsKey(shorthand)) {
+				Prop prop = props.get(shorthand);
+				return new Prop(name, prop.kind(), prop.value());
+			}
+			List<String> entries = new ArrayList<>();
+			for (Prop prop: props.values()) {
+				entries.add(prop.kind() == PropKind.SPREAD ? "..." + prop.value() : key(prop.name()) + ": " + value(prop));
+			}
+			return new Prop(name, PropKind.CODE, "{ " + String.join(", ", entries) + " }");
+		}
+
+		String value(Prop prop) {
+			return switch (prop.kind()) {
+				case STRING -> quote(prop.value());
+				case TRUE -> "true";
+				default -> prop.value();
+			};
+		}
+
+		String object(List<Map.Entry<String, String>> entries) {
+			List<String> ret = new ArrayList<>();
+			for (Map.Entry<String, String> entry: entries) {
+				ret.add(key(entry.getKey()) + ": " + quote(entry.getValue()));
+			}
+			return "{ " + String.join(", ", ret) + " }";
 		}
 
 		void selected(List<SelectItem> items, List<String> selected) {

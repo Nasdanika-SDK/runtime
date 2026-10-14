@@ -1,0 +1,273 @@
+@Ecore(
+    nsURI="https://runtime.sdk.nasdanika.org/models/react/bootstrap/components/overlays",
+	nsPrefix="org.nasdanika.sdk.runtime.models.react.bootstrap.components.overlays")
+
+@GenModel(
+	modelDirectory="/bootstrap/src-gen",
+    featureDelegation="Dynamic",
+    complianceLevel="25",
+    suppressGenModelAnnotations="false",
+    copyrightFields="false",
+    operationReflection="true",
+    importOrganizing="true"
+)
+/*
+ * React Bootstrap overlays: modals, offcanvases, toasts, tooltips and popovers.
+ * https://react-bootstrap.netlify.app/docs/components/modal
+ *
+ * Overlays are shown and hidden by state: show={state} and onHide={...} are JSX attributes
+ * of the overlay, with the state in a hook of the component rendering it.
+ */
+package org.nasdanika.sdk.runtime.models.react.bootstrap.components.overlays
+
+import org.nasdanika.sdk.runtime.models.react.JsxNode
+import org.nasdanika.sdk.runtime.models.react.bootstrap.BootstrapComponent
+import org.nasdanika.sdk.runtime.models.react.bootstrap.TextContent
+import org.nasdanika.sdk.runtime.models.react.bootstrap.Variant
+
+annotation "http://www.eclipse.org/emf/2002/Ecore" as Ecore
+annotation "http://www.eclipse.org/emf/2002/GenModel" as GenModel
+annotation "urn:org.nasdanika:react" as React
+
+// --- Modal ---------------------------------------------------------------
+
+enum ModalSize {
+	sm
+	lg
+	xl
+}
+
+enum Fullscreen {
+	smDown as "sm-down"
+	mdDown as "md-down"
+	lgDown as "lg-down"
+	xlDown as "xl-down"
+	xxlDown as "xxl-down"
+}
+
+/*
+ * Backdrop which does not close the modal on click.
+ */
+enum Backdrop {
+	^static
+}
+
+@React(component="Modal")
+class Modal extends BootstrapComponent {
+	unsettable boolean show
+
+	unsettable ModalSize size
+
+	boolean centered
+
+	boolean scrollable
+
+	boolean fullscreen
+
+	/* Fullscreen below the breakpoint. Wins over fullscreen. */
+	@React(prop="fullscreen")
+	unsettable Fullscreen fullscreenBelow
+
+	unsettable Backdrop backdrop
+
+	unsettable boolean keyboard
+
+	unsettable boolean animation
+
+	contains ModalHeader header
+
+	contains ModalBody body
+
+	contains ModalFooter footer
+}
+
+@React(component="Modal.Header")
+class ModalHeader extends BootstrapComponent {
+	boolean closeButton
+
+	contains ModalTitle title
+}
+
+@React(component="Modal.Title")
+class ModalTitle extends BootstrapComponent, TextContent {
+}
+
+@React(component="Modal.Body")
+class ModalBody extends BootstrapComponent, TextContent {
+}
+
+@React(component="Modal.Footer")
+class ModalFooter extends BootstrapComponent {
+	contains JsxNode[] content
+}
+
+// --- Offcanvas -----------------------------------------------------------
+
+enum OffcanvasPlacement {
+	start
+	end
+	top
+	bottom
+}
+
+@React(component="Offcanvas")
+class Offcanvas extends BootstrapComponent {
+	unsettable boolean show
+
+	unsettable OffcanvasPlacement placement
+
+	unsettable boolean backdrop
+
+	/* Body scrolling while the offcanvas is open */
+	boolean scroll
+
+	contains OffcanvasHeader header
+
+	contains OffcanvasBody body
+}
+
+@React(component="Offcanvas.Header")
+class OffcanvasHeader extends BootstrapComponent {
+	boolean closeButton
+
+	contains OffcanvasTitle title
+}
+
+@React(component="Offcanvas.Title")
+class OffcanvasTitle extends BootstrapComponent, TextContent {
+}
+
+@React(component="Offcanvas.Body")
+class OffcanvasBody extends BootstrapComponent, TextContent {
+}
+
+// --- Toasts --------------------------------------------------------------
+
+@React(component="Toast")
+class Toast extends BootstrapComponent {
+	unsettable boolean show
+
+	unsettable Variant bg
+
+	boolean autohide
+
+	/* Milliseconds before autohide */
+	unsettable int delay
+
+	unsettable boolean animation
+
+	contains ToastHeader header
+
+	contains ToastBody body
+}
+
+/*
+ * Header with title and secondary text, e.g. a time.
+ */
+@React(component="Toast.Header")
+class ToastHeader extends BootstrapComponent {
+	unsettable boolean closeButton
+
+	contains JsxNode[] content
+}
+
+@React(component="Toast.Body")
+class ToastBody extends BootstrapComponent, TextContent {
+}
+
+enum ToastPosition {
+	topStart as "top-start"
+	topCenter as "top-center"
+	topEnd as "top-end"
+	middleStart as "middle-start"
+	middleCenter as "middle-center"
+	middleEnd as "middle-end"
+	bottomStart as "bottom-start"
+	bottomCenter as "bottom-center"
+	bottomEnd as "bottom-end"
+}
+
+enum ToastContainment {
+	fixed
+	absolute
+	relative
+}
+
+@React(component="ToastContainer")
+class ToastContainer extends BootstrapComponent {
+	unsettable ToastPosition position
+
+	@React(prop="containerPosition")
+	unsettable ToastContainment containment
+
+	contains Toast[] toasts
+}
+
+// --- Tooltips and popovers -----------------------------------------------
+
+enum Placement {
+	auto
+	autoStart as "auto-start"
+	autoEnd as "auto-end"
+	top
+	topStart as "top-start"
+	topEnd as "top-end"
+	bottom
+	bottomStart as "bottom-start"
+	bottomEnd as "bottom-end"
+	right
+	rightStart as "right-start"
+	rightEnd as "right-end"
+	left
+	leftStart as "left-start"
+	leftEnd as "left-end"
+}
+
+enum Trigger {
+	hover
+	focus
+	click
+}
+
+/*
+ * Shows its overlay - a tooltip or a popover - for its single child.
+ */
+@React(component="OverlayTrigger")
+class OverlayTrigger extends BootstrapComponent {
+	unsettable Placement placement
+
+	/* Events showing the overlay */
+	Trigger[] trigger
+
+	unsettable int delay
+
+	/* Hides the overlay on a click outside */
+	boolean rootClose
+
+	@React(prop="overlay")
+	contains JsxNode overlay
+
+	contains JsxNode target
+}
+
+@React(component="Tooltip")
+class Tooltip extends BootstrapComponent, TextContent {
+	unsettable Placement placement
+}
+
+@React(component="Popover")
+class Popover extends BootstrapComponent {
+	unsettable Placement placement
+
+	contains PopoverHeader header
+
+	contains PopoverBody body
+}
+
+@React(component="Popover.Header")
+class PopoverHeader extends BootstrapComponent, TextContent {
+}
+
+@React(component="Popover.Body")
+class PopoverBody extends BootstrapComponent, TextContent {
+}
