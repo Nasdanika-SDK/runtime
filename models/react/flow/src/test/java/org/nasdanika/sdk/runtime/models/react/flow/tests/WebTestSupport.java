@@ -1,4 +1,4 @@
-package org.nasdanika.sdk.runtime.models.react.tests;
+package org.nasdanika.sdk.runtime.models.react.flow.tests;
 
 import java.io.IOException;
 import java.io.InputStream;
@@ -27,6 +27,7 @@ import org.nasdanika.sdk.runtime.models.html.Node;
 import org.nasdanika.sdk.runtime.models.html.Script;
 import org.nasdanika.sdk.runtime.models.html.Stylesheet;
 import org.nasdanika.sdk.runtime.models.html.Text;
+import org.nasdanika.sdk.runtime.models.react.tests.JvmPropertiesTableTests;
 import org.nasdanika.sdk.runtime.models.typescript.CodeBlock;
 import org.nasdanika.sdk.runtime.models.typescript.FunctionDeclaration;
 import org.nasdanika.sdk.runtime.models.typescript.Import;

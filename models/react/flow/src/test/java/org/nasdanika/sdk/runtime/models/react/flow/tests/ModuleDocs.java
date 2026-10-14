@@ -1,4 +1,4 @@
-package org.nasdanika.sdk.runtime.models.react.tests;
+package org.nasdanika.sdk.runtime.models.react.flow.tests;
 
 import java.io.IOException;
 import java.lang.module.ModuleDescriptor;
@@ -21,6 +21,9 @@ import java.util.stream.Stream;
 
 import org.json.JSONArray;
 import org.json.JSONObject;
+import org.nasdanika.sdk.runtime.models.react.tests.DocViewerTests;
+import org.nasdanika.sdk.runtime.models.react.tests.ModuleDocs;
+import org.nasdanika.sdk.runtime.models.react.tests.ModuleGraph;
 
 /**
  * A documentation tree over the modules of a module layer, in the shape the

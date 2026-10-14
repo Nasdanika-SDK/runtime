@@ -1,22 +1,22 @@
-package org.nasdanika.sdk.runtime.models.react.tests;
+package org.nasdanika.sdk.runtime.models.react.flow.tests;
 
 import static org.junit.jupiter.api.Assertions.assertEquals;
 import static org.junit.jupiter.api.Assertions.assertFalse;
 import static org.junit.jupiter.api.Assertions.assertTrue;
-import static org.nasdanika.sdk.runtime.models.react.tests.WebTestSupport.FACTORY;
-import static org.nasdanika.sdk.runtime.models.react.tests.WebTestSupport.badRequest;
-import static org.nasdanika.sdk.runtime.models.react.tests.WebTestSupport.binding;
-import static org.nasdanika.sdk.runtime.models.react.tests.WebTestSupport.demoPause;
-import static org.nasdanika.sdk.runtime.models.react.tests.WebTestSupport.function;
-import static org.nasdanika.sdk.runtime.models.react.tests.WebTestSupport.get;
-import static org.nasdanika.sdk.runtime.models.react.tests.WebTestSupport.method;
-import static org.nasdanika.sdk.runtime.models.react.tests.WebTestSupport.methodNotAllowed;
-import static org.nasdanika.sdk.runtime.models.react.tests.WebTestSupport.namedImport;
-import static org.nasdanika.sdk.runtime.models.react.tests.WebTestSupport.notFound;
-import static org.nasdanika.sdk.runtime.models.react.tests.WebTestSupport.path;
-import static org.nasdanika.sdk.runtime.models.react.tests.WebTestSupport.post;
-import static org.nasdanika.sdk.runtime.models.react.tests.WebTestSupport.readBody;
-import static org.nasdanika.sdk.runtime.models.react.tests.WebTestSupport.send;
+import static org.nasdanika.sdk.runtime.models.react.flow.tests.WebTestSupport.FACTORY;
+import static org.nasdanika.sdk.runtime.models.react.flow.tests.WebTestSupport.badRequest;
+import static org.nasdanika.sdk.runtime.models.react.flow.tests.WebTestSupport.binding;
+import static org.nasdanika.sdk.runtime.models.react.flow.tests.WebTestSupport.demoPause;
+import static org.nasdanika.sdk.runtime.models.react.flow.tests.WebTestSupport.function;
+import static org.nasdanika.sdk.runtime.models.react.flow.tests.WebTestSupport.get;
+import static org.nasdanika.sdk.runtime.models.react.flow.tests.WebTestSupport.method;
+import static org.nasdanika.sdk.runtime.models.react.flow.tests.WebTestSupport.methodNotAllowed;
+import static org.nasdanika.sdk.runtime.models.react.flow.tests.WebTestSupport.namedImport;
+import static org.nasdanika.sdk.runtime.models.react.flow.tests.WebTestSupport.notFound;
+import static org.nasdanika.sdk.runtime.models.react.flow.tests.WebTestSupport.path;
+import static org.nasdanika.sdk.runtime.models.react.flow.tests.WebTestSupport.post;
+import static org.nasdanika.sdk.runtime.models.react.flow.tests.WebTestSupport.readBody;
+import static org.nasdanika.sdk.runtime.models.react.flow.tests.WebTestSupport.send;
 
 import java.io.IOException;
 import java.net.InetAddress;
@@ -37,6 +37,9 @@ import org.junit.jupiter.api.Test;
 import org.eclipse.emf.common.util.EList;
 import org.nasdanika.sdk.runtime.models.html.Document;
 import org.nasdanika.sdk.runtime.models.html.Stylesheet;
+import org.nasdanika.sdk.runtime.models.react.tests.ModuleGraph;
+import org.nasdanika.sdk.runtime.models.react.tests.ReactFlowDiagramTests;
+import org.nasdanika.sdk.runtime.models.react.tests.WebTestSupport;
 import org.nasdanika.sdk.runtime.models.typescript.Module;
 import org.nasdanika.sdk.runtime.models.typescript.generator.Generator;
 

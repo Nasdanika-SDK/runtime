@@ -1,11 +1,11 @@
-package org.nasdanika.sdk.runtime.models.react.tests;
+package org.nasdanika.sdk.runtime.models.react.flow.tests;
 
 import static org.junit.jupiter.api.Assertions.assertEquals;
 import static org.junit.jupiter.api.Assertions.assertThrows;
 import static org.junit.jupiter.api.Assertions.assertTrue;
-import static org.nasdanika.sdk.runtime.models.react.tests.Jsx.HTML;
-import static org.nasdanika.sdk.runtime.models.react.tests.Jsx.REACT;
-import static org.nasdanika.sdk.runtime.models.react.tests.Jsx.TS;
+import static org.nasdanika.sdk.runtime.models.react.flow.tests.Jsx.HTML;
+import static org.nasdanika.sdk.runtime.models.react.flow.tests.Jsx.REACT;
+import static org.nasdanika.sdk.runtime.models.react.flow.tests.Jsx.TS;
 
 import java.nio.file.Files;
 import java.nio.file.Path;
@@ -30,6 +30,7 @@ import org.nasdanika.sdk.runtime.models.react.JsxBlock;
 import org.nasdanika.sdk.runtime.models.react.MemoHook;
 import org.nasdanika.sdk.runtime.models.react.StateHook;
 import org.nasdanika.sdk.runtime.models.react.generator.ReactGenerator;
+import org.nasdanika.sdk.runtime.models.react.tests.Jsx;
 import org.nasdanika.sdk.runtime.models.typescript.FunctionDeclaration;
 import org.nasdanika.sdk.runtime.models.typescript.InterfaceDeclaration;
 import org.nasdanika.sdk.runtime.models.typescript.OpaqueTypeReference;

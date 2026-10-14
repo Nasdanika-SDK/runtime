@@ -1,4 +1,4 @@
-package org.nasdanika.sdk.runtime.models.react.tests;
+package org.nasdanika.sdk.runtime.models.react.flow.tests;
 
 import org.nasdanika.sdk.runtime.models.html.Container;
 import org.nasdanika.sdk.runtime.models.html.Element;

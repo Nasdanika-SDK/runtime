@@ -1,4 +1,4 @@
-package org.nasdanika.sdk.runtime.models.react.tests;
+package org.nasdanika.sdk.runtime.models.react.flow.tests;
 
 import static org.junit.jupiter.api.Assertions.assertEquals;
 import static org.junit.jupiter.api.Assertions.assertTrue;
@@ -28,6 +28,9 @@ import org.nasdanika.sdk.runtime.models.html.TableHead;
 import org.nasdanika.sdk.runtime.models.react.ComponentDeclaration;
 import org.nasdanika.sdk.runtime.models.react.JsxNode;
 import org.nasdanika.sdk.runtime.models.react.generator.ReactGenerator;
+import org.nasdanika.sdk.runtime.models.react.tests.Jsx;
+import org.nasdanika.sdk.runtime.models.react.tests.JvmPropertiesTableTests;
+import org.nasdanika.sdk.runtime.models.react.tests.WebTestSupport;
 import org.nasdanika.sdk.runtime.models.typescript.CodeBlock;
 import org.nasdanika.sdk.runtime.models.typescript.FunctionDeclaration;
 import org.nasdanika.sdk.runtime.models.typescript.Import;

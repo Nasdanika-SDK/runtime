@@ -1,4 +1,4 @@
-package org.nasdanika.sdk.runtime.models.react.tests;
+package org.nasdanika.sdk.runtime.models.react.flow.tests;
 
 import static org.junit.jupiter.api.Assertions.assertEquals;
 import static org.junit.jupiter.api.Assertions.assertTrue;
@@ -30,6 +30,9 @@ import org.json.JSONArray;
 import org.json.JSONObject;
 import org.junit.jupiter.api.Test;
 import org.nasdanika.sdk.runtime.models.html.Document;
+import org.nasdanika.sdk.runtime.models.react.tests.JvmModulesTableTests;
+import org.nasdanika.sdk.runtime.models.react.tests.JvmPropertiesTableTests;
+import org.nasdanika.sdk.runtime.models.react.tests.WebTestSupport;
 import org.nasdanika.sdk.runtime.models.typescript.CodeBlock;
 import org.nasdanika.sdk.runtime.models.typescript.FunctionDeclaration;
 import org.nasdanika.sdk.runtime.models.typescript.Import;

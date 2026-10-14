@@ -1,4 +1,4 @@
-package org.nasdanika.sdk.runtime.models.react.tests;
+package org.nasdanika.sdk.runtime.models.react.flow.tests;
 
 import java.lang.module.ModuleDescriptor;
 import java.util.ArrayList;
@@ -7,6 +7,8 @@ import java.util.HashMap;
 import java.util.LinkedHashMap;
 import java.util.List;
 import java.util.Map;
+
+import org.nasdanika.sdk.runtime.models.react.tests.ModuleGraph;
 
 /**
  * The module dependency graph the diagram tests draw: the module this test runs in and
