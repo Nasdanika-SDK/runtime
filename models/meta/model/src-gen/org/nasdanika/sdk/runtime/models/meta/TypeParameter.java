@@ -32,7 +32,7 @@ public interface TypeParameter extends ModelElement {
 	 * <!-- begin-user-doc -->
 	 * <!-- end-user-doc -->
 	 * <!-- begin-model-doc -->
-	 *  The `extends` constraint.
+	 *  The `extends` constraint. Several bounds are an IntersectionTypeReference.
 	 * <!-- end-model-doc -->
 	 * @return the value of the '<em>Bound</em>' containment reference.
 	 * @see #setBound(TypeReference)

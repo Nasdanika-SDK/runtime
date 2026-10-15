@@ -806,7 +806,7 @@ Two classes work together per metamodel:
   `create()`, and source-location tracking by overriding `mark()` - see
   [§2.5](#25-custom-resolvers-beyond-a-fixed-epackage-list).
 
-- A **`ServiceCapabilityFactory`** that decides *which file qualifier* this
+- A **`@Capability` method** that decides *which file qualifier* this
   handler serves, requests the upstream `.groovy` source handler, and wires the
   two together.
 
@@ -862,75 +862,76 @@ In the case of SQL, an Ecore model can be generated from the SQL metadata - stat
 
 #### 2.3 Writing the capability factory
 
-The factory does three things: (1) declare which requirement it satisfies via
-`isFor`, (2) request the upstream source handler that produces a
-`CompiledScript`, and (3) construct your handler around it.
+A capability factory is a class extending `ReflectiveCapabilityFactory` with one
+`@Capability` method per capability. One class can hold many, and is registered
+once. A method does three things: (1) declare which requirement it satisfies, (2)
+request the upstream source handler that produces a `CompiledScript`, and (3)
+construct your handler around it.
+
+The signature does most of (1). The generic return type says what the method
+provides - here `ResourceContentsHandler<EObject[]>`, delivered later through a
+publisher - and it is matched with its type arguments, not just as a raw class. The
+`ResourceContentsHandler.Requirement` parameter takes the requirement's payload,
+so the method is offered only requirements carrying one. `Loader` is injected, and
+so are `Span`, `Logger`, `Meter`, `OpenTelemetry` and the required `Type` when a
+method declares them. The body checks the rest and returns null for qualifiers
+that are not its own.
 
 ```java
-public class EcoreResourceContentsHandlerCapabilityFactory
-        extends ServiceCapabilityFactory<ResourceContentsHandler.Requirement,
-                                          ResourceContentsHandler<EObject[]>> {
+public class MyCapabilityFactory extends ReflectiveCapabilityFactory {
 
-    @Override
-    public boolean isFor(Class<?> type, Object serviceRequirement) {
-        return ResourceContentsHandler.class.equals(type)
-            && serviceRequirement instanceof ResourceContentsHandler.Requirement req
-            && EObject[].class.equals(req.getContentsType())
-            // a source qualifier must sit to the right:
-            && req.getQualifierIndex() > 0
-            // the qualifier at the current index selects this handler:
-            && "ecore".equalsIgnoreCase(req.getQualifiers()[req.getQualifierIndex()]);
+    public MyCapabilityFactory() {
+        super(MethodHandles.lookup());   // so that methods need not be in an exported package
     }
 
-    @Override
-    protected Publisher<CapabilityProvider<ResourceContentsHandler<EObject[]>>> createService(
-            Class<ResourceContentsHandler<EObject[]>> serviceType,
-            ResourceContentsHandler.Requirement serviceRequirement,
-            Loader loader,
-            Span span,
-            Logger logger) {
+    @Capability
+    public Flow.Publisher<ResourceContentsHandler<EObject[]>> ecore(
+            ResourceContentsHandler.Requirement requirement,
+            Loader loader) {
+
+        if (!EObject[].class.equals(requirement.getContentsType())
+                // a source qualifier must sit to the right:
+                || requirement.getQualifierIndex() <= 0
+                // the qualifier at the current index selects this handler:
+                || !"ecore".equalsIgnoreCase(requirement.getQualifiers()[requirement.getQualifierIndex()])) {
+            return null;
+        }
 
         // Ask for a CompiledScript from the qualifier to the right (index - 1),
         // i.e. the '.groovy' source handler.
-        Resource resource = serviceRequirement.getResource();
+        Resource resource = requirement.getResource();
         ResourceContentsHandler.Requirement sourceRequirement = ResourceContentsHandler.createRequirement(
                 resource,
                 CompiledScript.class,
-                serviceRequirement.getQualifiers(),
-                serviceRequirement.getQualifierIndex() - 1);
+                requirement.getQualifiers(),
+                requirement.getQualifierIndex() - 1);
 
         CompletableFuture<List<ResourceContentsHandler<CompiledScript>>> sourceHandlers = loader.loadAll(
-                ServiceCapabilityFactory.createRequirement(ResourceContentsHandler.class, sourceRequirement));
+                Requirement.of(ResourceContentsHandler.class, sourceRequirement));
 
-        return Flows.fromFuture(sourceHandlers.thenApply(handlers -> {
-            List<ResourceContentsHandler<EObject[]>> dslHandlers = handlers
-                    .stream()
-                    .<ResourceContentsHandler<EObject[]>>map(sh -> createHandler(resource, sh))
-                    .toList();
-            return CapabilityProvider.of(Flows.fromIterable(dslHandlers));
-        }));
-    }
-
-    protected EcoreResourceContentsHandler createHandler(
-            Resource resource, ResourceContentsHandler<CompiledScript> sourceHandler) {
-        return new EcoreResourceContentsHandler(resource, sourceHandler);   // <-- your handler
+        CompletableFuture<List<ResourceContentsHandler<EObject[]>>> handlers = sourceHandlers.thenApply(sources -> sources
+                .stream()
+                .<ResourceContentsHandler<EObject[]>>map(sh -> new EcoreResourceContentsHandler(resource, sh))   // <-- your handler
+                .toList());
+        return Flows.concatMap(Flows.fromFuture(handlers), Flows::fromIterable);
     }
 }
 ```
 
 The loader does not block: `loadAll` returns a future that completes as the resolution is pumped, and
-the factory returns a publisher of the provider built from it.
+the method returns a publisher of the handlers built from it. This module's own
+`GroovyCapabilityFactory` holds its `compiledScript`, `dsl` and `ecore` methods side by side.
 
 Key points when adapting for your own qualifier:
 
-- **`isFor`** - match the qualifier name your files use. For `foo.groovy` files
-  carrying a `foo` qualifier, compare against `"foo"`. The Ecore factory matches
+- **The qualifier check** - match the qualifier name your files use. For `foo.groovy` files
+  carrying a `foo` qualifier, compare against `"foo"`. The `ecore` method matches
   the qualifier *at the current index* (`getQualifierIndex()`); the generic
-  `DslResourceContentsHandlerCapabilityFactory` instead matches `groovy` at index `0` and serves plain `.groovy` files.
+  `dsl` method instead matches `groovy` at index `0` and serves plain `.groovy` files.
 - **`createRequirement(..., getQualifierIndex() - 1)`** - this is the chaining
   step. You request a `CompiledScript` from the handler one qualifier to the
   left (the `.groovy` source), which is what your handler then evaluates.
-- **`createHandler`** - return *your* handler subclass so it is bound to *your*
+- **The handler you construct** - return *your* handler subclass so it is bound to *your*
   metamodel.
 
 #### 2.4 Registering the factory
@@ -941,7 +942,7 @@ the `provides CapabilityFactory with …` clause in
 
 ```java
 provides CapabilityFactory with
-    MyResourceContentsHandlerCapabilityFactory;    // <-- your factory here
+    MyCapabilityFactory;    // <-- your factory here
 ```
 
 On the classpath (non-modular) instead add the fully-qualified class name to

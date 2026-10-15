@@ -157,6 +157,24 @@ public interface MetaFactory extends EFactory {
 	UnionTypeReference createUnionTypeReference();
 
 	/**
+	 * Returns a new object of class '<em>Intersection Type Reference</em>'.
+	 * <!-- begin-user-doc -->
+	 * <!-- end-user-doc -->
+	 * @return a new object of class '<em>Intersection Type Reference</em>'.
+	 * @generated
+	 */
+	IntersectionTypeReference createIntersectionTypeReference();
+
+	/**
+	 * Returns a new object of class '<em>Wildcard Type Reference</em>'.
+	 * <!-- begin-user-doc -->
+	 * <!-- end-user-doc -->
+	 * @return a new object of class '<em>Wildcard Type Reference</em>'.
+	 * @generated
+	 */
+	WildcardTypeReference createWildcardTypeReference();
+
+	/**
 	 * Returns a new object of class '<em>Opaque Type Reference</em>'.
 	 * <!-- begin-user-doc -->
 	 * <!-- end-user-doc -->

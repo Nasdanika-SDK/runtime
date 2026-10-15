@@ -11,7 +11,7 @@ import org.eclipse.emf.common.util.URI;
 import org.eclipse.emf.ecore.EObject;
 import org.eclipse.emf.ecore.resource.impl.ResourceImpl;
 import org.nasdanika.sdk.runtime.common.capability.CapabilityLoader;
-import org.nasdanika.sdk.runtime.common.capability.ServiceCapabilityFactory;
+import org.nasdanika.sdk.runtime.common.capability.Requirement;
 import org.nasdanika.sdk.runtime.common.telemetry.ResourceTelemetry;
 
 /**
@@ -48,7 +48,6 @@ public class ContentsHandlingResource extends ResourceImpl {
 		return resourceContentsHandler;
 	}
 
-	@SuppressWarnings("rawtypes")
 	protected ResourceContentsHandler<EObject[]> resolveResourceContentsHandler() {
 		String lastSegment = getURI() == null ? null : getURI().lastSegment();
 		if (lastSegment == null || lastSegment.isBlank()) {
@@ -57,7 +56,7 @@ public class ContentsHandlingResource extends ResourceImpl {
 		String[] qualifiers = List.of(lastSegment.split("\\.")).reversed().toArray(String[]::new);
 		for (int i = qualifiers.length - 1; i >= 0; --i) {
 			ResourceContentsHandler.Requirement handlerRequirement = ResourceContentsHandler.createRequirement(this, EObject[].class, qualifiers, i);
-			ServiceCapabilityFactory.Requirement<ResourceContentsHandler.Requirement, ResourceContentsHandler> serviceRequirement = ServiceCapabilityFactory.createRequirement(ResourceContentsHandler.class, handlerRequirement);
+			Requirement serviceRequirement = Requirement.of(ResourceContentsHandler.class, handlerRequirement);
 			List<ResourceContentsHandler<EObject[]>> handlers = capabilityLoader.loadAll(serviceRequirement);
 			ResourceContentsHandler<EObject[]> handler = handlers
 					.stream()

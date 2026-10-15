@@ -11,7 +11,7 @@ import org.eclipse.emf.common.util.EList;
  *
  * <!-- begin-model-doc -->
  * Verbatim type text for what no class here covers - conditional and mapped
- * types, tuples, intersections. `references` keeps the named types visible to a
+ * types, tuples. `references` keeps the named types visible to a
  * projection's import resolver, so opaque text does not silently break import
  * management.
  * <!-- end-model-doc -->

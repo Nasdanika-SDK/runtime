@@ -26,6 +26,7 @@ import org.eclipse.emf.common.util.EList;
  *   <li>{@link org.nasdanika.sdk.runtime.models.jvm.Type#getAccess <em>Access</em>}</li>
  *   <li>{@link org.nasdanika.sdk.runtime.models.jvm.Type#getBinaryName <em>Binary Name</em>}</li>
  *   <li>{@link org.nasdanika.sdk.runtime.models.jvm.Type#getDescriptor <em>Descriptor</em>}</li>
+ *   <li>{@link org.nasdanika.sdk.runtime.models.jvm.Type#getSignature <em>Signature</em>}</li>
  *   <li>{@link org.nasdanika.sdk.runtime.models.jvm.Type#isAbstract <em>Abstract</em>}</li>
  *   <li>{@link org.nasdanika.sdk.runtime.models.jvm.Type#isFinal <em>Final</em>}</li>
  *   <li>{@link org.nasdanika.sdk.runtime.models.jvm.Type#isSynthetic <em>Synthetic</em>}</li>
@@ -143,6 +144,34 @@ public interface Type extends JvmElement {
 	 * @generated
 	 */
 	void setDescriptor(String value);
+
+	/**
+	 * Returns the value of the '<em><b>Signature</b></em>' attribute.
+	 * <!-- begin-user-doc -->
+	 * <!-- end-user-doc -->
+	 * <!-- begin-model-doc -->
+	 * The class file Signature attribute: type parameters, generic superclass and
+	 * interfaces, e.g. <T:Ljava/lang/Object;>Ljava/lang/Object;Ljava/util/function/Supplier<TT;>;
+	 * Unset when the type declares nothing generic, which is when the class file
+	 * has no such attribute either. See Member.signature.
+	 * <!-- end-model-doc -->
+	 * @return the value of the '<em>Signature</em>' attribute.
+	 * @see #setSignature(String)
+	 * @see org.nasdanika.sdk.runtime.models.jvm.JvmPackage#getType_Signature()
+	 * @model unique="false"
+	 * @generated
+	 */
+	String getSignature();
+
+	/**
+	 * Sets the value of the '{@link org.nasdanika.sdk.runtime.models.jvm.Type#getSignature <em>Signature</em>}' attribute.
+	 * <!-- begin-user-doc -->
+	 * <!-- end-user-doc -->
+	 * @param value the new value of the '<em>Signature</em>' attribute.
+	 * @see #getSignature()
+	 * @generated
+	 */
+	void setSignature(String value);
 
 	/**
 	 * Returns the value of the '<em><b>Abstract</b></em>' attribute.

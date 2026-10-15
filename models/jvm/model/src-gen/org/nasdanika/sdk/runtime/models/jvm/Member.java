@@ -23,6 +23,7 @@ package org.nasdanika.sdk.runtime.models.jvm;
  *   <li>{@link org.nasdanika.sdk.runtime.models.jvm.Member#isFinal <em>Final</em>}</li>
  *   <li>{@link org.nasdanika.sdk.runtime.models.jvm.Member#isSynthetic <em>Synthetic</em>}</li>
  *   <li>{@link org.nasdanika.sdk.runtime.models.jvm.Member#getDescriptor <em>Descriptor</em>}</li>
+ *   <li>{@link org.nasdanika.sdk.runtime.models.jvm.Member#getSignature <em>Signature</em>}</li>
  * </ul>
  *
  * @see org.nasdanika.sdk.runtime.models.jvm.JvmPackage#getMember()
@@ -145,5 +146,46 @@ public interface Member extends JvmElement {
 	 * @generated
 	 */
 	void setDescriptor(String value);
+
+	/**
+	 * Returns the value of the '<em><b>Signature</b></em>' attribute.
+	 * <!-- begin-user-doc -->
+	 * <!-- end-user-doc -->
+	 * <!-- begin-model-doc -->
+	 * The class file Signature attribute: a field's generic type, e.g.
+	 * Ljava/util/List<Ljava/lang/String;>; or a method's type parameters,
+	 * parameters, return and throws, e.g. <T:Ljava/lang/Object;>(TT;)Ljava/util/Optional<TT;>;
+	 * Unset when the descriptor already says everything.
+	 * 
+	 * DATA, NOT IDENTITY. Overloads are told apart by erasure, so two members of
+	 * one type never differ only in signature, and identity stays with the
+	 * descriptor. This is what lets a projection to Meta keep generics - telling
+	 * Supplier<Volume> from Supplier<Writable> - and what separates a source
+	 * incompatible change, which alters only the signature, from a binary
+	 * incompatible one, which alters the descriptor.
+	 * 
+	 * The JVM's own form rather than Java source text, for the same reason
+	 * identity uses descriptors: it is what bytecode carries, so a static scan
+	 * copies it verbatim and a live loader writes the same string from
+	 * java.lang.reflect.Type. Parameters have none of their own; theirs are
+	 * positions in the method's.
+	 * <!-- end-model-doc -->
+	 * @return the value of the '<em>Signature</em>' attribute.
+	 * @see #setSignature(String)
+	 * @see org.nasdanika.sdk.runtime.models.jvm.JvmPackage#getMember_Signature()
+	 * @model unique="false"
+	 * @generated
+	 */
+	String getSignature();
+
+	/**
+	 * Sets the value of the '{@link org.nasdanika.sdk.runtime.models.jvm.Member#getSignature <em>Signature</em>}' attribute.
+	 * <!-- begin-user-doc -->
+	 * <!-- end-user-doc -->
+	 * @param value the new value of the '<em>Signature</em>' attribute.
+	 * @see #getSignature()
+	 * @generated
+	 */
+	void setSignature(String value);
 
 } // Member

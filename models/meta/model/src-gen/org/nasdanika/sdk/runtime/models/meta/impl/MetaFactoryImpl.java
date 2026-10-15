@@ -17,6 +17,7 @@ import org.nasdanika.sdk.runtime.models.meta.ClassifierReference;
 import org.nasdanika.sdk.runtime.models.meta.DataType;
 import org.nasdanika.sdk.runtime.models.meta.EnumLiteral;
 import org.nasdanika.sdk.runtime.models.meta.IncomingReference;
+import org.nasdanika.sdk.runtime.models.meta.IntersectionTypeReference;
 import org.nasdanika.sdk.runtime.models.meta.MetaFactory;
 import org.nasdanika.sdk.runtime.models.meta.MetaPackage;
 import org.nasdanika.sdk.runtime.models.meta.OpaqueTypeReference;
@@ -28,6 +29,7 @@ import org.nasdanika.sdk.runtime.models.meta.Reference;
 import org.nasdanika.sdk.runtime.models.meta.TypeParameter;
 import org.nasdanika.sdk.runtime.models.meta.TypeParameterReference;
 import org.nasdanika.sdk.runtime.models.meta.UnionTypeReference;
+import org.nasdanika.sdk.runtime.models.meta.WildcardTypeReference;
 
 /**
  * <!-- begin-user-doc -->
@@ -88,6 +90,8 @@ public class MetaFactoryImpl extends EFactoryImpl implements MetaFactory {
 			case MetaPackage.TYPE_PARAMETER_REFERENCE: return createTypeParameterReference();
 			case MetaPackage.PRIMITIVE_TYPE_REFERENCE: return createPrimitiveTypeReference();
 			case MetaPackage.UNION_TYPE_REFERENCE: return createUnionTypeReference();
+			case MetaPackage.INTERSECTION_TYPE_REFERENCE: return createIntersectionTypeReference();
+			case MetaPackage.WILDCARD_TYPE_REFERENCE: return createWildcardTypeReference();
 			case MetaPackage.OPAQUE_TYPE_REFERENCE: return createOpaqueTypeReference();
 			case MetaPackage.OBJECT: return createObject();
 			case MetaPackage.INCOMING_REFERENCE: return createIncomingReference();
@@ -274,6 +278,26 @@ public class MetaFactoryImpl extends EFactoryImpl implements MetaFactory {
 	public UnionTypeReference createUnionTypeReference() {
 		UnionTypeReferenceImpl unionTypeReference = new UnionTypeReferenceImpl();
 		return unionTypeReference;
+	}
+
+	/**
+	 * <!-- begin-user-doc -->
+	 * <!-- end-user-doc -->
+	 * @generated
+	 */
+	public IntersectionTypeReference createIntersectionTypeReference() {
+		IntersectionTypeReferenceImpl intersectionTypeReference = new IntersectionTypeReferenceImpl();
+		return intersectionTypeReference;
+	}
+
+	/**
+	 * <!-- begin-user-doc -->
+	 * <!-- end-user-doc -->
+	 * @generated
+	 */
+	public WildcardTypeReference createWildcardTypeReference() {
+		WildcardTypeReferenceImpl wildcardTypeReference = new WildcardTypeReferenceImpl();
+		return wildcardTypeReference;
 	}
 
 	/**

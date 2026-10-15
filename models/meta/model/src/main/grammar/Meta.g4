@@ -79,8 +79,12 @@
  *   - Types: the Meta primitive kinds as lowercase keywords (string, number, boolean,
  *     bigint, date, time, dateTime, duration, binary, any, null, void), classifier
  *     names with optional type arguments, type parameter names (resolved by the
- *     builder against the enclosing scope), unions with |, and `opaque text` in
- *     backticks for anything else (OpaqueTypeReference).
+ *     builder against the enclosing scope), unions with |, intersections with &
+ *     (binding tighter than |, as in TypeScript, so A & B | C is (A & B) | C),
+ *     wildcards ?, ? extends T and ? super T as type arguments only
+ *     (WildcardTypeReference), and `opaque text` in backticks for anything else
+ *     (OpaqueTypeReference). A type parameter with several bounds is written
+ *     <T extends A & B> and its bound is an IntersectionTypeReference.
  *   - type Name as <primitive kind> wraps <source type>: DataType with its
  *     representation and sourceType.
  *   - enum: Enum, literals with an optional serialized value (as "value") and ordinal.
@@ -88,7 +92,7 @@
  *     A parameter with ... is variadic.
  *
  * Keywords that commonly occur as names (namespace, prefix, version, as, wraps,
- * throws, opposite, keys, the modifiers, id, type, and the primitive kinds) are
+ * throws, opposite, keys, super, the modifiers, id, type, and the primitive kinds) are
  * reserved only where they are keywords: they are accepted as feature, operation,
  * parameter and literal names. Type names are plain identifiers; any identifier may
  * be escaped with a leading ^, as in Xcore, and the builder strips the ^.
@@ -160,7 +164,7 @@ reference
 
 referenceSegment
     : IDENTIFIER
-    | NAMESPACE | PREFIX | VERSION | AS | WRAPS | THROWS | OPPOSITE | KEYS
+    | NAMESPACE | PREFIX | VERSION | AS | WRAPS | THROWS | OPPOSITE | KEYS | SUPER
     | DERIVED | READONLY | UNORDERED | UNIQUE | ID | TYPE
     | STRING_TYPE | NUMBER_TYPE | BOOLEAN_TYPE | BIGINT_TYPE | DATE_TYPE | TIME_TYPE
     | DATE_TIME_TYPE | DURATION_TYPE | BINARY_TYPE | ANY_TYPE | VOID_TYPE
@@ -241,11 +245,16 @@ typeParameter
     : annotation* typeName (EXTENDS typeReference)? ('=' typeReference)?
     ;
 
+/* A single member is that member, not a one-element union; likewise for intersections. */
 typeReference
     : unionMember ('|' unionMember)*
     ;
 
 unionMember
+    : intersectionMember ('&' intersectionMember)*
+    ;
+
+intersectionMember
     : primitiveType                             # primitiveTypeReference
     | qualifiedTypeName typeArguments?          # classifierReference
     | OPAQUE                                    # opaqueTypeReference
@@ -253,7 +262,12 @@ unionMember
     ;
 
 typeArguments
-    : '<' typeReference (',' typeReference)* '>'
+    : '<' typeArgument (',' typeArgument)* '>'
+    ;
+
+typeArgument
+    : typeReference                             # typeArgumentReference
+    | '?' ((EXTENDS | SUPER) typeReference)?    # wildcardTypeReference
     ;
 
 primitiveType
@@ -302,7 +316,7 @@ typeName
  */
 name
     : IDENTIFIER
-    | NAMESPACE | PREFIX | VERSION | AS | WRAPS | THROWS | OPPOSITE | KEYS
+    | NAMESPACE | PREFIX | VERSION | AS | WRAPS | THROWS | OPPOSITE | KEYS | SUPER
     | DERIVED | READONLY | UNORDERED | UNIQUE | ID | TYPE
     | STRING_TYPE | NUMBER_TYPE | BOOLEAN_TYPE | BIGINT_TYPE | DATE_TYPE | TIME_TYPE
     | DATE_TIME_TYPE | DURATION_TYPE | BINARY_TYPE | ANY_TYPE | NULL_TYPE | VOID_TYPE
@@ -328,6 +342,7 @@ AS          : 'as';
 ABSTRACT    : 'abstract';
 CLASS       : 'class';
 EXTENDS     : 'extends';
+SUPER       : 'super';
 TYPE        : 'type';
 WRAPS       : 'wraps';
 ENUM        : 'enum';

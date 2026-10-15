@@ -37,5 +37,9 @@
 				<groupId>org.eclipse.emf</groupId>
 				<artifactId>org.eclipse.emf.ecore.xmi</artifactId>
 			</dependency>
+		<dependency>
+			<groupId>io.leangen.geantyref</groupId>
+			<artifactId>geantyref</artifactId>
+		</dependency>
 	</dependencies>
 </project>

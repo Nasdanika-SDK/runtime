@@ -21,6 +21,7 @@ import org.nasdanika.sdk.runtime.models.jvm.Member;
  *   <li>{@link org.nasdanika.sdk.runtime.models.jvm.impl.MemberImpl#isFinal <em>Final</em>}</li>
  *   <li>{@link org.nasdanika.sdk.runtime.models.jvm.impl.MemberImpl#isSynthetic <em>Synthetic</em>}</li>
  *   <li>{@link org.nasdanika.sdk.runtime.models.jvm.impl.MemberImpl#getDescriptor <em>Descriptor</em>}</li>
+ *   <li>{@link org.nasdanika.sdk.runtime.models.jvm.impl.MemberImpl#getSignature <em>Signature</em>}</li>
  * </ul>
  *
  * @generated
@@ -75,6 +76,16 @@ public abstract class MemberImpl extends JvmElementImpl implements Member {
 	 * @ordered
 	 */
 	protected static final String DESCRIPTOR_EDEFAULT = null;
+
+	/**
+	 * The default value of the '{@link #getSignature() <em>Signature</em>}' attribute.
+	 * <!-- begin-user-doc -->
+	 * <!-- end-user-doc -->
+	 * @see #getSignature()
+	 * @generated
+	 * @ordered
+	 */
+	protected static final String SIGNATURE_EDEFAULT = null;
 
 	/**
 	 * <!-- begin-user-doc -->
@@ -190,6 +201,24 @@ public abstract class MemberImpl extends JvmElementImpl implements Member {
 	 * <!-- end-user-doc -->
 	 * @generated
 	 */
+	public String getSignature() {
+		return (String)eDynamicGet(JvmPackage.MEMBER__SIGNATURE, JvmPackage.Literals.MEMBER__SIGNATURE, true, true);
+	}
+
+	/**
+	 * <!-- begin-user-doc -->
+	 * <!-- end-user-doc -->
+	 * @generated
+	 */
+	public void setSignature(String newSignature) {
+		eDynamicSet(JvmPackage.MEMBER__SIGNATURE, JvmPackage.Literals.MEMBER__SIGNATURE, newSignature);
+	}
+
+	/**
+	 * <!-- begin-user-doc -->
+	 * <!-- end-user-doc -->
+	 * @generated
+	 */
 	@Override
 	public Object eGet(int featureID, boolean resolve, boolean coreType) {
 		switch (featureID) {
@@ -203,6 +232,8 @@ public abstract class MemberImpl extends JvmElementImpl implements Member {
 				return isSynthetic();
 			case JvmPackage.MEMBER__DESCRIPTOR:
 				return getDescriptor();
+			case JvmPackage.MEMBER__SIGNATURE:
+				return getSignature();
 		}
 		return super.eGet(featureID, resolve, coreType);
 	}
@@ -229,6 +260,9 @@ public abstract class MemberImpl extends JvmElementImpl implements Member {
 				return;
 			case JvmPackage.MEMBER__DESCRIPTOR:
 				setDescriptor((String)newValue);
+				return;
+			case JvmPackage.MEMBER__SIGNATURE:
+				setSignature((String)newValue);
 				return;
 		}
 		super.eSet(featureID, newValue);
@@ -257,6 +291,9 @@ public abstract class MemberImpl extends JvmElementImpl implements Member {
 			case JvmPackage.MEMBER__DESCRIPTOR:
 				setDescriptor(DESCRIPTOR_EDEFAULT);
 				return;
+			case JvmPackage.MEMBER__SIGNATURE:
+				setSignature(SIGNATURE_EDEFAULT);
+				return;
 		}
 		super.eUnset(featureID);
 	}
@@ -279,6 +316,8 @@ public abstract class MemberImpl extends JvmElementImpl implements Member {
 				return isSynthetic() != SYNTHETIC_EDEFAULT;
 			case JvmPackage.MEMBER__DESCRIPTOR:
 				return DESCRIPTOR_EDEFAULT == null ? getDescriptor() != null : !DESCRIPTOR_EDEFAULT.equals(getDescriptor());
+			case JvmPackage.MEMBER__SIGNATURE:
+				return SIGNATURE_EDEFAULT == null ? getSignature() != null : !SIGNATURE_EDEFAULT.equals(getSignature());
 		}
 		return super.eIsSet(featureID);
 	}

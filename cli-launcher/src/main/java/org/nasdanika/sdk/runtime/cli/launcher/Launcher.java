@@ -24,8 +24,7 @@ import org.nasdanika.sdk.runtime.common.Closeable;
 import org.nasdanika.sdk.runtime.common.NasdanikaResourceSet;
 import org.nasdanika.sdk.runtime.common.capability.CapabilityFactorySource;
 import org.nasdanika.sdk.runtime.common.capability.CapabilityLoader;
-import org.nasdanika.sdk.runtime.common.capability.ServiceCapabilityFactory;
-import org.nasdanika.sdk.runtime.common.capability.ServiceCapabilityFactory.Requirement;
+import org.nasdanika.sdk.runtime.common.capability.Requirement;
 import org.nasdanika.sdk.runtime.common.telemetry.Telemetry;
 import org.nasdanika.sdk.runtime.models.telemetry.exporters.ModelLogRecordExporter;
 import org.nasdanika.sdk.runtime.models.telemetry.exporters.ModelMetricExporter;
@@ -169,7 +168,7 @@ public class Launcher {
 			CapabilityLoader capabilityLoader = CapabilityLoader.of(capabilityFactorySource);
 			
 			// Sub-commands, sorting alphabetically
-			Requirement<SubCommandRequirement, CommandLine> subCommandRequirement = ServiceCapabilityFactory.createRequirement(
+			Requirement subCommandRequirement = Requirement.of(
 					CommandLine.class,  
 					new SubCommandRequirement(Collections.emptyList(), new AtomicInteger()));
 			

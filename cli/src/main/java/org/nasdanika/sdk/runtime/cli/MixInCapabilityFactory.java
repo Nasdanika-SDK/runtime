@@ -1,13 +1,13 @@
 package org.nasdanika.sdk.runtime.cli;
 
+import java.lang.invoke.MethodHandles;
 import java.util.List;
 import java.util.Objects;
 import java.util.concurrent.Flow.Publisher;
 
-import org.nasdanika.sdk.runtime.common.Adaptable;
+import org.nasdanika.sdk.runtime.common.Adapters;
 import org.nasdanika.sdk.runtime.common.Util;
-import org.nasdanika.sdk.runtime.common.capability.CapabilityProvider;
-import org.nasdanika.sdk.runtime.common.capability.ServiceCapabilityFactory;
+import org.nasdanika.sdk.runtime.common.capability.ReflectiveCapabilityFactory;
 import org.nasdanika.sdk.runtime.common.flow.Flows;
 
 import io.opentelemetry.api.logs.Logger;
@@ -17,26 +17,24 @@ import picocli.CommandLine;
 /**
  * Base class for MixIn factories.
  */
-public abstract class MixInCapabilityFactory<T> extends ServiceCapabilityFactory<MixInRequirement, MixInRecord> {
+public abstract class MixInCapabilityFactory<T> extends ReflectiveCapabilityFactory {
 
-	@Override
-	public boolean isFor(Class<?> type, Object requirement) {
-		return MixInRecord.class == type;
+	protected MixInCapabilityFactory() {
+		super(MethodHandles.lookup());
 	}
-	
-	@Override
-	protected Publisher<CapabilityProvider<MixInRecord>> createService(
-			Class<MixInRecord> serviceType,
-			MixInRequirement serviceRequirement, 
-			Loader loader, 
-			Span span, 
+
+	/**
+	 * Mix-ins for the last command of the path, named {@link #getName()}.
+	 */
+	@Capability
+	public Publisher<MixInRecord> mixIns(
+			MixInRequirement requirement,
+			Loader loader,
+			Span span,
 			Logger logger) {
-		
-		Publisher<T> mixInPublisher = createMixIn(serviceRequirement.commandPath(), loader, span, logger);
-		if (mixInPublisher != null) {
-			CapabilityProvider.of(mixInPublisher);
-		}
-		return Flows.empty();
+
+		Publisher<T> mixInPublisher = createMixIn(requirement.commandPath(), loader, span, logger);
+		return mixInPublisher == null ? null : Flows.map(mixInPublisher, mixIn -> new MixInRecord(getName(), mixIn));
 	}
 	
 	protected abstract String getName();
@@ -80,7 +78,7 @@ public abstract class MixInCapabilityFactory<T> extends ServiceCapabilityFactory
 					ParentCommands parentCommands = le.getAnnotation(ParentCommands.class);
 					if (parentCommands != null) {
 						for (Class<?> pt: parentCommands.value()) {
-							if (Adaptable.adaptTo(userObject, pt) != null) {
+							if (Adapters.adapt(userObject, pt) != null) {
 								return true;
 							}
 						}

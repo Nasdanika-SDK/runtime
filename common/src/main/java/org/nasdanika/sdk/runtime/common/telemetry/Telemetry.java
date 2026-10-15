@@ -120,6 +120,11 @@ public final class Telemetry {
 
 	public static final AttributeKey<Long> CAPABILITY_PROVIDERS = AttributeKey.longKey("nasdanika.capability.providers");
 
+	/**
+	 * The factory method that produced capabilities, when a factory has several: declaring class and method name.
+	 */
+	public static final AttributeKey<String> CAPABILITY_METHOD = AttributeKey.stringKey("nasdanika.capability.method");
+
 	public static final AttributeKey<String> FLOW_DESCRIPTION = AttributeKey.stringKey("nasdanika.flow.description");
 
 	public static final AttributeKey<Long> PROGRESS_WORKED = AttributeKey.longKey("nasdanika.progress.worked");

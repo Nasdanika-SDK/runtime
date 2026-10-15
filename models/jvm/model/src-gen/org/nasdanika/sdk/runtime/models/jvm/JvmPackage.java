@@ -1936,13 +1936,22 @@ public interface JvmPackage extends EPackage {
 	int TYPE__DESCRIPTOR = JVM_ELEMENT_FEATURE_COUNT + 3;
 
 	/**
+	 * The feature id for the '<em><b>Signature</b></em>' attribute.
+	 * <!-- begin-user-doc -->
+	 * <!-- end-user-doc -->
+	 * @generated
+	 * @ordered
+	 */
+	int TYPE__SIGNATURE = JVM_ELEMENT_FEATURE_COUNT + 4;
+
+	/**
 	 * The feature id for the '<em><b>Abstract</b></em>' attribute.
 	 * <!-- begin-user-doc -->
 	 * <!-- end-user-doc -->
 	 * @generated
 	 * @ordered
 	 */
-	int TYPE__ABSTRACT = JVM_ELEMENT_FEATURE_COUNT + 4;
+	int TYPE__ABSTRACT = JVM_ELEMENT_FEATURE_COUNT + 5;
 
 	/**
 	 * The feature id for the '<em><b>Final</b></em>' attribute.
@@ -1951,7 +1960,7 @@ public interface JvmPackage extends EPackage {
 	 * @generated
 	 * @ordered
 	 */
-	int TYPE__FINAL = JVM_ELEMENT_FEATURE_COUNT + 5;
+	int TYPE__FINAL = JVM_ELEMENT_FEATURE_COUNT + 6;
 
 	/**
 	 * The feature id for the '<em><b>Synthetic</b></em>' attribute.
@@ -1960,7 +1969,7 @@ public interface JvmPackage extends EPackage {
 	 * @generated
 	 * @ordered
 	 */
-	int TYPE__SYNTHETIC = JVM_ELEMENT_FEATURE_COUNT + 6;
+	int TYPE__SYNTHETIC = JVM_ELEMENT_FEATURE_COUNT + 7;
 
 	/**
 	 * The feature id for the '<em><b>Sealed</b></em>' attribute.
@@ -1969,7 +1978,7 @@ public interface JvmPackage extends EPackage {
 	 * @generated
 	 * @ordered
 	 */
-	int TYPE__SEALED = JVM_ELEMENT_FEATURE_COUNT + 7;
+	int TYPE__SEALED = JVM_ELEMENT_FEATURE_COUNT + 8;
 
 	/**
 	 * The feature id for the '<em><b>Class File Version</b></em>' attribute.
@@ -1978,7 +1987,7 @@ public interface JvmPackage extends EPackage {
 	 * @generated
 	 * @ordered
 	 */
-	int TYPE__CLASS_FILE_VERSION = JVM_ELEMENT_FEATURE_COUNT + 8;
+	int TYPE__CLASS_FILE_VERSION = JVM_ELEMENT_FEATURE_COUNT + 9;
 
 	/**
 	 * The feature id for the '<em><b>Methods</b></em>' containment reference list.
@@ -1987,7 +1996,7 @@ public interface JvmPackage extends EPackage {
 	 * @generated
 	 * @ordered
 	 */
-	int TYPE__METHODS = JVM_ELEMENT_FEATURE_COUNT + 9;
+	int TYPE__METHODS = JVM_ELEMENT_FEATURE_COUNT + 10;
 
 	/**
 	 * The feature id for the '<em><b>Fields</b></em>' containment reference list.
@@ -1996,7 +2005,7 @@ public interface JvmPackage extends EPackage {
 	 * @generated
 	 * @ordered
 	 */
-	int TYPE__FIELDS = JVM_ELEMENT_FEATURE_COUNT + 10;
+	int TYPE__FIELDS = JVM_ELEMENT_FEATURE_COUNT + 11;
 
 	/**
 	 * The feature id for the '<em><b>Super Type</b></em>' reference.
@@ -2005,7 +2014,7 @@ public interface JvmPackage extends EPackage {
 	 * @generated
 	 * @ordered
 	 */
-	int TYPE__SUPER_TYPE = JVM_ELEMENT_FEATURE_COUNT + 11;
+	int TYPE__SUPER_TYPE = JVM_ELEMENT_FEATURE_COUNT + 12;
 
 	/**
 	 * The feature id for the '<em><b>Interfaces</b></em>' reference list.
@@ -2014,7 +2023,7 @@ public interface JvmPackage extends EPackage {
 	 * @generated
 	 * @ordered
 	 */
-	int TYPE__INTERFACES = JVM_ELEMENT_FEATURE_COUNT + 12;
+	int TYPE__INTERFACES = JVM_ELEMENT_FEATURE_COUNT + 13;
 
 	/**
 	 * The feature id for the '<em><b>Component Type</b></em>' reference.
@@ -2023,7 +2032,7 @@ public interface JvmPackage extends EPackage {
 	 * @generated
 	 * @ordered
 	 */
-	int TYPE__COMPONENT_TYPE = JVM_ELEMENT_FEATURE_COUNT + 13;
+	int TYPE__COMPONENT_TYPE = JVM_ELEMENT_FEATURE_COUNT + 14;
 
 	/**
 	 * The feature id for the '<em><b>Module</b></em>' reference.
@@ -2032,7 +2041,7 @@ public interface JvmPackage extends EPackage {
 	 * @generated
 	 * @ordered
 	 */
-	int TYPE__MODULE = JVM_ELEMENT_FEATURE_COUNT + 14;
+	int TYPE__MODULE = JVM_ELEMENT_FEATURE_COUNT + 15;
 
 	/**
 	 * The number of structural features of the '<em>Type</em>' class.
@@ -2041,7 +2050,7 @@ public interface JvmPackage extends EPackage {
 	 * @generated
 	 * @ordered
 	 */
-	int TYPE_FEATURE_COUNT = JVM_ELEMENT_FEATURE_COUNT + 15;
+	int TYPE_FEATURE_COUNT = JVM_ELEMENT_FEATURE_COUNT + 16;
 
 	/**
 	 * The operation id for the '<em>Collect</em>' operation.
@@ -2216,13 +2225,22 @@ public interface JvmPackage extends EPackage {
 	int MEMBER__DESCRIPTOR = JVM_ELEMENT_FEATURE_COUNT + 4;
 
 	/**
+	 * The feature id for the '<em><b>Signature</b></em>' attribute.
+	 * <!-- begin-user-doc -->
+	 * <!-- end-user-doc -->
+	 * @generated
+	 * @ordered
+	 */
+	int MEMBER__SIGNATURE = JVM_ELEMENT_FEATURE_COUNT + 5;
+
+	/**
 	 * The number of structural features of the '<em>Member</em>' class.
 	 * <!-- begin-user-doc -->
 	 * <!-- end-user-doc -->
 	 * @generated
 	 * @ordered
 	 */
-	int MEMBER_FEATURE_COUNT = JVM_ELEMENT_FEATURE_COUNT + 5;
+	int MEMBER_FEATURE_COUNT = JVM_ELEMENT_FEATURE_COUNT + 6;
 
 	/**
 	 * The operation id for the '<em>Collect</em>' operation.
@@ -2395,6 +2413,15 @@ public interface JvmPackage extends EPackage {
 	 * @ordered
 	 */
 	int METHOD__DESCRIPTOR = MEMBER__DESCRIPTOR;
+
+	/**
+	 * The feature id for the '<em><b>Signature</b></em>' attribute.
+	 * <!-- begin-user-doc -->
+	 * <!-- end-user-doc -->
+	 * @generated
+	 * @ordered
+	 */
+	int METHOD__SIGNATURE = MEMBER__SIGNATURE;
 
 	/**
 	 * The feature id for the '<em><b>Abstract</b></em>' attribute.
@@ -2677,6 +2704,15 @@ public interface JvmPackage extends EPackage {
 	int FIELD__DESCRIPTOR = MEMBER__DESCRIPTOR;
 
 	/**
+	 * The feature id for the '<em><b>Signature</b></em>' attribute.
+	 * <!-- begin-user-doc -->
+	 * <!-- end-user-doc -->
+	 * @generated
+	 * @ordered
+	 */
+	int FIELD__SIGNATURE = MEMBER__SIGNATURE;
+
+	/**
 	 * The feature id for the '<em><b>Transient</b></em>' attribute.
 	 * <!-- begin-user-doc -->
 	 * <!-- end-user-doc -->
@@ -2704,13 +2740,22 @@ public interface JvmPackage extends EPackage {
 	int FIELD__ENUM_CONSTANT = MEMBER_FEATURE_COUNT + 2;
 
 	/**
+	 * The feature id for the '<em><b>Constant Value</b></em>' attribute.
+	 * <!-- begin-user-doc -->
+	 * <!-- end-user-doc -->
+	 * @generated
+	 * @ordered
+	 */
+	int FIELD__CONSTANT_VALUE = MEMBER_FEATURE_COUNT + 3;
+
+	/**
 	 * The feature id for the '<em><b>Type</b></em>' reference.
 	 * <!-- begin-user-doc -->
 	 * <!-- end-user-doc -->
 	 * @generated
 	 * @ordered
 	 */
-	int FIELD__TYPE = MEMBER_FEATURE_COUNT + 3;
+	int FIELD__TYPE = MEMBER_FEATURE_COUNT + 4;
 
 	/**
 	 * The number of structural features of the '<em>Field</em>' class.
@@ -2719,7 +2764,7 @@ public interface JvmPackage extends EPackage {
 	 * @generated
 	 * @ordered
 	 */
-	int FIELD_FEATURE_COUNT = MEMBER_FEATURE_COUNT + 4;
+	int FIELD_FEATURE_COUNT = MEMBER_FEATURE_COUNT + 5;
 
 	/**
 	 * The operation id for the '<em>Collect</em>' operation.
@@ -3617,6 +3662,17 @@ public interface JvmPackage extends EPackage {
 	EAttribute getType_Descriptor();
 
 	/**
+	 * Returns the meta object for the attribute '{@link org.nasdanika.sdk.runtime.models.jvm.Type#getSignature <em>Signature</em>}'.
+	 * <!-- begin-user-doc -->
+	 * <!-- end-user-doc -->
+	 * @return the meta object for the attribute '<em>Signature</em>'.
+	 * @see org.nasdanika.sdk.runtime.models.jvm.Type#getSignature()
+	 * @see #getType()
+	 * @generated
+	 */
+	EAttribute getType_Signature();
+
+	/**
 	 * Returns the meta object for the attribute '{@link org.nasdanika.sdk.runtime.models.jvm.Type#isAbstract <em>Abstract</em>}'.
 	 * <!-- begin-user-doc -->
 	 * <!-- end-user-doc -->
@@ -3803,6 +3859,17 @@ public interface JvmPackage extends EPackage {
 	EAttribute getMember_Descriptor();
 
 	/**
+	 * Returns the meta object for the attribute '{@link org.nasdanika.sdk.runtime.models.jvm.Member#getSignature <em>Signature</em>}'.
+	 * <!-- begin-user-doc -->
+	 * <!-- end-user-doc -->
+	 * @return the meta object for the attribute '<em>Signature</em>'.
+	 * @see org.nasdanika.sdk.runtime.models.jvm.Member#getSignature()
+	 * @see #getMember()
+	 * @generated
+	 */
+	EAttribute getMember_Signature();
+
+	/**
 	 * Returns the meta object for class '{@link org.nasdanika.sdk.runtime.models.jvm.Method <em>Method</em>}'.
 	 * <!-- begin-user-doc -->
 	 * <!-- end-user-doc -->
@@ -3975,6 +4042,17 @@ public interface JvmPackage extends EPackage {
 	 * @generated
 	 */
 	EAttribute getField_EnumConstant();
+
+	/**
+	 * Returns the meta object for the attribute '{@link org.nasdanika.sdk.runtime.models.jvm.Field#getConstantValue <em>Constant Value</em>}'.
+	 * <!-- begin-user-doc -->
+	 * <!-- end-user-doc -->
+	 * @return the meta object for the attribute '<em>Constant Value</em>'.
+	 * @see org.nasdanika.sdk.runtime.models.jvm.Field#getConstantValue()
+	 * @see #getField()
+	 * @generated
+	 */
+	EAttribute getField_ConstantValue();
 
 	/**
 	 * Returns the meta object for the reference '{@link org.nasdanika.sdk.runtime.models.jvm.Field#getType <em>Type</em>}'.
@@ -4623,6 +4701,14 @@ public interface JvmPackage extends EPackage {
 		EAttribute TYPE__DESCRIPTOR = eINSTANCE.getType_Descriptor();
 
 		/**
+		 * The meta object literal for the '<em><b>Signature</b></em>' attribute feature.
+		 * <!-- begin-user-doc -->
+		 * <!-- end-user-doc -->
+		 * @generated
+		 */
+		EAttribute TYPE__SIGNATURE = eINSTANCE.getType_Signature();
+
+		/**
 		 * The meta object literal for the '<em><b>Abstract</b></em>' attribute feature.
 		 * <!-- begin-user-doc -->
 		 * <!-- end-user-doc -->
@@ -4761,6 +4847,14 @@ public interface JvmPackage extends EPackage {
 		EAttribute MEMBER__DESCRIPTOR = eINSTANCE.getMember_Descriptor();
 
 		/**
+		 * The meta object literal for the '<em><b>Signature</b></em>' attribute feature.
+		 * <!-- begin-user-doc -->
+		 * <!-- end-user-doc -->
+		 * @generated
+		 */
+		EAttribute MEMBER__SIGNATURE = eINSTANCE.getMember_Signature();
+
+		/**
 		 * The meta object literal for the '{@link org.nasdanika.sdk.runtime.models.jvm.impl.MethodImpl <em>Method</em>}' class.
 		 * <!-- begin-user-doc -->
 		 * <!-- end-user-doc -->
@@ -4891,6 +4985,14 @@ public interface JvmPackage extends EPackage {
 		 * @generated
 		 */
 		EAttribute FIELD__ENUM_CONSTANT = eINSTANCE.getField_EnumConstant();
+
+		/**
+		 * The meta object literal for the '<em><b>Constant Value</b></em>' attribute feature.
+		 * <!-- begin-user-doc -->
+		 * <!-- end-user-doc -->
+		 * @generated
+		 */
+		EAttribute FIELD__CONSTANT_VALUE = eINSTANCE.getField_ConstantValue();
 
 		/**
 		 * The meta object literal for the '<em><b>Type</b></em>' reference feature.

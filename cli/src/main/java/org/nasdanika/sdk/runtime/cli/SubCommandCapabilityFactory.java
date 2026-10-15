@@ -1,5 +1,6 @@
 package org.nasdanika.sdk.runtime.cli;
 
+import java.lang.invoke.MethodHandles;
 import java.util.ArrayList;
 import java.util.Collections;
 import java.util.List;
@@ -9,10 +10,11 @@ import java.util.concurrent.CompletableFuture;
 import java.util.concurrent.Flow.Publisher;
 import java.util.concurrent.atomic.AtomicInteger;
 
-import org.nasdanika.sdk.runtime.common.Adaptable;
+import org.nasdanika.sdk.runtime.common.Adapters;
 import org.nasdanika.sdk.runtime.common.Util;
 import org.nasdanika.sdk.runtime.common.capability.CapabilityProvider;
-import org.nasdanika.sdk.runtime.common.capability.ServiceCapabilityFactory;
+import org.nasdanika.sdk.runtime.common.capability.ReflectiveCapabilityFactory;
+import org.nasdanika.sdk.runtime.common.capability.Requirement;
 import org.nasdanika.sdk.runtime.common.flow.Flows;
 
 import io.opentelemetry.api.logs.Logger;
@@ -24,7 +26,7 @@ import picocli.CommandLine;
  * Base class for sub-command factories.
  * Creates {@link CommandLine} from the command object, adds sub-commands and mix-ins
  */
-public abstract class SubCommandCapabilityFactory<T> extends ServiceCapabilityFactory<SubCommandRequirement, CommandLine> {
+public abstract class SubCommandCapabilityFactory<T> extends ReflectiveCapabilityFactory {
 	
 	private static final String MAX_COMMAND_PATH_PROPERTY = "org.nasdanika.sdk.runtime.cli.maxCommandPath";
 
@@ -34,13 +36,12 @@ public abstract class SubCommandCapabilityFactory<T> extends ServiceCapabilityFa
 		return s == null || s.isBlank();
 	}
 
-	@Override
-	public boolean isFor(Class<?> type, Object requirement) {
-		return CommandLine.class == type;
-	}
-	
 	private record CommandLineAndPath(CommandLine commandLine, List<CommandLine> path) {};
-	
+
+	protected SubCommandCapabilityFactory() {
+		super(MethodHandles.lookup());
+	}
+
 	public static final int DEFAULT_MAX_COMMAND_PATH = 15;
 	
 	public static final int DEFAULT_MAX_COMMANDS = 2000;
@@ -85,10 +86,13 @@ public abstract class SubCommandCapabilityFactory<T> extends ServiceCapabilityFa
 		return DEFAULT_MAX_COMMAND_PATH;
 	}
 	
-	@Override
-	protected Publisher<CapabilityProvider<CommandLine>> createService(
-			Class<CommandLine> serviceType,
-			SubCommandRequirement serviceRequirement, 
+	/**
+	 * The command, wrapped in a {@link CommandLine} with its sub-commands and mix-ins, for the parent
+	 * path of the requirement, if {@link #match(List)} accepts the parent.
+	 */
+	@Capability
+	public Publisher<CapabilityProvider<CommandLine>> commandLine(
+			SubCommandRequirement serviceRequirement,
 			Loader loader, 
 			Span span, 
 			Logger logger) {
@@ -223,7 +227,7 @@ public abstract class SubCommandCapabilityFactory<T> extends ServiceCapabilityFa
 			return CompletableFuture.completedFuture(Collections.emptyList());
 		}
 		
-		Requirement<SubCommandRequirement, CommandLine> subCommandRequirement = ServiceCapabilityFactory.createRequirement(CommandLine.class, new SubCommandRequirement(path, commandCounter));
+		Requirement subCommandRequirement = Requirement.of(CommandLine.class, new SubCommandRequirement(path, commandCounter));
 		return loader.loadAll(subCommandRequirement);
 	}
 	
@@ -294,7 +298,7 @@ public abstract class SubCommandCapabilityFactory<T> extends ServiceCapabilityFa
 			return CompletableFuture.completedFuture(Collections.emptyList());
 		}
 		
-		Requirement<MixInRequirement, MixInRecord> mixInRequirement = ServiceCapabilityFactory.createRequirement(MixInRecord.class, new MixInRequirement(path));
+		Requirement mixInRequirement = Requirement.of(MixInRecord.class, new MixInRequirement(path));
 		return loader.loadAll(mixInRequirement);
 	}
 	
@@ -367,7 +371,7 @@ public abstract class SubCommandCapabilityFactory<T> extends ServiceCapabilityFa
 					ParentCommands parentCommands = le.getAnnotation(ParentCommands.class);
 					if (parentCommands != null) {
 						for (Class<?> pt: parentCommands.value()) {
-							if (Adaptable.adaptTo(userObject, pt)  != null) {
+							if (Adapters.adapt(userObject, pt)  != null) {
 								return true;
 							}
 						}

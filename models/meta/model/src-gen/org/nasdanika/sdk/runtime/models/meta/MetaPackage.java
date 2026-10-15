@@ -3656,6 +3656,323 @@ public interface MetaPackage extends EPackage {
 	int UNION_TYPE_REFERENCE_OPERATION_COUNT = TYPE_REFERENCE_OPERATION_COUNT + 0;
 
 	/**
+	 * The meta object id for the '{@link org.nasdanika.sdk.runtime.models.meta.impl.IntersectionTypeReferenceImpl <em>Intersection Type Reference</em>}' class.
+	 * <!-- begin-user-doc -->
+	 * <!-- end-user-doc -->
+	 * @see org.nasdanika.sdk.runtime.models.meta.impl.IntersectionTypeReferenceImpl
+	 * @see org.nasdanika.sdk.runtime.models.meta.impl.MetaPackageImpl#getIntersectionTypeReference()
+	 * @generated
+	 */
+	int INTERSECTION_TYPE_REFERENCE = 20;
+
+	/**
+	 * The feature id for the '<em><b>Id</b></em>' attribute.
+	 * <!-- begin-user-doc -->
+	 * <!-- end-user-doc -->
+	 * @generated
+	 * @ordered
+	 */
+	int INTERSECTION_TYPE_REFERENCE__ID = TYPE_REFERENCE__ID;
+
+	/**
+	 * The feature id for the '<em><b>Documentation</b></em>' attribute.
+	 * <!-- begin-user-doc -->
+	 * <!-- end-user-doc -->
+	 * @generated
+	 * @ordered
+	 */
+	int INTERSECTION_TYPE_REFERENCE__DOCUMENTATION = TYPE_REFERENCE__DOCUMENTATION;
+
+	/**
+	 * The feature id for the '<em><b>Doc Ref</b></em>' attribute.
+	 * <!-- begin-user-doc -->
+	 * <!-- end-user-doc -->
+	 * @generated
+	 * @ordered
+	 */
+	int INTERSECTION_TYPE_REFERENCE__DOC_REF = TYPE_REFERENCE__DOC_REF;
+
+	/**
+	 * The feature id for the '<em><b>Doc Format</b></em>' attribute.
+	 * <!-- begin-user-doc -->
+	 * <!-- end-user-doc -->
+	 * @generated
+	 * @ordered
+	 */
+	int INTERSECTION_TYPE_REFERENCE__DOC_FORMAT = TYPE_REFERENCE__DOC_FORMAT;
+
+	/**
+	 * The feature id for the '<em><b>Doc Contents</b></em>' containment reference list.
+	 * <!-- begin-user-doc -->
+	 * <!-- end-user-doc -->
+	 * @generated
+	 * @ordered
+	 */
+	int INTERSECTION_TYPE_REFERENCE__DOC_CONTENTS = TYPE_REFERENCE__DOC_CONTENTS;
+
+	/**
+	 * The feature id for the '<em><b>Doc Sections</b></em>' containment reference list.
+	 * <!-- begin-user-doc -->
+	 * <!-- end-user-doc -->
+	 * @generated
+	 * @ordered
+	 */
+	int INTERSECTION_TYPE_REFERENCE__DOC_SECTIONS = TYPE_REFERENCE__DOC_SECTIONS;
+
+	/**
+	 * The feature id for the '<em><b>Markers</b></em>' containment reference list.
+	 * <!-- begin-user-doc -->
+	 * <!-- end-user-doc -->
+	 * @generated
+	 * @ordered
+	 */
+	int INTERSECTION_TYPE_REFERENCE__MARKERS = TYPE_REFERENCE__MARKERS;
+
+	/**
+	 * The feature id for the '<em><b>Icon</b></em>' attribute.
+	 * <!-- begin-user-doc -->
+	 * <!-- end-user-doc -->
+	 * @generated
+	 * @ordered
+	 */
+	int INTERSECTION_TYPE_REFERENCE__ICON = TYPE_REFERENCE__ICON;
+
+	/**
+	 * The feature id for the '<em><b>Uris</b></em>' attribute list.
+	 * <!-- begin-user-doc -->
+	 * <!-- end-user-doc -->
+	 * @generated
+	 * @ordered
+	 */
+	int INTERSECTION_TYPE_REFERENCE__URIS = TYPE_REFERENCE__URIS;
+
+	/**
+	 * The feature id for the '<em><b>Name</b></em>' attribute.
+	 * <!-- begin-user-doc -->
+	 * <!-- end-user-doc -->
+	 * @generated
+	 * @ordered
+	 */
+	int INTERSECTION_TYPE_REFERENCE__NAME = TYPE_REFERENCE__NAME;
+
+	/**
+	 * The feature id for the '<em><b>Annotations</b></em>' containment reference list.
+	 * <!-- begin-user-doc -->
+	 * <!-- end-user-doc -->
+	 * @generated
+	 * @ordered
+	 */
+	int INTERSECTION_TYPE_REFERENCE__ANNOTATIONS = TYPE_REFERENCE__ANNOTATIONS;
+
+	/**
+	 * The feature id for the '<em><b>Types</b></em>' containment reference list.
+	 * <!-- begin-user-doc -->
+	 * <!-- end-user-doc -->
+	 * @generated
+	 * @ordered
+	 */
+	int INTERSECTION_TYPE_REFERENCE__TYPES = TYPE_REFERENCE_FEATURE_COUNT + 0;
+
+	/**
+	 * The number of structural features of the '<em>Intersection Type Reference</em>' class.
+	 * <!-- begin-user-doc -->
+	 * <!-- end-user-doc -->
+	 * @generated
+	 * @ordered
+	 */
+	int INTERSECTION_TYPE_REFERENCE_FEATURE_COUNT = TYPE_REFERENCE_FEATURE_COUNT + 1;
+
+	/**
+	 * The operation id for the '<em>Collect</em>' operation.
+	 * <!-- begin-user-doc -->
+	 * <!-- end-user-doc -->
+	 * @generated
+	 * @ordered
+	 */
+	int INTERSECTION_TYPE_REFERENCE___COLLECT__OBJECT_EREFERENCE_ELIST = TYPE_REFERENCE___COLLECT__OBJECT_EREFERENCE_ELIST;
+
+	/**
+	 * The operation id for the '<em>Get Referrers</em>' operation.
+	 * <!-- begin-user-doc -->
+	 * <!-- end-user-doc -->
+	 * @generated
+	 * @ordered
+	 */
+	int INTERSECTION_TYPE_REFERENCE___GET_REFERRERS__EREFERENCE = TYPE_REFERENCE___GET_REFERRERS__EREFERENCE;
+
+	/**
+	 * The number of operations of the '<em>Intersection Type Reference</em>' class.
+	 * <!-- begin-user-doc -->
+	 * <!-- end-user-doc -->
+	 * @generated
+	 * @ordered
+	 */
+	int INTERSECTION_TYPE_REFERENCE_OPERATION_COUNT = TYPE_REFERENCE_OPERATION_COUNT + 0;
+
+	/**
+	 * The meta object id for the '{@link org.nasdanika.sdk.runtime.models.meta.impl.WildcardTypeReferenceImpl <em>Wildcard Type Reference</em>}' class.
+	 * <!-- begin-user-doc -->
+	 * <!-- end-user-doc -->
+	 * @see org.nasdanika.sdk.runtime.models.meta.impl.WildcardTypeReferenceImpl
+	 * @see org.nasdanika.sdk.runtime.models.meta.impl.MetaPackageImpl#getWildcardTypeReference()
+	 * @generated
+	 */
+	int WILDCARD_TYPE_REFERENCE = 21;
+
+	/**
+	 * The feature id for the '<em><b>Id</b></em>' attribute.
+	 * <!-- begin-user-doc -->
+	 * <!-- end-user-doc -->
+	 * @generated
+	 * @ordered
+	 */
+	int WILDCARD_TYPE_REFERENCE__ID = TYPE_REFERENCE__ID;
+
+	/**
+	 * The feature id for the '<em><b>Documentation</b></em>' attribute.
+	 * <!-- begin-user-doc -->
+	 * <!-- end-user-doc -->
+	 * @generated
+	 * @ordered
+	 */
+	int WILDCARD_TYPE_REFERENCE__DOCUMENTATION = TYPE_REFERENCE__DOCUMENTATION;
+
+	/**
+	 * The feature id for the '<em><b>Doc Ref</b></em>' attribute.
+	 * <!-- begin-user-doc -->
+	 * <!-- end-user-doc -->
+	 * @generated
+	 * @ordered
+	 */
+	int WILDCARD_TYPE_REFERENCE__DOC_REF = TYPE_REFERENCE__DOC_REF;
+
+	/**
+	 * The feature id for the '<em><b>Doc Format</b></em>' attribute.
+	 * <!-- begin-user-doc -->
+	 * <!-- end-user-doc -->
+	 * @generated
+	 * @ordered
+	 */
+	int WILDCARD_TYPE_REFERENCE__DOC_FORMAT = TYPE_REFERENCE__DOC_FORMAT;
+
+	/**
+	 * The feature id for the '<em><b>Doc Contents</b></em>' containment reference list.
+	 * <!-- begin-user-doc -->
+	 * <!-- end-user-doc -->
+	 * @generated
+	 * @ordered
+	 */
+	int WILDCARD_TYPE_REFERENCE__DOC_CONTENTS = TYPE_REFERENCE__DOC_CONTENTS;
+
+	/**
+	 * The feature id for the '<em><b>Doc Sections</b></em>' containment reference list.
+	 * <!-- begin-user-doc -->
+	 * <!-- end-user-doc -->
+	 * @generated
+	 * @ordered
+	 */
+	int WILDCARD_TYPE_REFERENCE__DOC_SECTIONS = TYPE_REFERENCE__DOC_SECTIONS;
+
+	/**
+	 * The feature id for the '<em><b>Markers</b></em>' containment reference list.
+	 * <!-- begin-user-doc -->
+	 * <!-- end-user-doc -->
+	 * @generated
+	 * @ordered
+	 */
+	int WILDCARD_TYPE_REFERENCE__MARKERS = TYPE_REFERENCE__MARKERS;
+
+	/**
+	 * The feature id for the '<em><b>Icon</b></em>' attribute.
+	 * <!-- begin-user-doc -->
+	 * <!-- end-user-doc -->
+	 * @generated
+	 * @ordered
+	 */
+	int WILDCARD_TYPE_REFERENCE__ICON = TYPE_REFERENCE__ICON;
+
+	/**
+	 * The feature id for the '<em><b>Uris</b></em>' attribute list.
+	 * <!-- begin-user-doc -->
+	 * <!-- end-user-doc -->
+	 * @generated
+	 * @ordered
+	 */
+	int WILDCARD_TYPE_REFERENCE__URIS = TYPE_REFERENCE__URIS;
+
+	/**
+	 * The feature id for the '<em><b>Name</b></em>' attribute.
+	 * <!-- begin-user-doc -->
+	 * <!-- end-user-doc -->
+	 * @generated
+	 * @ordered
+	 */
+	int WILDCARD_TYPE_REFERENCE__NAME = TYPE_REFERENCE__NAME;
+
+	/**
+	 * The feature id for the '<em><b>Annotations</b></em>' containment reference list.
+	 * <!-- begin-user-doc -->
+	 * <!-- end-user-doc -->
+	 * @generated
+	 * @ordered
+	 */
+	int WILDCARD_TYPE_REFERENCE__ANNOTATIONS = TYPE_REFERENCE__ANNOTATIONS;
+
+	/**
+	 * The feature id for the '<em><b>Upper Bound</b></em>' containment reference.
+	 * <!-- begin-user-doc -->
+	 * <!-- end-user-doc -->
+	 * @generated
+	 * @ordered
+	 */
+	int WILDCARD_TYPE_REFERENCE__UPPER_BOUND = TYPE_REFERENCE_FEATURE_COUNT + 0;
+
+	/**
+	 * The feature id for the '<em><b>Lower Bound</b></em>' containment reference.
+	 * <!-- begin-user-doc -->
+	 * <!-- end-user-doc -->
+	 * @generated
+	 * @ordered
+	 */
+	int WILDCARD_TYPE_REFERENCE__LOWER_BOUND = TYPE_REFERENCE_FEATURE_COUNT + 1;
+
+	/**
+	 * The number of structural features of the '<em>Wildcard Type Reference</em>' class.
+	 * <!-- begin-user-doc -->
+	 * <!-- end-user-doc -->
+	 * @generated
+	 * @ordered
+	 */
+	int WILDCARD_TYPE_REFERENCE_FEATURE_COUNT = TYPE_REFERENCE_FEATURE_COUNT + 2;
+
+	/**
+	 * The operation id for the '<em>Collect</em>' operation.
+	 * <!-- begin-user-doc -->
+	 * <!-- end-user-doc -->
+	 * @generated
+	 * @ordered
+	 */
+	int WILDCARD_TYPE_REFERENCE___COLLECT__OBJECT_EREFERENCE_ELIST = TYPE_REFERENCE___COLLECT__OBJECT_EREFERENCE_ELIST;
+
+	/**
+	 * The operation id for the '<em>Get Referrers</em>' operation.
+	 * <!-- begin-user-doc -->
+	 * <!-- end-user-doc -->
+	 * @generated
+	 * @ordered
+	 */
+	int WILDCARD_TYPE_REFERENCE___GET_REFERRERS__EREFERENCE = TYPE_REFERENCE___GET_REFERRERS__EREFERENCE;
+
+	/**
+	 * The number of operations of the '<em>Wildcard Type Reference</em>' class.
+	 * <!-- begin-user-doc -->
+	 * <!-- end-user-doc -->
+	 * @generated
+	 * @ordered
+	 */
+	int WILDCARD_TYPE_REFERENCE_OPERATION_COUNT = TYPE_REFERENCE_OPERATION_COUNT + 0;
+
+	/**
 	 * The meta object id for the '{@link org.nasdanika.sdk.runtime.models.meta.impl.OpaqueTypeReferenceImpl <em>Opaque Type Reference</em>}' class.
 	 * <!-- begin-user-doc -->
 	 * <!-- end-user-doc -->
@@ -3663,7 +3980,7 @@ public interface MetaPackage extends EPackage {
 	 * @see org.nasdanika.sdk.runtime.models.meta.impl.MetaPackageImpl#getOpaqueTypeReference()
 	 * @generated
 	 */
-	int OPAQUE_TYPE_REFERENCE = 20;
+	int OPAQUE_TYPE_REFERENCE = 22;
 
 	/**
 	 * The feature id for the '<em><b>Id</b></em>' attribute.
@@ -3826,7 +4143,7 @@ public interface MetaPackage extends EPackage {
 	 * @see org.nasdanika.sdk.runtime.models.meta.impl.MetaPackageImpl#getObject()
 	 * @generated
 	 */
-	int OBJECT = 21;
+	int OBJECT = 23;
 
 	/**
 	 * The feature id for the '<em><b>Type</b></em>' reference.
@@ -4025,7 +4342,7 @@ public interface MetaPackage extends EPackage {
 	 * @see org.nasdanika.sdk.runtime.models.meta.impl.MetaPackageImpl#getIncomingReference()
 	 * @generated
 	 */
-	int INCOMING_REFERENCE = 22;
+	int INCOMING_REFERENCE = 24;
 
 	/**
 	 * The feature id for the '<em><b>Source</b></em>' reference.
@@ -4080,7 +4397,7 @@ public interface MetaPackage extends EPackage {
 	 * @see org.nasdanika.sdk.runtime.models.meta.impl.MetaPackageImpl#getPrimitiveKind()
 	 * @generated
 	 */
-	int PRIMITIVE_KIND = 23;
+	int PRIMITIVE_KIND = 25;
 
 
 	/**
@@ -4766,6 +5083,59 @@ public interface MetaPackage extends EPackage {
 	 * @generated
 	 */
 	EReference getUnionTypeReference_Types();
+
+	/**
+	 * Returns the meta object for class '{@link org.nasdanika.sdk.runtime.models.meta.IntersectionTypeReference <em>Intersection Type Reference</em>}'.
+	 * <!-- begin-user-doc -->
+	 * <!-- end-user-doc -->
+	 * @return the meta object for class '<em>Intersection Type Reference</em>'.
+	 * @see org.nasdanika.sdk.runtime.models.meta.IntersectionTypeReference
+	 * @generated
+	 */
+	EClass getIntersectionTypeReference();
+
+	/**
+	 * Returns the meta object for the containment reference list '{@link org.nasdanika.sdk.runtime.models.meta.IntersectionTypeReference#getTypes <em>Types</em>}'.
+	 * <!-- begin-user-doc -->
+	 * <!-- end-user-doc -->
+	 * @return the meta object for the containment reference list '<em>Types</em>'.
+	 * @see org.nasdanika.sdk.runtime.models.meta.IntersectionTypeReference#getTypes()
+	 * @see #getIntersectionTypeReference()
+	 * @generated
+	 */
+	EReference getIntersectionTypeReference_Types();
+
+	/**
+	 * Returns the meta object for class '{@link org.nasdanika.sdk.runtime.models.meta.WildcardTypeReference <em>Wildcard Type Reference</em>}'.
+	 * <!-- begin-user-doc -->
+	 * <!-- end-user-doc -->
+	 * @return the meta object for class '<em>Wildcard Type Reference</em>'.
+	 * @see org.nasdanika.sdk.runtime.models.meta.WildcardTypeReference
+	 * @generated
+	 */
+	EClass getWildcardTypeReference();
+
+	/**
+	 * Returns the meta object for the containment reference '{@link org.nasdanika.sdk.runtime.models.meta.WildcardTypeReference#getUpperBound <em>Upper Bound</em>}'.
+	 * <!-- begin-user-doc -->
+	 * <!-- end-user-doc -->
+	 * @return the meta object for the containment reference '<em>Upper Bound</em>'.
+	 * @see org.nasdanika.sdk.runtime.models.meta.WildcardTypeReference#getUpperBound()
+	 * @see #getWildcardTypeReference()
+	 * @generated
+	 */
+	EReference getWildcardTypeReference_UpperBound();
+
+	/**
+	 * Returns the meta object for the containment reference '{@link org.nasdanika.sdk.runtime.models.meta.WildcardTypeReference#getLowerBound <em>Lower Bound</em>}'.
+	 * <!-- begin-user-doc -->
+	 * <!-- end-user-doc -->
+	 * @return the meta object for the containment reference '<em>Lower Bound</em>'.
+	 * @see org.nasdanika.sdk.runtime.models.meta.WildcardTypeReference#getLowerBound()
+	 * @see #getWildcardTypeReference()
+	 * @generated
+	 */
+	EReference getWildcardTypeReference_LowerBound();
 
 	/**
 	 * Returns the meta object for class '{@link org.nasdanika.sdk.runtime.models.meta.OpaqueTypeReference <em>Opaque Type Reference</em>}'.
@@ -5628,6 +5998,50 @@ public interface MetaPackage extends EPackage {
 		 * @generated
 		 */
 		EReference UNION_TYPE_REFERENCE__TYPES = eINSTANCE.getUnionTypeReference_Types();
+
+		/**
+		 * The meta object literal for the '{@link org.nasdanika.sdk.runtime.models.meta.impl.IntersectionTypeReferenceImpl <em>Intersection Type Reference</em>}' class.
+		 * <!-- begin-user-doc -->
+		 * <!-- end-user-doc -->
+		 * @see org.nasdanika.sdk.runtime.models.meta.impl.IntersectionTypeReferenceImpl
+		 * @see org.nasdanika.sdk.runtime.models.meta.impl.MetaPackageImpl#getIntersectionTypeReference()
+		 * @generated
+		 */
+		EClass INTERSECTION_TYPE_REFERENCE = eINSTANCE.getIntersectionTypeReference();
+
+		/**
+		 * The meta object literal for the '<em><b>Types</b></em>' containment reference list feature.
+		 * <!-- begin-user-doc -->
+		 * <!-- end-user-doc -->
+		 * @generated
+		 */
+		EReference INTERSECTION_TYPE_REFERENCE__TYPES = eINSTANCE.getIntersectionTypeReference_Types();
+
+		/**
+		 * The meta object literal for the '{@link org.nasdanika.sdk.runtime.models.meta.impl.WildcardTypeReferenceImpl <em>Wildcard Type Reference</em>}' class.
+		 * <!-- begin-user-doc -->
+		 * <!-- end-user-doc -->
+		 * @see org.nasdanika.sdk.runtime.models.meta.impl.WildcardTypeReferenceImpl
+		 * @see org.nasdanika.sdk.runtime.models.meta.impl.MetaPackageImpl#getWildcardTypeReference()
+		 * @generated
+		 */
+		EClass WILDCARD_TYPE_REFERENCE = eINSTANCE.getWildcardTypeReference();
+
+		/**
+		 * The meta object literal for the '<em><b>Upper Bound</b></em>' containment reference feature.
+		 * <!-- begin-user-doc -->
+		 * <!-- end-user-doc -->
+		 * @generated
+		 */
+		EReference WILDCARD_TYPE_REFERENCE__UPPER_BOUND = eINSTANCE.getWildcardTypeReference_UpperBound();
+
+		/**
+		 * The meta object literal for the '<em><b>Lower Bound</b></em>' containment reference feature.
+		 * <!-- begin-user-doc -->
+		 * <!-- end-user-doc -->
+		 * @generated
+		 */
+		EReference WILDCARD_TYPE_REFERENCE__LOWER_BOUND = eINSTANCE.getWildcardTypeReference_LowerBound();
 
 		/**
 		 * The meta object literal for the '{@link org.nasdanika.sdk.runtime.models.meta.impl.OpaqueTypeReferenceImpl <em>Opaque Type Reference</em>}' class.

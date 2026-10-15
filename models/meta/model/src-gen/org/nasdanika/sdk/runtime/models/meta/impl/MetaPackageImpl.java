@@ -22,6 +22,7 @@ import org.nasdanika.sdk.runtime.models.meta.DataType;
 import org.nasdanika.sdk.runtime.models.meta.EnumLiteral;
 import org.nasdanika.sdk.runtime.models.meta.Feature;
 import org.nasdanika.sdk.runtime.models.meta.IncomingReference;
+import org.nasdanika.sdk.runtime.models.meta.IntersectionTypeReference;
 import org.nasdanika.sdk.runtime.models.meta.MetaFactory;
 import org.nasdanika.sdk.runtime.models.meta.MetaPackage;
 import org.nasdanika.sdk.runtime.models.meta.ModelElement;
@@ -36,6 +37,7 @@ import org.nasdanika.sdk.runtime.models.meta.TypeParameterReference;
 import org.nasdanika.sdk.runtime.models.meta.TypeReference;
 import org.nasdanika.sdk.runtime.models.meta.TypedElement;
 import org.nasdanika.sdk.runtime.models.meta.UnionTypeReference;
+import org.nasdanika.sdk.runtime.models.meta.WildcardTypeReference;
 
 /**
  * <!-- begin-user-doc -->
@@ -183,6 +185,20 @@ public class MetaPackageImpl extends EPackageImpl implements MetaPackage {
 	 * @generated
 	 */
 	private EClass unionTypeReferenceEClass = null;
+
+	/**
+	 * <!-- begin-user-doc -->
+	 * <!-- end-user-doc -->
+	 * @generated
+	 */
+	private EClass intersectionTypeReferenceEClass = null;
+
+	/**
+	 * <!-- begin-user-doc -->
+	 * <!-- end-user-doc -->
+	 * @generated
+	 */
+	private EClass wildcardTypeReferenceEClass = null;
 
 	/**
 	 * <!-- begin-user-doc -->
@@ -857,6 +873,51 @@ public class MetaPackageImpl extends EPackageImpl implements MetaPackage {
 	 * <!-- end-user-doc -->
 	 * @generated
 	 */
+	public EClass getIntersectionTypeReference() {
+		return intersectionTypeReferenceEClass;
+	}
+
+	/**
+	 * <!-- begin-user-doc -->
+	 * <!-- end-user-doc -->
+	 * @generated
+	 */
+	public EReference getIntersectionTypeReference_Types() {
+		return (EReference)intersectionTypeReferenceEClass.getEStructuralFeatures().get(0);
+	}
+
+	/**
+	 * <!-- begin-user-doc -->
+	 * <!-- end-user-doc -->
+	 * @generated
+	 */
+	public EClass getWildcardTypeReference() {
+		return wildcardTypeReferenceEClass;
+	}
+
+	/**
+	 * <!-- begin-user-doc -->
+	 * <!-- end-user-doc -->
+	 * @generated
+	 */
+	public EReference getWildcardTypeReference_UpperBound() {
+		return (EReference)wildcardTypeReferenceEClass.getEStructuralFeatures().get(0);
+	}
+
+	/**
+	 * <!-- begin-user-doc -->
+	 * <!-- end-user-doc -->
+	 * @generated
+	 */
+	public EReference getWildcardTypeReference_LowerBound() {
+		return (EReference)wildcardTypeReferenceEClass.getEStructuralFeatures().get(1);
+	}
+
+	/**
+	 * <!-- begin-user-doc -->
+	 * <!-- end-user-doc -->
+	 * @generated
+	 */
 	public EClass getOpaqueTypeReference() {
 		return opaqueTypeReferenceEClass;
 	}
@@ -1216,6 +1277,13 @@ public class MetaPackageImpl extends EPackageImpl implements MetaPackage {
 		unionTypeReferenceEClass = createEClass(UNION_TYPE_REFERENCE);
 		createEReference(unionTypeReferenceEClass, UNION_TYPE_REFERENCE__TYPES);
 
+		intersectionTypeReferenceEClass = createEClass(INTERSECTION_TYPE_REFERENCE);
+		createEReference(intersectionTypeReferenceEClass, INTERSECTION_TYPE_REFERENCE__TYPES);
+
+		wildcardTypeReferenceEClass = createEClass(WILDCARD_TYPE_REFERENCE);
+		createEReference(wildcardTypeReferenceEClass, WILDCARD_TYPE_REFERENCE__UPPER_BOUND);
+		createEReference(wildcardTypeReferenceEClass, WILDCARD_TYPE_REFERENCE__LOWER_BOUND);
+
 		opaqueTypeReferenceEClass = createEClass(OPAQUE_TYPE_REFERENCE);
 		createEAttribute(opaqueTypeReferenceEClass, OPAQUE_TYPE_REFERENCE__TEXT);
 		createEReference(opaqueTypeReferenceEClass, OPAQUE_TYPE_REFERENCE__REFERENCES);
@@ -1302,6 +1370,8 @@ public class MetaPackageImpl extends EPackageImpl implements MetaPackage {
 		typeParameterReferenceEClass.getESuperTypes().add(this.getTypeReference());
 		primitiveTypeReferenceEClass.getESuperTypes().add(this.getTypeReference());
 		unionTypeReferenceEClass.getESuperTypes().add(this.getTypeReference());
+		intersectionTypeReferenceEClass.getESuperTypes().add(this.getTypeReference());
+		wildcardTypeReferenceEClass.getESuperTypes().add(this.getTypeReference());
 		opaqueTypeReferenceEClass.getESuperTypes().add(this.getTypeReference());
 
 		// Initialize classes, features, and operations; add parameters
@@ -1388,6 +1458,13 @@ public class MetaPackageImpl extends EPackageImpl implements MetaPackage {
 
 		initEClass(unionTypeReferenceEClass, UnionTypeReference.class, "UnionTypeReference", !IS_ABSTRACT, !IS_INTERFACE, IS_GENERATED_INSTANCE_CLASS);
 		initEReference(getUnionTypeReference_Types(), this.getTypeReference(), null, "types", null, 0, -1, UnionTypeReference.class, !IS_TRANSIENT, !IS_VOLATILE, IS_CHANGEABLE, IS_COMPOSITE, !IS_RESOLVE_PROXIES, !IS_UNSETTABLE, IS_UNIQUE, !IS_DERIVED, IS_ORDERED);
+
+		initEClass(intersectionTypeReferenceEClass, IntersectionTypeReference.class, "IntersectionTypeReference", !IS_ABSTRACT, !IS_INTERFACE, IS_GENERATED_INSTANCE_CLASS);
+		initEReference(getIntersectionTypeReference_Types(), this.getTypeReference(), null, "types", null, 0, -1, IntersectionTypeReference.class, !IS_TRANSIENT, !IS_VOLATILE, IS_CHANGEABLE, IS_COMPOSITE, !IS_RESOLVE_PROXIES, !IS_UNSETTABLE, IS_UNIQUE, !IS_DERIVED, IS_ORDERED);
+
+		initEClass(wildcardTypeReferenceEClass, WildcardTypeReference.class, "WildcardTypeReference", !IS_ABSTRACT, !IS_INTERFACE, IS_GENERATED_INSTANCE_CLASS);
+		initEReference(getWildcardTypeReference_UpperBound(), this.getTypeReference(), null, "upperBound", null, 0, 1, WildcardTypeReference.class, !IS_TRANSIENT, !IS_VOLATILE, IS_CHANGEABLE, IS_COMPOSITE, !IS_RESOLVE_PROXIES, !IS_UNSETTABLE, IS_UNIQUE, !IS_DERIVED, IS_ORDERED);
+		initEReference(getWildcardTypeReference_LowerBound(), this.getTypeReference(), null, "lowerBound", null, 0, 1, WildcardTypeReference.class, !IS_TRANSIENT, !IS_VOLATILE, IS_CHANGEABLE, IS_COMPOSITE, !IS_RESOLVE_PROXIES, !IS_UNSETTABLE, IS_UNIQUE, !IS_DERIVED, IS_ORDERED);
 
 		initEClass(opaqueTypeReferenceEClass, OpaqueTypeReference.class, "OpaqueTypeReference", !IS_ABSTRACT, !IS_INTERFACE, IS_GENERATED_INSTANCE_CLASS);
 		initEAttribute(getOpaqueTypeReference_Text(), theEcorePackage.getEString(), "text", null, 0, 1, OpaqueTypeReference.class, !IS_TRANSIENT, !IS_VOLATILE, IS_CHANGEABLE, !IS_UNSETTABLE, !IS_ID, !IS_UNIQUE, !IS_DERIVED, IS_ORDERED);
@@ -1692,7 +1769,7 @@ public class MetaPackageImpl extends EPackageImpl implements MetaPackage {
 		  (getTypeParameter_Bound(),
 		   source,
 		   new String[] {
-			   "documentation", " The `extends` constraint."
+			   "documentation", " The `extends` constraint. Several bounds are an IntersectionTypeReference."
 		   });
 		addAnnotation
 		  (typeReferenceEClass,
@@ -1719,10 +1796,22 @@ public class MetaPackageImpl extends EPackageImpl implements MetaPackage {
 			   "documentation", "One of several. Present because JSON Schema oneOf, XSD choice and TypeScript\nunions are all the same shape, and because optionality alone cannot express\nthem."
 		   });
 		addAnnotation
+		  (intersectionTypeReferenceEClass,
+		   source,
+		   new String[] {
+			   "documentation", "All of several. The counterpart of UnionTypeReference: TypeScript allows an\nintersection in any type position, Java only as a type parameter bound - a T\nthat extends both Comparable of T and Serializable. Which is why TypeParameter\nkeeps a single `bound` rather than growing a list: a multiple bound is one of\nthese."
+		   });
+		addAnnotation
+		  (wildcardTypeReferenceEClass,
+		   source,
+		   new String[] {
+			   "documentation", "? extends T, ? super T or a bare ?, and valid only as a type argument.\n\nUse-site variance, which Java has and TypeScript does not. It is here rather\nthan in the java sub-model because it stands in a type position, and every\nprojection must handle every TypeReference, so a language-specific subclass\nwould break the emitters that do not know it. The rule for a projection without\nwildcards: emit the bound that is set - the upper for ? extends T, the lower\nfor ? super T, which structural typing makes sound for the usual\nproducer-extends, consumer-super use - and the widest type it has for a bare ?\n(unknown in TypeScript).\n\nAt most one bound is set. Neither set is a bare ?."
+		   });
+		addAnnotation
 		  (opaqueTypeReferenceEClass,
 		   source,
 		   new String[] {
-			   "documentation", "Verbatim type text for what no class here covers - conditional and mapped\ntypes, tuples, intersections. `references` keeps the named types visible to a\nprojection\'s import resolver, so opaque text does not silently break import\nmanagement."
+			   "documentation", "Verbatim type text for what no class here covers - conditional and mapped\ntypes, tuples. `references` keeps the named types visible to a\nprojection\'s import resolver, so opaque text does not silently break import\nmanagement."
 		   });
 		addAnnotation
 		  (primitiveKindEEnum,

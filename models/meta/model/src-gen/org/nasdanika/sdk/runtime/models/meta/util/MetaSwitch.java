@@ -21,6 +21,7 @@ import org.nasdanika.sdk.runtime.models.meta.DataType;
 import org.nasdanika.sdk.runtime.models.meta.EnumLiteral;
 import org.nasdanika.sdk.runtime.models.meta.Feature;
 import org.nasdanika.sdk.runtime.models.meta.IncomingReference;
+import org.nasdanika.sdk.runtime.models.meta.IntersectionTypeReference;
 import org.nasdanika.sdk.runtime.models.meta.MetaPackage;
 import org.nasdanika.sdk.runtime.models.meta.ModelElement;
 import org.nasdanika.sdk.runtime.models.meta.OpaqueTypeReference;
@@ -33,6 +34,7 @@ import org.nasdanika.sdk.runtime.models.meta.TypeParameterReference;
 import org.nasdanika.sdk.runtime.models.meta.TypeReference;
 import org.nasdanika.sdk.runtime.models.meta.TypedElement;
 import org.nasdanika.sdk.runtime.models.meta.UnionTypeReference;
+import org.nasdanika.sdk.runtime.models.meta.WildcardTypeReference;
 
 /**
  * <!-- begin-user-doc -->
@@ -364,6 +366,34 @@ public class MetaSwitch<T> extends Switch<T> {
 				if (result == null) result = defaultCase(theEObject);
 				return result;
 			}
+			case MetaPackage.INTERSECTION_TYPE_REFERENCE: {
+				IntersectionTypeReference intersectionTypeReference = (IntersectionTypeReference)theEObject;
+				T result = caseIntersectionTypeReference(intersectionTypeReference);
+				if (result == null) result = caseTypeReference(intersectionTypeReference);
+				if (result == null) result = caseModelElement(intersectionTypeReference);
+				if (result == null) result = caseNamedElement(intersectionTypeReference);
+				if (result == null) result = caseCore_ModelElement(intersectionTypeReference);
+				if (result == null) result = caseStringIdentity(intersectionTypeReference);
+				if (result == null) result = caseDocumented(intersectionTypeReference);
+				if (result == null) result = caseMarked(intersectionTypeReference);
+				if (result == null) result = caseReferrable(intersectionTypeReference);
+				if (result == null) result = defaultCase(theEObject);
+				return result;
+			}
+			case MetaPackage.WILDCARD_TYPE_REFERENCE: {
+				WildcardTypeReference wildcardTypeReference = (WildcardTypeReference)theEObject;
+				T result = caseWildcardTypeReference(wildcardTypeReference);
+				if (result == null) result = caseTypeReference(wildcardTypeReference);
+				if (result == null) result = caseModelElement(wildcardTypeReference);
+				if (result == null) result = caseNamedElement(wildcardTypeReference);
+				if (result == null) result = caseCore_ModelElement(wildcardTypeReference);
+				if (result == null) result = caseStringIdentity(wildcardTypeReference);
+				if (result == null) result = caseDocumented(wildcardTypeReference);
+				if (result == null) result = caseMarked(wildcardTypeReference);
+				if (result == null) result = caseReferrable(wildcardTypeReference);
+				if (result == null) result = defaultCase(theEObject);
+				return result;
+			}
 			case MetaPackage.OPAQUE_TYPE_REFERENCE: {
 				OpaqueTypeReference opaqueTypeReference = (OpaqueTypeReference)theEObject;
 				T result = caseOpaqueTypeReference(opaqueTypeReference);
@@ -691,6 +721,36 @@ public class MetaSwitch<T> extends Switch<T> {
 	 * @generated
 	 */
 	public T caseUnionTypeReference(UnionTypeReference object) {
+		return null;
+	}
+
+	/**
+	 * Returns the result of interpreting the object as an instance of '<em>Intersection Type Reference</em>'.
+	 * <!-- begin-user-doc -->
+	 * This implementation returns null;
+	 * returning a non-null result will terminate the switch.
+	 * <!-- end-user-doc -->
+	 * @param object the target of the switch.
+	 * @return the result of interpreting the object as an instance of '<em>Intersection Type Reference</em>'.
+	 * @see #doSwitch(org.eclipse.emf.ecore.EObject) doSwitch(EObject)
+	 * @generated
+	 */
+	public T caseIntersectionTypeReference(IntersectionTypeReference object) {
+		return null;
+	}
+
+	/**
+	 * Returns the result of interpreting the object as an instance of '<em>Wildcard Type Reference</em>'.
+	 * <!-- begin-user-doc -->
+	 * This implementation returns null;
+	 * returning a non-null result will terminate the switch.
+	 * <!-- end-user-doc -->
+	 * @param object the target of the switch.
+	 * @return the result of interpreting the object as an instance of '<em>Wildcard Type Reference</em>'.
+	 * @see #doSwitch(org.eclipse.emf.ecore.EObject) doSwitch(EObject)
+	 * @generated
+	 */
+	public T caseWildcardTypeReference(WildcardTypeReference object) {
 		return null;
 	}
 

@@ -32,6 +32,7 @@ import org.nasdanika.sdk.runtime.models.jvm.TypeKind;
  *   <li>{@link org.nasdanika.sdk.runtime.models.jvm.impl.TypeImpl#getAccess <em>Access</em>}</li>
  *   <li>{@link org.nasdanika.sdk.runtime.models.jvm.impl.TypeImpl#getBinaryName <em>Binary Name</em>}</li>
  *   <li>{@link org.nasdanika.sdk.runtime.models.jvm.impl.TypeImpl#getDescriptor <em>Descriptor</em>}</li>
+ *   <li>{@link org.nasdanika.sdk.runtime.models.jvm.impl.TypeImpl#getSignature <em>Signature</em>}</li>
  *   <li>{@link org.nasdanika.sdk.runtime.models.jvm.impl.TypeImpl#isAbstract <em>Abstract</em>}</li>
  *   <li>{@link org.nasdanika.sdk.runtime.models.jvm.impl.TypeImpl#isFinal <em>Final</em>}</li>
  *   <li>{@link org.nasdanika.sdk.runtime.models.jvm.impl.TypeImpl#isSynthetic <em>Synthetic</em>}</li>
@@ -87,6 +88,16 @@ public class TypeImpl extends JvmElementImpl implements Type {
 	 * @ordered
 	 */
 	protected static final String DESCRIPTOR_EDEFAULT = null;
+
+	/**
+	 * The default value of the '{@link #getSignature() <em>Signature</em>}' attribute.
+	 * <!-- begin-user-doc -->
+	 * <!-- end-user-doc -->
+	 * @see #getSignature()
+	 * @generated
+	 * @ordered
+	 */
+	protected static final String SIGNATURE_EDEFAULT = null;
 
 	/**
 	 * The default value of the '{@link #isAbstract() <em>Abstract</em>}' attribute.
@@ -227,6 +238,24 @@ public class TypeImpl extends JvmElementImpl implements Type {
 	 */
 	public void setDescriptor(String newDescriptor) {
 		eDynamicSet(JvmPackage.TYPE__DESCRIPTOR, JvmPackage.Literals.TYPE__DESCRIPTOR, newDescriptor);
+	}
+
+	/**
+	 * <!-- begin-user-doc -->
+	 * <!-- end-user-doc -->
+	 * @generated
+	 */
+	public String getSignature() {
+		return (String)eDynamicGet(JvmPackage.TYPE__SIGNATURE, JvmPackage.Literals.TYPE__SIGNATURE, true, true);
+	}
+
+	/**
+	 * <!-- begin-user-doc -->
+	 * <!-- end-user-doc -->
+	 * @generated
+	 */
+	public void setSignature(String newSignature) {
+		eDynamicSet(JvmPackage.TYPE__SIGNATURE, JvmPackage.Literals.TYPE__SIGNATURE, newSignature);
 	}
 
 	/**
@@ -462,6 +491,8 @@ public class TypeImpl extends JvmElementImpl implements Type {
 				return getBinaryName();
 			case JvmPackage.TYPE__DESCRIPTOR:
 				return getDescriptor();
+			case JvmPackage.TYPE__SIGNATURE:
+				return getSignature();
 			case JvmPackage.TYPE__ABSTRACT:
 				return isAbstract();
 			case JvmPackage.TYPE__FINAL:
@@ -511,6 +542,9 @@ public class TypeImpl extends JvmElementImpl implements Type {
 				return;
 			case JvmPackage.TYPE__DESCRIPTOR:
 				setDescriptor((String)newValue);
+				return;
+			case JvmPackage.TYPE__SIGNATURE:
+				setSignature((String)newValue);
 				return;
 			case JvmPackage.TYPE__ABSTRACT:
 				setAbstract((Boolean)newValue);
@@ -572,6 +606,9 @@ public class TypeImpl extends JvmElementImpl implements Type {
 			case JvmPackage.TYPE__DESCRIPTOR:
 				setDescriptor(DESCRIPTOR_EDEFAULT);
 				return;
+			case JvmPackage.TYPE__SIGNATURE:
+				setSignature(SIGNATURE_EDEFAULT);
+				return;
 			case JvmPackage.TYPE__ABSTRACT:
 				setAbstract(ABSTRACT_EDEFAULT);
 				return;
@@ -625,6 +662,8 @@ public class TypeImpl extends JvmElementImpl implements Type {
 				return BINARY_NAME_EDEFAULT == null ? getBinaryName() != null : !BINARY_NAME_EDEFAULT.equals(getBinaryName());
 			case JvmPackage.TYPE__DESCRIPTOR:
 				return DESCRIPTOR_EDEFAULT == null ? getDescriptor() != null : !DESCRIPTOR_EDEFAULT.equals(getDescriptor());
+			case JvmPackage.TYPE__SIGNATURE:
+				return SIGNATURE_EDEFAULT == null ? getSignature() != null : !SIGNATURE_EDEFAULT.equals(getSignature());
 			case JvmPackage.TYPE__ABSTRACT:
 				return isAbstract() != ABSTRACT_EDEFAULT;
 			case JvmPackage.TYPE__FINAL:

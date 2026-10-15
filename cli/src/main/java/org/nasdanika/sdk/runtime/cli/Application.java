@@ -8,7 +8,7 @@ import java.util.concurrent.atomic.AtomicInteger;
 import org.nasdanika.sdk.runtime.common.Closeable;
 import org.nasdanika.sdk.runtime.common.capability.CapabilityFactorySource;
 import org.nasdanika.sdk.runtime.common.capability.CapabilityLoader;
-import org.nasdanika.sdk.runtime.common.capability.ServiceCapabilityFactory;
+import org.nasdanika.sdk.runtime.common.capability.Requirement;
 
 import picocli.CommandLine;
 
@@ -27,7 +27,7 @@ public class Application {
 			CapabilityLoader capabilityLoader = CapabilityLoader.of(capabilityFactorySource);
 			// Sub-commands, sorting alphabetically
 			List<CommandLine> rootCommands = new ArrayList<>();		
-			ServiceCapabilityFactory.Requirement<SubCommandRequirement, CommandLine> subCommandRequirement = ServiceCapabilityFactory.createRequirement(
+			Requirement subCommandRequirement = Requirement.of(
 					CommandLine.class, 
 					new SubCommandRequirement(Collections.emptyList(), new AtomicInteger()));
 			

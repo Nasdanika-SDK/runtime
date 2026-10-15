@@ -1,8 +1,6 @@
 import org.nasdanika.sdk.runtime.common.capability.CapabilityFactory;
 import org.nasdanika.sdk.runtime.common.services.ResourceSetContributor;
-import org.nasdanika.sdk.runtime.groovy.CompiledScriptResourceContentsHandlerCapabilityFactory;
-import org.nasdanika.sdk.runtime.groovy.DslResourceContentsHandlerCapabilityFactory;
-import org.nasdanika.sdk.runtime.groovy.EcoreResourceContentsHandlerCapabilityFactory;
+import org.nasdanika.sdk.runtime.groovy.GroovyCapabilityFactory;
 import org.nasdanika.sdk.runtime.groovy.GroovyResourceFactoryContributor;
 
 module org.nasdanika.sdk.runtime.groovy {
@@ -17,9 +15,7 @@ module org.nasdanika.sdk.runtime.groovy {
 	requires transitive java.scripting;
 
 	provides CapabilityFactory with
-		CompiledScriptResourceContentsHandlerCapabilityFactory,
-		DslResourceContentsHandlerCapabilityFactory,
-		EcoreResourceContentsHandlerCapabilityFactory;
+		GroovyCapabilityFactory;
 
 	provides ResourceSetContributor with
 		GroovyResourceFactoryContributor;

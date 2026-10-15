@@ -230,7 +230,7 @@ class Parameter extends TypedElement {
  * --------------------------------------------------------------------------- */
 
 class TypeParameter extends ModelElement {
-    /* The `extends` constraint. */
+    /* The `extends` constraint. Several bounds are an IntersectionTypeReference. */
     contains TypeReference bound
     contains TypeReference ^default
 }
@@ -274,8 +274,38 @@ class UnionTypeReference extends TypeReference {
 }
 
 /*
+ * All of several. The counterpart of UnionTypeReference: TypeScript allows an
+ * intersection in any type position, Java only as a type parameter bound - a T
+ * that extends both Comparable of T and Serializable. Which is why TypeParameter
+ * keeps a single `bound` rather than growing a list: a multiple bound is one of
+ * these.
+ */
+class IntersectionTypeReference extends TypeReference {
+    contains TypeReference[] types
+}
+
+/*
+ * ? extends T, ? super T or a bare ?, and valid only as a type argument.
+ *
+ * Use-site variance, which Java has and TypeScript does not. It is here rather
+ * than in the java sub-model because it stands in a type position, and every
+ * projection must handle every TypeReference, so a language-specific subclass
+ * would break the emitters that do not know it. The rule for a projection without
+ * wildcards: emit the bound that is set - the upper for ? extends T, the lower
+ * for ? super T, which structural typing makes sound for the usual
+ * producer-extends, consumer-super use - and the widest type it has for a bare ?
+ * (unknown in TypeScript).
+ *
+ * At most one bound is set. Neither set is a bare ?.
+ */
+class WildcardTypeReference extends TypeReference {
+    contains TypeReference upperBound
+    contains TypeReference lowerBound
+}
+
+/*
  * Verbatim type text for what no class here covers - conditional and mapped
- * types, tuples, intersections. `references` keeps the named types visible to a
+ * types, tuples. `references` keeps the named types visible to a
  * projection's import resolver, so opaque text does not silently break import
  * management.
  */

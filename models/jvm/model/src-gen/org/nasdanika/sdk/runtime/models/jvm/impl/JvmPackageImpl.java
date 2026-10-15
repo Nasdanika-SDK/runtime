@@ -771,7 +771,7 @@ public class JvmPackageImpl extends EPackageImpl implements JvmPackage {
 	 * <!-- end-user-doc -->
 	 * @generated
 	 */
-	public EAttribute getType_Abstract() {
+	public EAttribute getType_Signature() {
 		return (EAttribute)typeEClass.getEStructuralFeatures().get(4);
 	}
 
@@ -780,7 +780,7 @@ public class JvmPackageImpl extends EPackageImpl implements JvmPackage {
 	 * <!-- end-user-doc -->
 	 * @generated
 	 */
-	public EAttribute getType_Final() {
+	public EAttribute getType_Abstract() {
 		return (EAttribute)typeEClass.getEStructuralFeatures().get(5);
 	}
 
@@ -789,7 +789,7 @@ public class JvmPackageImpl extends EPackageImpl implements JvmPackage {
 	 * <!-- end-user-doc -->
 	 * @generated
 	 */
-	public EAttribute getType_Synthetic() {
+	public EAttribute getType_Final() {
 		return (EAttribute)typeEClass.getEStructuralFeatures().get(6);
 	}
 
@@ -798,7 +798,7 @@ public class JvmPackageImpl extends EPackageImpl implements JvmPackage {
 	 * <!-- end-user-doc -->
 	 * @generated
 	 */
-	public EAttribute getType_Sealed() {
+	public EAttribute getType_Synthetic() {
 		return (EAttribute)typeEClass.getEStructuralFeatures().get(7);
 	}
 
@@ -807,7 +807,7 @@ public class JvmPackageImpl extends EPackageImpl implements JvmPackage {
 	 * <!-- end-user-doc -->
 	 * @generated
 	 */
-	public EAttribute getType_ClassFileVersion() {
+	public EAttribute getType_Sealed() {
 		return (EAttribute)typeEClass.getEStructuralFeatures().get(8);
 	}
 
@@ -816,8 +816,8 @@ public class JvmPackageImpl extends EPackageImpl implements JvmPackage {
 	 * <!-- end-user-doc -->
 	 * @generated
 	 */
-	public EReference getType_Methods() {
-		return (EReference)typeEClass.getEStructuralFeatures().get(9);
+	public EAttribute getType_ClassFileVersion() {
+		return (EAttribute)typeEClass.getEStructuralFeatures().get(9);
 	}
 
 	/**
@@ -825,7 +825,7 @@ public class JvmPackageImpl extends EPackageImpl implements JvmPackage {
 	 * <!-- end-user-doc -->
 	 * @generated
 	 */
-	public EReference getType_Fields() {
+	public EReference getType_Methods() {
 		return (EReference)typeEClass.getEStructuralFeatures().get(10);
 	}
 
@@ -834,7 +834,7 @@ public class JvmPackageImpl extends EPackageImpl implements JvmPackage {
 	 * <!-- end-user-doc -->
 	 * @generated
 	 */
-	public EReference getType_SuperType() {
+	public EReference getType_Fields() {
 		return (EReference)typeEClass.getEStructuralFeatures().get(11);
 	}
 
@@ -843,7 +843,7 @@ public class JvmPackageImpl extends EPackageImpl implements JvmPackage {
 	 * <!-- end-user-doc -->
 	 * @generated
 	 */
-	public EReference getType_Interfaces() {
+	public EReference getType_SuperType() {
 		return (EReference)typeEClass.getEStructuralFeatures().get(12);
 	}
 
@@ -852,7 +852,7 @@ public class JvmPackageImpl extends EPackageImpl implements JvmPackage {
 	 * <!-- end-user-doc -->
 	 * @generated
 	 */
-	public EReference getType_ComponentType() {
+	public EReference getType_Interfaces() {
 		return (EReference)typeEClass.getEStructuralFeatures().get(13);
 	}
 
@@ -861,8 +861,17 @@ public class JvmPackageImpl extends EPackageImpl implements JvmPackage {
 	 * <!-- end-user-doc -->
 	 * @generated
 	 */
-	public EReference getType_Module() {
+	public EReference getType_ComponentType() {
 		return (EReference)typeEClass.getEStructuralFeatures().get(14);
+	}
+
+	/**
+	 * <!-- begin-user-doc -->
+	 * <!-- end-user-doc -->
+	 * @generated
+	 */
+	public EReference getType_Module() {
+		return (EReference)typeEClass.getEStructuralFeatures().get(15);
 	}
 
 	/**
@@ -917,6 +926,15 @@ public class JvmPackageImpl extends EPackageImpl implements JvmPackage {
 	 */
 	public EAttribute getMember_Descriptor() {
 		return (EAttribute)memberEClass.getEStructuralFeatures().get(4);
+	}
+
+	/**
+	 * <!-- begin-user-doc -->
+	 * <!-- end-user-doc -->
+	 * @generated
+	 */
+	public EAttribute getMember_Signature() {
+		return (EAttribute)memberEClass.getEStructuralFeatures().get(5);
 	}
 
 	/**
@@ -1068,8 +1086,17 @@ public class JvmPackageImpl extends EPackageImpl implements JvmPackage {
 	 * <!-- end-user-doc -->
 	 * @generated
 	 */
+	public EAttribute getField_ConstantValue() {
+		return (EAttribute)fieldEClass.getEStructuralFeatures().get(3);
+	}
+
+	/**
+	 * <!-- begin-user-doc -->
+	 * <!-- end-user-doc -->
+	 * @generated
+	 */
 	public EReference getField_Type() {
-		return (EReference)fieldEClass.getEStructuralFeatures().get(3);
+		return (EReference)fieldEClass.getEStructuralFeatures().get(4);
 	}
 
 	/**
@@ -1276,6 +1303,7 @@ public class JvmPackageImpl extends EPackageImpl implements JvmPackage {
 		createEAttribute(typeEClass, TYPE__ACCESS);
 		createEAttribute(typeEClass, TYPE__BINARY_NAME);
 		createEAttribute(typeEClass, TYPE__DESCRIPTOR);
+		createEAttribute(typeEClass, TYPE__SIGNATURE);
 		createEAttribute(typeEClass, TYPE__ABSTRACT);
 		createEAttribute(typeEClass, TYPE__FINAL);
 		createEAttribute(typeEClass, TYPE__SYNTHETIC);
@@ -1294,6 +1322,7 @@ public class JvmPackageImpl extends EPackageImpl implements JvmPackage {
 		createEAttribute(memberEClass, MEMBER__FINAL);
 		createEAttribute(memberEClass, MEMBER__SYNTHETIC);
 		createEAttribute(memberEClass, MEMBER__DESCRIPTOR);
+		createEAttribute(memberEClass, MEMBER__SIGNATURE);
 
 		methodEClass = createEClass(METHOD);
 		createEAttribute(methodEClass, METHOD__ABSTRACT);
@@ -1312,6 +1341,7 @@ public class JvmPackageImpl extends EPackageImpl implements JvmPackage {
 		createEAttribute(fieldEClass, FIELD__TRANSIENT);
 		createEAttribute(fieldEClass, FIELD__VOLATILE);
 		createEAttribute(fieldEClass, FIELD__ENUM_CONSTANT);
+		createEAttribute(fieldEClass, FIELD__CONSTANT_VALUE);
 		createEReference(fieldEClass, FIELD__TYPE);
 
 		parameterEClass = createEClass(PARAMETER);
@@ -1447,6 +1477,7 @@ public class JvmPackageImpl extends EPackageImpl implements JvmPackage {
 		initEAttribute(getType_Access(), this.getAccessLevel(), "access", null, 0, 1, Type.class, !IS_TRANSIENT, !IS_VOLATILE, IS_CHANGEABLE, !IS_UNSETTABLE, !IS_ID, !IS_UNIQUE, !IS_DERIVED, IS_ORDERED);
 		initEAttribute(getType_BinaryName(), theEcorePackage.getEString(), "binaryName", null, 0, 1, Type.class, !IS_TRANSIENT, !IS_VOLATILE, IS_CHANGEABLE, !IS_UNSETTABLE, !IS_ID, !IS_UNIQUE, !IS_DERIVED, IS_ORDERED);
 		initEAttribute(getType_Descriptor(), theEcorePackage.getEString(), "descriptor", null, 0, 1, Type.class, !IS_TRANSIENT, !IS_VOLATILE, IS_CHANGEABLE, !IS_UNSETTABLE, !IS_ID, !IS_UNIQUE, !IS_DERIVED, IS_ORDERED);
+		initEAttribute(getType_Signature(), theEcorePackage.getEString(), "signature", null, 0, 1, Type.class, !IS_TRANSIENT, !IS_VOLATILE, IS_CHANGEABLE, !IS_UNSETTABLE, !IS_ID, !IS_UNIQUE, !IS_DERIVED, IS_ORDERED);
 		initEAttribute(getType_Abstract(), theEcorePackage.getEBoolean(), "abstract", null, 0, 1, Type.class, !IS_TRANSIENT, !IS_VOLATILE, IS_CHANGEABLE, !IS_UNSETTABLE, !IS_ID, !IS_UNIQUE, !IS_DERIVED, IS_ORDERED);
 		initEAttribute(getType_Final(), theEcorePackage.getEBoolean(), "final", null, 0, 1, Type.class, !IS_TRANSIENT, !IS_VOLATILE, IS_CHANGEABLE, !IS_UNSETTABLE, !IS_ID, !IS_UNIQUE, !IS_DERIVED, IS_ORDERED);
 		initEAttribute(getType_Synthetic(), theEcorePackage.getEBoolean(), "synthetic", null, 0, 1, Type.class, !IS_TRANSIENT, !IS_VOLATILE, IS_CHANGEABLE, !IS_UNSETTABLE, !IS_ID, !IS_UNIQUE, !IS_DERIVED, IS_ORDERED);
@@ -1465,6 +1496,7 @@ public class JvmPackageImpl extends EPackageImpl implements JvmPackage {
 		initEAttribute(getMember_Final(), theEcorePackage.getEBoolean(), "final", null, 0, 1, Member.class, !IS_TRANSIENT, !IS_VOLATILE, IS_CHANGEABLE, !IS_UNSETTABLE, !IS_ID, !IS_UNIQUE, !IS_DERIVED, IS_ORDERED);
 		initEAttribute(getMember_Synthetic(), theEcorePackage.getEBoolean(), "synthetic", null, 0, 1, Member.class, !IS_TRANSIENT, !IS_VOLATILE, IS_CHANGEABLE, !IS_UNSETTABLE, !IS_ID, !IS_UNIQUE, !IS_DERIVED, IS_ORDERED);
 		initEAttribute(getMember_Descriptor(), theEcorePackage.getEString(), "descriptor", null, 0, 1, Member.class, !IS_TRANSIENT, !IS_VOLATILE, IS_CHANGEABLE, !IS_UNSETTABLE, !IS_ID, !IS_UNIQUE, !IS_DERIVED, IS_ORDERED);
+		initEAttribute(getMember_Signature(), theEcorePackage.getEString(), "signature", null, 0, 1, Member.class, !IS_TRANSIENT, !IS_VOLATILE, IS_CHANGEABLE, !IS_UNSETTABLE, !IS_ID, !IS_UNIQUE, !IS_DERIVED, IS_ORDERED);
 
 		initEClass(methodEClass, Method.class, "Method", !IS_ABSTRACT, !IS_INTERFACE, IS_GENERATED_INSTANCE_CLASS);
 		initEAttribute(getMethod_Abstract(), theEcorePackage.getEBoolean(), "abstract", null, 0, 1, Method.class, !IS_TRANSIENT, !IS_VOLATILE, IS_CHANGEABLE, !IS_UNSETTABLE, !IS_ID, !IS_UNIQUE, !IS_DERIVED, IS_ORDERED);
@@ -1483,6 +1515,7 @@ public class JvmPackageImpl extends EPackageImpl implements JvmPackage {
 		initEAttribute(getField_Transient(), theEcorePackage.getEBoolean(), "transient", null, 0, 1, Field.class, !IS_TRANSIENT, !IS_VOLATILE, IS_CHANGEABLE, !IS_UNSETTABLE, !IS_ID, !IS_UNIQUE, !IS_DERIVED, IS_ORDERED);
 		initEAttribute(getField_Volatile(), theEcorePackage.getEBoolean(), "volatile", null, 0, 1, Field.class, !IS_TRANSIENT, !IS_VOLATILE, IS_CHANGEABLE, !IS_UNSETTABLE, !IS_ID, !IS_UNIQUE, !IS_DERIVED, IS_ORDERED);
 		initEAttribute(getField_EnumConstant(), theEcorePackage.getEBoolean(), "enumConstant", null, 0, 1, Field.class, !IS_TRANSIENT, !IS_VOLATILE, IS_CHANGEABLE, !IS_UNSETTABLE, !IS_ID, !IS_UNIQUE, !IS_DERIVED, IS_ORDERED);
+		initEAttribute(getField_ConstantValue(), theEcorePackage.getEString(), "constantValue", null, 0, 1, Field.class, !IS_TRANSIENT, !IS_VOLATILE, IS_CHANGEABLE, !IS_UNSETTABLE, !IS_ID, !IS_UNIQUE, !IS_DERIVED, IS_ORDERED);
 		initEReference(getField_Type(), this.getType(), null, "type", null, 0, 1, Field.class, !IS_TRANSIENT, !IS_VOLATILE, IS_CHANGEABLE, !IS_COMPOSITE, IS_RESOLVE_PROXIES, !IS_UNSETTABLE, IS_UNIQUE, !IS_DERIVED, IS_ORDERED);
 
 		initEClass(parameterEClass, Parameter.class, "Parameter", !IS_ABSTRACT, !IS_INTERFACE, IS_GENERATED_INSTANCE_CLASS);
@@ -1755,6 +1788,12 @@ public class JvmPackageImpl extends EPackageImpl implements JvmPackage {
 			   "documentation", " Ljava/lang/String;, I, [I."
 		   });
 		addAnnotation
+		  (getType_Signature(),
+		   source,
+		   new String[] {
+			   "documentation", "The class file Signature attribute: type parameters, generic superclass and\ninterfaces, e.g. <T:Ljava/lang/Object;>Ljava/lang/Object;Ljava/util/function/Supplier<TT;>;\nUnset when the type declares nothing generic, which is when the class file\nhas no such attribute either. See Member.signature."
+		   });
+		addAnnotation
 		  (getType_ClassFileVersion(),
 		   source,
 		   new String[] {
@@ -1785,6 +1824,12 @@ public class JvmPackageImpl extends EPackageImpl implements JvmPackage {
 			   "documentation", " The JVM descriptor: a field\'s type, or a method\'s parameters and return."
 		   });
 		addAnnotation
+		  (getMember_Signature(),
+		   source,
+		   new String[] {
+			   "documentation", "The class file Signature attribute: a field\'s generic type, e.g.\nLjava/util/List<Ljava/lang/String;>; or a method\'s type parameters,\nparameters, return and throws, e.g. <T:Ljava/lang/Object;>(TT;)Ljava/util/Optional<TT;>;\nUnset when the descriptor already says everything.\n\nDATA, NOT IDENTITY. Overloads are told apart by erasure, so two members of\none type never differ only in signature, and identity stays with the\ndescriptor. This is what lets a projection to Meta keep generics - telling\nSupplier<Volume> from Supplier<Writable> - and what separates a source\nincompatible change, which alters only the signature, from a binary\nincompatible one, which alters the descriptor.\n\nThe JVM\'s own form rather than Java source text, for the same reason\nidentity uses descriptors: it is what bytecode carries, so a static scan\ncopies it verbatim and a live loader writes the same string from\njava.lang.reflect.Type. Parameters have none of their own; theirs are\npositions in the method\'s."
+		   });
+		addAnnotation
 		  (methodEClass,
 		   source,
 		   new String[] {
@@ -1807,6 +1852,12 @@ public class JvmPackageImpl extends EPackageImpl implements JvmPackage {
 		   source,
 		   new String[] {
 			   "documentation", " Binary names of declared checked exceptions."
+		   });
+		addAnnotation
+		  (getField_ConstantValue(),
+		   source,
+		   new String[] {
+			   "documentation", "The class file ConstantValue attribute, as text. Unset when there is none;\nan empty string is the empty String constant.\n\nAPI, not detail: javac copies a constant\'s value into every class that\nreads it, so client code carries the value it was compiled against. A stub\nor a spec that gets it wrong compiles silently and is wrong at run time,\nand changing it is a break no descriptor diff shows. That holds for\ninstance fields too - javac emits the attribute for any final field with a\nconstant initializer, and the JVM ignores it only for non-static ones.\n\nThe text is the value as the class file stores it, read with the field\'s\ndescriptor:\n  - boolean, byte, char, short, int: a decimal integer, since all five are\n    stored as int - so true is 1 and \'A\' is 65;\n  - long: a decimal integer;\n  - float, double: Float.toString and Double.toString, which round trip\n    exactly and spell NaN, Infinity and -0.0;\n  - String: the content with Java string escapes - backslash, quote,\n    newline, tab and the like, and a Unicode escape (backslash, u, four hex\n    digits) for any other control character and for unpaired surrogates -\n    so it survives XML 1.0, which cannot carry U+0000, and a source\n    generator only has to add the quotes.\n\nReflection cannot populate this: a static final field initialized by a\nconstant and one initialized in a static initializer look the same through\njava.lang.reflect. It comes from the class file, which a live loader can\nread too, through the class loader\'s resource for the type."
 		   });
 		addAnnotation
 		  (parameterEClass,

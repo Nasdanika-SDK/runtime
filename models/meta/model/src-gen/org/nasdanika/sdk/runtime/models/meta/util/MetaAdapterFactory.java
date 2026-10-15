@@ -23,6 +23,7 @@ import org.nasdanika.sdk.runtime.models.meta.DataType;
 import org.nasdanika.sdk.runtime.models.meta.EnumLiteral;
 import org.nasdanika.sdk.runtime.models.meta.Feature;
 import org.nasdanika.sdk.runtime.models.meta.IncomingReference;
+import org.nasdanika.sdk.runtime.models.meta.IntersectionTypeReference;
 import org.nasdanika.sdk.runtime.models.meta.MetaPackage;
 import org.nasdanika.sdk.runtime.models.meta.ModelElement;
 import org.nasdanika.sdk.runtime.models.meta.OpaqueTypeReference;
@@ -35,6 +36,7 @@ import org.nasdanika.sdk.runtime.models.meta.TypeParameterReference;
 import org.nasdanika.sdk.runtime.models.meta.TypeReference;
 import org.nasdanika.sdk.runtime.models.meta.TypedElement;
 import org.nasdanika.sdk.runtime.models.meta.UnionTypeReference;
+import org.nasdanika.sdk.runtime.models.meta.WildcardTypeReference;
 
 /**
  * <!-- begin-user-doc -->
@@ -171,6 +173,14 @@ public class MetaAdapterFactory extends AdapterFactoryImpl {
 			@Override
 			public Adapter caseUnionTypeReference(UnionTypeReference object) {
 				return createUnionTypeReferenceAdapter();
+			}
+			@Override
+			public Adapter caseIntersectionTypeReference(IntersectionTypeReference object) {
+				return createIntersectionTypeReferenceAdapter();
+			}
+			@Override
+			public Adapter caseWildcardTypeReference(WildcardTypeReference object) {
+				return createWildcardTypeReferenceAdapter();
 			}
 			@Override
 			public Adapter caseOpaqueTypeReference(OpaqueTypeReference object) {
@@ -505,6 +515,34 @@ public class MetaAdapterFactory extends AdapterFactoryImpl {
 	 * @generated
 	 */
 	public Adapter createUnionTypeReferenceAdapter() {
+		return null;
+	}
+
+	/**
+	 * Creates a new adapter for an object of class '{@link org.nasdanika.sdk.runtime.models.meta.IntersectionTypeReference <em>Intersection Type Reference</em>}'.
+	 * <!-- begin-user-doc -->
+	 * This default implementation returns null so that we can easily ignore cases;
+	 * it's useful to ignore a case when inheritance will catch all the cases anyway.
+	 * <!-- end-user-doc -->
+	 * @return the new adapter.
+	 * @see org.nasdanika.sdk.runtime.models.meta.IntersectionTypeReference
+	 * @generated
+	 */
+	public Adapter createIntersectionTypeReferenceAdapter() {
+		return null;
+	}
+
+	/**
+	 * Creates a new adapter for an object of class '{@link org.nasdanika.sdk.runtime.models.meta.WildcardTypeReference <em>Wildcard Type Reference</em>}'.
+	 * <!-- begin-user-doc -->
+	 * This default implementation returns null so that we can easily ignore cases;
+	 * it's useful to ignore a case when inheritance will catch all the cases anyway.
+	 * <!-- end-user-doc -->
+	 * @return the new adapter.
+	 * @see org.nasdanika.sdk.runtime.models.meta.WildcardTypeReference
+	 * @generated
+	 */
+	public Adapter createWildcardTypeReferenceAdapter() {
 		return null;
 	}
 

@@ -258,7 +258,7 @@ time if that creates a cycle — resolve via a small interface, e.g. `GlobalObje
 
 ### Assessment
 
-Straightforward application of the existing `ServiceCapabilityFactory` pattern already used by the
+Straightforward application of the `@Capability` method pattern already used by the
 handler factories in this repo. The one decision is the requirement shape; the record-with-predicate
 is fine, with a convenience flavour for the common NS-URI case.
 
@@ -281,8 +281,8 @@ that `forNsURI` carries the namespace and providers match on it.
 
 ### 4.2 Provider and capability type
 
-Capability service type is `URI` (or `Iterable<URI>` for the multi flavour). A
-`ServiceCapabilityFactory<ResourceURIRequirement, URI>` per contributing module returns
+Capability type is `URI`; a method returning `URI[]` answers a requirement for `URI` with each URI and one for `URI[]` with the array, so no separate multi flavour is needed. A
+`@Capability URI[] resourceURIs(ResourceURIRequirement requirement)` method per contributing module returns
 `module://<bundle>/<resource>` URIs (e.g.
 `module://org.nasdanika.core.capabilities/capabilities.pm.groovy`) when the requirement's namespace
 matches what the module provides.
@@ -292,7 +292,7 @@ matches what the module provides.
 ```java
 ResourceURIRequirement req = ResourceURIRequirement.forNsURI(ProductmanagementPackage.eNS_URI);
 Iterable<CapabilityProvider<URI>> providers = capabilityLoader.load(
-        ServiceCapabilityFactory.createRequirement(URI.class, null, req), monitor);
+        Requirement.of(URI.class, req), monitor);
 for (URI uri : flatten(providers)) {
     Resource r = resourceSet.getResource(uri, true);   // load
     // load registers globals: see §4.4

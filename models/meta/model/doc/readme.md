@@ -342,7 +342,7 @@ What that gives, which a catalog cannot:
 | Base | `ModelElement` (on nxcore `NamedElement`), `Annotation` |
 | Structure | `Package`, `Classifier`, `Class`, `DataType`, `Enum`, `EnumLiteral` |
 | Members | `TypedElement`, `Feature`, `Attribute`, `Reference`, `Operation`, `Parameter` |
-| Types | `TypeParameter`, `TypeReference`, `ClassifierReference`, `TypeParameterReference`, `PrimitiveTypeReference`, `UnionTypeReference`, `OpaqueTypeReference`, `PrimitiveKind` |
+| Types | `TypeParameter`, `TypeReference`, `ClassifierReference`, `TypeParameterReference`, `PrimitiveTypeReference`, `UnionTypeReference`, `IntersectionTypeReference`, `WildcardTypeReference`, `OpaqueTypeReference`, `PrimitiveKind` |
 | Instances | `Object`, `IncomingReference` |
 
 `Attribute.identifying` marks the attribute that gives an instance its identity, which is how a reference cites a target and, incidentally, how a DDD entity is distinguished from a value object.
@@ -359,6 +359,8 @@ That keeps this at twenty classifiers rather than Ecore's fifty-three, of which 
 
 So: no `volatile`, `transient`, `unsettable` or `resolveProxies` - EMF implementation concerns with no meaning in a browser.
 No feature maps, no generic type algebra, no factories.
+Generic types are carried, not computed: unions, intersections and wildcards are there so that a Java or TypeScript signature can be written down without loss, and there is no subtyping or substitution machinery behind them.
+A type reference is in the core rather than a sub-model whenever it can stand in a type position, because every projection has to handle every kind of type reference, and one it does not know breaks it.
 No subpackages, because neither TypeScript modules nor npm packages need the nesting.
 No `interface` flag, because whether a `Class` becomes an interface, a type alias or a class is a decision for the projection rather than a property of the model.
 

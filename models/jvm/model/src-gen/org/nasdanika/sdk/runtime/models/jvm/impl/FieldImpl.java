@@ -19,6 +19,7 @@ import org.nasdanika.sdk.runtime.models.jvm.Type;
  *   <li>{@link org.nasdanika.sdk.runtime.models.jvm.impl.FieldImpl#isTransient <em>Transient</em>}</li>
  *   <li>{@link org.nasdanika.sdk.runtime.models.jvm.impl.FieldImpl#isVolatile <em>Volatile</em>}</li>
  *   <li>{@link org.nasdanika.sdk.runtime.models.jvm.impl.FieldImpl#isEnumConstant <em>Enum Constant</em>}</li>
+ *   <li>{@link org.nasdanika.sdk.runtime.models.jvm.impl.FieldImpl#getConstantValue <em>Constant Value</em>}</li>
  *   <li>{@link org.nasdanika.sdk.runtime.models.jvm.impl.FieldImpl#getType <em>Type</em>}</li>
  * </ul>
  *
@@ -54,6 +55,16 @@ public class FieldImpl extends MemberImpl implements Field {
 	 * @ordered
 	 */
 	protected static final boolean ENUM_CONSTANT_EDEFAULT = false;
+
+	/**
+	 * The default value of the '{@link #getConstantValue() <em>Constant Value</em>}' attribute.
+	 * <!-- begin-user-doc -->
+	 * <!-- end-user-doc -->
+	 * @see #getConstantValue()
+	 * @generated
+	 * @ordered
+	 */
+	protected static final String CONSTANT_VALUE_EDEFAULT = null;
 
 	/**
 	 * <!-- begin-user-doc -->
@@ -133,6 +144,24 @@ public class FieldImpl extends MemberImpl implements Field {
 	 * <!-- end-user-doc -->
 	 * @generated
 	 */
+	public String getConstantValue() {
+		return (String)eDynamicGet(JvmPackage.FIELD__CONSTANT_VALUE, JvmPackage.Literals.FIELD__CONSTANT_VALUE, true, true);
+	}
+
+	/**
+	 * <!-- begin-user-doc -->
+	 * <!-- end-user-doc -->
+	 * @generated
+	 */
+	public void setConstantValue(String newConstantValue) {
+		eDynamicSet(JvmPackage.FIELD__CONSTANT_VALUE, JvmPackage.Literals.FIELD__CONSTANT_VALUE, newConstantValue);
+	}
+
+	/**
+	 * <!-- begin-user-doc -->
+	 * <!-- end-user-doc -->
+	 * @generated
+	 */
 	public Type getType() {
 		return (Type)eDynamicGet(JvmPackage.FIELD__TYPE, JvmPackage.Literals.FIELD__TYPE, true, true);
 	}
@@ -169,6 +198,8 @@ public class FieldImpl extends MemberImpl implements Field {
 				return isVolatile();
 			case JvmPackage.FIELD__ENUM_CONSTANT:
 				return isEnumConstant();
+			case JvmPackage.FIELD__CONSTANT_VALUE:
+				return getConstantValue();
 			case JvmPackage.FIELD__TYPE:
 				if (resolve) return getType();
 				return basicGetType();
@@ -192,6 +223,9 @@ public class FieldImpl extends MemberImpl implements Field {
 				return;
 			case JvmPackage.FIELD__ENUM_CONSTANT:
 				setEnumConstant((Boolean)newValue);
+				return;
+			case JvmPackage.FIELD__CONSTANT_VALUE:
+				setConstantValue((String)newValue);
 				return;
 			case JvmPackage.FIELD__TYPE:
 				setType((Type)newValue);
@@ -217,6 +251,9 @@ public class FieldImpl extends MemberImpl implements Field {
 			case JvmPackage.FIELD__ENUM_CONSTANT:
 				setEnumConstant(ENUM_CONSTANT_EDEFAULT);
 				return;
+			case JvmPackage.FIELD__CONSTANT_VALUE:
+				setConstantValue(CONSTANT_VALUE_EDEFAULT);
+				return;
 			case JvmPackage.FIELD__TYPE:
 				setType((Type)null);
 				return;
@@ -238,6 +275,8 @@ public class FieldImpl extends MemberImpl implements Field {
 				return isVolatile() != VOLATILE_EDEFAULT;
 			case JvmPackage.FIELD__ENUM_CONSTANT:
 				return isEnumConstant() != ENUM_CONSTANT_EDEFAULT;
+			case JvmPackage.FIELD__CONSTANT_VALUE:
+				return CONSTANT_VALUE_EDEFAULT == null ? getConstantValue() != null : !CONSTANT_VALUE_EDEFAULT.equals(getConstantValue());
 			case JvmPackage.FIELD__TYPE:
 				return basicGetType() != null;
 		}

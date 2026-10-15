@@ -8,7 +8,7 @@ layers, class loaders, modules, packages, types, methods, fields and parameters.
 
 It is a spine rather than a complete picture, and that is the design. Source information, bytecode,
 and runtime observations all attach to these elements rather than restating them: a [Java source
-model](https://java.models.nasdanika.org/) adds positions and generic signatures, 
+model](https://java.models.nasdanika.org/) adds positions, comments and source-level type text, 
 a bytecode model adds instructions and constant pools,
 [telemetry](https://telemetry.models.nasdanika.org/) attaches measurements, and all of them point at the same nodes.
 
@@ -73,7 +73,7 @@ so coverage merges onto these elements with no mapping layer and no per-project 
 | | |
 |---|---|
 | **In** | Layers, class loaders, modules and their directives, packages, types, methods, fields, parameters, resolved readability, access flags, class file version |
-| **Erased** | No generics. Identity is by descriptor and descriptors are erased. Generic signatures live in the models above, and are recoverable from the `Signature` attribute by a bytecode reader as well as from source |
+| **Erased identity, generics as data** | Identity is by descriptor, and descriptors are erased. Generic types are carried as the class file `Signature` attribute, verbatim, in `signature` on types and members - data rather than identity, since overloads are told apart by erasure. Parsing them into a type structure is left to consumers such as the projection to Meta |
 | **Out** | Source positions, instructions, constant pools, annotations |
 | **Projected, not extended** | [Meta](https://meta.models.nasdanika.org/). See below |
 
@@ -84,7 +84,7 @@ that can be added without disturbing anything here. Left out to keep the first v
 
 ## Relation to Meta, and why this does not extend it
 
-The [Meta model](https://java.models.nasdanika.org/) covers packages, classes, features and operations, loads from
+The [Meta model](https://meta.models.nasdanika.org/) covers packages, classes, features and operations, loads from
 Java among other formats, and states that it is "deliberately not a superset of any of its sources",
 with whatever does not fit dropped by design or carried in an annotation. That is a published
 language, and a published language is a projection target rather than a base class.
@@ -105,8 +105,8 @@ route they expect.
 | Root | `JavaVirtualMachine`: `live`, VM name, version, vendor, specification version; contains modules, layers, class loaders |
 | Runtime structure | `Layer` (`boot`, parents, modules), `ClassLoader` (parent, unnamed module) |
 | Modules | `Module` (`named`, version, modifiers, main class, `uses`, **`reads`** as resolved readability), `Requires` with `RequiresModifier`, `Exports` and `Opens` with targets, `Provides` with service and providers |
-| Types | `Package`, `Type` (`TypeKind`, `AccessLevel`, binary name, descriptor, supertype, interfaces, component type, class file version) |
-| Members | `Member` abstract, `Method` (covers constructors as `<init>` and static initializers as `<clinit>`), `Field`, `Parameter` |
+| Types | `Package`, `Type` (`TypeKind`, `AccessLevel`, binary name, descriptor, signature, supertype, interfaces, component type, class file version) |
+| Members | `Member` abstract (access, descriptor, signature), `Method` (covers constructors as `<init>` and static initializers as `<clinit>`), `Field` (constant value), `Parameter` |
 | Enumerations | `TypeKind`, `AccessLevel`, `ModuleModifier`, `RequiresModifier`, `DirectiveModifier` |
 | Reused, not redefined | NxCore `ModelElement`, `NamedElement` |
 
@@ -129,6 +129,12 @@ Three shape decisions worth knowing before reading the xcore:
 parents, reads each `ModuleDescriptor`, takes resolved readability from the `Configuration`, and
 reflects over loaded types. It is smaller than a static scan (no jar traversal, no ASM, no
 multi-release decision) and it is what produces a real graph to query.
+
+Reflection does not reach everything, and `Field.constantValue` is the case that matters: a field
+initialized by a constant and one initialized in a static initializer look the same through
+`java.lang.reflect`. For that the live loader reads the loaded type's own class file, through its
+class loader's resource. The JDK's class file API (`java.lang.classfile`, final since Java 24) does
+that without a dependency, and is an option for the scanner below as well.
 
 A build-time class-file scanner using [ASM](https://asm.ow2.io/) follows, and adds what a running VM
 cannot show: types that were never loaded. Note that a scanner needs a metamodel of neither ASM nor

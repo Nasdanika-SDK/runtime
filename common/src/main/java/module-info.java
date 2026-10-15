@@ -17,6 +17,7 @@ module org.nasdanika.sdk.runtime.common {
 	requires transitive io.opentelemetry.context;
 	requires org.eclipse.emf.ecore.xmi;
 	requires java.xml;
+	requires io.leangen.geantyref; // Not transitive: no public signature mentions it, Types wraps it
 
 	exports org.nasdanika.sdk.runtime.common.services;
 	exports org.nasdanika.sdk.runtime.common;
