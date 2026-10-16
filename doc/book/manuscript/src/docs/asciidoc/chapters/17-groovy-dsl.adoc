@@ -1,0 +1,189 @@
+// Default for previewing this file on its own; the Maven build sets examplesdir
+ifndef::examplesdir[:examplesdir: ../../../../../examples]
+
+[#groovy-dsl]
+== Authoring models with the Groovy DSL
+
+XMI, JSON and YAML are good formats for saving models and poor ones for writing them.
+Xcore is the language for metamodels (<<models>>), and there is no equivalent for instances: a library, an architecture, a backlog.
+
+The runtime's `groovy` module fills the gap with a Groovy DSL that is driven by the metamodel.
+Nothing in it is written for a particular class or feature: every keyword, every nesting and every attribute is read reflectively from the packages the DSL is bound to.
+Bind it to a different metamodel and you get a different DSL, for free.
+
+Groovy brings what a home-made language would have to build: nesting, variables, loops, string interpolation, and code where code is the clearest way to say something.
+
+=== A library as a script
+
+.A library as a Groovy script (`dsl/src/test/resources/reading-group.library.groovy`)
+[source,groovy]
+----
+include::{examplesdir}/dsl/src/test/resources/reading-group.library.groovy[]
+----
+<1> *Type dispatch.* `author` names the class `Author`, so the call creates an author and puts it into the one containment feature of the library that accepts authors. The call returns the object, so it can be kept in a variable.
+<2> A book, into `Library.books` by the same rule.
+<3> *Feature dispatch.* `name` names a feature of the book, inherited from the core model's `NamedElement`, so the call sets it. Feature dispatch is tried before type dispatch.
+<4> Values are coerced to the feature's type: `2003` to `int`, `'TECHNOLOGY'` to the enumeration literal.
+<5> A reference to an object the script holds.
+<6> A reference by path, to a book defined further down. Paths are resolved after the whole script has run, so forward references work.
+<7> The core model's documentation feature, in Markdown.
+
+The file name selects the language.
+It is read as qualifiers from right to left (<<capabilities>>): `groovy` compiles the text to a script, and `library` binds the DSL to the library metamodel and evaluates it.
+Loading the script is loading a resource:
+
+.Loading a script
+[source,java]
+----
+include::{examplesdir}/dsl/src/test/java/org/example/dsl/TestDsl.java[tag=load,indent=0]
+----
+<1> A configured resource set has the Groovy resource factory, and the qualifiers select the handlers.
+
+The model is an ordinary model: it can be saved in any format, validated, transformed, served or generated from.
+The script is the source; the model is what it means.
+
+=== The rules of the language
+
+*Entry points.* At the top level, every concrete class of the bound packages whose uncapitalized simple name is unambiguous is a keyword: `library`, `ePackage`.
+
+*Dispatch.* Inside a builder closure, a call whose name is a feature of the current object sets the feature; otherwise a call whose name is a class creates an object of that class in the one containment feature that accepts it.
+When a class fits more than one containment feature, or the feature is typed by an abstract class, the feature is named and the class given explicitly: `eStructuralFeatures('EReference') { ... }`.
+
+*Built-in keywords.* `ref`, `dsl`, `onSave`, `loadResource`, `copy` and `eObject` at the top level, and `global`, `proxy`, `loadResource`, `copy` and `eObject` in a closure, win over both kinds of dispatch.
+
+*Setting features.* `year 2003`, `year(2003)` and `year = 2003` all set the feature.
+One form is a trap: `upperBound -1` is the expression `upperBound - 1` in Groovy, which reads the feature, subtracts one and discards the result.
+Whenever a value starts with a minus or a plus sign, use the assignment or the parenthesized form.
+
+*References* take one of three values:
+
+* An object the script holds, in a variable.
+* A path in the style of EMF URI fragments, resolved after the script has run: `/` anchors it at the root, `..` goes to the container, and predicates select by attribute, as in `+../books[name='Patterns of Enterprise Application Architecture']+`. A path containing `#` is a URI, resolved against the script's own URI, possibly in another resource.
+* A closure, evaluated after the script with the referencing object as its delegate, which returns an object or a path.
+
+*Names of classes* can be simple (`Book`), uncapitalized (`book`), qualified by a package path (`library.Book`) or a namespace URI with a fragment (`<nsURI>#Book`).
+When a simple name matches several classes and one is a subclass of another, the more specific class wins, which is what makes refinements of a metamodel work in the same script as the metamodel itself.
+A name that is still ambiguous is an error that lists the qualified alternatives.
+
+*Results.* The contents of the resource are the script's last expression, if it is an object or a collection of objects, and otherwise the roots created by entry points.
+
+=== Metamodels too
+
+The runtime binds the DSL to Ecore itself, under the qualifier `ecore`, so a metamodel can be a script as well:
+
+.A metamodel as a script (`dsl/src/test/resources/catalog.ecore.groovy`)
+[source,groovy]
+----
+include::{examplesdir}/dsl/src/test/resources/catalog.ecore.groovy[]
+----
+<1> A class, kept in a variable for the reference below.
+<2> Several features on one line, separated by semicolons. `eType 'EString'` is resolved as a class name.
+<3> `eStructuralFeatures` accepts attributes and references, so the class is named.
+<4> The assignment form, because the value is negative.
+
+.Loading a metamodel script
+[source,java]
+----
+include::{examplesdir}/dsl/src/test/java/org/example/dsl/TestDsl.java[tag=ecore,indent=0]
+----
+
+Xcore remains the way to define a metamodel that has generated code.
+An Ecore script is the quick way to sketch one, or to derive one from something else.
+
+=== Binding the DSL to a metamodel
+
+Binding the DSL to a metamodel takes a handler that names the packages:
+
+.The library DSL (`dsl/.../LibraryDslHandler.java`)
+[source,java]
+----
+include::{examplesdir}/dsl/src/main/java/org/example/dsl/LibraryDslHandler.java[tag=handler,indent=0]
+----
+
+and a capability factory that decides which qualifier it serves and connects it to the source handler on its right:
+
+.The qualifier (`dsl/.../LibraryDsl.java`)
+[source,java]
+----
+include::{examplesdir}/dsl/src/main/java/org/example/dsl/LibraryDsl.java[tag=factory,indent=0]
+----
+<1> Not a library script: some other factory's business.
+<2> The handler of the qualifier to the right, `groovy`, which compiles the source.
+<3> One library handler per source handler.
+
+.The module (`dsl/.../module-info.java`)
+[source,java]
+----
+include::{examplesdir}/dsl/src/main/java/module-info.java[tag=module,indent=0]
+----
+
+A handler can do more than name packages: provide bindings to the script, a short form that creates an element from a plain value for a containment reference, and source locations for the elements it creates.
+
+=== Scripts that derive models
+
+A script is not limited to transcribing a model:
+
+* `loadResource 'payments.drawio'` loads another resource through the script's resource set, relative to the script, with every handler and factory the set has. A script can iterate a diagram, a spreadsheet or another model and emit a model from it, which turns a transcription into a derivation.
+* `copy '<uri>#<fragment>' { ... }` deep-copies an element as a prototype and then populates the copy like a new element: structure from a diagram, details from code. A copy is a snapshot, not a live link.
+* `global '<uri>'` registers the current element under a URI, so that other resources in the same resource set can reference it.
+
+A DSL resource is read-only by default, because the script, not the model, is the source of truth and there is no general way to write a model back as a script.
+An `onSave` callback in the script decides what saving means when it should mean something: writing the model elsewhere, or rewriting the script.
+
+=== Errors and telemetry
+
+Failures are reported with the script's URI and line, including failures of references resolved after the script has run, which report the line where the reference was written.
+
+Loading a script is traced, and the spans nest the way the script does.
+This test collects the spans of loading the library script, with the script lines from the `code.line.number` attribute:
+
+.Collecting the spans of loading a script
+[source,java]
+----
+include::{examplesdir}/dsl/src/test/java/org/example/dsl/TestDsl.java[tag=trace,indent=0]
+----
+<1> A subscriber that records started spans with their line numbers, indented by nesting.
+<2> The first book, from line 7, created in `Library.books`.
+<3> Its forward reference, resolved after the script ran, reported with the line where it was written.
+
+The complete tree:
+
+[source,text]
+----
+Resource.load
+  Compiling script
+  Evaluating script
+    Loading Library, line 1
+      Setting name, line 2
+      Setting authors, line 4
+        Loading Author, line 4
+          Setting name, line 4
+      Setting authors, line 5
+        Loading Author, line 5
+          Setting name, line 5
+      Setting books, line 7
+        Loading Book, line 7
+          Setting name, line 8
+          Setting year, line 9
+          Setting genre, line 10
+          Setting authors, line 11
+          Setting cites, line 12
+          Setting documentation, line 13
+      Setting books, line 18
+        Loading Book, line 18
+          Setting name, line 19
+          Setting year, line 20
+          Setting genre, line 21
+          Setting authors, line 22
+    Resolving references
+      Resolving cites, line 12
+----
+
+Spans carry locations, never loaded values: the script URI, the line, and the identities of classes and features as `<nsURI>#<name>`.
+A long script that fails, or that is slow, says where.
+
+=== What comes next
+
+The DSL is built on the JDK's scripting API, `javax.script`, so the same pipeline can serve other JVM languages [.sketch]#SKETCH#.
+Kotlin scripts are designed, with the same qualifiers, so `reading-group.library.kts` would load like the Groovy script.
+Validation rules expressed in the DSL, and a path from a sketched metamodel script to Xcore and generated code, are part of the same design.

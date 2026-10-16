@@ -1,0 +1,101 @@
+// Default for previewing this file on its own; the Maven build sets examplesdir
+ifndef::examplesdir[:examplesdir: ../../../../../examples]
+
+[#serving]
+== Serving over HTTP and WebDAV
+
+Anything presented as a volume can be served: to a browser over HTTP, and to anything that mounts drives over WebDAV.
+A model becomes a folder in Finder or Explorer, a preview of a generated site is one URL away, and an agent reads a running system with the file tools it already has.
+
+The runtime serves volumes with the HTTP server the JDK has shipped for years, `com.sun.net.httpserver` in the module `jdk.httpserver`.
+With virtual threads it is enough for local tools, previews and agents, with no servlet container and no framework.
+
+=== Serving a volume
+
+`VolumeHttpHandler` serves a volume read-only, in the manner of the JDK's `SimpleFileServer`:
+
+* Files are sent with a media type from their extension, a `Last-Modified` header from the entry, and an ETag from the entry's hash. A conditional request whose `If-None-Match` matches gets a `304`.
+* Directories are generated HTML listings. A directory requested without a trailing slash is redirected to it, so relative links in pages and listings resolve.
+* The request path below the context path is the volume path. Paths with empty, `.` or `..` segments are refused.
+* `GET` and `HEAD` are served; other methods get a `405`.
+
+`WebDavHandler` extends it into a read-only WebDAV (RFC 4918) class 1 share:
+
+* `OPTIONS` answers `DAV: 1` and the allowed methods.
+* `PROPFIND` answers a `207 Multi-Status` with the resource type, display name, content length, content type, ETag and modification time, as far as the volume knows them. `Depth: infinity` is answered as `1`, so that a client cannot make the server walk a large volume.
+* `GET` and `HEAD` work as in `VolumeHttpHandler`, listings included, so the share also browses in a web browser.
+* Methods that write or lock get a `405`. Writing belongs behind the volume's `Writable` capability, and is not implemented yet.
+
+That is enough to mount a share in macOS Finder ("Connect to Server"), on Windows (`net use`), on Linux (davfs2) or with rclone, and to read it with any tool.
+Clients need the content length of files to read them reliably, so a volume served over WebDAV should know its file sizes.
+
+Serving the catalog of <<volumes>> both ways takes a few lines:
+
+.Serving a volume (`volume/.../Serve.java`)
+[source,java]
+----
+include::{examplesdir}/volume/src/main/java/org/example/volume/Serve.java[tag=serve,indent=0]
+----
+<1> A virtual thread per request. Handlers block, and blocking is cheap.
+<2> Browsers read the catalog at `/catalog/`. Each request is a unit of work with a server span.
+<3> WebDAV clients mount the same volume at `/dav/`.
+
+The server binds to the loopback address.
+The handlers do not authenticate, so serving beyond the local machine needs what the JDK server provides for it, an `HttpsServer` and an `Authenticator` on the context, or a proxy in front.
+
+Running `Serve` prints the two URLs.
+Opening the first in a browser shows the listing of the catalog's root; following `index.md` shows the Markdown of the library.
+
+=== Reading over HTTP
+
+On the client side, content at a URL is a `Content` like any other:
+
+.Content at a URL
+[source,java]
+----
+include::{examplesdir}/volume/src/test/java/org/example/volume/TestVolumes.java[tag=fetch,indent=0]
+----
+<1> Nothing is requested until the content is opened, and every open requests it again.
+
+A WebDAV listing is a `PROPFIND` request, which the JDK HTTP client sends like any other method:
+
+.Listing a directory over WebDAV
+[source,java]
+----
+include::{examplesdir}/volume/src/test/java/org/example/volume/TestVolumes.java[tag=propfind,indent=0]
+----
+
+=== One trace across client and server
+
+`TelemetryHandler` wraps a handler, or is added as a filter of a context, and makes each request a unit of work:
+
+* The trace context is extracted from the request headers with the propagators of the OpenTelemetry instance, so the client's span is the parent of the server's.
+* The server span is named `<method> <route>`, the route being the context path, and carries the HTTP semantic convention attributes: method, route, path, scheme, server and client address, protocol version, user agent, response status and response body size.
+* The instance and the span are current while the wrapped handler runs, so whatever it does, content transfers, resource loads, its own log records, reports to the request.
+* A failure of the handler is recorded on the span. If no response was sent yet, the client gets a `500`; if one was, the connection is dropped instead of completing a response that would look successful.
+* A failure or a `5xx` sets the error status. A `4xx` is the client's error, not the server's, and leaves the status unset.
+
+On the client side, `Content.of(uri)` starts a client span and propagates its context in the request headers.
+Together they make one trace:
+
+.A trace that crosses HTTP
+[source,java]
+----
+include::{examplesdir}/volume/src/test/java/org/example/volume/TestVolumes.java[tag=trace,indent=0]
+----
+<1> W3C trace context propagation, on both sides: the client injects, the server extracts.
+<2> The server's instance. In a real deployment it is another process with its own instance; here both share one, so the test can see both spans.
+<3> The client's unit of work. Opening the content is a `GET` client span.
+<4> The server span is a child of the client span, in the same trace.
+
+This is the cross-process rule of <<telemetry>> at work: the unit of work spans two processes, each with its own instance, and the trace connects them.
+When both sides save their telemetry as models (<<telemetry-model>>), the two halves of the trace are two files that reference the same trace id, and a query can join them.
+
+=== What comes next
+
+Serving is the first of several surfaces over volumes, and the others are planned [.planned]#PLANNED#:
+
+* *Writable WebDAV*, behind the `Writable` capability, so that editing a mounted model is editing the model.
+* *VS Code*, through its `FileSystemProvider` API, which consumes the change batches of a `Watchable` volume directly.
+* *FUSE*, for a native mount on Linux and macOS.
+* *The reflective viewer*: a browser application that renders any model, and live telemetry, from the same server (<<vision>>).

@@ -1,0 +1,50 @@
+<project xmlns="http://maven.apache.org/POM/4.0.0" xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
+	xsi:schemaLocation="http://maven.apache.org/POM/4.0.0 http://maven.apache.org/xsd/maven-4.0.0.xsd">
+	<modelVersion>4.0.0</modelVersion>
+	  <parent>
+	    <artifactId>parent</artifactId>
+	    <groupId>org.nasdanika.sdk.runtime.doc.book</groupId>
+	    <version>2026.10.0</version>
+	    <relativePath>..</relativePath>
+	  </parent>
+	<groupId>org.nasdanika.sdk.runtime.doc.book.examples</groupId>
+	<artifactId>parent</artifactId>
+	<packaging>pom</packaging>
+	<name>Book examples</name>
+	<description>
+		Examples for the chapters of the book, one module per topic. They are written the way a reader's
+		project would be: Java packages and JPMS modules in the org.example namespace, the runtime's BOM
+		imported for versions, and services registered in module-info.java. Listings are included in the
+		book from regions marked with tag::name[] and end::name[] comments.
+	</description>
+
+	<!-- tag::bom[] -->
+	<dependencyManagement>
+		<dependencies>
+			<dependency>
+				<groupId>org.nasdanika.sdk.runtime</groupId>
+				<artifactId>bom</artifactId>
+				<version>${project.version}</version>
+				<type>pom</type>
+				<scope>import</scope>
+			</dependency>
+		</dependencies>
+	</dependencyManagement>
+	<!-- end::bom[] -->
+
+	<modules>
+		<module>start</module>
+		<module>library</module>
+		<module>generics</module>
+		<module>flow</module>
+		<module>capability</module>
+		<module>telemetry</module>
+		<module>recording</module>
+		<module>volume</module>
+		<module>cli</module>
+		<module>dsl</module>
+		<module>meta</module>
+		<module>jvm</module>
+		<module>web</module>
+	</modules>
+</project>

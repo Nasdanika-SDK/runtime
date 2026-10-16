@@ -1,0 +1,117 @@
+[appendix]
+[#glossary]
+== Glossary
+
+Adaptable::
+An object that can be asked for a view of itself as another type, through `adapt(type)`. Its `@Adapter` methods declare, with their generic return types, what it can be adapted to (<<generic-types>>).
+
+Adapter method::
+A method annotated with `@Adapter` whose return type declares a type the object can be adapted to. Command groups offer their sub-commands values this way (<<wiring>>).
+
+Assembly::
+A set of modules on a module path, run together: a test, a command line distribution, an application. What an assembly became at run time is what the JVM model snapshots (<<jvm>>).
+
+Automatic module::
+A jar without a module descriptor on the module path. Its name comes from its manifest or file name, it reads every module, and a module that reads one automatic module reads all of them (<<jvm>>).
+
+Bootstrap::
+The dependency-free jar that starts a distribution from any directory, by rewriting the distribution's options to absolute paths and relaunching Java (<<distributions>>).
+
+Capability::
+Something a factory provides in answer to a requirement: an object, a function, a service (<<capabilities>>).
+
+Capability factory::
+A class that answers requirements, declared as a service. A reflective factory answers with methods annotated `@Capability`, matched by their declared return types (<<capabilities>>).
+
+Capability loader::
+The object that resolves a requirement against a source of factories, on a pump, and returns a publisher of providers (<<capabilities>>).
+
+Change description::
+A record of changes to models, stored forward and detached from the models, contained by the span in which the changes were recorded (<<telemetry-model>>).
+
+Command group::
+A command that does nothing itself and gives its sub-commands something to work on (<<commands>>).
+
+Content::
+The state of a file in a volume: a re-readable source of bytes that does no I/O until it is opened (<<volumes>>).
+
+Core model::
+The model of identity, documentation, provenance and evaluators that the other models extend (<<core-model>>).
+
+Distribution::
+A directory, or an archive of one, with the jars of a command line, its options file, the bootstrap and wrapper scripts (<<distributions>>).
+
+EPackage provider::
+A service that contributes a generated EMF package, so that a configured resource set knows it (<<models>>).
+
+ExecutionSupplier::
+A value that a parent produces for a child while the child executes, in the child's span (<<wiring>>).
+
+Explaining listener::
+A listener that tells, line by line, which factories a capability loader asked about a requirement, which declined, and what each produced (<<capabilities>>).
+
+Marker::
+A record of where an element, or one of its features, came from: a location, a position, a date, a digest, or a commit (<<core-model>>).
+
+Meta::
+The language-neutral type system of the runtime: packages, classes, features, operations and type references, to write a vocabulary once and project it to many languages (<<meta>>).
+
+Mix-in::
+A set of options contributed to a command, by a factory or by a picocli `@Mixin` field (<<commands>>).
+
+Model tower::
+The stack of small models, each extending the ones below: the core model at the bottom, then Meta, the JVM model, telemetry and the floors above (<<vision>>).
+
+nsURI::
+The namespace URI of an EMF package: its identity, under `https://runtime.sdk.nasdanika.org/` for the runtime's models (<<principles>>).
+
+Planes::
+The data plane where data sits, the semantic plane of models with resolved references, and the presentation plane of what people and agents read, separated by volumes, with commands writing down (<<vision>>).
+
+Published Language::
+In Domain-Driven Design, a documented, shared vocabulary that bounded contexts translate into and out of. Meta is one that is machine-checkable (<<meta>>).
+
+Pump::
+A serial work queue, drained by one thread at a time, that drives capability resolution, transformations and pumped publishers. A thread that waits on it runs queued work instead of sleeping, and it reports what is stuck when nothing can progress (<<flows>>).
+
+Pure Nasdanika::
+Code that depends on the JDK, EMF core and the OpenTelemetry API and nothing else (<<principles>>).
+
+Qualifier::
+A dot-separated part of a file name, read right to left, that selects a handler for a resource's contents: `reading-group.library.groovy` has the qualifiers `groovy` and `library` (<<capabilities>>, <<groovy-dsl>>).
+
+Requirement::
+A type, possibly generic, and payloads that select and parameterize what is required (<<capabilities>>).
+
+Resource set contributor::
+A service that configures resource sets: packages, factories, URI handlers, adapters (<<models>>).
+
+Snapshot::
+A model of a running system saved as a file, such as the JVM model of a module layer: evidence of what ran (<<jvm>>).
+
+Span::
+An operation in a trace, with a name, a start, an end, attributes and log records; in the runtime, one per operation worth seeing (<<telemetry>>).
+
+Status label::
+[.available]#AVAILABLE# for what the runtime does in this edition, [.sketch]#SKETCH# for what is designed and partly built, [.planned]#PLANNED# for what is designed and not built.
+
+Telemetry model::
+Traces, logs and metrics as EMF models, faithful to OpenTelemetry's data model, with nested spans, log records in their spans and recorded changes (<<telemetry-model>>).
+
+Transformer::
+A function from sources to publishers of targets, with mappings declared by annotated methods and wiring of targets to each other (<<flows>>).
+
+Type token::
+An object that captures a generic type at compile time, such as `new TypeToken<Supplier<Library>>() {}`, where erasure would lose it (<<generic-types>>).
+
+Unit of work::
+A piece of work with its own OpenTelemetry instance and its own record: a command run, a request served, an agent session, a test (<<telemetry>>).
+
+Volume::
+The runtime's file abstraction: string paths, `stat`, `list`, `content`, declared case sensitivity and optional capabilities, implemented over NIO, models or remote systems (<<volumes>>).
+
+Wiring::
+Matching commands to parents and sub-commands by declared generic types, and injecting adapted values before execution (<<wiring>>).
+
+Xcore::
+A textual syntax for Ecore models with operation bodies, from which EMF generates Java (<<models>>).

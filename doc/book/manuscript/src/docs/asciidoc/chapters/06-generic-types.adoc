@@ -1,0 +1,180 @@
+// Default for previewing this file on its own; the Maven build sets examplesdir
+ifndef::examplesdir[:examplesdir: ../../../../../examples]
+
+[#generic-types]
+== Generic types at run time
+
+Components that find each other by type run into a limit of Java almost immediately.
+`ServiceLoader` can be asked for a `Supplier`, and then every supplier in the assembly answers, whatever it supplies.
+It cannot be asked for a `Supplier<Library>`, because at run time there is no such thing: type arguments are erased.
+
+The runtime needs them anyway.
+A command that needs a supplier of libraries should not be offered a supplier of authors, and a requirement for "something that renders a library" should not be answered by something that renders a book.
+This chapter shows what survives erasure, how the runtime matches generic types with Java's own rules, and how objects declare what they can be adapted to.
+The capability framework (<<capabilities>>) and command wiring (<<wiring>>) are both built on it.
+
+=== What survives erasure
+
+Objects carry no type arguments.
+A `new ArrayList<String>()` and a `new ArrayList<Integer>()` are the same class at run time, and nothing can recover the difference from the objects.
+
+Declarations are different.
+The class file keeps the generic signature of every class, field and method, and reflection reads it: `Field.getGenericType()`, `Method.getGenericReturnType()`, `Class.getGenericInterfaces()`.
+A class declared as `implements Supplier<Library>` says so at run time, forever.
+So does a field declared as `Supplier<Library>`, and a method declared to return one.
+
+That gives the runtime a rule it applies everywhere: *what is matched is always a declaration, never an instance*.
+A capability method is matched by its declared generic return type, an adapter field by its declared type, a command's parent member by its declared type.
+The compiler checks the declarations, and the runtime trusts them.
+
+=== Types
+
+`org.nasdanika.sdk.runtime.common.Types` is the runtime's small library of generic type operations, built on geantyref and hiding it.
+The examples in this chapter use a few types of their own: a catalog lists titles, and a shelf is a catalog you can also put books on.
+
+.The types the examples adapt to (`generics/.../Catalogs.java`)
+[source,java]
+----
+include::{examplesdir}/generics/src/main/java/org/example/generics/Catalogs.java[tag=types,indent=0]
+----
+
+A generic type is captured with a type token, an anonymous subclass of `TypeToken` whose type argument reflection can read back:
+
+.Type tokens (`generics/src/test/java/.../TestGenerics.java`)
+[source,java]
+----
+include::{examplesdir}/generics/src/test/java/org/example/generics/TestGenerics.java[tag=tokens,indent=0]
+----
+
+`Types.isAssignable(target, source)` answers the question the compiler answers for an assignment: may a value declared as `source` be used where `target` is required?
+
+.Assignability, by Java's rules for generics
+[source,java]
+----
+include::{examplesdir}/generics/src/test/java/org/example/generics/TestGenerics.java[tag=assignability,indent=0]
+----
+
+The first three lines are Java's rules.
+`Supplier<Shelf>` can be used where `Supplier<? extends Catalog>` is required, because a shelf is a catalog and the wildcard allows subtypes.
+It cannot be used where `Supplier<Catalog>` is required, because Java generics are invariant: `Supplier<Shelf>` is not a subtype of `Supplier<Catalog>`, even though `Shelf` is a subtype of `Catalog`.
+A wildcard is how a requirement says that subtypes are welcome, and it is the requirement's choice, not the provider's.
+And anything parameterized can be used where the raw type is required.
+
+The fourth line is where the runtime is deliberately stricter than Java.
+Java lets a raw `Supplier` be used where `Supplier<Shelf>` is required, with an unchecked warning.
+For matching that would let something declared as a raw supplier answer a requirement for shelves, about which it has said nothing, so `Types` refuses.
+The one exception is a target whose type arguments are all unbounded wildcards, such as `Supplier<?>`, which Java itself accepts from a raw type without a warning.
+
+Two more operations read type arguments from declarations.
+`getTypeArgument` finds the argument a subtype fixes for a type parameter of a supertype, however many classes lie in between:
+
+.The type argument a declaration fixes
+[source,java]
+----
+include::{examplesdir}/generics/src/test/java/org/example/generics/TestGenerics.java[tag=type-argument,indent=0]
+----
+
+`getElementType` does the same for containers, replacing a wildcard by its bound: an element of `List<? extends Shelf>` is a `Shelf`, an element of `List<?>` is an `Object`.
+
+Finally, `isGround` says whether a type can be required or provided at all.
+A type variable means something only inside the scope that declares it, so `T`, or `List<T>`, cannot be matched against anything.
+This is the trap of type tokens created inside generic methods: `new TypeToken<T>() {}` captures the variable `T`, not what `T` stands for at the call site, because erasure leaves nothing else to capture.
+The capability framework refuses such types with an error instead of matching them wrongly.
+
+=== Adaptation
+
+Matching declared types answers "is this declaration compatible with that one".
+Adaptation answers a question objects are asked all the time in a system assembled from parts: "can you give me what I need?"
+
+An object declares what it can be adapted to with `@Adapter` on fields and methods.
+The declared generic type of the member is what it provides:
+
+.An adaptable object (`generics/.../Branch.java`)
+[source,java]
+----
+include::{examplesdir}/generics/src/main/java/org/example/generics/Branch.java[tag=branch,indent=0]
+----
+<1> A field: the branch can be adapted to `Supplier<Shelf>`.
+<2> Another field of the same raw type, told apart by its type argument.
+<3> A method with a parameter takes context. It answers a request for a `String` with one `String` of context, and returns null to decline.
+
+Asking is `adaptTo(type, context...)`:
+
+.Adapting
+[source,java]
+----
+include::{examplesdir}/generics/src/test/java/org/example/generics/TestGenerics.java[tag=adapt,indent=0]
+----
+
+The rules, in order:
+
+* With no context, the object itself is returned if its own declared type matches, generic supertypes included: a class that implements `Supplier<Shelf>` adapts to `Supplier<Shelf>` without any annotation.
+* Otherwise adapter fields and adapter methods without parameters are tried. With context, adapter methods whose parameters accept the context values are tried: as many parameters as values, each value an instance of its parameter's class, or null for a parameter that is not primitive.
+* Of the candidates whose declared type is assignable to the requested one, the more specific are tried first, fields before methods, then by name. The first non-null value wins; null means "not this time".
+
+ifdef::editor-notes[]
+[IMPORTANT,caption="Editor's note"]
+====
+"More specific first" is computed by `Types.specificity`, which counts the supertypes of the *erased* type. `Supplier<Shelf>` and `Supplier<Catalog>` both erase to `Supplier`, so they tie, and the member name decides. In the example, a request for `Supplier<? extends Catalog>` gets the `catalogs` field, not the more specific `shelves`. The runtime's `TestAdaptable` passes its equivalent assertion only because "volumes" sorts before "writables". The same ordering is used by `ReflectiveCapabilityFactory` and `CommandWiring`. A fix: break ties between members whose types are both assignable to the request by comparing them with `Types.isAssignable`, so that a member assignable to the other comes first.
+====
+endif::[]
+
+Objects that do not implement `Adaptable` can still be adapted through their annotations, with `Adapters.adapt`:
+
+.Adapting a plain object (`generics/.../Archive.java` and the test)
+[source,java]
+----
+include::{examplesdir}/generics/src/main/java/org/example/generics/Archive.java[tag=archive,indent=0]
+
+include::{examplesdir}/generics/src/test/java/org/example/generics/TestGenerics.java[tag=plain,indent=0]
+----
+
+Implementing `Adaptable` is needed only to adapt in ways an annotation cannot express: computed, delegated or cached.
+The override can fall back to the declared adapters:
+
+.Adaptation in code, with a fallback to the declarations
+[source,java]
+----
+include::{examplesdir}/generics/src/main/java/org/example/generics/Reserve.java[tag=reserve,indent=0]
+
+include::{examplesdir}/generics/src/test/java/org/example/generics/TestGenerics.java[tag=override,indent=0]
+----
+
+=== Asking before there is an instance
+
+Sometimes the question comes before the object exists.
+The command line builds its tree of commands before any command has parsed an option, and it needs to know whether a command could work under a given parent without creating either.
+`Adapters.isAdaptable(class, type, contextTypes...)` answers from declarations only:
+
+.Asking a class instead of an object
+[source,java]
+----
+include::{examplesdir}/generics/src/test/java/org/example/generics/TestGenerics.java[tag=declarations,indent=0]
+----
+
+True means an instance can be asked and has a declared way to answer, not that it will: an adapter may still decline at run time.
+A class whose adaptation lives only in an `adaptTo` override is not adaptable by this check; an `@Adapter` method that delegates to the override makes it so.
+
+=== Access
+
+Adapters are read and invoked reflectively by `common`, so JPMS has to let it.
+Public members of an exported package are accessible; private members, like the fields of `Branch`, need their package to be open to `common`:
+
+.Opening a package to the runtime (`generics/src/main/java/module-info.java`)
+[source,java]
+----
+include::{examplesdir}/generics/src/main/java/module-info.java[tag=module,indent=0]
+----
+
+A qualified `opens ... to` keeps the package closed to everybody else.
+Command modules usually open their packages without qualification anyway, because picocli needs the same access (<<commands>>).
+
+=== Where this is used
+
+Three parts of the runtime are built on these few operations:
+
+* *The capability framework* matches a requirement's type against each capability method's declared return type with `isAssignable`, so `Function<Library, String>` and `Function<Book, String>` are different requirements (<<capabilities>>).
+* *Command wiring* matches a command's `@Parent` and `@SubCommand` members against what other commands can be adapted to, first by declarations with `isAdaptable`, then by instances with `adapt` (<<wiring>>).
+* *Adaptation* itself is how a command group offers its sub-commands what they need without knowing them.
+
+In all three, no string names a type, and the compiler checks every declaration that takes part.

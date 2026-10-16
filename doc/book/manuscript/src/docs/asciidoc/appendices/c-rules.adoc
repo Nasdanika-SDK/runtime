@@ -1,0 +1,81 @@
+[appendix]
+[#rules-of-thumb]
+== Rules of thumb for people and assistants
+
+This appendix collects the rules the chapters explain, as short imperatives.
+It is written to be pasted into the instructions of a coding assistant working on a Nasdanika project, and to be read by the people who review its work.
+Each rule names the chapter that explains it.
+
+=== Foundations
+
+. Depend on the JDK, EMF core and the OpenTelemetry API, and nothing else, in code meant to be reused. Anything that needs more goes into its own module (<<principles>>).
+. Use the JDK where it can do the job: `java.util.concurrent.Flow`, not Reactor; the JDK HTTP client and server; virtual threads; the service loader (<<principles>>).
+. Derive identities from the module's path: the Java module `org.nasdanika.sdk.runtime.<path>`, dropping a trailing `model`, and the nsURI `+https://runtime.sdk.nasdanika.org/<path>+` (<<principles>>).
+. Register by declaring: `provides` in `module-info.java`, never registration code (<<principles>>).
+. Register by type with Java services, such as EPackages and resource set contributors. Use capabilities only for lookups that have a requirement object (<<principles>>, <<capabilities>>).
+. Say what is stuck. A failure names what it needed, what it found and what was waiting for what (<<principles>>).
+
+=== Models
+
+. Write metamodels in Xcore. Give the GenModel's `modelDirectory` the Maven module's directory as its first segment (<<models>>).
+. Contribute each package through an EPackage provider in the module's `services` package, declared in `module-info.java` (<<models>>).
+. Create resource sets with `NasdanikaResourceSet.createAndConfigure()`, so that every contributed package, factory and handler is there and every load and save is traced (<<models>>).
+. Choose the format with the extension: `xmi` to interchange, `yml` and `json` to read and review, `ebin` and `egz` for size (<<models>>).
+. Extend the core model's `NamedElement`, or `ModelElement` for elements without names, and get identity, documentation and provenance with it (<<core-model>>).
+. Prefer `getReferrers` to an opposite reference when the inverse is not part of the model's meaning (<<core-model>>).
+. Fill markers. A loader, an importer and an agent record where an element came from (<<core-model>>).
+. Keep a vocabulary in Meta when it has to be projected to more than one language (<<meta>>).
+
+=== Types, flows and capabilities
+
+. Ask with wildcards, `? extends`, at every level that is only read from (<<generic-types>>, <<wiring>>).
+. Use ground types in requirements: classes, or parameterized types whose arguments are classes or wildcards (<<capabilities>>).
+. Remember that objects carry no type arguments: what matches is always what was declared, a return type or a generic supertype (<<generic-types>>).
+. Drive asynchronous work that must be ordered and settled with a `Pump`, and settle it before using results that factories attach after emitting them (<<flows>>, <<commands>>).
+. Do not return null from a `first` mapping to skip a source; distinguish sources by type, or use `all` (<<flows>>).
+. Explain a resolution with a listener before guessing why a capability is missing (<<capabilities>>).
+
+=== Telemetry
+
+. Create one OpenTelemetry instance per unit of work and make it current. Never use `GlobalOpenTelemetry` (<<telemetry>>).
+. Depend on the OpenTelemetry API in instrumented code; only the assembly that runs a unit of work depends on the SDK (<<telemetry>>, <<telemetry-model>>).
+. Make an operation a span named `Type.operation`, and emit log records with the Logs API inside it. Do not use span events (<<telemetry>>).
+. Put locations and identities in attributes: URIs, lines, names of types. Never put loaded values or credentials there (<<telemetry>>, <<groovy-dsl>>).
+. Report progress with progress log records, at most once a second (<<telemetry>>).
+. Carry the context across threads; the pump does it for its subscribers (<<telemetry>>).
+. Record changes to models with `Changes.record` inside the span that makes them, so the change lands in the span (<<telemetry-model>>).
+. Keep the telemetry of units of work worth keeping, as models, next to what they describe (<<telemetry-model>>).
+
+=== Files and serving
+
+. Use string paths, slash-separated and relative to the root, and keep URIs at the edges (<<volumes>>).
+. Report hashes in entries when they are cheap to know (<<volumes>>).
+. Push content with `writeTo` when you can; pull with `openStream` only when an input stream is required (<<volumes>>).
+. Produce generated content with `Content.ofWriter`, so it is written when read, into the reader's stream (<<volumes>>).
+. Ask a volume for capabilities instead of assuming them (<<volumes>>).
+. Keep model URIs independent of where the bytes are: map them to volumes with `VolumeURIHandler` (<<volumes>>).
+. Bind servers to the loopback address unless authentication is in front of them (<<serving>>).
+
+=== Commands
+
+. Extend `CommandBase` and implement `execute(span, logger, meter)`; write output to `spec.commandLine().getOut()` (<<commands>>).
+. Contribute a command with a factory and `provides CapabilityFactory`, and open the command's package (<<commands>>).
+. Declare what a command needs from its parent with `@Parent` and a generic type, and what it accepts with `@SubCommand` (<<wiring>>).
+. Ask for an `ExecutionSupplier` for anything expensive, so the work happens in the command's span and only if it runs (<<wiring>>).
+. Offer with `@Adapter` what any child may use; hand down with plain methods what only children written for the parent should use (<<wiring>>).
+. Never let help fail. Wiring is skipped for help; keep constructors and option defaults free of work (<<wiring>>).
+
+=== The Groovy DSL
+
+. Set a negative number with `upperBound = -1` or `upperBound(-1)`, never `upperBound -1` (<<groovy-dsl>>).
+. Reference forward with paths; they are resolved after the script has run (<<groovy-dsl>>).
+. Prefix a path with `./` when a local name clashes with a class name (<<groovy-dsl>>).
+
+=== For assistants
+
+. Ground answers in models and their documentation, and cite elements by their URIs.
+. Check an API against the module reference (<<modules-reference>>) and the listings of this book, which compile and are tested, before using it. Do not invent methods.
+. Respect the status labels. Present [.sketch]#SKETCH# and [.planned]#PLANNED# features as designs, never as available.
+. Propose changes as recorded change sets or diffs that a person reviews; do not apply them silently.
+. Write original prose when documenting the JDK and other licensed specifications; never reproduce their text (<<jvm>>).
+. Prefer the surfaces the runtime gives you, commands and files, to new integrations.

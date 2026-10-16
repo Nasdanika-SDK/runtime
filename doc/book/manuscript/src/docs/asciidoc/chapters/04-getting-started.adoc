@@ -1,0 +1,242 @@
+// Default for previewing this file on its own; the Maven build sets examplesdir
+ifndef::examplesdir[:examplesdir: ../../../../../examples]
+
+[#getting-started]
+== Getting started
+
+This chapter gets the runtime onto your machine, builds a first program against it, and shows that the program is observable before you have done anything to make it so.
+The program is small on purpose: one metamodel with one class, one instance, three files.
+Everything else in the book builds on the same few steps.
+
+=== What you need
+
+* *A JDK for Java 25.* The runtime is compiled with `--release 25`. Any distribution works; the examples were built with Eclipse Temurin.
+* *Maven 3.9.16 or later.* The build enforces the version.
+* *Git*, to get the source.
+* An editor. The runtime does not need an IDE, and nothing in it is specific to one. Eclipse, IntelliJ IDEA and VS Code all import the Maven projects as they are.
+
+=== Building the runtime
+
+Until the runtime is published to Maven Central, you build it and install it into your local Maven repository:
+
+[source,shell]
+----
+git clone https://github.com/Nasdanika-SDK/runtime.git
+cd runtime
+mvn clean install
+----
+
+The first build downloads the dependencies and runs every module's tests, including the book's examples, and renders this book.
+Two properties shorten it:
+
+[source,shell]
+----
+mvn clean install -DskipTests              # compile and install, run no tests
+mvn clean install -Dasciidoctor.skip=true  # everything but rendering the book
+----
+
+ifdef::editor-notes[]
+[IMPORTANT,caption="Editor's note"]
+====
+Update this section when {runtime-version} is on Maven Central: readers then need only the BOM import shown below, and building from source becomes the section for contributors.
+====
+endif::[]
+
+=== A first project
+
+A project that uses the runtime imports its bill of materials, which manages the versions of the runtime's modules and of the libraries they use, and then depends on the modules it needs without versions.
+The examples share the import in their parent `pom.xml`:
+
+.Importing the runtime's bill of materials (`doc/book/examples/pom.xml`)
+[source,xml]
+----
+include::{examplesdir}/pom.xml[tag=bom,indent=0]
+----
+
+The first example depends on two modules: `common`, which brings EMF and the OpenTelemetry API with it, and `emf-json`, which adds the JSON and YAML formats.
+
+.Dependencies of the first example (`start/pom.xml`)
+[source,xml]
+----
+include::{examplesdir}/start/pom.xml[tag=dependencies,indent=0]
+----
+
+Every runtime module is a named JPMS module, and so is every example.
+The module declaration says which runtime modules the code uses:
+
+.The module declaration (`start/src/main/java/module-info.java`)
+[source,java]
+----
+include::{examplesdir}/start/src/main/java/module-info.java[tag=module,indent=0]
+----
+
+The comment in the listing points at something worth knowing early.
+`emf-json` contributes its resource factories as a service that `common` uses.
+When the JVM resolves modules, it adds every observable module that provides a service a resolved module uses, a step called service binding, so `emf-json` would be in the running program even without the `requires`.
+I require it anyway, because a dependency that is visible in the declaration is one less surprise.
+Service binding comes back in <<jvm>>, where it is one of the things a snapshot of a running JVM shows and no build file does.
+
+=== A first model
+
+EMF models are usually generated from Xcore, which <<models>> covers.
+The first program builds a metamodel at run time instead, which needs no generator and shows what a metamodel is: a package, containing classes, containing typed features.
+
+.A one-class metamodel built at run time (`start/.../FirstModel.java`)
+[source,java]
+----
+include::{examplesdir}/start/src/main/java/org/example/start/FirstModel.java[tag=metamodel,indent=0]
+----
+
+The last statement puts the package into a resource whose URI is its namespace URI.
+That is how EMF expects packages to live, and it matters as soon as instances are saved: an instance refers to its class by the URI of the class, and a package that is in no resource produces a relative reference that cannot be resolved when the file is loaded again.
+
+With a metamodel in hand, the program creates an instance and saves it three times:
+
+.Saving one book in three formats
+[source,java]
+----
+include::{examplesdir}/start/src/main/java/org/example/start/FirstModel.java[tag=save,indent=0]
+----
+<1> A resource set configured from services: every `EPackage`, URI handler and `ResourceSetContributor` on the module path is applied to it. This is the one line that makes everything else in the runtime available to EMF.
+<2> Packages registered as services are found by namespace URI. This one was built at run time, so it is registered by hand.
+<3> `EcoreUtil.create` makes an instance of a class without generated code. Features are set and read reflectively.
+<4> The file extension selects the resource factory: `xmi` is the default, `json` and `yml` were contributed by `emf-json`.
+
+The three files hold the same object:
+
+.book.xmi
+[source,xml]
+----
+<?xml version="1.0" encoding="ASCII"?>
+<library:Book xmi:version="2.0" xmlns:xmi="http://www.omg.org/XMI"
+    xmlns:library="https://example.org/start/library"
+    title="Structure and Interpretation of Computer Programs" year="1985"/>
+----
+
+.book.json
+[source,json]
+----
+{
+  "eClass" : "https://example.org/start/library#//Book",
+  "title" : "Structure and Interpretation of Computer Programs",
+  "year" : 1985
+}
+----
+
+.book.yml
+[source,yaml]
+----
+---
+eClass: "https://example.org/start/library#//Book"
+title: "Structure and Interpretation of Computer Programs"
+year: 1985
+----
+
+Loading is the mirror image: a resource set, the package registered, and `getResource` with the file's URI.
+
+.Loading a book and reading its title reflectively
+[source,java]
+----
+include::{examplesdir}/start/src/main/java/org/example/start/FirstModel.java[tag=load,indent=0]
+----
+
+That is a complete EMF program: a metamodel, an instance, three formats, and reflection, with no generated code and no configuration.
+
+=== Watching it run
+
+The program above contains no telemetry code, and it is observable anyway.
+The runtime's resource set configuration, resource factories and URI handlers report what they do through the OpenTelemetry API, to whichever `OpenTelemetry` instance the unit of work made current.
+To see it, make one current that publishes what it receives, and subscribe:
+
+.Watching the first program (`start/.../WatchIt.java`)
+[source,java]
+----
+include::{examplesdir}/start/src/main/java/org/example/start/WatchIt.java[tag=watch,indent=0]
+----
+<1> The tracer provider the events come from wraps the no-op provider: no OpenTelemetry SDK is involved.
+<2> `Runnable::run` delivers each event on the thread that produced it. That makes the output deterministic, which suits a console and a test. The default delivers on virtual threads instead.
+<3> A subscriber that prints span starts, span ends and log records, indented by nesting. It is twenty lines; the listing is in the example.
+<4> The instance is current until the scope closes. Everything instrumented in between reports to it.
+<5> The program's own work runs in a span named for what it does, so that the runtime's spans nest under it.
+
+The output, with the long class and file names shortened:
+
+[source,text]
+----
+> Save a book
+  > ResourceSetContributor.configure
+    Contributed uri-handler ...ClassPathURIHandlerFactory$1
+    Contributed uri-handler ...ModuleURIHandlerFactory$1
+    Contributed contributor ...BinaryResourceFactoryContributor
+    Contributed contributor ...GzipBinaryResourceFactoryContributor
+    Contributed contributor ...XMIResourceFactoryContributor
+    > Contribute To Resource Set
+    < Contribute To Resource Set
+    Contributed contributor ...JsonResourceFactoryContributor
+    ...
+  < ResourceSetContributor.configure
+  Created ...XMIResourceImpl for file:/tmp/watch-it/book.xmi
+  > URIHandler.write
+  > Resource.save
+    Saved file:/tmp/watch-it/book.xmi: 230 bytes
+  < Resource.save
+  < URIHandler.write
+  Created ...JsonResource for file:/tmp/watch-it/book.json
+  > URIHandler.write
+  > Resource.save
+  < URIHandler.write
+    Saved file:/tmp/watch-it/book.json: 145 bytes
+  < Resource.save
+  ...
+< Save a book
+Done
+----
+
+Three things in that output say a lot about how the runtime is built.
+
+The resource set's configuration is visible: which URI handlers, factories and contributors were applied, and from which classes.
+When a format you expected is missing, this is where you find out that its module was not on the module path.
+
+`URIHandler.write` and `Resource.save` are siblings, not parent and child.
+The stream is opened before the resource starts saving into it, and a stream is not a lexical scope, so its span is not made current.
+In the JSON case the stream span ends before the save span does, because the JSON resource closes the stream itself.
+
+And nothing here needed an OpenTelemetry SDK.
+The SDK is what samples, batches and exports spans; the API is all instrumented code ever sees.
+<<telemetry>> shows how to add the SDK when you want spans exported, and <<telemetry-model>> how to export them as models.
+
+=== The examples in this book
+
+Every listing in this book is included from one of the example modules in `doc/book/examples`.
+They are built and tested with the runtime, before the book is rendered, so a listing that stops compiling stops the build.
+
+[cols="1,3",options="header"]
+|===
+| Module | Chapters
+| `start` | <<getting-started>>
+| `library` | <<models>>, <<core-model>>; the domain model the later examples share
+| `generics` | <<generic-types>>
+| `flow` | <<flows>>
+| `capability` | <<capabilities>>
+| `telemetry` | <<telemetry>>, <<watching>>
+| `recording` | <<telemetry-model>>
+| `volume` | <<volumes>>, <<serving>>
+| `cli` | <<commands>>, <<wiring>>
+| `dsl` | <<groovy-dsl>>
+| `meta` | <<meta>>
+| `jvm` | <<jvm>>
+| `web` | <<web>>
+|===
+
+To build and test one of them with what it depends on, from the runtime's root:
+
+[source,shell]
+----
+mvn -pl doc/book/examples/capability -am verify
+----
+
+Most examples are tests: each test method is one scenario, and its assertions say what the scenario produces.
+That is deliberate.
+A test is the shortest program that shows both what to write and what to expect, and it keeps working.
+
+The examples use the `org.example` namespace for their packages and JPMS modules, the way your project would use its own, and share one domain: a library of books, defined as a model in the next chapter.

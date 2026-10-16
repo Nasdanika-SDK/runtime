@@ -455,5 +455,6 @@
 		<module>cli</module>
 		<module>all</module>
 		<module>cli-launcher</module>
-	</modules>	
+		<module>doc</module>
+	</modules>
 </project>

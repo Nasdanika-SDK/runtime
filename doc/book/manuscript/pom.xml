@@ -1,0 +1,163 @@
+<project xmlns="http://maven.apache.org/POM/4.0.0" xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
+	xsi:schemaLocation="http://maven.apache.org/POM/4.0.0 http://maven.apache.org/xsd/maven-4.0.0.xsd">
+	<modelVersion>4.0.0</modelVersion>
+	  <parent>
+	    <artifactId>parent</artifactId>
+	    <groupId>org.nasdanika.sdk.runtime.doc.book</groupId>
+	    <version>2026.10.0</version>
+	    <relativePath>..</relativePath>
+	  </parent>
+	<artifactId>manuscript</artifactId>
+	<packaging>pom</packaging>
+	<name>Manuscript</name>
+	<description>
+		The book in AsciiDoc, rendered by Asciidoctor to PDF (7 by 9.25 inches, the trim size of the
+		EMF book), EPUB 3 and a single HTML page. Code listings are included from the examples by tag.
+
+		Render:            mvn -pl doc/book/manuscript -am verify   (from the runtime root)
+		Skip rendering:    -Dasciidoctor.skip=true
+		Print layout:      -Dbook.media=prepress   (mirrored margins, chapters start on recto pages)
+		Without notes:     -Dbook.editor-notes=false   (hides the editor's notes for publishing)
+
+		Output: target/book/nasdanika-sdk-runtime-VERSION.{pdf,epub,html}
+	</description>
+
+	<properties>
+		<maven.build.timestamp.format>yyyy-MM-dd</maven.build.timestamp.format>
+		<book.name>nasdanika-sdk-runtime-${project.version}</book.name>
+		<book.media>screen</book.media>
+		<book.editor-notes>true</book.editor-notes>
+		<book.examples>${project.basedir}/../examples</book.examples>
+		<asciidoctor.maven.plugin.version>3.2.0</asciidoctor.maven.plugin.version>
+		<asciidoctorj.version>3.0.1</asciidoctorj.version>
+		<asciidoctorj.pdf.version>2.3.27</asciidoctorj.pdf.version>
+		<asciidoctorj.epub3.version>2.2.0</asciidoctorj.epub3.version>
+		<asciidoctorj.diagram.version>3.2.1</asciidoctorj.diagram.version>
+		<asciidoctorj.diagram.plantuml.version>1.2026.2</asciidoctorj.diagram.plantuml.version>
+		<asciidoctorj.diagram.batik.version>1.19</asciidoctorj.diagram.batik.version>
+	</properties>
+
+	<build>
+		<plugins>
+			<plugin>
+				<groupId>org.asciidoctor</groupId>
+				<artifactId>asciidoctor-maven-plugin</artifactId>
+				<version>${asciidoctor.maven.plugin.version}</version>
+				<dependencies>
+					<dependency>
+						<groupId>org.asciidoctor</groupId>
+						<artifactId>asciidoctorj</artifactId>
+						<version>${asciidoctorj.version}</version>
+					</dependency>
+					<dependency>
+						<groupId>org.asciidoctor</groupId>
+						<artifactId>asciidoctorj-pdf</artifactId>
+						<version>${asciidoctorj.pdf.version}</version>
+					</dependency>
+					<dependency>
+						<groupId>org.asciidoctor</groupId>
+						<artifactId>asciidoctorj-epub3</artifactId>
+						<version>${asciidoctorj.epub3.version}</version>
+					</dependency>
+					<dependency>
+						<groupId>org.asciidoctor</groupId>
+						<artifactId>asciidoctorj-diagram</artifactId>
+						<version>${asciidoctorj.diagram.version}</version>
+					</dependency>
+					<dependency>
+						<groupId>org.asciidoctor</groupId>
+						<artifactId>asciidoctorj-diagram-plantuml</artifactId>
+						<version>${asciidoctorj.diagram.plantuml.version}</version>
+					</dependency>
+					<dependency>
+						<groupId>org.asciidoctor</groupId>
+						<artifactId>asciidoctorj-diagram-batik</artifactId>
+						<version>${asciidoctorj.diagram.batik.version}</version>
+					</dependency>
+				</dependencies>
+				<configuration>
+					<sourceDirectory>${project.basedir}/src/docs/asciidoc</sourceDirectory>
+					<sourceDocumentName>book.adoc</sourceDocumentName>
+					<outputDirectory>${project.build.directory}/book</outputDirectory>
+					<doctype>book</doctype>
+					<requires>
+						<require>asciidoctor-diagram</require>
+					</requires>
+					<logHandler>
+						<outputToConsole>true</outputToConsole>
+						<failIf>
+							<severity>WARN</severity>
+						</failIf>
+					</logHandler>
+					<attributes>
+						<revnumber>${project.version}</revnumber>
+						<revdate>${maven.build.timestamp}</revdate>
+						<runtime-version>${project.version}</runtime-version>
+						<examplesdir>${book.examples}</examplesdir>
+						<editor-notes>${book.editor-notes}</editor-notes>
+						<source-highlighter>rouge</source-highlighter>
+						<icons>font</icons>
+						<sectanchors>true</sectanchors>
+						<idprefix />
+						<idseparator>-</idseparator>
+						<xrefstyle>short</xrefstyle>
+						<experimental>true</experimental>
+						<imagesdir>images</imagesdir>
+						<plantumlconfig>${project.basedir}/src/docs/asciidoc/diagrams/plantuml.cfg</plantumlconfig>
+						<diagram-cachedir>${project.build.directory}/diagram-cache</diagram-cachedir>
+					</attributes>
+				</configuration>
+				<executions>
+					<execution>
+						<id>pdf</id>
+						<phase>generate-resources</phase>
+						<goals>
+							<goal>process-asciidoc</goal>
+						</goals>
+						<configuration>
+							<backend>pdf</backend>
+							<outputFile>${book.name}.pdf</outputFile>
+							<attributes>
+								<pdf-themesdir>${project.basedir}/src/docs/themes</pdf-themesdir>
+								<pdf-theme>nasdanika</pdf-theme>
+								<media>${book.media}</media>
+								<plantuml-format>svg</plantuml-format>
+							</attributes>
+						</configuration>
+					</execution>
+					<execution>
+						<id>epub</id>
+						<phase>generate-resources</phase>
+						<goals>
+							<goal>process-asciidoc</goal>
+						</goals>
+						<configuration>
+							<backend>epub3</backend>
+							<outputFile>${book.name}.epub</outputFile>
+							<attributes>
+								<plantuml-format>png</plantuml-format>
+							</attributes>
+						</configuration>
+					</execution>
+					<execution>
+						<id>html</id>
+						<phase>generate-resources</phase>
+						<goals>
+							<goal>process-asciidoc</goal>
+						</goals>
+						<configuration>
+							<backend>html5</backend>
+							<outputFile>${book.name}.html</outputFile>
+							<attributes>
+								<toc>left</toc>
+								<toclevels>3</toclevels>
+								<plantuml-format>svg</plantuml-format>
+								<data-uri>true</data-uri>
+							</attributes>
+						</configuration>
+					</execution>
+				</executions>
+			</plugin>
+		</plugins>
+	</build>
+</project>

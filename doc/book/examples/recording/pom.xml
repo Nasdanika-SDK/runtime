@@ -1,0 +1,37 @@
+<project xmlns="http://maven.apache.org/POM/4.0.0" xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
+	xsi:schemaLocation="http://maven.apache.org/POM/4.0.0 http://maven.apache.org/xsd/maven-4.0.0.xsd">
+	<modelVersion>4.0.0</modelVersion>
+	<parent>
+		<groupId>org.nasdanika.sdk.runtime.doc.book.examples</groupId>
+		<artifactId>parent</artifactId>
+		<version>2026.10.0</version>
+		<relativePath>..</relativePath>
+	</parent>
+	<artifactId>recording</artifactId>
+	<name>Telemetry as a model</name>
+	<description>Chapter "Telemetry as a model": the OpenTelemetry SDK exporting to the telemetry model, and recorded changes</description>
+	<!-- tag::dependencies[] -->
+	<dependencies>
+		<dependency>
+			<groupId>${project.groupId}</groupId>
+			<artifactId>library</artifactId>
+			<version>${project.version}</version>
+		</dependency>
+		<!-- Exporters to the telemetry model, and the model itself -->
+		<dependency>
+			<groupId>org.nasdanika.sdk.runtime.models.telemetry</groupId>
+			<artifactId>exporters</artifactId>
+		</dependency>
+		<!-- The SDK: only the assembly that runs the unit of work needs it -->
+		<dependency>
+			<groupId>io.opentelemetry</groupId>
+			<artifactId>opentelemetry-sdk</artifactId>
+		</dependency>
+		<!-- YAML for the telemetry files -->
+		<dependency>
+			<groupId>org.nasdanika.sdk.runtime</groupId>
+			<artifactId>emf-json</artifactId>
+		</dependency>
+	</dependencies>
+	<!-- end::dependencies[] -->
+</project>

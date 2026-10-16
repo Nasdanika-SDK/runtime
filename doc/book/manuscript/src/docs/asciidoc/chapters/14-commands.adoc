@@ -1,0 +1,180 @@
+// Default for previewing this file on its own; the Maven build sets examplesdir
+ifndef::examplesdir[:examplesdir: ../../../../../examples]
+
+[#commands]
+== Commands as capabilities
+
+The command line is the runtime's first user interface, for people, for build steps and for agents.
+An agent that can run a command and read a file can use everything the command line offers, with no protocol to implement.
+
+Three decisions shape it:
+
+* *Commands are contributed.* A module that adds a command declares a factory in its module descriptor. Nothing lists all the commands: the command tree is whatever the module path contributes.
+* *The tree is resolved.* Commands find their parents and their sub-commands by capability resolution (<<capabilities>>), matched by the generic types they declare (<<wiring>>).
+* *A command execution is a unit of work.* Every command runs in a span, and the launcher saves the telemetry of each launch as models (<<distributions>>).
+
+=== Picocli
+
+The commands are https://picocli.info[picocli] commands: annotated classes with options, parameters, mix-ins, generated help and completion.
+Picocli is mature, small and dependency-free, and a picocli command is a plain object that the runtime can create, inspect and wire.
+
+The runtime bundles picocli in its own module, `org.nasdanika.sdk.runtime.picocli`, until a picocli release includes the changes the runtime contributed.
+Commands import `picocli.CommandLine` as usual.
+
+=== A first command
+
+.A command (`cli/.../HelloCommand.java`)
+[source,java]
+----
+include::{examplesdir}/cli/src/main/java/org/example/cli/HelloCommand.java[tag=hello,indent=0]
+----
+<1> `CommandBase` runs the command in a span named after it, with the command's qualified name, class, module and module version as attributes.
+<2> The command goes under the root command. How a declaration decides the parent is the subject of <<wiring>>.
+<3> The execution gets the span and the logger and meter of the unit of work. Whatever the command does reports to them.
+
+A command is contributed by a factory:
+
+.Its factory (`cli/.../HelloCommandFactory.java`)
+[source,java]
+----
+include::{examplesdir}/cli/src/main/java/org/example/cli/HelloCommandFactory.java[tag=factory,indent=0]
+----
+<1> The command's class. The base factory matches it against each candidate parent before creating anything.
+<2> A new command for each parent it matches. A factory can also create several commands, or none, depending on the parent path and on what the loader resolves.
+
+The module declares the factory, and opens the command package:
+
+.The module of the example commands (`cli/.../module-info.java`)
+[source,java]
+----
+include::{examplesdir}/cli/src/main/java/module-info.java[tag=module,indent=0]
+----
+<1> Picocli sets option fields reflectively, and the wiring injects parents and sub-commands, so the package is open.
+<2> Each factory is a capability factory, found by the service loader in the module layer.
+
+=== How the tree is built
+
+The command tree is built by resolving one requirement: a `CommandLine` with a `SubCommandRequirement` payload whose parent path is empty.
+The runtime's `RootCommandFactory` answers it with the root command, `nsd`.
+
+Every factory that creates a command then asks for the command's own sub-commands, with the command appended to the parent path, and for its mix-ins.
+The tree grows within the same resolution until no factory matches a new parent path.
+Two limits stop a runaway contribution: a parent path of at most 15 commands and at most 2,000 commands in a tree, set with the system properties `org.nasdanika.sdk.runtime.cli.maxCommandPath` and `org.nasdanika.sdk.runtime.cli.maxCommands`.
+
+.Assembling the command line (`cli/.../Assembly.java`)
+[source,java]
+----
+include::{examplesdir}/cli/src/main/java/org/example/cli/Assembly.java[tag=assemble,indent=0]
+----
+<1> The requirement for root commands: an empty parent path and a counter shared by the whole tree.
+<2> Factories attach sub-commands as they arrive, after the root command line is emitted, so the pump is settled before the tree is used. The editor's notes of <<at-a-glance>> and <<capabilities>> discuss why.
+
+With the example module on the module path, the tree is:
+
+[source,text]
+----
+nsd
+  launcher
+  hello
+  library
+    books
+    export
+      csv
+      markdown
+    save
+----
+
+`launcher` is the root command's own sub-command, declared statically and therefore first (<<distributions>>), and `save` is the runtime's, which found its way under `library` by itself (<<wiring>>).
+Running a command is picocli's `execute`:
+
+.Running a command
+[source,java]
+----
+include::{examplesdir}/cli/src/test/java/org/example/cli/TestCommands.java[tag=run,indent=0]
+----
+
+The test prints the tree by walking the command lines:
+
+[source,java]
+----
+include::{examplesdir}/cli/src/test/java/org/example/cli/TestCommands.java[tag=tree,indent=0]
+----
+
+=== Groups
+
+A group is a command that does nothing itself.
+It organizes sub-commands under a name and gives them something to work on, from its options.
+
+.A group (`cli/.../LibraryCommand.java`)
+[source,java]
+----
+include::{examplesdir}/cli/src/main/java/org/example/cli/LibraryCommand.java[tag=library,indent=0]
+----
+<1> The group's option, parsed before any of its sub-commands run.
+<2> What the group gives: a library, produced when a sub-command asks for it. The generic return type is the declaration that commands match.
+<3> The same library as a list of objects, for commands that work on any model.
+<4> Loading through a configured resource set, so the file can be in any format the runtime reads.
+
+`CommandGroup` fails with "Missing required subcommand" when it is run alone, which picocli reports with the usage help.
+`nsd library --file shelf.yml books` parses `--file` for the group and runs `books`, which asks the group for its library.
+
+=== Mix-ins
+
+A picocli mix-in contributes options to a command.
+In the runtime, mix-ins are contributed like commands, by factories, and a command asks for them by type:
+
+.A mix-in (`cli/.../LimitMixIn.java`)
+[source,java]
+----
+include::{examplesdir}/cli/src/main/java/org/example/cli/LimitMixIn.java[tag=mixin,indent=0]
+----
+
+.Its factory (`cli/.../LimitMixInFactory.java`)
+[source,java]
+----
+include::{examplesdir}/cli/src/main/java/org/example/cli/LimitMixInFactory.java[tag=mixin-factory,indent=0]
+----
+
+A mix-in is added to a command when the command's `@MixIns` annotation lists a supertype of the mix-in, or when the mix-in takes the command through a `@Parent` member.
+The `books` command of <<wiring>> asks for `LimitMixIn` and finds it among its mix-ins at execution, so `nsd library books --limit 2` prints two books.
+
+The runtime's mix-ins add common options without a factory, as picocli `@Mixin` fields:
+
+[cols="1,3",options="header"]
+|===
+| Mix-in | Options
+| `ResourceSetMixIn` | `--extension-resource-factory`, `--protocol-resource-factory` and `--content-type-resource-factory`, which map an extension, a protocol or a content type to a resource factory class, and `createResourceSet()`
+| `PropertiesMixIn` | `-p` for one property and `-P` for a properties resource, in YAML, JSON or properties format, loaded in order
+|===
+
+=== Overriding
+
+Several modules may contribute a command with the same name under the same parent.
+The runtime keeps one when it can tell which one overrides the others:
+
+* A command whose class is annotated with `@Overrides` overrides commands of the listed types.
+* A command implementing `Overrider` decides, for each other command, whether it overrides it.
+* A command whose class is a subclass of another command's class overrides it.
+
+Commands that do not override each other are all kept, and picocli reports the duplicate name.
+The same rules apply to mix-ins with the same name.
+
+=== Commands in the runtime
+
+[cols="1,3",options="header"]
+|===
+| Command | What it does
+| `nsd` | The root command, with version information from the module descriptors
+| `launcher` | Generates a Java command line, or an options file, from directories of modules and jars (<<distributions>>)
+| `save` | Saves its parent's model contents to a file, in any format the runtime writes (<<wiring>>)
+| `ecore` | A group that narrows its parent's objects to Ecore model elements
+| `shell` | Added by the launcher: an interactive shell over the root command, with `exit`
+|===
+
+=== Commands and telemetry
+
+Each executed command is a span named after the command, a child of the launcher's root span.
+Spans the command starts, resource loads and saves, capability resolution, content transfers, are its children, and log records it emits are in it.
+
+A parent's work done for a child, loading the library in the example, runs in the child's span when the child asks for it through an `ExecutionSupplier`, so the cost is attributed to the command that needed it (<<wiring>>).
+The launcher saves all of it as models in a directory per launch (<<distributions>>), which makes every command run an inspectable record.

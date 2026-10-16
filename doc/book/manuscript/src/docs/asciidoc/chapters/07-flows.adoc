@@ -1,0 +1,223 @@
+// Default for previewing this file on its own; the Maven build sets examplesdir
+ifndef::examplesdir[:examplesdir: ../../../../../examples]
+
+[#flows]
+== Flows, pumps and transformations
+
+Most code in the runtime is plain blocking Java on virtual threads, and should be.
+Some of it is genuinely asynchronous: resolving capabilities that depend on each other, wiring a graph of objects that reference each other, delivering telemetry events to subscribers while the work they describe continues.
+For that code the runtime uses `java.util.concurrent.Flow`, a handful of operators, and one engine, the pump, that makes asynchronous resolution deterministic and able to say what went wrong.
+
+This chapter is the most technical in the foundations.
+Architects can read the first section of each topic and skip the rest; the capability framework in the next chapter is built on what is here, and makes more sense with it.
+
+=== Flow, not Reactor
+
+The JDK has had the reactive streams interfaces since Java 9: `Flow.Publisher`, `Flow.Subscriber`, `Flow.Subscription` and `Flow.Processor`, plus one implementation, `SubmissionPublisher`.
+It does not have operators: no `map`, no `filter`, no `retry`.
+Reactive libraries such as Reactor fill that gap, and bring a large API, their own threading model and their own dependencies with them.
+
+The runtime does not use them, for the reasons in <<principles>>, and takes a narrower position: write the few operators that are needed, and do not write a Reactor.
+On virtual threads, blocking is cheap, so most processing is better done on the pull side, with `java.util.stream`.
+The push-side operators exist for results that must stay a publisher: fed to another subscriber, subscribed to by several consumers, or delivered as soon as each item is ready.
+
+=== Flows
+
+`org.nasdanika.sdk.runtime.common.flow.Flows` holds sources, operators and terminals, named in the style of `Collectors` and `Executors`.
+
+[cols="1,3",options="header"]
+|===
+| Kind | Members
+| Sources | `of`, `fromIterable`, `fromStream`, `fromFuture`, `empty`, `error`
+| Operators | `map`, `mapNotNull`, `filter`, `peek`, `onTerminate`, `take`, `concat`, `concatMap`
+| Terminals | `toList` and `first`, which return a `CompletableFuture`; `forEach`; `toStream`, the bridge to the pull side
+|===
+
+Every operator follows three rules.
+It is lazy: it subscribes upstream once per downstream subscriber, at subscription time.
+Demand is accounted: `filter` requests one more item for every item it drops, and `take` cancels upstream after the last one.
+And an exception in a function you pass cancels upstream and signals `onError` downstream, so a failure never escapes as a thrown exception from somewhere unexpected.
+
+.Operators and a terminal (`flow/src/test/java/.../TestFlow.java`)
+[source,java]
+----
+include::{examplesdir}/flow/src/test/java/org/example/flow/TestFlow.java[tag=operators,indent=0]
+----
+
+.The pull side
+[source,java]
+----
+include::{examplesdir}/flow/src/test/java/org/example/flow/TestFlow.java[tag=stream,indent=0]
+----
+
+Absent on purpose: `flatMap`, `merge`, `zip`, schedulers and time operators.
+They are where reactive libraries get large and hard to reason about, and on virtual threads they are ordinary blocking code.
+`concatMap` is present because sequential composition is deterministic, and the capability framework needs it.
+
+=== The pump
+
+Asynchronous resolution has two classic failure modes.
+Work that depends on other work deadlocks when the dependency graph has a cycle, and the program hangs with no explanation.
+Or a pass counter gives up after some number of iterations, finds the same condition late, and says nothing about what was stuck.
+
+`org.nasdanika.sdk.runtime.common.flow.Pump` replaces both with one idea: *block by pumping*.
+A pump is a serial work queue drained by one thread at a time.
+Its blocking operations, `join` and `settle`, do not sleep: the waiting thread runs queued work itself until what it waits for is done.
+`ForkJoinTask.join` works this way, as do SWT's `readAndDispatch` loop and Kotlin's `runBlocking`.
+
+.Blocking by pumping
+[source,java]
+----
+include::{examplesdir}/flow/src/test/java/org/example/flow/TestFlow.java[tag=join,indent=0]
+----
+
+A pump created without an executor runs nothing until somebody pumps, which makes it deterministic: the same work runs in the same order every time, on the calling thread.
+That is the mode for tests and for resolutions that settle before returning.
+A pump created with an executor, such as `Pump.Options.VIRTUAL_THREADS`, drains work enqueued while nobody pumps, so publishers on it make progress without a blocking caller.
+
+==== Idle and stalls
+
+The pump knows when it is idle: no task can run, and no work it is tracking is in flight.
+What happens then while something is still waiting is a policy, not a guess:
+
+[cols="1,3",options="header"]
+|===
+| Policy | Meaning
+| `COMPLETE` | A closed world: every source feeds this pump, so nothing more can arrive. Waiters are released, a pumped publisher completes, and whatever is still unsatisfied is reported as a stall. This is the default, and what capability resolution uses.
+| `WAIT` | An open world: change reports, the network, webhooks. The pump waits for new work for a quiet period, then behaves as `COMPLETE`.
+| `FAIL` | A closed world where going idle early is a bug, for tests: the pump fails at once with a stall report.
+|===
+
+A stall is reported as a `StallException` that lists everything that was waiting and what it was waiting for:
+
+.A stall, reported
+[source,java]
+----
+include::{examplesdir}/flow/src/test/java/org/example/flow/TestFlow.java[tag=stall,indent=0]
+----
+
+==== Work that leaves the pump
+
+The pump can only reason about work it knows of.
+Work that leaves it, an HTTP call or a model turn on another thread, must be tracked, or the pump would consider itself idle while the work is still out:
+
+.Tracking work done elsewhere
+[source,java]
+----
+include::{examplesdir}/flow/src/test/java/org/example/flow/TestFlow.java[tag=track,indent=0]
+----
+
+`track` counts the stage as in flight until it completes, and returns a stage that completes on the pump, so whatever is composed on it runs in order with everything else.
+Code running inside a pump task can find its pump with `Pump.current()`, which is how a capability factory tracks the calls it makes.
+
+Items that cannot proceed yet can yield.
+`when(stage, description, action)` parks an action until a stage completes, with a reason that appears in stall reports.
+`submit(description, step)` is a blind yield for a step that returns false while it cannot proceed; it is retried at a lower priority, and priorities age so that nothing starves.
+
+==== Context and rules
+
+A task runs in the OpenTelemetry context that was current when it was enqueued.
+Spans started by tasks are children of the span that enqueued them, whichever thread happens to drain the queue, and the unit of work's `OpenTelemetry` instance travels with them (<<telemetry>>).
+
+Two rules keep the pump honest.
+A blocking terminal on the pump's own draining thread is refused, because a nested pump is re-entrancy, the classic event-loop bug.
+And an exception escaping a task fails the pump: new work is dropped and terminals rethrow it.
+Operators route exceptions to `onError`, so tasks rarely throw.
+
+=== The transformer
+
+A transformation turns sources into targets, and the interesting ones have dependencies: the target of one source references the targets of others.
+A model loaded from a diagram, a graph of modules that read each other, and a set of capabilities that depend on each other all have this shape, and the references can be cyclic.
+
+`Transformer` maps each source to a publisher of its targets.
+A factory receives the source and a context, and the context's `get(otherSource)` returns the targets of another source in the same transformation.
+Within one transformation each source is created once, its targets are replayed to everyone who asks, and all work runs through one pump, so it is deterministic and never recursive: requesting a source enqueues its creation instead of running it inline.
+
+The example turns module descriptions, which name the modules they read, into nodes that reference each other:
+
+.Module descriptions and nodes (`flow/.../ModuleGraph.java`)
+[source,java]
+----
+include::{examplesdir}/flow/src/main/java/org/example/flow/ModuleGraph.java[tag=types,indent=0]
+----
+
+.Wiring a graph by subscription
+[source,java]
+----
+include::{examplesdir}/flow/src/main/java/org/example/flow/ModuleGraph.java[tag=transform,indent=0]
+----
+<1> The factory: a source, here a module name, and the transformation's context.
+<2> Wiring is subscription. The node subscribes to the targets of each module it reads and adds them as they arrive.
+<3> The node is emitted at once, without waiting for its references. That is what lets cyclic graphs wire without deadlock.
+<4> `transform` runs the transformation on a new pump and settles it. The result holds the targets of every source resolved, including those requested by factories, in the order they were requested.
+
+.A cycle, wired
+[source,java]
+----
+include::{examplesdir}/flow/src/test/java/org/example/flow/TestFlow.java[tag=wiring,indent=0]
+----
+
+`app` reads `model` and `model` reads `app`, and both nodes are created exactly once and reference each other.
+Note what the test does not assert: the order of a node's references.
+References arrive in the order their targets are produced, not the order they were requested; when `model` subscribes, the node for `app` already exists and arrives at once, while the node for `common` is still queued.
+If order matters, keep the position with each reference, or wait for all of them.
+
+Waiting is allowed.
+A factory that needs another source's targets before it can emit its own collects them, for example with `Flows.toList(context.get(other))`, and emits when they are there.
+If two sources wait on each other, the pump goes idle with both waiting, and the transformation fails with the cycle named:
+
+.A waiting cycle, reported with its path
+[source,java]
+----
+include::{examplesdir}/flow/src/test/java/org/example/flow/TestFlow.java[tag=cycle,indent=0]
+----
+
+Every transformation reports itself: `transform` runs in a `Transformer.transform` span, and each source is created in a `Transformer.create` span, from the factory call to the completion of its publisher.
+A source requested by a factory is created in a child span of the requesting source's span, so the span tree shows the dependency graph.
+
+=== Mapping methods
+
+Writing one factory per kind of source gets repetitive.
+`ReflectiveFactory` assembles a factory from methods annotated with `@Mapping`, so one class contributes many mappings.
+A mapping method takes the source, and optionally the context, and returns a publisher of targets, a completion stage of one target, a target, or null for none.
+The method matches sources that are instances of its first parameter's type, or of the type the annotation names.
+
+The example renders a small document tree as outline lines, one method per kind of node:
+
+.Nodes (`flow/.../Outline.java`)
+[source,java]
+----
+include::{examplesdir}/flow/src/main/java/org/example/flow/Outline.java[tag=nodes,indent=0]
+----
+
+.Mapping methods
+[source,java]
+----
+include::{examplesdir}/flow/src/main/java/org/example/flow/Outline.java[tag=mappings,indent=0]
+----
+<1> A chapter maps to its heading followed by the targets of its parts, each obtained from the context, in order.
+<2> A paragraph maps to its text.
+<3> A note is a different type, so it gets its own method rather than a condition inside the paragraph method.
+
+.The rendered outline
+[source,java]
+----
+include::{examplesdir}/flow/src/test/java/org/example/flow/TestFlow.java[tag=outline,indent=0]
+----
+
+Matching methods are ordered by priority (higher first), then by how specific the matched type is, then by how specific the declaring class is, then by name.
+`ReflectiveFactory.first` uses only the best match, which is polymorphic dispatch; `ReflectiveFactory.all` uses every match, in that order.
+
+[CAUTION]
+====
+With `first`, the best match is chosen by type and priority before the method runs, and a method that returns null produces no target; it does not pass the source on to the next method.
+A high-priority method that matches every paragraph and returns null for most of them makes most paragraphs disappear.
+Distinguish cases by type, as the note does, or use `all` and let several methods contribute.
+====
+
+=== One engine
+
+The pump, the transformer and the capability loader were written as separate pieces of code in older Nasdanika versions, and each hand-built the same four things: a memoizing registry, a queue drained on the caller's thread, a loop guard, and a collector of results.
+In the runtime they are one engine.
+The transformer runs on the pump, and the capability loader, the subject of the next chapter, is a transformer whose sources are requirements and whose targets are providers of capabilities.
+Everything in this chapter about memoization, cycles, stall reports, context propagation and spans applies to capability resolution unchanged.

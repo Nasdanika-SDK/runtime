@@ -1,0 +1,149 @@
+// Default for previewing this file on its own; the Maven build sets examplesdir
+ifndef::examplesdir[:examplesdir: ../../../../../examples]
+
+[#wiring]
+== Wiring commands with generic types
+
+Commands contributed by different modules have to find each other.
+The runtime's `save` command should work under any command that has model contents to save; a `books` command should work under anything that supplies a library; an `export` command should run whatever exporters other modules contribute.
+None of these modules knows the others.
+
+The runtime wires commands by declarations: a command declares, with generic types, what it needs from its parent and what it accepts as sub-commands, and a parent declares what it offers.
+Matching the declarations decides where commands go.
+Injecting adapted values just before execution connects them.
+
+=== What a command needs from its parent
+
+A `@Parent` member, a field or a method taking one parameter, declares what a command needs from its parent:
+
+.A command that needs a library (`cli/.../BooksCommand.java`)
+[source,java]
+----
+include::{examplesdir}/cli/src/main/java/org/example/cli/BooksCommand.java[tag=books,indent=0]
+----
+<1> The command asks for the `LimitMixIn` of <<commands>>.
+<2> What the command needs from its parent: something that produces a library while the command executes. `? extends` widens what answers: a parent producing a subclass of `Library` matches too.
+<3> The library is produced now, inside this command's span, with its logger and meter. If the command does not run, the library is never loaded.
+<4> The mix-in, found among the command's mix-ins.
+
+The parent declares what it offers with `@Adapter` methods, whose generic return types are the declarations matched.
+The `library` group of <<commands>> offers `ExecutionSupplier<Library>` and `ExecutionSupplier<List<EObject>>`, and `ExecutionSupplier<Library>` is assignable to `ExecutionSupplier<? extends Library>`, so `books` goes under `library`.
+
+A parent member is used twice:
+
+* *Matching*, before the command exists. A factory creates the command under a parent whose class is adaptable to the type of any of the command's parent members (<<generic-types>>). Declarations decide, because the parent's options are not parsed while the tree is built.
+* *Injection*, after parsing and before execution. The parent is adapted to the member types, most specific first, and the first value obtained is injected. A command has one parent, so several parent members are alternative ways to take it, and one is injected. A command whose parent provides none of them fails to execute, with a message naming what it needed.
+
+=== ExecutionSupplier
+
+What a parent hands a child is often not cheap: a model to load, a service to call, a repository to clone.
+`ExecutionSupplier<T>` is the shape for such values: a function from the executing command's span, logger and meter to a value.
+
+[source,java]
+----
+@FunctionalInterface
+public interface ExecutionSupplier<T> {
+
+	T get(Span span, Logger logger, Meter meter) throws Exception;
+
+}
+----
+
+The work happens only if the command runs, and it happens inside the command's span, so its cost, its log records and its failures are attributed to the command that needed it.
+A cheap value is better asked for directly: adapting the parent is then all it takes.
+
+=== The runtime's save command
+
+The `save` command is in the runtime's `cli` module.
+It has never heard of libraries:
+
+[source,java]
+----
+@Parent
+private ExecutionSupplier<? extends Collection<? extends EObject>> contentsSupplier;
+
+@Parent
+private EObjectSupplier<? extends EObject> eObjectSupplier;
+----
+
+`ExecutionSupplier<List<EObject>>`, the second adapter of the `library` group, is assignable to the first member's type, so `save` goes under `library` and saves the library:
+
+.The runtime's command under the example's group
+[source,java]
+----
+include::{examplesdir}/cli/src/test/java/org/example/cli/TestCommands.java[tag=save,indent=0]
+----
+
+The second member is the older shape, a parent implementing `EObjectSupplier`.
+Both work, and only one is injected.
+
+=== What a command accepts as sub-commands
+
+A `@SubCommand` member declares what a command accepts as sub-commands.
+A member typed as an array, a `List`, a `Collection`, an `Iterable` or a `Set` takes many sub-commands, and its element type is what is accepted; any other member takes one.
+
+.A command that runs what it is given (`cli/.../ExportCommand.java`)
+[source,java]
+----
+include::{examplesdir}/cli/src/main/java/org/example/cli/ExportCommand.java[tag=export,indent=0]
+----
+<1> The export command needs a library from its parent, like `books`.
+<2> It accepts every sub-command adaptable to `Exporter`. Without a sub-command on the command line, it lists their formats.
+<3> It hands its library down to its exporters with a plain method, deliberately not an adapter.
+
+Sub-command members are also used twice.
+A sub-command is created under a command whose sub-command members accept its class.
+After parsing, every member gets the sub-commands adaptable to what it accepts: all of them for a many-valued member, possibly none, and the first for a single-valued one.
+Sub-commands that are not on the command line have not had their options parsed, so a command uses them for what they are, not for their options.
+
+An exporter takes its parent by class:
+
+.An exporter (`cli/.../MarkdownExporter.java`)
+[source,java]
+----
+include::{examplesdir}/cli/src/main/java/org/example/cli/MarkdownExporter.java[tag=markdown,indent=0]
+----
+
+`nsd library export` prints `csv` and `markdown`, and `nsd library export markdown` prints the library as Markdown.
+A module that contributes a `JsonExporter` adds a format without touching the export command.
+
+=== Why export hides its library
+
+Had `ExportCommand.library()` been an `@Adapter`, every command that needs a library, `books` included, would have appeared under `export` as well as under `library`.
+Adapters are offers to every command that might match.
+A plain method is an offer only to commands that take the export command by class, which is what the exporters do.
+
+The test of the example asserts it: `books` is under `library`, and not under `export`.
+
+[TIP]
+====
+Offer with `@Adapter` what any child may use.
+Hand down with plain methods what only children written for this parent should use.
+====
+
+=== When wiring happens
+
+`WiringExecutionStrategy` injects `@Parent` and `@SubCommand` members of the commands on the command line, and the `@Parent` members of their mix-ins, and then executes as its delegate does, picocli's `RunLast` by default.
+
+* *After parsing.* A parent's options are parsed by then. Adapting the parent while the tree is being built would see their defaults.
+* *From the root to the executed command.* A parent's own members are in place before it is adapted for its child, so a value can flow down several levels.
+* *Not for help.* Help and version requests skip wiring, so asking for help never fails on a parent that cannot provide.
+
+`SubCommandCapabilityFactory` sets the strategy on the root commands it creates.
+A command line assembled otherwise needs `commandLine.setExecutionStrategy(new WiringExecutionStrategy())`.
+
+=== Rules
+
+* *Members are found once per class*, on the class and its superclasses, and must be accessible to the `cli` module: in a package opened to it, as picocli needs command packages to be anyway. An inaccessible member fails with a message that says which package to open.
+* *A parent member is a field or an instance method taking one parameter*, never static. The same holds for sub-command members.
+* *Ask with wildcards.* `? extends` at every level that is only read from, so that more parents answer.
+* *Ask for an `ExecutionSupplier`* for whatever is expensive to produce.
+* *Most specific first.* Of alternative parent members, the one with the most specific type is tried first, which is subject to the tie described in the editor's note of <<generic-types>>.
+
+=== Why declarations
+
+Wiring by declarations, rather than by names or by registration, has three consequences that matter:
+
+* *The tree is known before anything runs.* Help lists exactly the commands that will work, because a command is only placed where its declared needs are met.
+* *The compiler checks the contract.* A parent's adapter returns a type, a child's member has a type, and both are checked where they are written. Nothing is matched by a string.
+* *Modules stay independent.* The runtime's `save` and the example's `library` have no dependency on each other, and an assistant generating a new command needs to know only the type it consumes.

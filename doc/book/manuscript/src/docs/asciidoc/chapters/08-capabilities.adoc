@@ -1,0 +1,327 @@
+// Default for previewing this file on its own; the Maven build sets examplesdir
+ifndef::examplesdir[:examplesdir: ../../../../../examples]
+
+[#capabilities]
+== The capability framework
+
+`ServiceLoader` answers one question: give me every implementation of this interface.
+That is enough surprisingly often, and the runtime uses it whenever it is (<<principles>>).
+It is not enough when the question carries more than a type.
+
+"A renderer for libraries, in Markdown."
+"A contents handler for a file named `shelf.csv`."
+"The sub-commands that can work under this command."
+Each of these is a requirement that the providers have to interpret, some providers will decline it, several may answer, and answering may require resolving other requirements first.
+That is what the capability framework is for.
+
+=== Concepts
+
+Five words carry the whole framework, and the rest of the book uses them in exactly these senses.
+
+Requirement:: What is asked for: an object that capability factories interpret. Usually a `Requirement`, a type with optional payloads, but any object can be one.
+Capability factory:: A service that says whether it can handle a requirement, and if so creates providers for it. It may raise requirements of its own while doing so.
+Capability provider:: A publisher of the capabilities that satisfy a requirement. A provider is subscribed lazily, and may carry information about what it provides, so that a caller can choose between providers without subscribing.
+Capability:: What a provider publishes: the object the requirement asked for.
+Capability loader:: Resolves a requirement against a set of factories: asks each whether it can handle it, collects their providers, and resolves the requirements the factories raise, once each, on a pump.
+
+[#capability-resolution]
+.Resolution of a requirement that depends on another
+[plantuml,capability-resolution,svg,pdfwidth=90%]
+----
+skinparam defaultFontName "Noto Sans"
+skinparam defaultFontSize 11
+skinparam ArrowColor #0F4C6E
+skinparam rectangle {
+  BackgroundColor #F2F7FA
+  BorderColor #1B8EC6
+}
+rectangle "Requirement\nFunction<Library, String>, markdown" as r1
+rectangle "Renderers\n(capability factory)" as f1
+rectangle "IsbnLookup\n(capability factory)" as f2
+rectangle "Requirement\nFunction<Book, String>, markdown" as r2
+rectangle "Provider\nof a library renderer" as p1
+rectangle "Provider\nof a book line renderer" as p2
+
+r1 --> f1 : handles
+r1 ..> f2 : declines
+f1 --> r2 : needs
+r2 --> f1 : handled by
+f1 --> p1 : creates
+f1 --> p2 : creates
+----
+
+The loader's `load` returns a `Flow.Publisher` of providers, and blocking conveniences, `loadAll` and `loadOne`, flatten them into capabilities.
+Resolution runs on a pump (<<flows>>): every requirement is resolved once per resolution however many factories ask for it, a cycle is reported with its path instead of hanging, and each step is a span.
+
+=== Requirements
+
+A `Requirement` is a record of a type and a list of payloads.
+The type says what is wanted and may be generic; the payloads select and parameterize.
+
+[source,java]
+----
+// Anything that is a Library
+Requirement.of(Library.class)
+
+// A supplier of libraries, not of books
+Requirement.of(new TypeToken<Supplier<Library>>() {})
+
+// A renderer of libraries to text, for the markdown format
+Requirement.of(new TypeToken<Function<Library, String>>() {}, new Format("markdown"))
+----
+
+With no payloads, a requirement is a plain lookup by type, which is what `ServiceLoader` does, but generic, lazy and asynchronous.
+The type must be ground: a class, or a parameterized type whose arguments are classes or wildcards, never a type variable (<<generic-types>>).
+
+Because a requirement is a cache key within a resolution, payloads should have value equality.
+Records do; the examples use them for formats and ISBNs.
+A type obtained from reflection, from a `TypeToken` or built some other way is equal to another describing the same type, so it does not matter where a type came from.
+
+The example keeps its generic requirement types in one place:
+
+.Generic types used in requirements (`capability/.../Requirements.java`)
+[source,java]
+----
+include::{examplesdir}/capability/src/main/java/org/example/capability/Requirements.java[tag=types,indent=0]
+----
+
+Any other object can be a requirement too, and is handed to factories as it is.
+`IsbnLookup`, below, handles requirements that are `Isbn` records.
+
+=== Factories with capability methods
+
+Most factories are written as methods.
+A class extending `ReflectiveCapabilityFactory` contributes one capability per method annotated with `@Capability`, behind a single entry in `module-info.java`:
+
+.Four capabilities in one class (`capability/.../Renderers.java`)
+[source,java]
+----
+include::{examplesdir}/capability/src/main/java/org/example/capability/Renderers.java[tag=factory,indent=0]
+----
+<1> A method handle lookup from the declaring module, so the methods are invoked through method handles and need not be in an exported package.
+<2> No parameters: answers `Requirement.of(new TypeToken<Supplier<Library>>() {})`, and nothing else, because the generic return type is what is matched.
+<3> One parameter that is not injected takes a payload: this method is offered requirements of a compatible type with exactly one payload that is a `Format`.
+<4> Returning null declines. The method saw the requirement and it was not for markdown.
+<5> `Loader` and `Span` are injected by type. The method's own span is a child of the resolution's.
+<6> A dependency, resolved within the same resolution. The method does not block: it returns a stage that completes when the dependency is resolved.
+
+What a method provides is its generic return type, matched with `Types.isAssignable`, so type arguments count.
+A method may return its capability directly, or wrapped in a way that says how it is delivered:
+
+[cols="2,3",options="header"]
+|===
+| Return type | Meaning
+| `X` | One capability, now
+| `CompletionStage<X>` | One capability, later
+| `Flow.Publisher<X>` | Any number of capabilities, as they are produced
+| `CapabilityProvider<X>`, `Flow.Publisher<CapabilityProvider<X>>` | Providers, for methods that want to control them
+| `X[]`, `List<X>` and other iterables | The container is matched first; if it does not satisfy the requirement, its elements are offered as separate capabilities
+|===
+
+Delivery wrappers are always unwrapped: a requirement for `Object` gets the values, not the publisher.
+Containers are values that hold others, so a requirement for `List<Book>` gets the list from a method returning one, while a requirement for `Book` gets its elements.
+
+What a method takes is its parameters.
+`Loader`, `Span`, `Logger`, `Meter`, `OpenTelemetry` and `Type` (the required type, for a method that serves a range of them) are injected by their exact type, in any position.
+Every other parameter takes a payload, in order: a method matches when it has as many payload parameters as the requirement has payloads, and each payload is an instance of its parameter's class.
+A requirement that is neither a `Requirement` nor a type is read as one payload with `Object` as the type, so a method taking an `Isbn` answers `loadAll(new Isbn(...))`.
+
+When several methods match, all of them contribute, the most specific provided type first.
+Choosing between the capabilities is the caller's business, as with any requirement several factories answer.
+
+=== Factories against the interface
+
+A factory can also implement `CapabilityFactory` directly.
+That is the right choice when the factory interprets its requirements in a way no method signature can express, or simply for small factories with one job:
+
+.A factory written against the interface (`capability/.../IsbnLookup.java`)
+[source,java]
+----
+include::{examplesdir}/capability/src/main/java/org/example/capability/IsbnLookup.java[tag=lookup,indent=0]
+----
+<1> `canHandle` is called for every requirement in a resolution, so it must be cheap.
+<2> `create` is called once per requirement per resolution, on the resolution's pump, in a span. The interface's default `create(requirement, loader)` creates that span and calls this method with it.
+<3> Factories raise dependencies through the loader they are given, never through a loader of their own, so that the dependency is resolved within the same resolution, memoized, and checked for cycles.
+<4> The providers are published when the dependency completes.
+
+=== Registering and loading
+
+A factory is a Java service.
+The example's module declares all three of its factories, and the `ResourceSetContributor` discussed below:
+
+.Registering capability factories (`capability/src/main/java/module-info.java`)
+[source,java]
+----
+include::{examplesdir}/capability/src/main/java/module-info.java[tag=module,indent=0]
+----
+
+`CapabilityLoader.getInstance()` is the shared loader over every factory the service loader finds.
+It is created on first use, and it is stateless: memoization lives in a resolution, not in the loader, so sharing it is safe.
+
+.Loading by generic type (`capability/src/test/java/.../TestCapabilities.java`)
+[source,java]
+----
+include::{examplesdir}/capability/src/test/java/org/example/capability/TestCapabilities.java[tag=by-type,indent=0]
+----
+
+.Loading by type and payload
+[source,java]
+----
+include::{examplesdir}/capability/src/test/java/org/example/capability/TestCapabilities.java[tag=by-payload,indent=0]
+----
+
+.A plain object as the requirement
+[source,java]
+----
+include::{examplesdir}/capability/src/test/java/org/example/capability/TestCapabilities.java[tag=isbn,indent=0]
+----
+
+`loadAll` and `loadOne` are the blocking conveniences, for the edge of a program.
+Each creates a pump and pumps it on the calling thread until the result is complete; `loadOne` stops at the first capability and abandons work still queued.
+Inside a larger asynchronous computation, call `load(requirement, pump)` with the computation's pump instead, so that resolution is ordered and settled with the rest of the work.
+`load(requirement)` without a pump resolves on virtual threads, for subscribers that do not pump.
+
+ifdef::editor-notes[]
+[IMPORTANT,caption="Editor's note"]
+====
+A resolution whose factories attach results to objects after emitting them, as `SubCommandCapabilityFactory` attaches sub-commands to a command line in `thenAccept`, finishes that work after `loadAll` has returned. The command line examples settle the pump instead (<<commands>>). Worth deciding whether such factories should emit only complete results, which keeps `loadAll` correct, or whether `loadAll` should settle rather than join.
+====
+endif::[]
+
+=== Composing sources and loaders
+
+A loader resolves against a *source* of factories, and the two can be composed separately, with different effects.
+
+Composing *sources* puts factories into one resolution.
+A factory from one source can then satisfy a dependency raised by a factory from another.
+That is the way to put a local, task-specific factory in front of everything registered globally, for a test double or a one-off override:
+
+.A local source in front of the registered factories
+[source,java]
+----
+include::{examplesdir}/capability/src/test/java/org/example/capability/TestCapabilities.java[tag=local,indent=0]
+----
+
+Filtering a source is stronger than filtering results.
+A factory that is not in the filtered set cannot satisfy a dependency raised by another factory either, so a filtered source is a closure, not a check on the surface.
+That is how a trust level is enforced structurally:
+
+.Only factories from trusted modules
+[source,java]
+----
+include::{examplesdir}/capability/src/test/java/org/example/capability/TestCapabilities.java[tag=filtered,indent=0]
+----
+
+Composing *loaders* keeps resolutions separate.
+`CapabilityLoader.concat` lets every loader contribute, in order; `fallback` consults the next loader only if the previous one produced nothing; `cached` memoizes across calls, which a loader deliberately does not do on its own, and should be used only where the same requirements recur and the answers are stable.
+
+Sources are closeable.
+Closing one closes the factories in it that are `AutoCloseable`, which is how a factory that holds resources, a connection pool for example, is disposed of.
+A source owns its factories; a loader borrowing a shared source does not, which is why `close` is on the source.
+
+=== When nothing comes back
+
+A resolution that produces nothing has two very different causes: no factory claimed the requirement, or a factory claimed it and produced nothing.
+They have different fixes, and the explaining listener tells them apart:
+
+.Explaining a resolution
+[source,java]
+----
+include::{examplesdir}/capability/src/test/java/org/example/capability/TestCapabilities.java[tag=explain,indent=0]
+----
+
+For the markdown renderer it prints the following, shortened here: package names are removed, the factory's list of methods is elided, and `F<A>` stands for `Function<A, String>` with the markdown format as its payload.
+
+[source,text]
+----
+requested F<Library>
+  Renderers[...] handles F<Library>
+  IsbnLookup declines F<Library>
+  Renderers[...] needs F<Book> for F<Library>
+requested F<Book> by F<Library>
+  Renderers[...] produced 1 provider(s) for F<Library>
+completed F<Library> with 1 provider(s) in 1389 us
+  Renderers[...] handles F<Book>
+  IsbnLookup declines F<Book>
+  Renderers[...] produced 1 provider(s) for F<Book>
+completed F<Book> with 1 provider(s) in 649 us
+----
+
+The order of the lines is worth a second look.
+The library renderer's provider was produced before the book renderer it depends on was resolved, because the method returned a stage at once; the provider delivers its capability when the stage completes.
+
+Listeners receive a sealed hierarchy of `ResolutionEvent` records (`Requested`, `CacheHit`, `FactoryConsidered`, `DependencyRequested`, `Resolved`, `Failed`, `Completed`), so a listener of your own pattern-matches on them.
+`FactoryNodeCollector` is one that rebuilds the dependency graph of a resolution, for troubleshooting or for drawing:
+
+.Collecting the dependency graph
+[source,java]
+----
+include::{examplesdir}/capability/src/test/java/org/example/capability/TestCapabilities.java[tag=graph,indent=0]
+----
+
+A requirement cycle fails the resolution with a `StallException` naming the path, for example `+cycle: chicken -> egg -> chicken+`, exactly as in a transformation.
+And every resolution is visible in telemetry: `CapabilityLoader.loadAll` or `loadOne`, a `Transformer.create` span per requirement, a `CapabilityFactory.create` span per factory that handles it, and a `CapabilityFactory.method` span per capability method invoked, with the requirement, the factory and the number of providers as attributes.
+
+=== A case study: file names as pipelines
+
+The runtime uses capabilities for one job that shows the framework at its best: deciding how to load a resource from its name.
+
+A `ContentsHandlingResource` splits the last segment of its URI on dots and reads the parts as qualifiers, right to left.
+`reading-group.library.groovy` has the qualifiers `groovy` and `library`.
+The resource asks the capability loader for a `ResourceContentsHandler` with a requirement that carries the resource, the expected contents type and the qualifiers, starting with the leftmost qualifier, so that the most specific handler wins.
+The handler for `library` needs a compiled script, so it asks for a handler of the `groovy` qualifier to its right, and the two together turn a Groovy script into library objects (<<groovy-dsl>>).
+
+Adding a file format is therefore three small pieces.
+The example adds CSV for libraries.
+First the handler, which reads and writes the format:
+
+.A resource contents handler (`capability/.../CsvLibraryHandler.java`)
+[source,java]
+----
+include::{examplesdir}/capability/src/main/java/org/example/capability/CsvLibraryHandler.java[tag=handler,indent=0]
+----
+
+Then a capability method that offers the handler for the `csv` qualifier and declines everything else:
+
+.Offering the handler as a capability (`capability/.../CsvHandlers.java`)
+[source,java]
+----
+include::{examplesdir}/capability/src/main/java/org/example/capability/CsvHandlers.java[tag=csv-capability,indent=0]
+----
+
+And a resource set contributor that registers a factory of contents-handling resources for the `csv` extension:
+
+.Registering the extension (`capability/.../CsvContributor.java`)
+[source,java]
+----
+include::{examplesdir}/capability/src/main/java/org/example/capability/CsvContributor.java[tag=csv-contributor,indent=0]
+----
+
+The split follows the principle of services before capabilities.
+Registering a factory for an extension is a lookup by type: every contributor, applied to every resource set, so it is a service.
+Choosing a handler is a requirement that providers interpret, a resource with a name and a contents type, so it is a capability.
+
+With the three pieces on the module path, a CSV file is a model:
+
+.A CSV file, loaded, edited and saved as a model
+[source,java]
+----
+include::{examplesdir}/capability/src/test/java/org/example/capability/TestCapabilities.java[tag=csv,indent=0]
+----
+
+The mechanism chains.
+A handler for one qualifier can ask for the handler of the qualifier to its right and transform what that one produces, which is how `library` builds on `groovy`.
+Each qualifier is a step, and the file name declares the pipeline.
+
+=== When to use which
+
+[cols="1,2",options="header"]
+|===
+| Use | When
+| A Java service | The lookup is by type alone, such as every contributor or every `EPackage`.
+| A capability | There is a requirement for providers to interpret, providers may decline, or resolving it requires resolving something else.
+| Adaptation | You already have an object and need it in another shape (<<generic-types>>).
+|===
+
+The capability framework is how the command line is assembled, which is where the next part of the book is heading after a detour through telemetry.
+Every resolution above was a span, and the next chapter explains why that was free.

@@ -1,0 +1,26 @@
+<project xmlns="http://maven.apache.org/POM/4.0.0" xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
+	xsi:schemaLocation="http://maven.apache.org/POM/4.0.0 http://maven.apache.org/xsd/maven-4.0.0.xsd">
+	<modelVersion>4.0.0</modelVersion>
+	<parent>
+		<groupId>org.nasdanika.sdk.runtime.doc.book.examples</groupId>
+		<artifactId>parent</artifactId>
+		<version>2026.10.0</version>
+		<relativePath>..</relativePath>
+	</parent>
+	<artifactId>start</artifactId>
+	<name>Getting started</name>
+	<description>Chapter "Getting started": a first model, saved and loaded, observed from the first line</description>
+
+	<!-- tag::dependencies[] -->
+	<dependencies>
+		<dependency>
+			<groupId>org.nasdanika.sdk.runtime</groupId>
+			<artifactId>common</artifactId>
+		</dependency>
+		<dependency>
+			<groupId>org.nasdanika.sdk.runtime</groupId>
+			<artifactId>emf-json</artifactId>
+		</dependency>
+	</dependencies>
+	<!-- end::dependencies[] -->
+</project>

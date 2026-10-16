@@ -1,0 +1,76 @@
+[preface]
+== Preface
+
+The books that shaped how I build software have one thing in common: they are a body of knowledge you can read from the first page to the last.
+_EMF: Eclipse Modeling Framework_ explained not only how to generate code from a model, but why a model is worth having and what it buys you once you have one.
+_The C4 model for visualising software architecture_ took something every architect does badly, drawing boxes and lines, and gave it a vocabulary small enough to remember.
+Neither is a reference manual. Both are arguments, made one chapter at a time, with enough "how" to make the "why" concrete.
+
+This book tries to do the same for the Nasdanika SDK Runtime.
+
+The runtime is the part of the Nasdanika SDK you install first and build everything else on: models defined in Xcore and handled by EMF, a capability framework that finds what is needed by generic type, telemetry that is part of the code rather than bolted on, volumes that present anything as files, and a command line assembled from whatever modules happen to be present.
+It is influenced by EMF but has nothing to do with the Eclipse IDE.
+It speaks OpenTelemetry but keeps telemetry local, as a model, next to the models it describes.
+It is built on the JDK and adds as little as it can.
+Those choices have reasons, and the reasons are most of what this book is about.
+
+=== Who this book is for
+
+*Architects who want more structure with less effort.*
+If you have ever tried to keep a domain vocabulary, an architecture or a portfolio in office documents, a wiki and a drawing tool, you know the problem: structure is expensive, so it decays.
+The runtime is my answer to making structure cheap enough to keep. You do not need to write Java to get value from the first part of this book, and the parts that are about code explain what the code makes possible before they show it.
+
+*Java developers* who want an observable, testable foundation with few dependencies, and who are curious what modeling looks like when it does not require an IDE.
+
+*Collaborators.* If you want to contribute to Nasdanika, or build on it, this is the map. It says what exists today, what is a sketch, and what is planned.
+
+*Me.* "The faintest ink is better than the strongest memory." A design that is not written down is re-derived, slightly differently, every time it is needed.
+
+*AI assistants.* A coding assistant working on a Nasdanika project is grounded in what it is given. This book is written to be given: the terms are used consistently and defined in <<glossary>>, the rules of thumb are collected in <<rules-of-thumb>>, and every listing is code that compiles. If you are an assistant reading this, start with <<rules-of-thumb>>.
+
+=== How this book is organized
+
+<<why>> explains the problem the runtime addresses, the principles it follows and how its parts fit together.
+<<foundations>> covers the `common` module: models with EMF, generic types at run time, reactive flows on the JDK, and the capability framework.
+<<observability>> is about telemetry: how the runtime instruments itself, how to watch work while it runs, and how telemetry becomes a model.
+<<files>> introduces volumes, the runtime's file abstraction, and serving them over HTTP and WebDAV.
+<<command-line>> shows how commands are contributed by modules and wired by generic types.
+<<models-in-the-runtime>> tours the models that ship with the runtime: the Groovy DSL for authoring, the core model, Meta, the JVM model, and the models that generate the web.
+<<looking-ahead>> is the roadmap and the vision.
+The appendices are references: modules, telemetry names, rules of thumb, a glossary, and how this book is built.
+
+Like "Beyond Diagrams", this book is more a menu than a recipe book.
+Architects can read <<why>> and the first section of each later chapter, which says what a capability is for, and skip the listings.
+Developers should read the parts in order, because each builds on the previous one, and run the examples as they go.
+
+=== Conventions
+
+I write in the first person. "The author" is ten times more letters than "I", and a book about doing more with less effort should not waste them.
+"You" is the reader, whether you write the code or decide what gets built.
+
+Code listings are included from the book's example modules, in the runtime repository under `doc/book/examples`.
+Each module is a small Maven project, built and tested before the book is rendered, so a listing that no longer compiles stops the build instead of misleading you.
+The examples use the `org.example` namespace for Java packages and modules, as your own code would use yours.
+Numbered markers in a listing, such as `<1>`, are explained in the list right below it.
+
+Status labels say how far along something is:
+[.available]#AVAILABLE# means it is in Nasdanika SDK Runtime {runtime-version} and the book shows it working;
+[.sketch]#SKETCH# means a model or an interface exists without the behavior around it;
+[.planned]#PLANNED# means it is designed, on the roadmap, and not built yet.
+
+ifdef::editor-notes[]
+[IMPORTANT,caption="Editor's note"]
+====
+Notes like this one are addressed to me, the author: open questions, inconsistencies found while writing, and decisions to make. They are shown in this draft and hidden in the published edition with `-Dbook.editor-notes=false`.
+====
+endif::[]
+
+=== Versions
+
+This edition describes Nasdanika SDK Runtime {runtime-version}, built with Java 25 and Maven 3.9.16 or later.
+The runtime's version is a calendar version: year, month, patch.
+
+=== Feedback
+
+The book is developed with the runtime, in {runtime-repo}.
+Issues and pull requests against the manuscript in `doc/book/manuscript` are welcome, and so are questions: a question is a section that is missing.

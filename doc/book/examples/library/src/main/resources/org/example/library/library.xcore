@@ -1,0 +1,80 @@
+// tag::header[]
+@Ecore(nsURI="https://example.org/library", nsPrefix="library")
+@GenModel(
+	modelDirectory="/library/src-gen",
+	featureDelegation="Dynamic",
+	complianceLevel="25",
+	suppressGenModelAnnotations="false",
+	copyrightFields="false",
+	operationReflection="true",
+	importOrganizing="true"
+)
+package org.example.library
+
+import org.nasdanika.sdk.runtime.models.core.NamedElement
+// end::header[]
+
+annotation "http://www.eclipse.org/emf/2002/Ecore" as Ecore
+annotation "http://www.eclipse.org/emf/2002/GenModel" as GenModel
+
+// tag::classes[]
+/*
+ * A collection of books and the people who wrote them.
+ */
+class Library extends NamedElement {
+
+	contains Author[] authors
+
+	contains Book[] books
+
+	/*
+	 * Books published before the year.
+	 */
+	op Book[] publishedBefore(int year) {
+		val result = new org.eclipse.emf.common.util.BasicEList<Book>
+		for (book : books) {
+			if (book.year < year) {
+				result.add(book)
+			}
+		}
+		result
+	}
+
+}
+
+enum Genre {
+	FICTION
+	SCIENCE
+	HISTORY
+	TECHNOLOGY
+}
+
+/*
+ * A person who wrote books.
+ */
+class Author extends NamedElement {
+
+	refers Book[] books opposite authors
+
+}
+
+/*
+ * A book. The name is the title.
+ */
+class Book extends NamedElement {
+
+	String isbn
+
+	int year
+
+	Genre genre
+
+	refers Author[] authors opposite books
+
+	/*
+	 * Cited books. No opposite: getReferrers() finds who cites a book.
+	 */
+	refers Book[] cites
+
+}
+// end::classes[]

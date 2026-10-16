@@ -1,0 +1,163 @@
+// Default for previewing this file on its own; the Maven build sets examplesdir
+ifndef::examplesdir[:examplesdir: ../../../../../examples]
+
+[#core-model]
+== The core model
+
+Every model needs the same few things: elements that can be identified, named and documented, that know where they came from, and that can be found by whatever refers to them.
+Written once, these are a foundation; written in every model, they are a source of small, incompatible differences.
+
+The runtime's core model, in `models/core`, is that foundation.
+The library of this book extends it, and so do the runtime's own models and the models of the tower to come (<<vision>>).
+In one sentence: model elements that are named, documented, identifiable, referrable, and that know where they came from.
+
+=== The element hierarchy
+
+[#core-hierarchy]
+.The core hierarchy, and the library's `Book`
+[plantuml,core-hierarchy,svg,pdfwidth=75%]
+----
+skinparam defaultFontName "Noto Sans"
+skinparam defaultFontSize 11
+skinparam ArrowColor #0F4C6E
+skinparam class {
+  BackgroundColor #F2F7FA
+  BorderColor #1B8EC6
+}
+hide empty members
+hide circle
+class "Referrable" as Referrable <<interface>> {
+  getReferrers(EReference)
+}
+class "StringIdentity" as StringIdentity <<interface>> {
+  id
+}
+class "Documented" as Documented <<interface>> {
+  documentation, docRef, docFormat
+  docContents, docSections
+}
+class "Marked" as Marked <<interface>> {
+  markers
+}
+class "ModelElement" as ModelElement <<abstract>> {
+  icon
+  uris
+}
+class "NamedElement" as NamedElement <<abstract>> {
+  name
+}
+class "Book" as Book {
+  year, isbn, genre
+}
+Referrable <|-- StringIdentity
+StringIdentity <|-- ModelElement
+Documented <|-- ModelElement
+Marked <|-- ModelElement
+ModelElement <|-- NamedElement
+NamedElement <|-- Book
+----
+
+`ModelElement` combines identity, documentation and provenance, and adds an icon and alias URIs.
+`NamedElement` adds a name.
+A model extends `NamedElement`, or `ModelElement` for elements without a name, and its elements get the rest by inheritance, along with everything built on top: documentation generation, sites, the reflective viewer.
+
+=== Identity and references
+
+`StringIdentity` gives an element an `id`: a stable, human-readable identifier for URIs and cross-references.
+A name is for people and may change; an id is for references and should not.
+
+`ModelElement.uris` are alias URIs, which may be absolute or opaque, such as `actors://john-smith`.
+They act as merge anchors: several teams may maintain elements with the same URI, for example `myorg://capabilities/developer-productivity`, and when their models are assembled into one, those elements are one logical element.
+
+`Referrable.getReferrers(reference)` is inverse navigation without opposite references.
+It finds the objects in the element's containment tree, resource or resource set that reference the element through a given reference:
+
+.Who refers to this element
+[source,java]
+----
+include::{examplesdir}/library/src/test/java/org/example/library/TestCoreFeatures.java[tag=referrers,indent=0]
+----
+
+An opposite reference is the right choice when both directions are part of the model's meaning, and it has a cost: both ends must be in memory and kept consistent, which fails across resources loaded on demand.
+`getReferrers` costs a walk of what is loaded, and nothing when it is not called.
+The catalog volume of <<volumes>> uses it for the "Cited by" line of each book.
+
+=== Documentation
+
+`Documented` gives every element documentation that can be as short or as long as it needs to be:
+
+.Documenting an element
+[source,java]
+----
+include::{examplesdir}/library/src/test/java/org/example/library/TestCoreFeatures.java[tag=documentation,indent=0]
+----
+<1> Inline documentation, in Markdown unless `docFormat` says otherwise.
+<2> Long-form documentation in a resource, resolved relative to the element's resource, with its format derived from the extension.
+<3> An identity for URIs and references.
+<4> An icon: a URL if it contains a slash, a CSS class otherwise, such as a Font Awesome icon.
+
+Beyond the documentation and its reference, `docContents` adds a list of contents, inline or by reference, each with a content type, and `docSections` adds a tree of titled sections.
+Documentation can be written where it belongs, a sentence inline, a chapter in a Markdown file next to the model, and still be assembled into one site.
+
+=== Provenance
+
+`Marked` elements carry markers that record where an element, or one feature of it, came from:
+
+.Recording where an element came from
+[source,java]
+----
+include::{examplesdir}/library/src/test/java/org/example/library/TestCoreFeatures.java[tag=markers,indent=0]
+----
+<1> The location of the source, typically the URI of the file the element was loaded from.
+<2> A position in the source: a line, a cell, a page.
+
+A marker can name the feature it is about, carry a digest of its source, a hash of a file or of a model, and have child markers, for a value computed from other values that have markers of their own.
+`GitMarker` adds the path in a repository, its remotes, the branch, the head commit and the refs on it: with the position, enough to build a permalink to the exact line in the exact commit.
+
+Markers make what is generated from models traceable.
+Every element on a generated page can point back to the file, the line and the version it came from, and a derived value can be traced through its inputs.
+
+=== Evaluators
+
+An evaluator is a documented, marked expression or script, evaluated against bindings and coerced to a result type.
+It is the core model's way of putting computed values and conditions into models: a rule, a derived property, a filter.
+
+.A rule in the model
+[source,java]
+----
+include::{examplesdir}/dsl/src/test/java/org/example/dsl/TestEvaluators.java[tag=evaluator,indent=0]
+----
+<1> A JSR-223 script. The language names the engine, here Groovy, which the `dsl` example module has on its module path.
+<2> The bindings are the script's variables, and the evaluator itself is bound as `self`.
+
+It prints "The Art of Computer Programming", "On the Origin of Species" and "War and Peace".
+
+[cols="2,4,2",options="header"]
+|===
+| Evaluator | Source | Status
+| `ScriptEvaluator` | A script in any JSR-223 language, inline or by reference. A referenced script selects its engine by extension when no language is given | [.available]#AVAILABLE#
+| `GroovyEvaluator` | A Groovy script, inline or by reference | [.planned]#PLANNED#
+| `SpelEvaluator` | A Spring Expression Language expression | [.planned]#PLANNED#
+| `XPathEvaluator` | An XPath expression over the model | [.planned]#PLANNED#
+|===
+
+The planned evaluators are declared in the model, so that models can contain them today, and throw `UnsupportedOperationException` when evaluated.
+Their implementations are to be loaded as services, which keeps the core model free of the engines' dependencies.
+
+ifdef::editor-notes[]
+[IMPORTANT,caption="Editor's note"]
+====
+The module's `doc/readme.md` describes more than the Xcore defines. It describes a time dimension, `Temporal`, `Period` and `NamedPeriod`, which is not in `core.xcore`, and Git markers "populated automatically when loading models" by a `DslMarker`, which does not exist in the runtime. It calls the model NxCore, and does not mention `XPathEvaluator` or that three of the four evaluators are not implemented. The `kind` package next to the core package has one placeholder interface. The readme should say which parts are current and which are the plan.
+====
+endif::[]
+
+=== Why a shared core matters
+
+The benefits of the core model compound with the number of models that extend it.
+
+* *One generator for many models.* A documentation generator that knows `NamedElement`, `Documented` and `Marked` documents any model in the tower, including ones written after it.
+* *One viewer for many models.* The reflective viewer shows names, icons, documentation and provenance for any element without knowing its class.
+* *Merging across teams.* Alias URIs let independently maintained models be assembled into one.
+* *Traceability by default.* Markers are there to fill, by loaders, by importers, by agents recording where a change came from.
+
+The library of this book got all of it by writing `extends NamedElement`.

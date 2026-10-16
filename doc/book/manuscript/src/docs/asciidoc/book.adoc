@@ -1,0 +1,134 @@
+= Nasdanika SDK Runtime: More Structure with Less Effort
+Pavel Vlasov
+:doctype: book
+:description: The why, the key capabilities and the high-level how of the Nasdanika SDK Runtime: models, capabilities, telemetry, volumes and commands on the JDK.
+:keywords: Nasdanika, EMF, Ecore, Xcore, OpenTelemetry, JPMS, picocli, models, capabilities, telemetry, architecture
+:lang: en
+:sectnums:
+:sectnumlevels: 2
+:partnums:
+:chapter-signifier: Chapter
+:part-signifier: Part
+:appendix-caption: Appendix
+:toc:
+:toclevels: 2
+:title-page:
+:title-logo-image: image:nasdanika-sdk-logo.jpg[pdfwidth=1.75in,align=left]
+:front-cover-image: image:cover.png[Front cover,1400,1850]
+:listing-caption: Listing
+:figure-caption: Figure
+:table-caption: Table
+:source-language: java
+:hide-uri-scheme:
+:runtime-repo: https://github.com/Nasdanika-SDK/runtime
+:runtime-site: https://runtime.sdk.nasdanika.org
+:medium: https://medium.com/nasdanika
+// Defaults for previews in an editor; the Maven build sets these
+ifndef::examplesdir[:examplesdir: ../../../../examples]
+ifndef::runtime-version[:runtime-version: 2026.10.0]
+ifndef::imagesdir[:imagesdir: images]
+
+include::front/colophon.adoc[]
+
+include::front/preface.adoc[]
+
+[#why]
+= The Why
+
+[partintro]
+Why the runtime exists, the principles it follows, and how its parts fit together. No code is needed to read this part; it is the argument the rest of the book makes concrete.
+
+include::chapters/01-more-structure.adoc[]
+
+include::chapters/02-principles.adoc[]
+
+include::chapters/03-at-a-glance.adoc[]
+
+[#foundations]
+= Foundations
+
+[partintro]
+The `common` module and the habits the rest of the runtime is built on: models without an IDE, generic types matched at run time, reactive flows on the JDK, and the capability framework that finds what code needs.
+
+include::chapters/04-getting-started.adoc[]
+
+include::chapters/05-models.adoc[]
+
+include::chapters/06-generic-types.adoc[]
+
+include::chapters/07-flows.adoc[]
+
+include::chapters/08-capabilities.adoc[]
+
+[#observability]
+= Observability
+
+[partintro]
+Telemetry as part of the code: how the runtime instruments itself, how to watch a unit of work while it runs, and how telemetry and recorded changes become models kept next to the models they describe.
+
+include::chapters/09-telemetry.adoc[]
+
+include::chapters/10-watching.adoc[]
+
+include::chapters/11-telemetry-model.adoc[]
+
+[#files]
+= Files and Serving
+
+[partintro]
+Volumes, the runtime's small file abstraction, and what they make possible: models loaded from anywhere, content written on demand, and anything presented as files over HTTP and WebDAV.
+
+include::chapters/12-volumes.adoc[]
+
+include::chapters/13-serving.adoc[]
+
+[#command-line]
+= The Command Line
+
+[partintro]
+Commands contributed by modules, found as capabilities and wired to their parents by generic type, and the launcher that runs them as units of work with their telemetry saved as models.
+
+include::chapters/14-commands.adoc[]
+
+include::chapters/15-wiring.adoc[]
+
+include::chapters/16-distributions.adoc[]
+
+[#models-in-the-runtime]
+= Models in the Runtime
+
+[partintro]
+The models that ship with the runtime: a Groovy DSL to author any of them, the core model of identity, documentation and provenance, Meta, the JVM model, and the models that make the web a generation target.
+
+include::chapters/17-groovy-dsl.adoc[]
+
+include::chapters/18-core-model.adoc[]
+
+include::chapters/19-meta.adoc[]
+
+include::chapters/20-jvm.adoc[]
+
+include::chapters/21-web.adoc[]
+
+[#looking-ahead]
+= Looking Ahead
+
+[partintro]
+Where the runtime is going: what comes next, what is designed, and the North Star that orders the work.
+
+include::chapters/22-vision.adoc[]
+
+include::appendices/a-modules.adoc[]
+
+include::appendices/b-telemetry-reference.adoc[]
+
+include::appendices/c-rules.adoc[]
+
+include::appendices/d-glossary.adoc[]
+
+include::appendices/e-building.adoc[]
+
+ifdef::backend-pdf[]
+[index]
+== Index
+endif::[]

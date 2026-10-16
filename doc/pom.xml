@@ -1,0 +1,24 @@
+<project xmlns="http://maven.apache.org/POM/4.0.0" xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
+	xsi:schemaLocation="http://maven.apache.org/POM/4.0.0 http://maven.apache.org/xsd/maven-4.0.0.xsd">
+	<modelVersion>4.0.0</modelVersion>
+	  <parent>
+	    <artifactId>parent</artifactId>
+	    <groupId>org.nasdanika.sdk.runtime</groupId>
+	    <version>2026.10.0</version>
+	    <relativePath>..</relativePath>
+	  </parent>
+	<groupId>org.nasdanika.sdk.runtime.doc</groupId>
+	<artifactId>parent</artifactId>
+	<packaging>pom</packaging>
+	<name>Documentation</name>
+	<description>Documentation built with the runtime and not deployed: the book and its examples</description>
+	<properties>
+	    <maven.deploy.skip>true</maven.deploy.skip>
+	    <!-- Nothing here is published, so there is nothing to attach -->
+	    <maven.javadoc.skip>true</maven.javadoc.skip>
+	    <maven.source.skip>true</maven.source.skip>
+	</properties>
+	<modules>
+		<module>book</module>
+	</modules>
+</project>

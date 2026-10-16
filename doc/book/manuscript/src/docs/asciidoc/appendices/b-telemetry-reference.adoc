@@ -1,0 +1,89 @@
+[appendix]
+[#telemetry-reference]
+== Telemetry reference
+
+The runtime's own spans and log records use the instrumentation scope `org.nasdanika.sdk.runtime`.
+Attribute keys and event names are constants of `Telemetry`, so instrumentation and the code that reads telemetry share them.
+<<telemetry>> describes the conventions; this appendix lists the names.
+
+=== Spans
+
+[cols="2,4",options="header"]
+|===
+| Span | Started by
+| `Resource.load`, `Resource.save`, `Resource.unload` | Resources of a configured resource set
+| `URIHandler.read`, `URIHandler.write`, `URIHandler.delete` | Instrumented URI handlers, from opening a stream to closing it
+| `ResourceSetContributor.configure`, `Contribute To Resource Set` | Configuring a resource set from services
+| `Transformer.transform`, `Transformer.create` | Transformations, and each mapping of a source
+| `PumpedPublisher.onNext` | Delivery of an item to a subscriber in another span's context
+| `CapabilityLoader.loadAll`, `CapabilityLoader.loadOne` | The blocking conveniences of the capability loader
+| `CapabilityFactory.create`, `CapabilityFactory.method`, `Create Capability` | A factory handling a requirement, a capability method invoked, a capability created
+| `Content.writeTo`, `Content.pipe`, `Content.read` | Content transfers of the volume module
+| `GET` (client) | Content at an HTTP URI
+| `<method> <route>` (server) | Requests through `TelemetryHandler`
+| The name of a command | `CommandBase`, for each executed command
+| `Executing the root command` | `Launcher`, the root span of a launch
+| `Compiling script`, `Evaluating script`, `Saving script` | Groovy DSL resources
+| `Loading <Type>`, `Setting <feature>`, `Resolving references`, `Resolving <feature>`, `Loading resource` | Evaluation of a DSL script
+|===
+
+=== Attributes
+
+[cols="3,1,4",options="header"]
+|===
+| Key | Type | Meaning
+| `nasdanika.resource.uri` | string | The URI of a resource or a stream
+| `nasdanika.resource.type` | string | The class of a resource
+| `nasdanika.resource.contents` | long | The number of root objects loaded or saved
+| `nasdanika.io.bytes` | long | Bytes read or written, so far or in total
+| `nasdanika.uri.handler` | string | The URI handler that served a stream
+| `nasdanika.content` | string | The description of a content
+| `nasdanika.content.cancelled` | boolean | The reader of piped content closed it before the writer finished
+| `nasdanika.contribution.kind` | string | What was contributed to a resource set: `epackage`, `uri-handler`, `adapter-factory` or `contributor`
+| `nasdanika.contribution` | string | The contribution: an nsURI or a class name
+| `nasdanika.contribution.count` | long | The number of contributions
+| `nasdanika.transformer.source` | string | The source of a mapping
+| `nasdanika.transformer.sources`, `nasdanika.transformer.targets` | long | The numbers of sources and targets of a transformation
+| `nasdanika.capability.requirement` | string | The requirement being resolved
+| `nasdanika.capability.factory` | string | The factory handling it
+| `nasdanika.capability.providers` | long | The number of providers produced
+| `nasdanika.capability.method` | string | The factory method that produced capabilities
+| `nasdanika.flow.description` | string | The description of a flow stage
+| `nasdanika.progress.worked`, `nasdanika.progress.total` | long | Progress, on progress log records
+| `qualifiedName`, `commandClass`, `commandModule`, `commandModuleVersion` | string | The executed command, on command spans
+| `nasdanika.dsl.type` | string | The class an element of a script was created as
+| `nasdanika.dsl.type.superseded` | string array | The less specific classes that the class superseded
+| `nasdanika.dsl.feature`, `nasdanika.dsl.feature.class`, `nasdanika.dsl.feature.kind` | string | The feature being set, its class, and `attribute`, `containment` or `reference`
+| `nasdanika.dsl.deferred` | boolean | A reference resolved after the script ran
+| `nasdanika.dsl.references` | long | The number of deferred references
+| `nasdanika.dsl.prototype.uri`, `nasdanika.dsl.target.uri` | string | The prototype of a `copy`, the target of a `loadResource`
+| `nasdanika.dsl.global.uri` | string | The URI a script registered a global object under
+| `code.line.number` | long | The line of a script
+|===
+
+HTTP spans carry the semantic convention attributes `http.request.method`, `http.route`, `http.response.status_code`, `http.response.body.size`, `url.full` (client, without user info and query), `url.path`, `url.scheme`, `server.address`, `server.port`, `client.address`, `network.protocol.version` and `user_agent.original`.
+
+=== Events
+
+Log records that are events have an event name:
+
+[cols="2,4",options="header"]
+|===
+| Event | Emitted when
+| `nasdanika.progress` | Work progresses, with the worked and total amounts; at most once a second for transfers
+| `nasdanika.resource_set.contribution` | Something is contributed to a resource set
+| `nasdanika.resource.created`, `nasdanika.resource.loaded`, `nasdanika.resource.saved` | A resource is created, loaded or saved
+| `nasdanika.dsl.global` | A DSL script registers a global object
+|===
+
+=== Configuration
+
+[cols="2,4",options="header"]
+|===
+| Setting | Effect
+| `nsdk.home`, `NSDK_HOME` | The home directory of a distribution, where telemetry is saved
+| `nsdk.telemetry.format`, `NSDK_TELEMETRY_FORMAT` | The format of saved telemetry: `yml` (the default), `json`, `xml`, `binary` or `compressed`
+| `TRACEPARENT`, `TRACESTATE`, `BAGGAGE` | A trace to continue: a launch becomes part of the trace of whatever started it
+| `org.nasdanika.sdk.runtime.cli.maxCommandPath`, `org.nasdanika.sdk.runtime.cli.maxCommands` | Limits of the command tree: 15 and 2,000 by default
+| `BOOTSTRAP_HOME`, `BOOTSTRAP_JAVA`, `BOOTSTRAP_JAVA_OPTIONS` | The distribution root, the Java executable and extra JVM options of the bootstrap
+|===

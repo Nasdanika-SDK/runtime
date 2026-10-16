@@ -1,0 +1,145 @@
+// Default for previewing this file on its own; the Maven build sets examplesdir
+ifndef::examplesdir[:examplesdir: ../../../../../examples]
+
+[#jvm]
+== The JVM model
+
+A running Java virtual machine knows a great deal about itself.
+`ModuleLayer.boot()` gives the module graph, `Configuration` reports what resolution actually produced, and reflection has exposed types and members since Java 1.1.
+The information was never the problem.
+Getting an answer meant writing a program, so only questions worth a program were ever asked, and that is a small set.
+
+The JVM model, in `models/jvm`, is a model of what a JVM can name: layers, class loaders, modules, packages, types, methods, fields and parameters.
+With the JVM as a model, a question costs what it costs to ask it, and the answer can be saved, compared and published like any other model.
+
+=== What your assembly became
+
+There is a gap between what a build declares and what runs, and nothing reports it.
+A dependency tree describes what could be on the path, test scope, optional dependencies and libraries nothing loads included.
+The resolved module graph is shorter and truer.
+
+Its clearest instance is readability: modules that read something they never required.
+Usually that is correct and by design, because `requires transitive` propagates readability and service binding pulls providers into the resolved graph that no dependency declaration mentions.
+It is a property of resolution, not of the build, so it is absent from every POM and every bill of materials, and no dependency tool can report it.
+
+Non-modular code is as visible as modular code.
+Code on the class path lives in a class loader's unnamed module, which is a value with packages and types in it, not an absence, so the model is useful for an application that has never heard of the module system.
+
+=== Identity
+
+Elements are named the way the JVM names them: binary names and method descriptors, such as `java.util.List`, `[I` and `get(I)Ljava/lang/Object;`.
+
+That is not a local convention.
+It is the form in the constant pool, in stack traces, in `jdeps` output, in JFR events and in profilers and coverage tools, and OpenTelemetry's code attributes carry its two halves.
+A build scan, a coverage report, a profile and a span name the same method the same way, and models produced independently merge on URIs with no translation:
+
+[cols="1,3",options="header"]
+|===
+| Element | URI
+| Module | `jvm:module/<module name>`
+| Package | `jvm:package/<binary package name>`
+| Type | `jvm:type/<binary name>`
+| Method | `jvm:method/<owner binary name>#<name><descriptor>`
+| Field | `jvm:field/<owner binary name>#<name>:<descriptor>`
+| Parameter | `jvm:parameter/<owner method>#<index>`
+|===
+
+Joining static structure to runtime observation is then mechanical, not a project.
+A JaCoCo report already keys classes by binary name and methods by name and descriptor, so coverage attaches to these elements with no mapping layer.
+
+=== What it models
+
+[cols="1,3",options="header"]
+|===
+| Area | Types
+| Root | `JavaVirtualMachine`: whether it is live, the VM's name, version, vendor and specification version; it contains modules, layers and class loaders
+| Runtime structure | `Layer`, with its parents and modules; `ClassLoader`, with its parent and unnamed module
+| Modules | `Module`, with its version, modifiers, main class, `uses` and `reads`, the resolved readability; `Requires`, `Exports` and `Opens` with their targets; `Provides` with the service and its providers
+| Types | `Package`; `Type`, with its kind, access level, binary name, descriptor, signature, supertype, interfaces and class file version
+| Members | `Method`, constructors and static initializers included; `Field`, with its constant value; `Parameter`
+|===
+
+Three decisions shape it:
+
+* *Modules are contained by the root, not by a layer.* A named module belongs to a layer and an unnamed module to a class loader, and one containment cannot express both, so layers and loaders reference modules.
+* *Constructors are methods*, named `<init>`, and static initializers are `<clinit>`, as in bytecode, where the identity scheme comes from.
+* *Access flags are booleans*, not a packed integer, so that a query language without bitwise operators can ask about them.
+
+Generic types are carried as data: the class file's `Signature` attribute, verbatim, on types and members.
+Identity uses erased descriptors, because that is how the JVM tells overloads apart.
+Annotations, source positions and instructions are out of scope for the first version; annotations are the most likely next addition.
+
+The JVM model extends the core model, not Meta (<<meta>>).
+Bridge methods, synthetic accessors and overloads that differ only in erased parameter types are realities of the JVM that Meta deliberately does not hold, so the JVM model projects to Meta instead of extending it.
+
+=== A snapshot of a running JVM
+
+The runtime's live loader is planned [.planned]#PLANNED#.
+A minimal one fits in a page, and shows the shape:
+
+.A snapshot of a module layer (`jvm/.../Snapshot.java`)
+[source,java]
+----
+include::{examplesdir}/jvm/src/main/java/org/example/jvm/Snapshot.java[tag=snapshot,indent=0]
+----
+<1> Observed in a running VM, not scanned from jars.
+<2> What each module declares, from its descriptor.
+<3> The JVM's own naming, as the identity of the element.
+<4> A required module that was not resolved stays unresolved: the declaration is kept, with no target.
+<5> What resolution made of the declarations: the modules each module reads.
+
+A snapshot is a model, so it is saved as evidence of what ran:
+
+.Saving a snapshot and asking it a question
+[source,java]
+----
+include::{examplesdir}/jvm/src/test/java/org/example/jvm/TestSnapshot.java[tag=use,indent=0]
+----
+<1> A YAML file, next to the build or the release it describes.
+
+The question is ordinary code over the model:
+
+.Modules that read what they never required (`jvm/.../Snapshot.java`)
+[source,java]
+----
+include::{examplesdir}/jvm/src/main/java/org/example/jvm/Snapshot.java[tag=question,indent=0]
+----
+
+For the test's own module layer, the answer includes:
+
+[cols="2,3",options="header"]
+|===
+| Module | Reads without requiring
+| `org.nasdanika.sdk.runtime.models.core` | `emfjson.jackson`, `io.opentelemetry.api`, `io.opentelemetry.context`, `org.eclipse.emf.ecore.xmi`
+| `org.nasdanika.sdk.runtime.common` | `emfjson.jackson`
+| `org.example.jvm` | `emfjson.jackson`, `io.opentelemetry.api`, `io.opentelemetry.context`, `org.eclipse.emf.common`, `org.eclipse.emf.ecore`, `org.eclipse.emf.ecore.xmi`, `org.nasdanika.sdk.runtime.models.core`
+|===
+
+Some of this is `requires transitive` at work: the example requires the JVM model, which requires the core model and EMF transitively.
+The first row is more interesting.
+The core model requires only EMF and `java.scripting`, and yet it reads OpenTelemetry and a JSON library.
+EMF, OpenTelemetry and `emfjson-jackson` are automatic modules, jars without a module descriptor, and the module system gives a module that reads one automatic module readability of all of them.
+No build file says so, and the snapshot shows it in the first query anyone runs.
+
+=== Loading
+
+A live loader comes first, before any scanner of jars, because it is smaller and produces a real graph to ask questions of: it walks the boot layer and its parents, reads each module descriptor, takes readability from the configuration, and reflects over loaded types.
+Where reflection does not reach, as for a field's constant value, it reads the loaded type's class file through the JDK's class file API, which is final since Java 24 and needs no dependency.
+
+A build-time scanner over class files follows, and adds what a running VM cannot show: types that were never loaded.
+It has to record which release of a multi-release jar it modeled, and take automatic module names from manifests and file names.
+
+=== Applications
+
+* *Ask a running process what it is.* Logs, metrics, traces and profiles describe behavior over time; none describes composition. The JVM model is the missing view.
+* *Deployed versus running.* The difference between the dependency tree and the resolved graph, computed rather than argued.
+* *Reports that are expensive today.* Which class file versions are present, which modules are automatic, which packages are opened for deep reflection and to whom.
+* *A join point for telemetry.* A stack trace, a JFR event and a span resolve to model elements without a mapping, so a slow span resolves to a method, in a module, from an artifact, owned by a team.
+* *Coverage that knows what runs.* With a live loader recording what was loaded and coverage attached from builds, two lists appear that a coverage tool alone cannot produce: covered but never loaded, and loaded but not covered.
+* *The JVM as files.* A snapshot presented as a volume (<<volumes>>) and served over WebDAV (<<serving>>) is a running system that an agent reads with the file tools it already has.
+
+[NOTE]
+====
+Documentation of JVM concepts is meant to be generated, and the specifications and the JDK's Javadoc are under licenses that do not permit republishing derived text under the runtime's license.
+Concepts are not copyrightable and expression is: generated documentation must be original prose, and an assistant describing `requires transitive` must not reproduce Javadoc it remembers.
+====

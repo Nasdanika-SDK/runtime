@@ -10,7 +10,6 @@ import java.util.concurrent.CompletableFuture;
 import java.util.concurrent.Flow.Publisher;
 import java.util.concurrent.atomic.AtomicInteger;
 
-import org.nasdanika.sdk.runtime.common.Adapters;
 import org.nasdanika.sdk.runtime.common.Util;
 import org.nasdanika.sdk.runtime.common.capability.CapabilityProvider;
 import org.nasdanika.sdk.runtime.common.capability.ReflectiveCapabilityFactory;
@@ -207,6 +206,10 @@ public abstract class SubCommandCapabilityFactory<T> extends ReflectiveCapabilit
 		}
 		List<CommandLine> parentPath = serviceRequirement.parentPath();
 		CommandLine commandLine = new CommandLine(command);
+		if (parentPath == null || parentPath.isEmpty()) {
+			// The root decides how the whole command line executes
+			commandLine.setExecutionStrategy(new WiringExecutionStrategy());
+		}
 		List<CommandLine> path = new ArrayList<CommandLine>();
 		if (serviceRequirement.parentPath() != null) {
 			path.addAll(parentPath);
@@ -337,49 +340,20 @@ public abstract class SubCommandCapabilityFactory<T> extends ReflectiveCapabilit
 	protected abstract Class<T> getCommandType();
 	
 	/**
-	 * Matches command to parent using annotations.
-	 * @param parentPath
-	 * @return
+	 * Matches the command to its parent by declarations, before the command exists: the parent
+	 * accepts it through a {@link SubCommand} member, or the command takes the parent through a
+	 * {@link Parent} member. See {@link CommandWiring}.
 	 */
 	protected boolean match(List<CommandLine> parentPath) {
 		if (parentPath == null || parentPath.isEmpty()) {
 			return false;
 		}
-		
-		CommandLine parent = parentPath.get(parentPath.size() - 1);
-		Object userObject = parent.getCommandSpec().userObject();
-		if (userObject != null) {
-			Class<T> commandType = getCommandType();
-			if (commandType != null) {
-				List<SubCommands> subCommandsAnnotations = Util.lineage(userObject.getClass())
-						.stream()
-						.map(c -> c.getAnnotation(SubCommands.class))
-						.filter(Objects::nonNull)
-						.toList();
-				
-				for (SubCommands subCommandsAnnotation: subCommandsAnnotations) {
-					for (Class<?> at: subCommandsAnnotation.value()) {					
-						if (at.isAssignableFrom(commandType)) {
-							return true;
-						}
-					}
-				}
-			}
-			
-			if (commandType != null) {
-				for (Class<?> le: Util.lineage(commandType)) {
-					ParentCommands parentCommands = le.getAnnotation(ParentCommands.class);
-					if (parentCommands != null) {
-						for (Class<?> pt: parentCommands.value()) {
-							if (Adapters.adapt(userObject, pt)  != null) {
-								return true;
-							}
-						}
-					}
-				}
-			}
+		Object parent = parentPath.get(parentPath.size() - 1).getCommandSpec().userObject();
+		Class<T> commandType = getCommandType();
+		if (parent == null || commandType == null) {
+			return false;
 		}
-		return false;
+		return CommandWiring.acceptsSubCommand(parent.getClass(), commandType) || CommandWiring.acceptsParent(commandType, parent.getClass());
 	}
 	
 	/**

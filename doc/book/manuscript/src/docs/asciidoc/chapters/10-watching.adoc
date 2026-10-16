@@ -1,0 +1,102 @@
+// Default for previewing this file on its own; the Maven build sets examplesdir
+ifndef::examplesdir[:examplesdir: ../../../../../examples]
+
+[#watching]
+== Watching work live
+
+Exported span data arrives when a span ends, often in a batch some seconds later.
+That is fine for looking at what happened, and useless for a person watching a long operation, who wants to know what is happening now and how far along it is.
+It is also awkward for tests, which want to see what the code under test reported, in order, without an exporter and a collector in between.
+
+The runtime publishes telemetry as it happens.
+This chapter shows how, and how to subscribe.
+
+=== Publishing OpenTelemetry
+
+`PublishingOpenTelemetry` wraps any `OpenTelemetry` instance, the no-op instance included, and is a `Flow.Publisher<SpanEvent>`.
+Its tracers publish an event for every change to the spans they start: started, attribute set, status set, exception recorded, renamed, ended.
+Its loggers publish every log record they emit, together with the span that was current.
+Meters and propagators are the delegate's.
+
+Delivery has three properties that make it safe to leave on:
+
+* *It never blocks the instrumented code.* Events are offered to a bounded buffer per subscriber; a subscriber that cannot keep up loses events, and the losses are counted in `getDroppedCount()`.
+* *It costs nothing when nobody listens.* With no subscribers, events are not even created.
+* *It does not need an SDK.* Over the no-op instance, spans record nothing, and events are still published. Tracers and loggers report themselves as enabled while anybody is subscribed, so instrumentation that checks before doing work does not go quiet on a progress bar because no SDK is installed.
+
+Events are delivered asynchronously, in order per subscriber, on virtual threads by default.
+For tests and consoles, a tracer provider created with `Runnable::run` delivers each event on the thread that produced it:
+
+.Deterministic delivery for tests (`telemetry/src/test/java/.../TestTelemetry.java`)
+[source,java]
+----
+include::{examplesdir}/telemetry/src/test/java/org/example/telemetry/TestTelemetry.java[tag=deterministic,indent=0]
+----
+
+=== Span events
+
+`SpanEvent` is a sealed interface with one record per kind of event, so a subscriber pattern-matches on them and a new kind of event does not break existing subscribers:
+
+[cols="1,3",options="header"]
+|===
+| Event | When
+| `Started` | A span started, with its name, kind and initial attributes
+| `AttributeSet` | An attribute was set on a live span
+| `StatusSet` | The status was set
+| `ExceptionRecorded` | An exception was recorded
+| `Renamed` | The span was renamed
+| `Ended` | The span ended
+| `EventAdded` | `Span.addEvent` was called. The runtime itself does not do this; it emits log records instead
+| `LogEmitted` | A log record was emitted, with the publishing span that was current, if any
+|===
+
+Every event has the span it concerns and a timestamp.
+A `PublishingSpan` knows its publishing parent, so a subscriber can compute nesting, and `isWithin(span)` tells whether a span is a descendant of another.
+
+=== A live tree
+
+The subscriber the previous chapter used prints spans as an indented tree, with errors, log records and progress:
+
+.Printing spans as they run (`telemetry/.../SpanTree.java`)
+[source,java]
+----
+include::{examplesdir}/telemetry/src/main/java/org/example/telemetry/SpanTree.java[tag=tree,indent=0]
+----
+<1> One case per kind of event, with a guard for error statuses. Kinds the tree does not show fall through to `default`.
+<2> Progress is recognized by its event name and drawn from its two attributes.
+
+The same twenty lines could update a progress bar, write lines to a file, or push events to a browser.
+A console is one subscriber among others, not a second logging API.
+
+=== Following one operation
+
+A busy unit of work has many concurrent operations.
+`within(span)` filters the events to one span and the publishing spans started under it, which is what a progress view for one operation needs:
+
+.Subscribing to one operation
+[source,java]
+----
+include::{examplesdir}/telemetry/src/test/java/org/example/telemetry/TestTelemetry.java[tag=within,indent=0]
+----
+<1> Only events of `operation` and its descendants are delivered. `Unrelated` and the span started under it are filtered out.
+
+Nesting follows the context, not the tracer: a span started by any tracer of the same provider while `operation` is current is its child, and is seen.
+
+=== Testing with telemetry
+
+Because telemetry is published without an SDK, a test can assert on what the code reported as easily as on what it returned:
+
+.Asserting on reported telemetry
+[source,java]
+----
+include::{examplesdir}/telemetry/src/test/java/org/example/telemetry/TestTelemetry.java[tag=live-tree,indent=0]
+----
+
+This changes what is worth testing.
+"The import reports progress for every book" and "a book without a title is a warning, not a failure" are now properties a test can check, and keep checking.
+
+=== What comes next
+
+The runtime's direction for live observation is a browser.
+A command, or a test, starts the JDK HTTP server on a random port, subscribes to its unit of work, and streams span events to a React viewer with server-sent events, so that a long operation is watched as a tree of spans with progress bars, live, and the same viewer opens recorded telemetry afterwards ([.planned]#PLANNED#, <<vision>>).
+Everything it needs on the Java side exists today: publishing, `within`, and the model the next chapter describes.

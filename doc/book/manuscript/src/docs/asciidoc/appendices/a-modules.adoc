@@ -1,0 +1,115 @@
+[appendix]
+[#modules-reference]
+== Module reference
+
+Every module of the runtime has version {runtime-version}.
+Import the BOM, `org.nasdanika.sdk.runtime:bom`, and leave versions out of the dependencies (<<getting-started>>).
+For each module: its directory in the repository, its Maven coordinates, its Java module name, and what it contains.
+
+=== Runtime modules
+
+`common`::
+Maven `org.nasdanika.sdk.runtime:common` +
+Module `org.nasdanika.sdk.runtime.common` +
+`NasdanikaResourceSet` and resource set contributors (<<models>>); `Types`, `TypeToken`, `Adaptable` and `Adapters` (<<generic-types>>); `Flows`, `Pump`, `Transformer` and `ReflectiveFactory` (<<flows>>); the capability framework (<<capabilities>>); `Telemetry`, the publishing OpenTelemetry and the instrumented URI handler (<<telemetry>>, <<watching>>).
+
+`emf-json`::
+Maven `org.nasdanika.sdk.runtime:emf-json` +
+Module `org.nasdanika.sdk.runtime.emf.json` +
+JSON and YAML resources for EMF, selected by extension (<<models>>).
+
+`volume`::
+Maven `org.nasdanika.sdk.runtime:volume` +
+Module `org.nasdanika.sdk.runtime.volume` +
+The volume SPI, `Content`, `Volume.of(Path)`, `VolumeURIHandler` (<<volumes>>), and the HTTP, WebDAV and telemetry handlers (<<serving>>).
+
+`groovy`::
+Maven `org.nasdanika.sdk.runtime:groovy` +
+Module `org.nasdanika.sdk.runtime.groovy` +
+The Groovy DSL for any metamodel, its Ecore binding and the Groovy resource factory (<<groovy-dsl>>).
+
+`picocli`::
+Maven `org.nasdanika.sdk.runtime:picocli` +
+Module `org.nasdanika.sdk.runtime.picocli` +
+Picocli, bundled until a picocli release includes the runtime's contributions (<<commands>>).
+
+`cli`::
+Maven `org.nasdanika.sdk.runtime:cli` +
+Module `org.nasdanika.sdk.runtime.cli` +
+`CommandBase`, `CommandGroup`, the command and mix-in factories, `@Parent`, `@SubCommand`, `ExecutionSupplier` and `WiringExecutionStrategy`; the root, `save`, `ecore`, `shell` and `launcher` commands; resource set and properties mix-ins (<<commands>>, <<wiring>>).
+
+`cli-launcher`::
+Maven `org.nasdanika.sdk.runtime:cli-launcher` +
+Module `org.nasdanika.sdk.runtime.cli.launcher` +
+`Launcher`, which runs a launch as a unit of work with telemetry saved as models, and `DistributionBuilder`; builds the command line distribution (<<distributions>>).
+
+`bootstrap`::
+Maven `org.nasdanika.sdk.runtime:bootstrap` +
+Not a named module: it is run with `java -jar`. +
+The dependency-free bootstrap that relaunches a distribution from any directory (<<distributions>>).
+
+`bom`, `all`::
+Maven `org.nasdanika.sdk.runtime:bom` and `org.nasdanika.sdk.runtime:all`, both POMs +
+The bill of materials of the runtime and its dependencies, and an aggregate of every runtime module for assemblies.
+
+=== Models
+
+The models follow the identity rule of <<principles>>: the nsURI is `https://runtime.sdk.nasdanika.org/` followed by the model's path.
+
+`models/core`::
+Maven `org.nasdanika.sdk.runtime.models:core` +
+Module `org.nasdanika.sdk.runtime.models.core` +
+Packages `models/core` and `models/core/kind`. Identity, documentation, provenance and evaluators (<<core-model>>).
+
+`models/telemetry/model`::
+Maven `org.nasdanika.sdk.runtime.models.telemetry:model` +
+Module `org.nasdanika.sdk.runtime.models.telemetry` +
+Packages `models/telemetry`, `models/telemetry/traces`, `models/telemetry/logs` and `models/telemetry/metrics`, with change recording (<<telemetry-model>>).
+
+`models/telemetry/exporters`::
+Maven `org.nasdanika.sdk.runtime.models.telemetry:exporters` +
+Module `org.nasdanika.sdk.runtime.models.telemetry.exporters` +
+OpenTelemetry SDK exporters that write spans, log records and metrics into telemetry models (<<telemetry-model>>).
+
+`models/file/model`::
+Maven `org.nasdanika.sdk.runtime.models.file:model` +
+Module `org.nasdanika.sdk.runtime.models.file` +
+Package `models/file`. Files and directories as a model over volumes [.sketch]#SKETCH# (<<volumes>>).
+
+`models/meta/model`::
+Maven `org.nasdanika.sdk.runtime.models.meta:model` +
+Module `org.nasdanika.sdk.runtime.models.meta` +
+Package `models/meta`. The language-neutral type system (<<meta>>).
+
+`models/jvm/model`::
+Maven `org.nasdanika.sdk.runtime.models.jvm:model` +
+Module `org.nasdanika.sdk.runtime.models.jvm` +
+Package `models/jvm`. What a JVM can name (<<jvm>>).
+
+`models/html/model`::
+Maven `org.nasdanika.sdk.runtime.models.html:model` +
+Module `org.nasdanika.sdk.runtime.models.html` +
+Package `models/html`, with the HTML generator (<<web>>).
+
+`models/html/bootstrap`::
+Maven `org.nasdanika.sdk.runtime.models.html:bootstrap` +
+Module `org.nasdanika.sdk.runtime.models.html.bootstrap` +
+Packages `models/html/bootstrap`, `.../forms` and `.../components/content`, `navigation` and `overlays`, with `BootstrapStructure` and `NavigationTree` (<<web>>).
+
+`models/typescript/model`::
+Maven `org.nasdanika.sdk.runtime.models.typescript:model` +
+Module `org.nasdanika.sdk.runtime.models.typescript` +
+Package `models/typescript`, with the generator and its import management (<<web>>).
+
+`models/react/model`, `models/react/bootstrap`, `models/react/flow`::
+Maven `org.nasdanika.sdk.runtime.models.react:model`, `:bootstrap` and `:flow` +
+Modules `org.nasdanika.sdk.runtime.models.react` +
+`org.nasdanika.sdk.runtime.models.react.bootstrap` +
+`org.nasdanika.sdk.runtime.models.react.flow` +
+React components, hooks and JSX with `ReactGenerator`; Bootstrap in React; React Flow with a layered layout (<<web>>).
+
+=== Book examples
+
+The examples of this book are modules too, in `doc/book/examples`, with the group `org.nasdanika.sdk.runtime.doc.book.examples` and Java modules named `org.example.<example>`.
+They are built and tested with the runtime and never deployed.
+<<getting-started>> lists them by chapter.

@@ -1,0 +1,316 @@
+[#at-a-glance]
+== The runtime at a glance
+
+This chapter puts the whole runtime on a few pages: the modules and what each is for, the three planes they serve, how the pieces find each other, and what happens, step by step, when one command runs.
+Later chapters zoom into each part; this one is the map you come back to.
+
+=== The modules
+
+The runtime is one Maven reactor in one Git repository, released as one unit with one calendar version.
+<<module-map>> lists its modules; <<modules-reference>> has the full reference with every service each one provides.
+
+[#module-map]
+.The modules of the runtime
+[cols="2,5,3",options="header"]
+|===
+| Path | What it is for | Depends on, beyond the foundation
+
+| `common`
+| Resource sets and their contributors, generic type matching and adaptation, `Flow` utilities, the pump and the transformer, the capability framework, telemetry
+| geantyref
+
+| `volume`
+| The file system SPI: volumes, content, capabilities; serving volumes over HTTP and WebDAV; volumes as EMF URI handlers
+| `common`
+
+| `emf-json`
+| EMF resources as JSON and YAML, instrumented
+| `common`, EMF JSON (Jackson)
+
+| `groovy`
+| A metamodel-driven Groovy DSL for authoring any EMF model
+| `common`, Groovy
+
+| `picocli`
+| picocli, bundled until a release with Nasdanika's contributions
+| none
+
+| `cli`
+| Commands as capabilities, wiring by generic type, mix-ins, the shell
+| `common`, `picocli`, JLine
+
+| `cli-launcher`
+| The launcher: one OpenTelemetry SDK per launch, telemetry saved as models, distribution building
+| `cli`, the OpenTelemetry SDK, the telemetry exporters
+
+| `bootstrap`
+| A dependency-free jar that starts a distribution from any directory
+| none (only `java.base`)
+
+| `models/core`
+| Identity, documentation as structure, provenance markers, evaluators
+| none
+
+| `models/meta`
+| A language-neutral type system: packages, classes, features, operations
+| `models/core`
+
+| `models/jvm`
+| What a Java virtual machine can name: layers, modules, packages, types, members
+| `models/core`
+
+| `models/file`
+| Files and directories as a model over volumes ([.sketch]#SKETCH#)
+| `volume`
+
+| `models/telemetry`
+| Traces, logs and metrics as models, and change recording; exporters from the OpenTelemetry SDK
+| the OpenTelemetry SDK (exporters only)
+
+| `models/html`
+| HTML and Bootstrap as models, with generators
+| `models/core`
+
+| `models/typescript`
+| The TypeScript declaration surface as a model, with an emitter that manages imports
+| `models/core`, `volume`
+
+| `models/react`
+| JSX and React components, React Bootstrap and React Flow as models
+| `models/typescript`, `models/html`
+
+| `bom`, `all`
+| A bill of materials for consumers, and an aggregate of everything
+|
+
+| `tests`
+| Tests that need several modules, or the OpenTelemetry SDK, and a CLI assembly for demos
+|
+
+| `doc`
+| This book and its examples
+|
+|===
+
+<<module-dependencies>> shows the same modules as a dependency graph.
+The foundation is not drawn: every module may use the JDK, EMF core and the OpenTelemetry API.
+
+[#module-dependencies]
+.Module dependencies
+[plantuml,module-dependencies,svg,pdfwidth=100%]
+----
+skinparam componentStyle rectangle
+skinparam defaultFontName "Noto Sans"
+skinparam defaultFontSize 11
+skinparam ArrowColor #0F4C6E
+skinparam component {
+  BackgroundColor #F2F7FA
+  BorderColor #1B8EC6
+}
+left to right direction
+
+package "Runtime" {
+  [common]
+  [volume]
+  [emf-json]
+  [groovy]
+  [picocli]
+  [cli]
+  [cli-launcher]
+}
+
+package "Models" {
+  [core]
+  [meta]
+  [jvm]
+  [file]
+  [telemetry]
+  [exporters]
+  [html]
+  [typescript]
+  [react]
+}
+
+[volume] --> [common]
+[emf-json] --> [common]
+[groovy] --> [common]
+[cli] --> [common]
+[cli] --> [picocli]
+[cli-launcher] --> [cli]
+[cli-launcher] --> [exporters]
+[exporters] --> [telemetry]
+[meta] --> [core]
+[jvm] --> [core]
+[html] --> [core]
+[typescript] --> [core]
+[typescript] --> [volume]
+[file] --> [volume]
+[react] --> [typescript]
+[react] --> [html]
+----
+
+Two things stand out.
+`common` sits under almost everything, which is why it is held to the strictest rule about what it may depend on.
+And the models do not depend on `common` at all, with the exception of the ones that need volumes: a model is EMF, and anything else is somebody else's concern.
+
+=== Three planes
+
+It helps to sort what the runtime does into three planes, with two seams between them.
+
+[#planes]
+.Three planes and the volumes between them
+[plantuml,planes,svg,pdfwidth=90%]
+----
+skinparam defaultFontName "Noto Sans"
+skinparam defaultFontSize 11
+skinparam rectangle {
+  BackgroundColor #F2F7FA
+  BorderColor #1B8EC6
+}
+skinparam ArrowColor #0F4C6E
+
+rectangle "Presentation plane\nHTML, Bootstrap, React, Markdown, text" as presentation
+rectangle "Semantic plane\nmodels in a resource set, cross-references resolved" as semantic
+rectangle "Data plane\nfiles, a running JVM, Git, Jira, Maven, cloud APIs" as data
+rectangle "Control plane\ncommands, telemetry, change recording" as control
+
+data -up-> semantic : volumes, loaders
+semantic -up-> presentation : representations
+control .right.> semantic : writes
+control .right.> presentation : serves
+----
+
+The *data plane* is raw data where it lives: files on disk, a running JVM, a Git repository, Jira, a Maven repository, a cloud provider's API.
+The *semantic plane* is models loaded from that data, typed, with cross-references resolved, in a resource set.
+The *presentation plane* is how people and programs see the models: HTML pages, a React viewer, Markdown for an agent, plain text for a console.
+
+Reads flow up.
+A volume presents data as files, and EMF loads resources from those files through a URI handler; or a loader reads an API and builds a model directly.
+A representation turns model objects into pages or files, and another volume presents those for serving, copying or mounting.
+Writes flow down, through commands, with telemetry and change recording on the way.
+
+The planes explain why the runtime has volumes at all.
+A volume is the seam between the data plane and the semantic plane, and again between the semantic plane and channels such as HTTP, WebDAV or a directory.
+The same five-method interface serves both seams (<<volumes>>).
+
+=== How the pieces find each other
+
+Nothing in the runtime is wired by hand, and nothing is configured in XML or YAML.
+Four mechanisms, from the simplest to the most capable, connect the parts.
+
+*Java services.*
+A module declares in `module-info.java` that it provides an implementation of a service interface, and `java.util.ServiceLoader` finds every provider on the module path.
+Resource set configuration uses services: EPackages, URI handlers, adapter factories and `ResourceSetContributor`s (<<models>>).
+So does the capability framework itself, to find capability factories.
+
+*Capabilities.*
+A capability factory is a service that interprets requirements.
+A requirement is a type, possibly generic, with optional payloads: "a `Function<Library, String>` for the markdown format".
+Factories may raise their own requirements while satisfying one, and the loader resolves the whole graph, once per requirement, with cycle detection (<<capabilities>>).
+
+*Adaptation.*
+An object can declare, with annotated fields and methods, what it can be adapted to, by generic type and with optional context.
+Adaptation answers "can this thing give me what I need?" without either side knowing the other's class (<<generic-types>>).
+
+*Wiring.*
+A command declares, by generic type, what it needs from its parent and which sub-commands it takes.
+Commands contributed as capabilities are matched to parents by those declarations, and the parent is adapted to what the child needs just before it runs (<<wiring>>).
+
+Each mechanism builds on the previous ones.
+Commands are capabilities; capability factories are services; wiring is adaptation.
+
+=== One command, end to end
+
+To see the parts work together, follow one command through a distribution: `nsd library save shelf.xmi`, which saves the library the `library` command supplies to a file.
+<<one-command>> shows the main steps.
+
+[#one-command]
+.One command, end to end
+[plantuml,one-command,svg,pdfwidth=72%]
+----
+skinparam defaultFontName "Noto Sans"
+skinparam defaultFontSize 12
+skinparam ArrowColor #0F4C6E
+skinparam activity {
+  BackgroundColor #F2F7FA
+  BorderColor #1B8EC6
+}
+skinparam note {
+  BackgroundColor #FFFFFF
+  BorderColor #A9C7D8
+}
+start
+:Launcher builds a unit of work:\none OpenTelemetry SDK with model exporters;
+note right: continues TRACEPARENT if set
+:Capability loader assembles the command tree;
+note right: contributed commands, parents\nmatched by generic type
+:picocli parses the arguments;
+:Wiring injects parents, root to leaf;
+note right: save gets a supplier from library
+:The save command executes in its span;
+:The supplier loads the library\nin the span of save;
+:Resource set configured and resource\nsaved, in spans, with progress logs;
+:SDK closes: traces, logs and metrics\nsaved as models;
+stop
+----
+
+. *The launcher builds a unit of work.*
+It creates a directory for this launch's telemetry, builds an OpenTelemetry SDK whose exporters write traces, logs and metrics as models, and makes it current.
+If a `TRACEPARENT` environment variable is set, by a CI step for example, the launch continues that trace.
+Everything that follows reports to this instance and to no other (<<distributions>>).
+
+. *The capability loader assembles the command tree.*
+It asks for root commands; the root command's factory produces `nsd`, and every command factory on the module path is asked whether its command fits under `nsd`, then under each command added so far.
+The `library` command fits under `nsd` because it declares the root command as its parent.
+The runtime's `save` command fits under `library` because it declares that its parent must supply a collection of EMF objects, and `library` declares an adapter that does (<<commands>>).
+
+. *picocli parses the arguments* against that tree and finds `nsd library save` with one positional parameter.
+
+. *Wiring injects parents.*
+After parsing, from the root to the executed command, each command's `@Parent` members are filled by adapting its parent.
+`save` receives a supplier from `library`; nothing is loaded yet (<<wiring>>).
+
+. *The command executes in its own span.*
+`save` calls the supplier, which loads or builds the library inside `save`'s span, so the cost is attributed to the command that needed it.
+It creates a resource set, which is configured from services in a span with a log record per contribution, and saves the resource in a span with the byte count, while the URI handler logs progress for large streams (<<telemetry>>).
+
+. *The unit of work ends.*
+Closing the SDK exports what is pending, and the exporters save `traces.yml`, `logs.yml` and `metrics.yml` in the launch's telemetry directory, with log records nested in the spans they were emitted in (<<telemetry-model>>).
+
+Nothing in that sequence was configured.
+The commands are present because their modules are on the module path, the wiring follows from their declared types, and the telemetry is there because the runtime's code reports through the OpenTelemetry API to whatever instance is current.
+
+ifdef::editor-notes[]
+[IMPORTANT,caption="Editor's note"]
+====
+Step 2 describes the intended behavior. In the working tree as of this edition, `Application` and `Launcher` call `CapabilityLoader.loadAll` for the root command, and `loadAll` returns as soon as the root command line is emitted, while `SubCommandCapabilityFactory` attaches sub-commands later, in `thenAccept`, on the same pump. The result is a tree with only the static `launcher` sub-command. The book's CLI example assembles the tree by settling the pump instead (<<commands>>), which produces the full tree. Either `SubCommandCapabilityFactory.commandLine` should emit the command line after its sub-commands and mix-ins are combined, or the launcher should settle the pump.
+====
+endif::[]
+
+=== Where things are in the repository
+
+[source,text]
+----
+runtime/
+  pom.xml               the reactor; every module below is listed in it
+  bom/                  versions for consumers
+  common/  volume/  emf-json/  groovy/  picocli/  cli/  cli-launcher/  bootstrap/
+  models/
+    core/  meta/  jvm/  file/  telemetry/  html/  typescript/  react/
+  tests/                multi-module tests and a demo CLI assembly
+  doc/
+    book/
+      examples/         one Maven module per topic, built and tested with the runtime
+      manuscript/       this book, in AsciiDoc, rendered to PDF, EPUB and HTML
+----
+
+Each model module keeps its Xcore source under `src/main/resources`, its generated Java under `src-gen` (committed, so that editors without Maven integration see it), and its hand-written code under `src/main/java`.
+
+=== What is available today
+
+The capabilities in this book are at three stages, and every chapter labels them.
+In short, as of {runtime-version}:
+
+[.available]#AVAILABLE#:: Resource sets configured from services, all resource formats, generic type matching and adaptation, the flow utilities, the pump and the transformer, the capability framework, runtime telemetry with live publishing, telemetry and change recording as models, volumes over directories with HTTP and WebDAV serving, commands as capabilities with generic wiring, the launcher and the bootstrap, the Groovy DSL, the core, Meta, JVM, telemetry, HTML, Bootstrap, TypeScript and React models with their generators.
+[.sketch]#SKETCH#:: The file model; the reflective operations of Meta's `Object`; the JVM model's loaders (the book shows a minimal one).
+[.planned]#PLANNED#:: Everything in <<vision>>: the reflective viewer, representations and views over mounted volumes, the inference and tool models, MCP, query languages, executable graphs with state in Git.

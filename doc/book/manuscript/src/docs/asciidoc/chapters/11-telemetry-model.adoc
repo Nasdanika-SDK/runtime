@@ -1,0 +1,161 @@
+// Default for previewing this file on its own; the Maven build sets examplesdir
+ifndef::examplesdir[:examplesdir: ../../../../../examples]
+
+[#telemetry-model]
+== Telemetry as a model
+
+Telemetry sent to a backend becomes the backend's: it is stored in its format, queried with its language, and forgotten on its schedule.
+The runtime can also keep telemetry as models, in files next to the models it describes, in the same formats, versioned in the same repositories.
+Then a trace is something you load, navigate, query, diff and commit, and a change to a model can be recorded in the span that made it.
+
+This chapter covers the telemetry model, the exporters that fill it from the OpenTelemetry SDK, and change recording.
+
+=== Why keep telemetry as a model
+
+"Somebody changed the year of a book" is a log line.
+"In the course of the work named 'Correct the year', the attribute `year` of the book 'Domain-Driven Design' changed to 2004" is structure: the work, the object and the attribute are elements you can navigate to, and the statement can be checked years later.
+
+That is the difference between operational and strategic telemetry made concrete.
+Its uses are the ones where an answer has to survive the people who knew it:
+
+* *Audit and compliance.* Every change to an element during an audit period, who made it, and in the course of what work, is a query instead of an archaeology project.
+* *Agents.* An agent's run is a trace whose spans are its tool calls, and the changes it made to models are in the spans that made them. Reviewing an agent's work means reading that trace, and reverting it means applying the changes in reverse.
+* *Evidence.* Telemetry kept with the build or the release it describes is evidence of what ran, the right end of the line in <<principles>>.
+* *Replay.* Spans carry timing and nesting, so an execution can be played back over a diagram of the system that ran it, which is planned for the reflective viewer (<<vision>>).
+
+=== The telemetry model
+
+The model lives in `models/telemetry`, in four parts, following OpenTelemetry's own data model (OTLP) so that nothing is lost on the way in:
+
+[cols="1,3",options="header"]
+|===
+| Package | Contents
+| `telemetry` | `Resource` (the entity that produced the signals), `InstrumentationScope`, and typed attribute values, `KeyValue` and `AnyValue`
+| `traces` | `TracesData`, `ResourceSpans`, `ScopeSpans`, `Span`, `SpanEvent`, `SpanLink`, `SpanStatus`, and the change recording classes
+| `logs` | `LogsData`, `ResourceLogs`, `ScopeLogs`, `LogRecord`
+| `metrics` | `MetricsData`, `ResourceMetrics`, `ScopeMetrics`, `Gauge`, `Sum`, `Histogram`, `ExponentialHistogram`, `Summary`, their data points, and `Exemplar`
+|===
+
+On top of OTLP, the model adds what makes telemetry navigable as a graph:
+
+* *Spans nest.* A span's children are contained by it, within an instrumentation scope, so a trace reads as a tree. Across scopes, spans reference their parent by id.
+* *Log records live in their spans.* A log record emitted in a span is contained by that span, not stored in a separate stream to be joined later.
+* *Changes live in their spans.* A span contains the description of the model changes recorded while it was current.
+* *References resolve.* Span links and the change classes reference spans as objects, not only by id, and an exemplar references the span that produced a measurement.
+
+ifdef::editor-notes[]
+[IMPORTANT,caption="Editor's note"]
+====
+The module's `doc/readme.md` describes the tower version of this model: a span extends the work model's `AbstractWork`, a resource is an actor, and metrics are accounting entries. The Xcore in the runtime is the OTLP-faithful model described here, with no dependency on work, role or accounting. The readme should say which is current and which is the plan.
+====
+endif::[]
+
+=== Exporting to the model
+
+The model exporters are OpenTelemetry SDK exporters: `ModelSpanExporter`, `ModelLogRecordExporter` and `ModelMetricExporter`, in the module `org.nasdanika.sdk.runtime.models.telemetry:exporters`.
+Each writes into an EMF resource and saves it when the SDK flushes or shuts down.
+
+Only the assembly that runs the unit of work needs the SDK.
+Instrumented code, the runtime's included, needs only the API:
+
+.Dependencies of an assembly that records telemetry (`recording/pom.xml`)
+[source,xml]
+----
+include::{examplesdir}/recording/pom.xml[tag=dependencies,indent=0]
+----
+
+The SDK is built as usual, with the model exporters plugged in:
+
+.An SDK that exports to models (`recording/.../Recorder.java`)
+[source,java]
+----
+include::{examplesdir}/recording/src/main/java/org/example/recording/Recorder.java[tag=sdk,indent=0]
+----
+
+The log record exporter is given the span exporter, so that log records emitted in exported spans are added to those spans; log records emitted outside any span go to the logs resource.
+The W3C propagators let the unit of work continue a trace started elsewhere (<<telemetry>>).
+
+=== Recording changes
+
+Change recording is EMF's, extended so that recorded changes know their spans.
+`Changes.record(target, body)` records the changes the body makes to a resource set, a resource or an object, and hands the description to the sink that is current in the OpenTelemetry context.
+The span exporter is such a sink: it puts each description into the span it was recorded in.
+
+.A unit of work whose telemetry and changes are saved as models
+[source,java]
+----
+include::{examplesdir}/recording/src/main/java/org/example/recording/Recorder.java[tag=record,indent=0]
+----
+<1> The telemetry resources live in a resource set of their own, created before the instance is made current, so that saving them at shutdown is not itself traced.
+<2> The SDK is the unit of work's instance. Everything below reports to it.
+<3> The span exporter becomes the sink of recorded changes for the unit of work.
+<4> Creating the library and saving it is recorded in the current span, "Curate the shelf".
+<5> Correcting the year is recorded in its own span, so the change lands there.
+<6> Closing the SDK exports what is pending and saves `traces.yml`, `logs.yml` and `metrics.yml`.
+
+The recorded description is turned around before it is stored.
+EMF's change recorder produces a description that undoes the changes; the runtime stores one that describes them forward, detached from the model:
+
+* Objects added in the body are copied into the description, as objects to attach.
+* Objects removed in the body are moved into the description, so their state when they were removed is kept for audit.
+* Other objects are referenced by proxies with their URIs, so the description can be saved in a different resource set and resolves to the model wherever the model is saved.
+
+Nothing is recorded without a current sink or outside a sampled span, so the same code runs unchanged in a unit of work that does not record.
+
+=== Reading telemetry back
+
+Recorded telemetry is a model, so reading it is ordinary EMF:
+
+.Reading traces and their changes (`recording/.../TraceReader.java`)
+[source,java]
+----
+include::{examplesdir}/recording/src/main/java/org/example/recording/TraceReader.java[tag=read,indent=0]
+----
+<1> The change description is a feature of the span. Its object changes are keyed by the changed objects, which resolve through their proxies to the saved model.
+
+For the unit of work above, it prints:
+
+[source,text]
+----
+Curate the shelf
+  * created Library 'A Modeler's Shelf'
+  ResourceSetContributor.configure
+    Contribute To Resource Set
+    Contribute To Resource Set
+    Contribute To Resource Set
+    Contribute To Resource Set
+  URIHandler.write (2059 bytes)
+  Resource.save (2059 bytes)
+  Correct the year
+    * Book 'Domain-Driven Design'.year = 2004
+    URIHandler.write (2059 bytes)
+    Resource.save (2059 bytes)
+----
+
+The runtime's spans, from another instrumentation scope, appear in the tree by their parent ids: the resource set configuration and the saves happened inside "Curate the shelf" and "Correct the year", and the tree says so.
+Because the trace is a model, the same questions can be asked by a query language instead of a loop, which is on the roadmap (<<vision>>).
+
+=== Formats and where files go
+
+Telemetry resources use the formats every model uses, selected by extension: `yml` or `json` to read, `xmi` to interchange, `ebin` and `egz` for size.
+The launcher saves the telemetry of every command it runs in a directory per launch:
+
+[source,text]
+----
+<home>/telemetry/2026/10/16-14-03-12-345/
+  traces.yml
+  logs.yml
+  metrics.yml
+----
+
+The format is chosen with the system property `nsdk.telemetry.format` or the environment variable `NSDK_TELEMETRY_FORMAT`, with the values `yml` (the default), `json`, `xml`, `binary` and `compressed` (<<distributions>>).
+
+=== Every signal is precious
+
+Keeping telemetry forever sounds expensive until you count.
+A command line run, an agent session or a build step produces hundreds to thousands of spans, which compress to kilobytes.
+Strategic telemetry is not the firehose; it is the record of work that mattered, and it costs less than the meeting held to reconstruct it.
+
+The discipline that keeps it that way is deciding what is a unit of work worth keeping.
+A command that changes models, a release, an agent run, a migration: yes.
+Every request a server handles: no, that is operational telemetry, and it belongs in an operational backend, from the same instrumentation.

@@ -1,0 +1,225 @@
+[#principles]
+== Principles
+
+A runtime is a long series of small decisions.
+Most of them are made under time pressure, by whoever happens to be writing the code, and the result is consistent only if the decisions follow from a few rules that everybody knows.
+This chapter states the rules the Nasdanika SDK Runtime follows, with the reasoning behind each one.
+Later chapters refer back to them by name.
+
+=== Pure Nasdanika: the JDK, EMF core and the OpenTelemetry API
+
+The foundation of the runtime is three things:
+
+* *The JDK*, currently Java 25.
+* *EMF core*: `org.eclipse.emf.common`, `org.eclipse.emf.ecore` and `org.eclipse.emf.ecore.xmi`.
+* *The OpenTelemetry API*: `io.opentelemetry.api` and `io.opentelemetry.context`, not the SDK.
+
+I call this "pure Nasdanika".
+Any module may depend on all three, `common` does, and code that uses only them counts as foundational.
+All three are small, stable, and standard in their space, which matters more than any feature they have: a platform team can approve "Java, EMF and the OpenTelemetry API" in a meeting, while "Java, EMF, Reactor, Netty, Jackson and two vendor SDKs" is a review.
+
+Everything beyond the foundation is justified per module.
+`emf-json` brings Jackson because EMF JSON is implemented on it.
+`groovy` brings Groovy because it is a Groovy DSL.
+The command line module brings picocli and JLine because they are what a command line is made of.
+None of them is allowed into `common`.
+The one exception made so far is geantyref, a tiny library with no dependencies that `common` uses to match generic types, wrapped behind the runtime's own `Types` class so that no public signature mentions it (<<generic-types>>).
+
+=== If the JDK can do it, use the JDK
+
+Occam's razor, applied to dependencies: a third-party library earns its place by doing something the JDK does not do.
+
+[cols="2,3,3",options="header"]
+|===
+| Concern | The usual choice | The runtime's choice
+| HTTP client | Netty, vendor SDKs | `java.net.http.HttpClient`
+| HTTP server | Netty, servlet containers | `com.sun.net.httpserver.HttpServer` on virtual threads
+| Asynchrony | Reactor `Mono` and `Flux` | Blocking code on virtual threads; `java.util.concurrent.Flow` where a stream really is a stream
+| Ambient context | Thread locals, frameworks | `ScopedValue`, and the OpenTelemetry `Context`
+| JSON | Jackson data binding | org.json where JSON is a wire format; EMF JSON where it is a model format
+| Logging API | SLF4J and a backend | The OpenTelemetry Logs API, correlated with spans; where a log record goes is decided by whoever runs the unit of work
+|===
+
+Most of the libraries in the middle column were written before the JDK had the feature.
+Reactor and Netty solved a real problem: a blocked platform thread was expensive, so non-blocking I/O and reactive composition were the only way to serve many concurrent requests.
+Virtual threads removed the cost.
+The reasons to take the dependency expired; the dependencies did not.
+
+Blocking code is also better code for the work the runtime is heading toward.
+An agentic loop is sequential: call the model, run a tool, call again.
+On virtual threads that reads as it runs, the OpenTelemetry context propagates through straight-line code with no hooks, spans nest the way the code nests, and stack traces are readable.
+Reactive operators pay off for fan-in and fan-out pipelines, and the runtime keeps `Flow` for those (<<flows>>).
+
+There is one refinement.
+Where the runtime _consumes_ something, it uses the JDK's API.
+Where it _implements_ something many times, it prefers a small interface of its own.
+File systems are the example: NIO is how the runtime reads existing file systems, and `Volume`, an interface with five methods in the shape of Go's `io/fs`, is what it implements over a directory, an in-memory tree, a running JVM or a remote system (<<volumes>>).
+Implementing an NIO file system provider is a large job; implementing a volume is an afternoon.
+
+=== If Xcore can model it, model it
+
+Data and APIs are Xcore classes and operations, not hand-written Java beans and interfaces.
+
+A model is more than a data structure.
+It is documented, so a generated site explains it to people.
+It is serializable, to XMI, JSON, YAML or binary, so a snapshot is a file you can diff and commit.
+It is reflective, so a viewer can show any object without code written for its class, and a query language can traverse it.
+And with operation reflection turned on, every operation can be invoked by name with arguments, which means an operation is already a tool: it has a name, parameters, types and documentation, which is everything a tool declaration for an agent needs.
+
+The cost is a code generator in the build.
+<<models>> shows that this cost is now one Maven plugin and a text file, which is the change that made the principle affordable.
+
+=== Telemetry is part of the runtime
+
+Instrumentation is not an add-on that somebody remembers to do later.
+Every runtime module that does something worth knowing about reports it through the OpenTelemetry API, and modules wrap the JDK APIs they use so that instrumentation is the default.
+Four conventions make that consistent:
+
+*Spans for operations, log records for what happens in them.*
+A span has a duration; a log line, a measurement or the progress of a long-running operation is a log record emitted through the OpenTelemetry Logs API, correlated with the current span.
+Span events are not used, because OpenTelemetry is moving events onto the Logs API.
+
+*One `OpenTelemetry` per unit of work.*
+A unit of work is a command, a request or a test.
+It builds or is handed an `OpenTelemetry` instance and makes it current, the way it would make a span current, and everything instrumented underneath reports to it.
+`GlobalOpenTelemetry` is never used.
+This is what lets one command save its own telemetry next to its own output, while another, running in the same JVM, sends its telemetry somewhere else.
+
+*Console output is a subscriber, not a second API.*
+Progress bars and live trees subscribe to the same span and log events that a model exporter or a backend receives (<<watching>>).
+
+*Every signal is precious.*
+Mainstream observability collects everything cheaply, samples, and forgets within days.
+The runtime is for the opposite end: deliberate collection, indefinite retention, and every signal resolved against a model, so that "who changed what, in the course of what work" can be answered years later (<<telemetry-model>>).
+The two are complementary: the same instrumentation can feed an operational backend and a model at once.
+
+=== Services before capabilities
+
+The runtime has two ways for code to find other code, and the rule for choosing between them is simple:
+
+* When the lookup is by type alone, such as every `EPackage` or every resource set contributor, it is a Java service, registered in `module-info.java` and found with `java.util.ServiceLoader`.
+* When there is a requirement object for providers to interpret ("a renderer for this format", "a contents handler for this file name"), or when resolving one thing requires resolving others, it is the capability framework (<<capabilities>>).
+
+`ServiceLoader` is a dozen lines of JDK and costs nothing.
+The capability framework is more powerful and has a cost: a resolution, a pump, memoization, telemetry.
+Using it where a service would do is the kind of generality that makes a codebase hard to read.
+
+=== Declaration is registration
+
+The runtime avoids strings that name types and configuration files that list classes.
+What a module contributes is declared in its `module-info.java` (`provides CapabilityFactory with ...`), and what a contribution provides and needs is declared in Java types the compiler checks.
+
+A capability method's generic return type is what it provides, and its parameters are what it needs.
+A command's `@Parent` field says, by its generic type, which parents it can work under.
+An adapter method's return type says what an object can be adapted to.
+One class can declare many such members behind a single entry in `module-info`, and a refactoring tool renames them like any other code.
+
+The honest caveat goes with it: objects carry no type arguments at run time, so what is matched is always a declaration, never an instance.
+A method declared to return `Supplier<Library>` is matched as one, whatever it actually returns.
+
+=== A model is a source file, not a module
+
+A Maven module holds as many Xcore models as are reused and changed together.
+One model per project was an Eclipse convention, and one repository per model came from each model having its own documentation site.
+Neither reason applies: the Xtext Maven plugin generates every `.xcore` file under its source root in one go, and the SDK is consumed as one unit with one body of documentation.
+
+A new module is justified by a dependency the others do not want, a different set of consumers, or a different maturity.
+That is why the telemetry model is one module with four models in it (core, traces, logs and metrics), and the exporters, which need the OpenTelemetry SDK, are a separate module.
+
+=== One identity per module
+
+Every module has one path in the repository, and every name it has is derived from that path.
+
+[cols="2,4",options="header"]
+|===
+| Identity | Rule
+| JPMS module and root package | `org.nasdanika.sdk.runtime.` followed by the path with `/` as `.`, dropping a trailing `model` segment: `models/telemetry/model` is `org.nasdanika.sdk.runtime.models.telemetry`
+| Maven coordinates | Group `org.nasdanika.sdk.runtime` followed by the parent path, artifact the last segment: `org.nasdanika.sdk.runtime.models.telemetry:model`
+| Namespace URI of a model | The model's page: `https://runtime.sdk.nasdanika.org/models/telemetry`, and a child path for each further model in the module, such as `.../models/telemetry/traces`
+| Documentation page | `https://runtime.sdk.nasdanika.org/` followed by the path
+|===
+
+One rule means any identity can be computed from the others, and someone who has seen one module knows where to find the next.
+It also removes name and version clashes with the older Nasdanika organizations by construction: nothing in the runtime shares a Maven group, a module name or a package with them, so the old and the new line can sit on one machine during a migration.
+
+ifdef::editor-notes[]
+[IMPORTANT,caption="Editor's note"]
+====
+Two places where the code and the design notes disagree:
+
+* The runtime README gives Maven coordinates as `org.nasdanika.sdk.runtime:models-inference` (the path with `/` as `-`). The poms use a group per directory (`org.nasdanika.sdk.runtime.models.telemetry:model`). The table above describes the poms. Decide which is the rule before the first release to Central, since coordinates cannot be redirected.
+* The README says the OpenTelemetry instrumentation scope is the JPMS module name. The runtime's own spans and log records all use one scope, `+Telemetry.INSTRUMENTATION_SCOPE = "org.nasdanika.sdk.runtime"+`, while the launcher uses `org.nasdanika.sdk.cli.launcher`. The book's examples follow the README and use their module name.
+====
+endif::[]
+
+=== Pull, don't push
+
+The runtime grows from a seed, one increment at a time, and modules from the older Nasdanika code base come in when an increment needs them, not before.
+Each increment has to state the capability it adds, the demonstration that shows it, what it pulls in, and that a clean clone builds.
+
+Pulling a module is not moving it.
+Its core comes in as a small library, and each integration becomes a separate adapter that is pulled only when something needs it.
+`common` started empty: a helper enters it when a second module needs it and no JDK feature replaces it.
+That keeps `common` from becoming the place things go because they have nowhere else to go.
+
+The same rule shapes how documentation and sites are produced.
+A site is not pushed out by a generator that knows every page; it is pulled from a model presented as files, by whatever reads it: a static copy, an HTTP server, a WebDAV mount, an agent (<<serving>>).
+
+=== Local first, federated, no server
+
+Everything the runtime does runs on a laptop, in a container and in a CI pipeline, as the same artifact.
+There is no central server and no administrator of the whole.
+
+Models are files in Git and artifacts in Maven repositories.
+They reference each other by URI, the way a class references a class in another jar, and URI handlers load them transparently from wherever they are.
+A team owns its vocabulary and publishes it; another team references it without either coordinating a release.
+A published version is what it was, so "what did this mean last quarter" is an install, not an archaeology project.
+
+This matters most where data cannot leave the building.
+Local telemetry, local models and local agents are the configuration that a regulated organization can approve.
+
+=== Say what is stuck
+
+A failure that does not say what failed is a mystery, and mysteries are expensive.
+The runtime prefers reports to guesses:
+
+* The pump that drives capability resolution and transformations fails at once when nothing can progress, with a list of what was waiting for what, including the path of a dependency cycle (<<flows>>).
+* A capability loader can be given a listener that explains, line by line, which factories were asked about a requirement, which declined, and what each produced (<<capabilities>>).
+* Command wiring fails with the types a command needed and what its parent offered, and asking for help never fails on wiring (<<wiring>>).
+
+=== Humans at both ends
+
+Draw software development as a line from intent to operation.
+AI is taking the middle of that line: writing code, writing tests, translating between formats.
+It pushes people out to both ends.
+
+To the left is intent: deciding what things are, what words mean, who owns which fact.
+That is modeling, and it is why the runtime makes models cheap.
+
+To the right is assurance: knowing what the system actually did.
+Assurance means checking what ran against what was intended, and that check is only as good as the evidence.
+Telemetry per unit of work answers "what did this command or this agent turn do?".
+A JVM snapshot answers "what actually runs?".
+Live observation answers "what is it doing right now?", for the person who has to decide whether to stop it.
+
+When intent and evidence are both models, assurance is a query instead of a meeting.
+
+=== Lineage
+
+The runtime borrows freely, and saying from where helps to read it.
+
+[cols="2,3",options="header"]
+|===
+| Idea | Borrowed from
+| Models as the API, reflection, change recording | EMF, without the IDE
+| Contributions found by declaration | Eclipse extension points, `java.util.ServiceLoader`, JPMS `provides`
+| Documentation contributed by modules | Eclipse Help, without the workbench
+| A file system interface with optional capabilities | Go's `io/fs`
+| Re-readable content | Guava's `ByteSource`; the JDK HTTP client's `BodyPublishers.ofInputStream`
+| Content written on demand | JAX-RS `StreamingOutput`
+| Blocking by pumping | `ForkJoinTask.join`, SWT's `readAndDispatch`, Kotlin's `runBlocking`
+| A Published Language | Domain-Driven Design
+| Diagrams as views of a model | The C4 model, and "Beyond Diagrams"
+|===
+
+With the principles stated, the next chapter puts the pieces on one page: the modules, how they depend on each other, and what happens when a unit of work runs.

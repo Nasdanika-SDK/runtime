@@ -1,0 +1,218 @@
+// Default for previewing this file on its own; the Maven build sets examplesdir
+ifndef::examplesdir[:examplesdir: ../../../../../examples]
+
+[#telemetry]
+== Telemetry in the runtime
+
+Telemetry usually arrives late in a project.
+The code works, it goes to production, something misbehaves, and somebody adds logging, then tracing, then a vendor's agent that instruments what it can guess at.
+By then the code was written without the question "how will anyone know what this did?", and it shows.
+
+In the runtime, telemetry is part of the code from the first line, and the first program in <<getting-started>> showed what that buys: a program with no telemetry code of its own was observable, because everything it called reported what it did.
+This chapter explains the conventions behind that, how to instrument your own code the same way, and where the telemetry goes.
+
+=== Two kinds of telemetry
+
+Mainstream observability is built for the firehose.
+It collects everything cheaply, samples, keeps it for days or weeks, and answers "is it healthy right now?".
+That is the right tool for operations, and the runtime does not compete with it.
+
+There is another kind, which most organizations do not have at all: telemetry that is collected deliberately, kept indefinitely, and resolved against models of the systems and the work, so that years later it can answer "who changed what, in the course of what work?".
+I call it strategic telemetry, and its rule is that every signal is precious.
+It is cheap at the scale it operates on, and what is expensive is not being able to answer.
+
+Both kinds start from the same instrumentation.
+Code reports through the OpenTelemetry API, and whoever runs the code decides whether the signals go to an operational backend, to a console, into a model that is kept forever, or to all three.
+
+=== The conventions
+
+Four conventions make the runtime's telemetry consistent.
+They were stated in <<principles>>; here is what each means in code.
+
+*Spans for operations, log records for what happens in them.*
+An operation that has a duration is a span: loading a resource, resolving a requirement, executing a command.
+Everything that happens within an operation is a log record emitted through the OpenTelemetry Logs API and correlated with the current span: a message, a warning, a measurement, progress.
+Span events, `Span.addEvent`, are not used, because OpenTelemetry is moving events onto the Logs API, where an event is a log record with an event name.
+
+*One OpenTelemetry per unit of work.*
+A command, a request and a test are units of work.
+Each builds or is handed its own `OpenTelemetry` instance and makes it current, the way it would make a span current.
+Instrumented code gets the instance from the context, never from `GlobalOpenTelemetry`, which the runtime does not use.
+Two commands running in one JVM can therefore send their telemetry to different places, and a test can capture exactly the telemetry of the code it tests.
+
+*The context carries everything.*
+The current instance travels in the OpenTelemetry `Context` next to the current span, so it crosses threads wherever the context does: the pump propagates it to its tasks, and content written on another thread runs in the context of the code that asked for it.
+
+*Watching is subscribing.*
+A console, a progress bar, a test or a browser watching a unit of work subscribes to the same spans and log records an exporter receives, through a publishing wrapper (<<watching>>).
+
+=== The Telemetry class
+
+`org.nasdanika.sdk.runtime.common.telemetry.Telemetry` is where instrumented code gets its instance, and where the runtime's attribute keys and event names are defined.
+
+[cols="2,3",options="header"]
+|===
+| Member | Purpose
+| `current()` | The instance in the current context, or the no-op instance
+| `makeCurrent(openTelemetry)`, `with(context, openTelemetry)` | Make an instance current, as a scope to close
+| `of(notifier)` | The current instance, or the one attached to a resource set, for EMF code that runs outside a unit of work
+| `attach(resourceSet, openTelemetry)` | Attach an instance to a resource set
+| `tracer`, `logger`, `meter` | The runtime's tracer, logger and meter of an instance
+| `inSpan(tracer, name, attributes, body)` | Run a body in a new current span; a failure is recorded on the span and rethrown
+| `log(logger, severity, eventName, body, attributes)` | Emit a log record in the current context, if the logger is enabled for the severity
+| `recordFailure(span, failure)` | Record an exception and set the error status
+| `w3cPropagators()`, `extract`, `extractFromEnvironment` | Continue a trace started by another process
+|===
+
+The keys and event names are listed in <<telemetry-reference>>.
+
+=== Instrumenting your code
+
+The telemetry example catalogs books, one at a time, and reports what it does.
+It starts with a few constants:
+
+.Instrumentation scope and attribute keys (`telemetry/.../Cataloging.java`)
+[source,java]
+----
+include::{examplesdir}/telemetry/src/main/java/org/example/telemetry/Cataloging.java[tag=keys,indent=0]
+----
+
+The instrumentation scope identifies who produced a span or a log record.
+By the runtime's identity rule it is the JPMS module name, which the code reads from its own class rather than repeating it in a string.
+Attribute keys are typed, `AttributeKey<String>` and `AttributeKey<Long>`, and named in the dotted lowercase style of OpenTelemetry's semantic conventions, with a prefix that says whose they are.
+
+The operation itself:
+
+.Work in a span, with log records, progress and a metric
+[source,java]
+----
+include::{examplesdir}/telemetry/src/main/java/org/example/telemetry/Cataloging.java[tag=in-span,indent=0]
+----
+<1> The instance of the current unit of work. The code does not know or care whether it is an SDK exporting to a backend, a publishing wrapper feeding a console, or the no-op instance.
+<2> `Telemetry.inSpan` starts a span, makes it current, runs the body with the span, records a failure if the body throws, and ends the span. It returns what the body returns.
+<3> A counter from the instance's meter. Metrics are aggregated by the SDK and exported periodically.
+<4> A warning is a log record in the current span. The span does not fail: skipping one book is part of the operation, not a failure of it.
+<5> Progress is a log record with the event name `nasdanika.progress` and two attributes, the work done and the total. Anything watching the operation can draw a progress bar from it.
+
+When the work is not a lexical block, or when you want control over the span, start one yourself:
+
+.A span started and ended by hand
+[source,java]
+----
+include::{examplesdir}/telemetry/src/main/java/org/example/telemetry/Cataloging.java[tag=manual,indent=0]
+----
+<1> Attributes known up front go on the builder.
+<2> Making the span current is what makes spans and log records created inside it its children.
+<3> A failure is recorded on the span with its exception, and the span gets the error status.
+<4> A span must end, whatever happens, or it is never exported.
+
+=== Units of work
+
+Instrumented code only reports.
+The unit of work decides where the reports go, by making an instance current:
+
+.A unit of work, watched live (`telemetry/.../UnitOfWork.java`)
+[source,java]
+----
+include::{examplesdir}/telemetry/src/main/java/org/example/telemetry/UnitOfWork.java[tag=unit-of-work,indent=0]
+----
+<1> A publishing wrapper around the no-op instance: no SDK, and everything is published to subscribers.
+<2> A subscriber that prints the spans as a tree, shown in <<watching>>.
+<3> The instance is current for the unit of work, and only for it.
+<4> Closing the wrapper completes the subscribers.
+<5> Delivery is asynchronous by default, so the program waits for the subscriber to finish.
+
+It prints:
+
+[source,text]
+----
++ Catalog books {library.books=3}
+  + Catalog a book {library.book.title=Domain-Driven Design}
+  - Catalog a book (0 ms)
+  [1/3] Processed 1 of 3
+  + Catalog a book {library.book.title= }
+    ! a book needs a title
+  - Catalog a book (0 ms)
+  WARN Skipped: a book needs a title
+  [2/3] Processed 2 of 3
+  + Catalog a book {library.book.title=Design Patterns}
+  - Catalog a book (0 ms)
+  [3/3] Processed 3 of 3
+- Catalog books (5 ms)
+----
+
+In a real assembly the unit of work is created once, in one place.
+The launcher creates one per command, with an OpenTelemetry SDK whose exporters save the telemetry as models (<<distributions>>).
+The HTTP handler creates one per request (<<serving>>).
+A test creates one per test, usually a publishing wrapper with deterministic delivery, so that it can assert on what the code reported.
+
+=== What the runtime instruments
+
+Most of the telemetry of a typical program comes from the runtime itself.
+
+[cols="2,3",options="header"]
+|===
+| Spans | Produced by
+| `ResourceSetContributor.configure`, with a log record per contribution | Configuring a resource set from services
+| `Contribute To Resource Set` | Each contributor that uses the interface's default
+| `Resource.load`, `Resource.save`, `Resource.unload`, with URI, bytes and root objects | Every resource the runtime's factories create, and yours if you use `ResourceTelemetry`
+| `URIHandler.read`, `URIHandler.write`, `URIHandler.delete`, with progress every second | Every stream a configured resource set opens
+| `Content.writeTo`, `Content.pipe`, and client spans named after the HTTP method | Transfers of volume content (<<volumes>>)
+| Server spans named `<method> <route>` | Requests through the volume HTTP handlers (<<serving>>)
+| `Transformer.transform`, `Transformer.create` | Transformations (<<flows>>)
+| `CapabilityLoader.loadAll`, `CapabilityLoader.loadOne`, `CapabilityFactory.create`, `CapabilityFactory.method`, `Create Capability` | Capability resolution (<<capabilities>>)
+| One span per executed command, named after the command | The command line (<<commands>>)
+| `Evaluating script`, `Loading <Type>`, `Setting <feature>`, with script line numbers | The Groovy DSL (<<groovy-dsl>>)
+|===
+
+ifdef::editor-notes[]
+[IMPORTANT,caption="Editor's note"]
+====
+Two span names are phrases, `Contribute To Resource Set` and `Create Capability`, while the rest follow `Type.operation`. Renaming them to `ResourceSetContributor.contribute` and `CapabilityFactory.create` would make the names predictable, but `CapabilityFactory.create` is already the name of the loader's span around the same call, so the factory's own span would need another name, or could be dropped.
+====
+endif::[]
+
+=== Crossing threads and processes
+
+Within a JVM, the OpenTelemetry context lives in a thread local, and the runtime carries it wherever work moves.
+A pump task runs in the context that was current when it was enqueued.
+A stage tracked or awaited on a pump completes in the caller's context.
+Content produced by a writer on a virtual thread runs the writer in the context of the reader that started it.
+Spans therefore nest the way the work nests, whichever thread does it, and the unit of work's instance travels along.
+
+Across processes, context travels in W3C trace context headers.
+`Telemetry.w3cPropagators()` returns the propagators for W3C trace context and baggage; an instance built with them injects `traceparent` into the requests the volume HTTP client makes, and the volume HTTP handler extracts it, so one trace spans both sides (<<serving>>).
+
+A process can also be invoked by something that has a trace of its own: a build step, a function call, a workflow engine.
+The runtime continues it from a map of carrier values, such as request parameters, or from the environment variables `TRACEPARENT`, `TRACESTATE` and `BAGGAGE`:
+
+.Continuing a trace started elsewhere (`telemetry/.../Propagation.java`)
+[source,java]
+----
+include::{examplesdir}/telemetry/src/main/java/org/example/telemetry/Propagation.java[tag=continue,indent=0]
+----
+<1> Extraction reads `traceparent`, or `TRACEPARENT` as environment variables are named, with the instance's propagators. If the carrier holds nothing valid, the context is returned unchanged.
+<2> The extracted context and the instance become current together, so spans started inside continue the remote trace.
+
+.A span in the continued trace
+[source,java]
+----
+include::{examplesdir}/telemetry/src/test/java/org/example/telemetry/TestTelemetry.java[tag=propagation,indent=0]
+----
+<1> The no-op instance with propagators: enough to extract a context, with no SDK.
+<2> The span started inside belongs to the trace from the carrier.
+
+The launcher does this for every command it runs, so `nsd` started by a CI job with `TRACEPARENT` set adds its spans to the job's trace.
+
+=== Where telemetry goes
+
+Instrumented code never decides, which is the point.
+The options are the unit of work's:
+
+* *Nowhere.* With no instance current, `Telemetry.current()` is the no-op instance, and instrumentation costs almost nothing.
+* *To subscribers.* A `PublishingOpenTelemetry` wrapper publishes spans and log records as they happen, with or without an SDK behind it (<<watching>>).
+* *To an operational backend.* An OpenTelemetry SDK with an OTLP exporter sends everything to a collector, as any OpenTelemetry application would.
+* *Into models.* An SDK with the runtime's model exporters saves traces, logs and metrics as EMF resources, next to the models they describe (<<telemetry-model>>).
+
+These combine.
+A launcher can export to a backend and to models at once, and still publish to a console.

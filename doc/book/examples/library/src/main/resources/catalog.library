@@ -1,0 +1,9 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<library:Library xmi:version="2.0" xmlns:xmi="http://www.omg.org/XMI" xmlns:library="https://example.org/library" name="Starter Shelf">
+  <authors name="Eric Evans" books="//@books.0"/>
+  <authors name="Martin Fowler" books="//@books.1"/>
+  <books name="Domain-Driven Design" year="2003" genre="TECHNOLOGY" authors="//@authors.0">
+    <documentation>Introduced the Ubiquitous Language and the Published Language.</documentation>
+  </books>
+  <books name="Patterns of Enterprise Application Architecture" year="2002" genre="TECHNOLOGY" authors="//@authors.1"/>
+</library:Library>

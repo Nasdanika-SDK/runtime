@@ -1,0 +1,25 @@
+[colophon]
+== Colophon
+
+*Nasdanika SDK Runtime: More Structure with Less Effort*
+
+Edition {revnumber}, built on {revdate}.
+
+This edition describes Nasdanika SDK Runtime {runtime-version}. Every code listing in it is included from an example module that is compiled and tested against that version of the runtime when the book is built.
+
+Copyright (C) 2026 Pavel Vlasov.
+
+The code examples are licensed under the Eclipse Public License 2.0, the same license as the runtime.
+
+ifdef::editor-notes[]
+[IMPORTANT,caption="Editor's note"]
+====
+Choose a license for the text before publishing. "Beyond Diagrams" is "All rights reserved". For a free book with optional payment on Leanpub, CC BY-NC-ND 4.0 keeps the text intact while allowing sharing; CC BY 4.0 is the most open. The manuscript lives in an EPL-2.0 repository, so state the text license explicitly here and in the repository's `doc/book/README.md`.
+====
+endif::[]
+
+Eclipse, EMF and Xtext are trademarks of the Eclipse Foundation. Java and OpenJDK are trademarks or registered trademarks of Oracle and its affiliates. OpenTelemetry is a project of the Cloud Native Computing Foundation. Other names may be trademarks of their owners. Their use here identifies the technologies the runtime builds on and implies no endorsement.
+
+The source of this book, its examples, and the runtime it describes are at {runtime-repo}.
+
+Typeset with Asciidoctor PDF in Noto Serif, Noto Sans and M+ 1mn. Diagrams drawn with PlantUML.

@@ -1,0 +1,146 @@
+[#distributions]
+== Distributions and launching
+
+A command line is only useful when it can be installed and run.
+This chapter describes what a distribution of the runtime's command line is, how it starts from any directory on any operating system, and how each launch becomes a unit of work whose telemetry is saved as models.
+
+=== What a distribution is
+
+The `cli-launcher` module builds a distribution of the runtime's command line, and the same machinery builds a distribution of yours.
+A distribution is a directory, also packaged as a zip and a tarball:
+
+[source,text]
+----
+dist/
+  lib/              <1>
+  modules           <2>
+  options           <3>
+  nsdk  nsdk.bat    <4>
+  nsdk-debug  nsdk-debug.bat
+----
+<1> The jars, in the Maven repository layout: about fifty for the runtime's own command line, the bootstrap jar among them.
+<2> The names of the modules in the launcher's module layer, recorded at build time.
+<3> The Java options of the launch: the module path, the class path and the main module, with paths relative to the distribution root.
+<4> Wrapper scripts. The debug variants start the JVM with a debugger listening on port 8998.
+
+The wrapper scripts are one line each, broken here to fit the page:
+
+[source,text]
+----
+#!/bin/bash
+exec java -jar \
+  "$(dirname "$0")/lib/org/nasdanika/sdk/runtime/bootstrap/2026.10.0/bootstrap-2026.10.0.jar" \
+  "$@"
+----
+
+A Windows variant of the distribution calls a JDK bundled under `jdk/` instead of the `java` on the path, for machines where installing Java is a project of its own.
+
+=== Module path and class path
+
+The runtime is a set of named modules, and so are its direct dependencies: EMF, OpenTelemetry, Jackson.
+Some of the libraries further down are not modules, or are automatic modules whose names and requirements are guesses.
+
+The launch puts on the module path the named modules and the modules they require, and everything else on the class path, where it is part of the unnamed module.
+The split is computed once, at build time, from the launcher's module layer, by the `launcher` command, and written to `options`:
+
+[source,text]
+----
+-p "lib/.../jackson-core-2.22.3.jar;lib/.../opentelemetry-api-1.67.0.jar;..."
+--add-modules ALL-SYSTEM
+-classpath "lib/.../guava-33.6.0-jre.jar;..."
+-m org.nasdanika.sdk.runtime.cli.launcher/org.nasdanika.sdk.runtime.cli.launcher.Launcher
+----
+
+The `launcher` command can also be run by hand, for an assembly of your own: it scans directories of jars (`lib` by default) and prints, or writes to a file, a Java command line or just its options.
+Root modules can be given with patterns, `.*` for the modules in a package and `.**` for those below it, and the Java command can carry extra options such as system properties.
+
+ifdef::editor-notes[]
+[IMPORTANT,caption="Editor's note"]
+====
+Three naming inconsistencies show in a distribution. The root command is `nsd` and the archive is `nsd-cli.zip`, while the scripts are `nsdk`, and the bootstrap's README speaks of `nsd`. The `launcher` command's `-m` and `-c` options default to `org.nasdanika.cli` and `org.nasdanika.cli.Application`, the module and class of the previous generation of the command line; the distribution builder passes its own values, so only manual runs see the stale defaults. And the module path of the distribution has `jackson-databind` and `jackson-annotations` 2.12.6, brought by `emfjson-jackson` 2.3.0, next to `jackson-core` and `jackson-dataformat-yaml` 2.22.3: Jackson expects one version across its modules, and 2.12.6 has known vulnerabilities. Importing `jackson-bom` in the runtime's BOM would align them.
+====
+endif::[]
+
+=== Starting from any directory
+
+Java resolves the relative paths of an argument file against the current directory, and scripts cannot expand their own location inside one.
+The bootstrap closes that gap.
+It is a small jar with no dependencies, and it:
+
+. Finds the distribution root from its own location, walking up to the nearest `lib` directory.
+. Reads `options` and rewrites every relative `lib/...` entry to an absolute path under the root.
+. Writes a temporary argument file with the absolute paths. A file, not a command line, because a distribution with many jars exceeds the Windows limit of 32 KB for a command line.
+. Launches a child JVM with that file and the user's arguments, with standard input, output and error inherited and the exit code propagated.
+
+The child runs in the user's working directory, so relative file arguments of commands work as expected.
+
+The bootstrap chooses the Java executable in this order: the `BOOTSTRAP_JAVA` environment variable, a `java` property in an optional `bootstrap.conf` in the distribution root, the executable that launched the bootstrap, `java.home`, a bundled `jdk/bin/java`, and finally `java` on the path.
+`BOOTSTRAP_HOME` forces the distribution root, and `BOOTSTRAP_JAVA_OPTIONS` adds JVM options to one invocation, which is how the debug scripts work.
+`bootstrap.conf` can also override the options file, the main module and class, the module path and the class path, and add JVM options.
+
+=== A launch is a unit of work
+
+`Launcher` is the main class of the distribution.
+It follows the rule of <<telemetry>>, one OpenTelemetry instance per unit of work, with the launch as the unit:
+
+. It finds the home directory: the `nsdk.home` system property, the `NSDK_HOME` environment variable, or the parent of the `lib` directory it was loaded from.
+. It creates a telemetry directory for the launch, `<home>/telemetry/<year>/<month>/<day>-<hour>-<minute>-<second>-<millisecond>`, and three telemetry resources in it, in the format of `nsdk.telemetry.format` or `NSDK_TELEMETRY_FORMAT` (<<telemetry-model>>).
+. It builds an OpenTelemetry SDK whose exporters write to those resources, with the service name `launcher`, its version, and the working directory as resource attributes, and W3C propagators.
+. It makes the instance current, continuing the trace in the `TRACEPARENT`, `TRACESTATE` and `BAGGAGE` environment variables if they are set.
+. It resolves the command tree (<<commands>>), adds the `shell` command to the root, and executes the command line in a span named "Executing the root command".
+. It closes the SDK, which exports what is pending and saves `traces`, `logs` and `metrics`, and exits with the command's exit code.
+
+The environment variables connect a launch to whatever started it.
+A build step, a scheduler or another program that sets `TRACEPARENT` makes the launch a part of its trace, so a pipeline of command runs is one trace across processes, each saved where it ran.
+
+=== Building a distribution
+
+A distribution is built by a Maven module with three pieces:
+
+* *Dependencies.* The bootstrap jar, `org.nasdanika.sdk.runtime:bootstrap`, and the modules of the assembly: the runtime's `all` aggregate and the modules that contribute commands.
+* *Copying.* `maven-dependency-plugin:copy-dependencies` with `useRepositoryLayout` copies the runtime dependencies into `target/dist/lib` in the `prepare-package` phase.
+* *Generating.* An integration test runs `DistributionBuilder`, which copies the module's own jar, records the module layer, computes `options` and writes the scripts. `maven-assembly-plugin` packages the directory.
+
+The runtime's own integration test is the template:
+
+[source,java]
+----
+@Test
+public void generateLauncher() throws IOException {
+	new DistributionBuilder(new File("target/dist")).build();
+}
+
+@Test
+public void generateWindowsLauncher() throws IOException {
+	// The Windows-specific distribution ships a bundled JDK under jdk/.
+	new DistributionBuilder(new File("target/dist-win")) {
+
+		@Override
+		protected String getBatJava() {
+			return "@\"%~dp0jdk\\bin\\java.exe\"";
+		}
+
+	}.build();
+}
+----
+
+`DistributionBuilder` launches `Launcher` from the launcher module.
+An assembly with its own commands overrides `getModuleName` to return its own module, whose `requires` and `provides` bring in its commands and their dependencies, while the main class stays `Launcher`.
+The script name, the debug options, the path separator of the options file and the Java invocation are protected methods as well.
+
+=== Running it
+
+With the distribution unpacked and its directory on the path:
+
+[source%unbreakable,text]
+----
+nsdk --help
+nsdk shell
+----
+
+A distribution assembled with the example module of <<commands>> also runs its commands, for example `nsdk library --file shelf.yml books --before 2000`.
+
+`nsdk shell` starts an interactive shell over the root command, with history and line editing from JLine; `exit` leaves it.
+Every command run in the shell is executed by the same root command line, in the same launch, so the telemetry of a shell session is one trace.
+
+After each launch, the telemetry directory holds the record of the run: the command's span with the spans of everything it did, log records in the spans that emitted them, and recorded model changes where a command recorded them (<<telemetry-model>>).

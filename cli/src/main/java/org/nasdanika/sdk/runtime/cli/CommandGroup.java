@@ -4,13 +4,12 @@ import io.opentelemetry.api.logs.Logger;
 import io.opentelemetry.api.metrics.Meter;
 import io.opentelemetry.api.trace.Span;
 import picocli.CommandLine.ParameterException;
-import picocli.CommandLine.ParentCommand;
 
 /**
  * A base class for commands which are used for grouping and do not provide 
  * own functionality but may contain options or provide functionality 
  * which can be accessed by 
- * their children via a field annotated with {@link ParentCommand}. 
+ * their children through a {@link Parent} field or method, usually by an {@link org.nasdanika.sdk.runtime.common.Adapter} method. 
  * @author Pavel
  *
  */

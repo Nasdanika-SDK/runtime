@@ -1,0 +1,108 @@
+// Default for previewing this file on its own; the Maven build sets examplesdir
+ifndef::examplesdir[:examplesdir: ../../../../../examples]
+
+[#web]
+== From models to the web
+
+A model that the people who own it cannot read is a private notation.
+The web is where they read, so the runtime treats web pages and web applications as generation targets, and generates them the way it does everything else: from models, into models, and only then into text.
+
+=== Pages are models too
+
+Generating HTML by concatenating strings is easy to start and hard to keep correct: escaping, nesting, attribute order, the one closing tag that went missing.
+The runtime's generators build a model of the page and let a generator write the text.
+
+[cols="1,3",options="header"]
+|===
+| Model | What it covers
+| `models/html` | HTML elements, attributes, text and comments, with a generator that writes HTML text
+| `models/html/bootstrap` | Bootstrap 5 semantics: documents with themes, containers, grids, and components for content, navigation, overlays and forms
+| `models/typescript` | The declaration surface of TypeScript: packages, modules, declarations and type references, with a generator that writes sources and manages imports
+| `models/react` | React components, hooks, contexts and JSX, on top of the TypeScript model
+| `models/react/bootstrap`, `models/react/flow` | Bootstrap components in React, and React Flow diagrams with a simple layered layout
+|===
+
+The Bootstrap model describes semantics, not markup: a modal has a title, a size and whether it is centered and scrollable.
+How that becomes elements, classes, ARIA and data attributes, and ids that Bootstrap's JavaScript connects, is the business of `BootstrapStructure`, used by the HTML generator for static pages and by the React generator for components.
+One model of a page renders both ways.
+
+=== A catalog site
+
+The example generates a small site from the library: an index with a table of books, and a page per book with a breadcrumb and its facts.
+
+.Generating the site (`web/.../CatalogSite.java`)
+[source,java]
+----
+include::{examplesdir}/web/src/main/java/org/example/web/CatalogSite.java[tag=generate,indent=0]
+----
+<1> Each page is a model of a Bootstrap document, turned into content and written to the volume.
+<2> File system semantics: a directory is created before files are written into it.
+<3> The generator interprets the page model and writes HTML.
+
+A page is a document with a theme, a head and a body:
+
+.A page (`web/.../CatalogSite.java`)
+[source,java]
+----
+include::{examplesdir}/web/src/main/java/org/example/web/CatalogSite.java[tag=page,indent=0]
+----
+<1> A Bootswatch theme, applied by the generator.
+
+The table is a Bootstrap table with badges, built from the library:
+
+.A table of books (`web/.../CatalogSite.java`)
+[source,java]
+----
+include::{examplesdir}/web/src/main/java/org/example/web/CatalogSite.java[tag=table,indent=0]
+----
+
+The site is written to any writable volume (<<volumes>>):
+
+[source,java]
+----
+include::{examplesdir}/web/src/test/java/org/example/web/TestSite.java[tag=run,indent=0]
+----
+
+A directory today, an in-memory volume for a test, a Git overlay for a publishing pipeline, or a volume served over HTTP for a preview (<<serving>>): the generator does not know and does not need to.
+
+Writing the page as a model has consequences beyond correctness.
+The page model can be checked before it is written, by a test or an agent; it can carry markers that point back to the model elements each part was generated from (<<core-model>>); and it can be transformed, for example by adding a navigation panel to every page of a site after the pages were generated.
+
+=== Navigation
+
+Documentation sites of models need navigation that works for people, crawlers and agents alike.
+The Bootstrap module's `NavigationTree` builds a side panel as nested `details` and `summary` elements, which work without JavaScript, so crawlers and agents read the tree as plain links.
+Branches on the path to the current page are open, and the current item is marked with `+aria-current="page"+`.
+For large models, a local tree renders the branches off the path as links without their children, so a page of a model with thousands of elements stays small.
+
+=== TypeScript and React
+
+The TypeScript model covers the declaration surface: packages, modules, interfaces, classes, functions, type aliases, and the type references between them.
+Bodies are opaque code blocks, which carry references to the declarations they use.
+
+Its generator writes sources to a volume of text (<<volumes>>) and owns import management, the hardest part of emitting TypeScript correctly: it walks the type references reachable from each module, resolves each to the module that declares it, computes the module specifier, decides whether an import can be `import type`, and aliases names that would collide.
+The model is write-only by design; nothing in the runtime parses TypeScript.
+
+The React model adds what the TypeScript model leaves opaque: components, hooks, contexts and JSX.
+`ReactGenerator` writes JSX into `.tsx` modules compiled with the automatic runtime, or `createElement` calls into plain JavaScript modules that a browser runs as they are, without a build step.
+HTML elements used in JSX are interpreted by the same structure the HTML generator uses, with attributes mapped to React props, so a page model and a component model mean the same markup.
+
+Generating through models, not templates, keeps three things that templates lose:
+
+* *Imports*, computed from references instead of maintained by hand.
+* *Provenance*, from a source element through every intermediate model to the generated code.
+* *Structure*: generated code that can be diffed, analyzed and reported on as a model, not compared as text.
+
+=== What comes next
+
+The generators are the building blocks of two things on the roadmap [.planned]#PLANNED#:
+
+* *Documentation sites for models.* A site per model with a page per element, its documentation, its neighbors, provenance links and a diagram of its neighborhood, for any model built on the core model.
+* *The reflective viewer.* A browser application that renders any model, and live telemetry, from the runtime's HTTP server, generated from models rather than written by hand. Meta's projection to TypeScript gives it runtime type information for dispatch (<<meta>>).
+
+ifdef::editor-notes[]
+[IMPORTANT,caption="Editor's note"]
+====
+The React model's `doc/readme.md` describes a UI model (`ui.xcore`, `Bootstrap.xcore`) with `Element extends Workable, GovernedElement`, and NSML transformations from it to React; neither is in the runtime. The module `models/typescript/ecore` is commented out of the build and still uses the previous generation's package `org.nasdanika.models.typescript.ecore` and module `org.nasdanika.common`.
+====
+endif::[]

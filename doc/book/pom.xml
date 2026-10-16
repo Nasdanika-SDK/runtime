@@ -1,0 +1,24 @@
+<project xmlns="http://maven.apache.org/POM/4.0.0" xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
+	xsi:schemaLocation="http://maven.apache.org/POM/4.0.0 http://maven.apache.org/xsd/maven-4.0.0.xsd">
+	<modelVersion>4.0.0</modelVersion>
+	  <parent>
+	    <artifactId>parent</artifactId>
+	    <groupId>org.nasdanika.sdk.runtime.doc</groupId>
+	    <version>2026.10.0</version>
+	    <relativePath>..</relativePath>
+	  </parent>
+	<groupId>org.nasdanika.sdk.runtime.doc.book</groupId>
+	<artifactId>parent</artifactId>
+	<packaging>pom</packaging>
+	<name>Book</name>
+	<description>
+		The Nasdanika SDK Runtime book: the manuscript, rendered to PDF, EPUB and HTML, and the examples
+		its code listings are included from. The examples are built and tested before the manuscript is
+		rendered, so a listing in the book is code that compiles and passes its tests against this
+		version of the runtime.
+	</description>
+	<modules>
+		<module>examples</module>
+		<module>manuscript</module>
+	</modules>
+</project>

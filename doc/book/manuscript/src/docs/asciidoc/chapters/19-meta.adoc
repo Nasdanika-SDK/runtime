@@ -1,0 +1,180 @@
+// Default for previewing this file on its own; the Maven build sets examplesdir
+ifndef::examplesdir[:examplesdir: ../../../../../examples]
+
+[#meta]
+== Meta: a language-neutral type system
+
+A class with named, typed, possibly multi-valued features is one of the most stable ideas in computing, and every ecosystem spells it its own way: Ecore, Java, XML Schema, JSON Schema, a database schema, TypeScript, a table on a wiki page, a spreadsheet.
+The differences are real and small, and most are about the host language, not about the domain.
+
+The cost is not the spelling.
+It is that one definition, of a customer, of a book, of a service, lives in many formats at once and nothing relates them.
+Each is a projection of a domain model that was never written down.
+
+Meta, in `models/meta`, is a place to write it down once and project.
+It is a micro-model of typed domain models, about twenty classifiers, positioned directly on the core model (<<core-model>>).
+In the terms of Domain-Driven Design it is a Published Language: a documented, shared vocabulary that bounded contexts translate into and out of, with the part that was out of reach when the term was coined: the vocabulary is machine-checkable, because the types and the documentation are generated from it.
+
+=== What it models
+
+[cols="1,3",options="header"]
+|===
+| Area | Classifiers
+| Base | `ModelElement`, on the core model's `NamedElement`, and `Annotation`
+| Structure | `Package`, `Classifier`, `Class`, `DataType`, `Enum`, `EnumLiteral`
+| Members | `TypedElement`, `Feature`, `Attribute`, `Reference`, `Operation`, `Parameter`
+| Types | `TypeParameter`, `TypeReference`, `ClassifierReference`, `TypeParameterReference`, `PrimitiveTypeReference`, `UnionTypeReference`, `IntersectionTypeReference`, `WildcardTypeReference`, `OpaqueTypeReference`, `PrimitiveKind`
+| Instances | `Object`, `IncomingReference`
+|===
+
+`Attribute.identifying` marks the attributes that identify an instance, which is how a reference cites a target, and how a Domain-Driven Design entity is told from a value object.
+`Reference.containment` separates tree edges from graph edges; `opposite` and `keys` carry bidirectionality and identity within a list.
+A `Package` is the unit of publication: one package becomes one Maven artifact or one npm package.
+
+The model is metacircular: a package containing classes describes `Package` and `Class`, so a runtime can bootstrap from it alone.
+
+=== What it leaves out
+
+The rule is that what a class-based type system cannot express is not a class in Meta.
+That keeps it at about twenty classifiers, against Ecore's fifty-three:
+
+* No `volatile`, `transient`, `unsettable` or `resolveProxies`: implementation concerns of EMF with no meaning in a browser.
+* No feature maps, no factories, no generic type algebra. Unions, intersections and wildcards are carried, so that a Java or TypeScript signature can be written down without loss, but nothing computes subtyping or substitution with them.
+* No subpackages, which neither TypeScript modules nor npm packages need. A loader flattens and records the original path.
+* No interface flag. Whether a class becomes an interface, a type alias or a class is the projection's decision.
+
+What a source expresses and Meta does not goes into an `Annotation`, keyed by a source URI, the bargain Ecore's `EAnnotation` makes.
+Loaders record what they cannot map instead of dropping it, so a round trip to the source stays possible.
+
+=== Documentation as structure
+
+Most formats carry documentation as one string: an Ecore annotation detail, a JSON Schema `description`, a database column remark.
+XML Schema, OpenAPI and OWL do better.
+None of them treats documentation as structure: a string cannot be divided into sections, point to a resource elsewhere, declare its format, or say who owns it.
+
+Meta elements are core model elements, so they have all of that, and markers that say where each element came from: this class from that sheet of that spreadsheet, at that commit; this feature from that schema element.
+When two sources disagree about what a term means, the model shows both, and where each came from.
+
+=== A vocabulary
+
+Here is the library's vocabulary in Meta, written with small builders:
+
+.Builders (`meta/.../Vocabulary.java`)
+[source,java]
+----
+include::{examplesdir}/meta/src/main/java/org/example/meta/Vocabulary.java[tag=builders,indent=0]
+----
+<1> Documentation is the core model's structure, not a string attribute of Meta.
+<2> Identity of instances, as for entities in Domain-Driven Design.
+
+.The vocabulary (`meta/.../Vocabulary.java`)
+[source,java]
+----
+include::{examplesdir}/meta/src/main/java/org/example/meta/Vocabulary.java[tag=vocabulary,indent=0]
+----
+
+A vocabulary is a model, so it is saved, versioned, diffed and reviewed like any other:
+
+.Saving a vocabulary
+[source,java]
+----
+include::{examplesdir}/meta/src/test/java/org/example/meta/TestMeta.java[tag=save,indent=0]
+----
+<1> A YAML file in a repository. A change to what a term means is a pull request whose diff shows which features moved.
+
+=== Projections
+
+A vocabulary is worth writing down once because of what is projected from it.
+The runtime's projections are planned; the example sketches two of them to show the idea.
+
+The first is for people: a glossary that cannot drift from the types, because both come from one source.
+
+.A glossary projection (`meta/.../Projections.java`)
+[source,java]
+----
+include::{examplesdir}/meta/src/main/java/org/example/meta/Projections.java[tag=glossary,indent=0]
+----
+
+For the library vocabulary, the section on books reads:
+
+[source,markdown]
+----
+## Book
+
+A published work, identified by its ISBN.
+
+| Term | Type | Meaning |
+|---|---|---|
+| isbn (identifies) | string | International Standard Book Number, 13 digits. |
+| title | string | The title as printed, subtitle excluded. |
+| published | date | The date of the first edition. |
+| authors | Person, many | The people credited as authors, in the order printed. |
+----
+
+The second is for tools: a dynamic Ecore package, so that every EMF tool works on a vocabulary without generated Java.
+
+.An Ecore projection (`meta/.../Projections.java`)
+[source,java]
+----
+include::{examplesdir}/meta/src/main/java/org/example/meta/Projections.java[tag=ecore,indent=0]
+----
+
+.Instances of a projected vocabulary
+[source,java]
+----
+include::{examplesdir}/meta/src/test/java/org/example/meta/TestMeta.java[tag=instances,indent=0]
+----
+<1> An instance of a class that has no Java class.
+<2> The package is registered with the resource set, so its instances can be saved and loaded in any format.
+
+The Ecore projection is the quiet one, and possibly the most useful: a vocabulary captured in a spreadsheet can be validated, compared, diagrammed and serialized by tools that already exist.
+
+=== Sources and targets
+
+The design names the surfaces through which a vocabulary comes in and goes out [.planned]#PLANNED#:
+
+[cols="1,3",options="header"]
+|===
+| Direction | Formats
+| Authored in | Excel, for the people who already keep the vocabulary there; Draw.io diagrams, where the diagram is the source; Markdown, where the prose matters most; YAML and JSON; the Groovy DSL (<<groovy-dsl>>)
+| Harvested from | Ecore, Java, XML Schema, JSON Schema, database metadata: most of a domain model is already written down somewhere, and asking people to retype it is how modeling efforts die
+| Projected to | TypeScript packages with runtime type information (<<web>>), JSON Schema, for validation and for the tool schemas of agents, Ecore, documentation sites with diagrams, and on demand SQL, Java or Python
+|===
+
+The incumbent for a shared vocabulary is a spreadsheet and a wiki table, which win because they are free and ask nobody to adopt anything.
+Meta treats them as inputs, not as competitors.
+
+=== Instances whose type is a reference
+
+`Object` is the reflective instance of a Meta class: no generated interface, no implementation class, no factory.
+It knows its type by reference, and answers about itself through a dozen operations: `get`, whole or by range, `set`, `add`, `remove`, `unset`, `size`, `invoke`, its container and containment feature, and its incoming references, filtered, paged and counted.
+An agent gets an interaction surface that can be taught in a paragraph.
+
+Because the type is a reference, an object can exist before it is classified, and be classified later.
+That is the shape elicitation has: a thing is named before anyone knows what kind of thing it is, an agent proposes a classification, and a person corrects it.
+Values without a typed home wait in annotations, and classification promotes what fits into features:
+
+[cols="3,3,5",options="header"]
+|===
+| Change | Example | Safety
+| Specialization | `Person` to `Author` | Safe: every feature stays in scope
+| Generalization | `Author` to `Person` | Loses a distinction
+| Reclassification | `Person` to `Publisher` | Arbitrary: names may coincide while meanings do not
+|===
+
+Values are never silently dropped: a value whose feature falls out of scope moves to an annotation, with its feature name and the type that declared it.
+Identity is intrinsic, not derived from an identifying attribute, so it survives retyping, and a marker records who classified an object and when, which separates confirmed facts from unreviewed machine guesses.
+
+The obvious implementation is dynamic EMF behind this interface, through the Ecore projection.
+In the runtime as of this edition, the operations of `Object` are declared and have no implementation [.sketch]#SKETCH#.
+
+=== Federated by design
+
+There is no server and no central repository.
+A vocabulary is files in Git, or an artifact published to Maven Central or npm, and packages reference each other by namespace URI.
+A team owns its vocabulary and refers to another team's without coordinating a release, and gets what a catalog cannot give:
+
+* *Branching.* A proposed change to a term, reviewed as a pull request.
+* *History.* The same history the code has, with the same tools.
+* *Ownership at the edges.* Nobody administers the whole graph.
+* *Immutable snapshots.* What a term meant last year is an install, not an investigation.
