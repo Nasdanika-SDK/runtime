@@ -1,21 +1,21 @@
-# Nasdanika CLI Bootstrap (`bootstrap`)
+# Nasdanika SDK CLI Bootstrap (`bootstrap`)
 
-A tiny, **dependency-free** bootstrap jar that makes a Nasdanika CLI
-distribution runnable from **any working directory** out of the box.
+A tiny, **dependency-free** bootstrap jar that makes a Nasdanika SDK command line
+(`nsdk`) distribution runnable from **any working directory** out of the box.
 
 ## The problem it solves
 
-A Nasdanika CLI distribution runs on a mixed **module-path + class-path** layout
-with ~1000 jars under `<home>/lib`. The build (`BuildDistributionIT`) already
-computes the correct split and writes it to an argfile (`<home>/options`) — but
+An `nsdk` distribution runs on a mixed **module-path + class-path** layout
+with dozens to hundreds of jars under `<home>/lib`. The build (`DistributionBuilder`
+in `cli-launcher`) already computes the correct split and writes it to an argfile (`<home>/options`), but
 with paths **relative** to the distribution root:
 
 ```
--p "lib/.../a.jar;lib/.../b.jar" --add-modules ALL-SYSTEM -classpath "lib/.../c.jar" -m org.nasdanika.launcher/org.nasdanika.launcher.Launcher
+-p "lib/.../a.jar;lib/.../b.jar" --add-modules ALL-SYSTEM -classpath "lib/.../c.jar" -m org.nasdanika.sdk.runtime.cli.launcher/org.nasdanika.sdk.runtime.cli.launcher.Launcher
 ```
 
 Java resolves those `lib/...` paths against the **current working directory**,
-and `%~dp0` / `$0` are not expanded inside argfiles. So `nsd` / `nsd.bat` only
+and `%~dp0` / `$0` are not expanded inside argfiles. So `nsdk` / `nsdk.bat` would only
 work when the CWD is the install directory.
 
 ## How it works
@@ -23,15 +23,15 @@ work when the CWD is the install directory.
 `bootstrap.jar`:
 
 1. **Finds the distribution root** from its own jar location (via the code
-   source), walking up to the nearest `lib` directory — independent of the
+   source), walking up to the nearest `lib` directory, independent of the
    working directory and of the Maven group depth it is deployed under.
 2. **Reads the build-time launch options** and rewrites every relative
    `lib/...` entry to an absolute path under the root. (No re-classification of
-   jars — it reuses the split the build already computed.)
+   jars: it reuses the split the build already computed.)
 3. **Writes a temporary argfile** with absolute paths. An argfile is required
-   because ~1000 absolute paths exceed the Windows `CreateProcess` 32&nbsp;KB
+   because hundreds of absolute paths exceed the Windows `CreateProcess` 32&nbsp;KB
    command-line limit.
-4. **Launches a child JVM** — `java @<argfile> <user args>` — with stdin/stdout/
+4. **Launches a child JVM**, `java @<argfile> <user args>`, with stdin/stdout/
    stderr wired through (`inheritIO`) and the exit code propagated.
 
 The child inherits the user's real working directory, so relative file arguments
@@ -87,12 +87,13 @@ so subclasses can override the selection policy.
 ## Integrating with a distribution build
 
 `bootstrap` is meant to be pulled in as a normal Maven dependency of a CLI
-assembly (e.g. Nasdanika CLI), so `maven-dependency-plugin`'s `copy-dependencies`
-drops it into `lib/` with the rest. The generator (`BuildDistributionIT`) then
-emits the one-line wrapper scripts above instead of embedding the full argfile.
+assembly (e.g. `cli-launcher`), so `maven-dependency-plugin`'s `copy-dependencies`
+drops it into `lib/` with the rest. The generator (`DistributionBuilder` in
+`cli-launcher`) then emits the one-line wrapper scripts above instead of embedding
+the full argfile.
 
 Because home detection is depth-independent, the coordinates it is deployed
-under do not matter — the bootstrap resolves the distribution root by walking up
+under do not matter: the bootstrap resolves the distribution root by walking up
 to the enclosing `lib` directory.
 
 ## Building
@@ -102,11 +103,12 @@ mvn -f bootstrap/pom.xml clean package
 ```
 
 Produces `target/bootstrap-<version>.jar` with `Main-Class` and
-`Automatic-Module-Name: org.nasdanika.core.bootstrap` in its manifest.
+`Automatic-Module-Name: org.nasdanika.sdk.runtime.bootstrap` in its manifest.
 
 ## Notes / caveats
 
 - Requires only `java.base`; no third-party dependencies.
 - The child process shares the console, so JLine-based interactive shells work;
   worth an end-to-end smoke test on Windows and Linux.
-- Targets Java 21 to match the Nasdanika ecosystem.
+- Compiled for Java 21 (`maven.compiler.release`), while the runtime it launches
+  targets Java 25.

@@ -15,7 +15,7 @@ public class LauncherCommand extends AbstractLauncherCommand {
 					"Application module,",
 					"defaults to ${DEFAULT-VALUE}"
 				}, 
-			defaultValue = "org.nasdanika.cli")
+			defaultValue = "org.nasdanika.sdk.runtime.cli")
 	private String moduleName;
 	
 	@Override
@@ -29,7 +29,7 @@ public class LauncherCommand extends AbstractLauncherCommand {
 					"Application class,",
 					"defaults to ${DEFAULT-VALUE}"
 				}, 
-			defaultValue = "org.nasdanika.cli.Application")
+			defaultValue = "org.nasdanika.sdk.runtime.cli.Application")
 	private String className;
 	
 	@Override

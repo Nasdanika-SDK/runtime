@@ -1,0 +1,129 @@
+[#built-with-ai]
+== Built with an AI assistant
+
+The runtime's repository was created on 29 September 2026.
+This edition describes it eighteen days and 43 commits later.
+By then it held about 28,000 lines of Java and 16,000 lines of tests in 235 test cases, 7,500 lines of Xcore from which EMF generates about 385,000 lines of Java, and 2,400 lines of Groovy.
+Part of it was migrated from earlier Nasdanika repositories rather than written from scratch, and the migration was work too: new packages, new identities, new conventions.
+
+One person did this work, with an AI coding assistant.
+This chapter is about how, because the how is part of the argument of the book.
+The runtime is built on technologies that most organizations have kept at arm's length for twenty years, for a reason that no longer holds.
+
+=== Who does what
+
+The division of labor settled quickly, and it is worth stating plainly, because it is easy to get wrong in both directions: an assistant is neither an autocomplete nor a colleague who can be left alone.
+
+*Intent comes from experience.*
+I decide what the runtime is for, which problems are worth solving, and in what order.
+That judgment comes from decades of building software and of watching what works and what does not, in projects of every size.
+The principles of <<principles>> are such lessons, written down.
+"Say what is stuck" is there because I have lost too many hours to builds that hung without a word.
+Documentation is part of the model because I have watched documentation drift away from what it describes wherever the two were kept apart.
+The JVM model snapshots what runs because I have seen dependency trees that bore little relation to it.
+Telemetry is a model kept with the work because telemetry kept for a week cannot answer the question asked a year later.
+An assistant can argue for or against any of these lessons; it did not learn them the hard way.
+
+*Research comes from the assistant.*
+Every design starts with a question: who has done this before, and what did they learn?
+The volume interface of <<volumes>> was compared with Go's `io/fs`, Python's fsspec, Visual Studio Code's file system provider, Hadoop's `FileSystem`, Apache Commons VFS and Eclipse EFS before a line of it was written.
+The polymorphic user interface of <<polymorphic-ui>> was set against Naked Objects, EMF.Edit, JSON Forms and Django's admin.
+When I believed an idea was new, the research often found that it was not, which is better news than it sounds: an idea with twenty years of precedent is easier to adopt and to defend than a novelty, and the precedent shows where the pitfalls are.
+The assistant checks claims as well as designs: a claim about what a regulation requires was checked against the text of the regulation and narrowed in the draft.
+
+*Implementation comes from the assistant.*
+Changes that would take a person weeks take hours.
+The pumped publisher, the transformer and the capability loader were rebuilt as one engine, with tests, in a day (<<flows>>).
+Telemetry per unit of work went into the runtime's core classes, with tests, in another (<<telemetry>>).
+Mechanical work that is tedious and error-prone for people, such as renaming packages across modules, aligning identities, migrating a module from an older code base and regenerating models, is fast and consistent for an assistant.
+
+*Assurance stays with people, and with the build.*
+I review designs, read diffs and decide.
+The build checks the rest: every module is tested, every listing in this book is compiled and tested, and a warning in the manuscript fails the build.
+Writing this book was also a review of the runtime: describing what the code does exposed where it did not do what it should.
+A command tree was assembled only in part, two families of dependencies were out of step, and names had drifted.
+Each became an editor's note in the first draft, and each was fixed in the next session, the first with a test that fails on the old code.
+
+=== The mainstream filter
+
+For two decades EMF was hard to propose in most large organizations, and not because it did not work.
+Technology choices there pass through a filter that is rarely written down: will an average developer on an average team be able to work with it?
+A technology that fails the filter is "too complex", however much it would save.
+The mainstream framework, which in the Java world means Spring, passes by definition, so it wins by default.
+It is a fine framework; the problem was never the choice, but a filter that left room for only one.
+
+The filter was rational.
+The cost of a technology includes the cost of everyone who has to understand it, and people fluent in EMF were few.
+The price of the mainstream choice was paid elsewhere, and quietly: in the effort of explaining what needed to be done, in reviewing whether it had been done right, and often in doing it yourself.
+It also produced judgments that sound odd side by side.
+Two hundred lines of Xcore were too complex; fifty thousand lines of generated TypeScript were a great achievement.
+Both were said in good faith.
+The first measured the cost of understanding; the second measured output.
+
+This is not a criticism of developers.
+Fluency follows exposure, and organizations exposed their people to what the market used most.
+It is a description of an economy in which fluency was scarce.
+
+=== When fluency is not scarce
+
+An assistant is fluent in Xcore, EMF, OpenTelemetry, the Java module system, picocli and Groovy, and in Spring and React as well.
+It does not tire of explaining, and it does not need things explained to it twice.
+The premise of the filter, that a technology must be within reach of every developer working unaided, loses its force when nobody works unaided.
+
+Two questions take its place.
+
+*Is it the right abstraction?*
+Mendeleev is said to have compared burning petroleum as fuel to heating a stove with banknotes: a valuable resource spent on low-value work.
+An assistant writing the boilerplate of a framework is the same trade.
+Its leverage compounds when it works a level or two higher: on models that generate the routine code, on languages that remove the need for it, on user interfaces that render themselves from the model.
+In this runtime, 7,500 lines of Xcore generate about 385,000 lines of Java, and people review the 7,500.
+
+*Can the result be checked?*
+What an assistant produces must be checkable, cheaply, by people and by machines.
+That is a design constraint, and it explains much of this book: typed models instead of maps of strings, generic types that the compiler checks (<<generic-types>>), declarations instead of registration code, tests for every module, listings that compile, telemetry kept as models (<<telemetry-model>>), and changes recorded in the spans that made them, so that what an agent did can be reviewed and reverted.
+
+Understanding still matters; it moves.
+It moves from the mechanics of a framework, which the assistant carries, to the meaning of the model, which only the people who own the domain can judge.
+That is where the experienced engineer, the architect and the domain expert spend their time, and it is a better use of it.
+
+=== How the work flows
+
+The work runs as a loop, and every turn of it leaves something written down.
+
+. *Intent.* A few paragraphs of what I want and why, often ending with a request for an assessment.
+. *Assessment.* The assistant agrees or pushes back, finds prior art, and names risks and alternatives. I decide.
+. *Design.* The decision is recorded: a design document, or a section of the roadmap saying where the work lands.
+. *Increment.* Code, tests and documentation change together, and the build is green from a clean clone.
+. *Observation.* Using the result, and reading its telemetry, produces the next intent.
+
+A few rules keep the loop honest, and they serve people and assistants alike:
+
+* *One source of truth per fact*: one identity rule, one model, and generated code that is never edited by hand.
+* *Everything is compiled and tested*, the listings of this book included.
+* *Failures say what is stuck*, which helps an assistant find a cause as much as it helps a person.
+* *Small models.* A micro-model, one concern in one module (<<principles>>), fits in an assistant's context as well as in a person's head.
+* *Documentation anchored to the model.* A micro-wiki (<<core-model>>) gives every model element a documentation file of its own, so people and assistants know which file to edit when they learn something about an element.
+* *Status labels.* What is available, sketched or planned is marked, so that neither people nor assistants mistake a design for a feature.
+
+=== What the assistant does not do
+
+* *Decide what matters.* The North Star, the order of the work and the trade-offs are mine (<<vision>>).
+* *Know what is not written down*: the constraints of an organization, the history behind a decision, the people involved. An assistant sees what it is given, which is why grounding it in models matters (<<more-structure>>).
+* *Own the consequences.* A person signs off on what ships.
+* *Be right every time.* An assistant can be confidently wrong, as people can. Types, tests, reviews and failing builds catch it, and the same habit of research that finds prior art also catches my mistakes: claims of novelty, a misremembered fact, a requirement read too broadly.
+
+=== This book
+
+This book was written the same way.
+I described what it should be and for whom; the assistant read the runtime's code, my stories and the roadmap, wrote the examples first and the prose around them, built the PDF and looked at its pages.
+I review, correct and decide.
+The examples are modules of the runtime's build, so the book cannot claim what the code does not do without the build saying so.
+
+ifdef::editor-notes[]
+[IMPORTANT,caption="Editor's note"]
+====
+The chapter speaks of "an AI coding assistant" without naming it. Name it, for example Anthropic's Claude in Claude Code, if you want the account to be specific. The figures in the first paragraph were taken from the repository on 16 October 2026; refresh them for each edition.
+====
+endif::[]
+
+The next chapter puts the runtime on one page: its modules, how they depend on each other, and what happens when a unit of work runs.

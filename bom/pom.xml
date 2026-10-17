@@ -144,11 +144,17 @@
 				<version>2.3.0</version>
 				<scope>compile</scope>
 			</dependency>
+			<!--
+				One version for all Jackson modules, jackson-dataformat-yaml included. Without it
+				emfjson-jackson brings jackson-databind and jackson-annotations 2.12.6, which do not
+				match jackson-core and have known vulnerabilities.
+			-->
 			<dependency>
-				<groupId>com.fasterxml.jackson.dataformat</groupId>
-				<artifactId>jackson-dataformat-yaml</artifactId>
+				<groupId>com.fasterxml.jackson</groupId>
+				<artifactId>jackson-bom</artifactId>
 				<version>2.22.3</version>
-				<scope>compile</scope>
+				<type>pom</type>
+				<scope>import</scope>
 			</dependency>
 			<dependency>
 				<groupId>org.jline</groupId>

@@ -202,7 +202,7 @@ include::{examplesdir}/telemetry/src/test/java/org/example/telemetry/TestTelemet
 <1> The no-op instance with propagators: enough to extract a context, with no SDK.
 <2> The span started inside belongs to the trace from the carrier.
 
-The launcher does this for every command it runs, so `nsd` started by a CI job with `TRACEPARENT` set adds its spans to the job's trace.
+The launcher does this for every command it runs, so `nsdk` started by a CI job with `TRACEPARENT` set adds its spans to the job's trace.
 
 === Where telemetry goes
 

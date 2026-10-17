@@ -3,9 +3,9 @@ package org.nasdanika.sdk.runtime.cli;
 import picocli.CommandLine.Command;
 
 @Command(
-		description= "Nasdanika Command Line Interface" , 
+		description= "Nasdanika SDK Command Line Interface" , 
 		synopsisSubcommandLabel = "COMMAND", 
-		name="nsd", 
+		name="nsdk", 
 		mixinStandardHelpOptions = true,
 		versionProvider = ModuleVersionProvider.class,
 		subcommands = {

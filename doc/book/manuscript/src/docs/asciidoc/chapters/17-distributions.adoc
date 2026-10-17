@@ -7,7 +7,7 @@ This chapter describes what a distribution of the runtime's command line is, how
 === What a distribution is
 
 The `cli-launcher` module builds a distribution of the runtime's command line, and the same machinery builds a distribution of yours.
-A distribution is a directory, also packaged as a zip and a tarball:
+A distribution is a directory, also packaged as `nsdk.zip`:
 
 [source,text]
 ----
@@ -53,13 +53,6 @@ The split is computed once, at build time, from the launcher's module layer, by 
 
 The `launcher` command can also be run by hand, for an assembly of your own: it scans directories of jars (`lib` by default) and prints, or writes to a file, a Java command line or just its options.
 Root modules can be given with patterns, `.*` for the modules in a package and `.**` for those below it, and the Java command can carry extra options such as system properties.
-
-ifdef::editor-notes[]
-[IMPORTANT,caption="Editor's note"]
-====
-Three naming inconsistencies show in a distribution. The root command is `nsd` and the archive is `nsd-cli.zip`, while the scripts are `nsdk`, and the bootstrap's README speaks of `nsd`. The `launcher` command's `-m` and `-c` options default to `org.nasdanika.cli` and `org.nasdanika.cli.Application`, the module and class of the previous generation of the command line; the distribution builder passes its own values, so only manual runs see the stale defaults. And the module path of the distribution has `jackson-databind` and `jackson-annotations` 2.12.6, brought by `emfjson-jackson` 2.3.0, next to `jackson-core` and `jackson-dataformat-yaml` 2.22.3: Jackson expects one version across its modules, and 2.12.6 has known vulnerabilities. Importing `jackson-bom` in the runtime's BOM would align them.
-====
-endif::[]
 
 === Starting from any directory
 

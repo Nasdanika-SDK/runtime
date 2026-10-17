@@ -13,7 +13,7 @@ doc/                       documentation parent, never deployed
   book/
     examples/              one Maven module per topic: start, library, generics, flow,
                            capability, telemetry, recording, volume, cli, dsl, meta,
-                           jvm, web
+                           jvm, web, ui
     manuscript/
       src/docs/asciidoc/   book.adoc, front matter, chapters, appendices, images
       src/docs/themes/     the PDF theme

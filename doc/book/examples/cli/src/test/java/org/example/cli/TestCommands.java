@@ -48,7 +48,7 @@ class TestCommands {
 		tree(root(), "", lines);
 		lines.forEach(System.out::println);
 		assertThat(lines).contains(
-				"nsd",
+				"nsdk",
 				"  hello",
 				"  library",
 				"    books",

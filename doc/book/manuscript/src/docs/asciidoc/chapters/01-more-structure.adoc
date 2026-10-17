@@ -154,7 +154,7 @@ The runtime's own `save` command was written long before that example and knows 
 
 [source,text]
 ----
-nsd
+nsdk
   launcher
   hello
   library

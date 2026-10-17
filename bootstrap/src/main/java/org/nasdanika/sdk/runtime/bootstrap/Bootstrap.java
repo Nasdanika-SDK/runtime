@@ -17,12 +17,12 @@ import java.util.Properties;
  * Dependency-free bootstrap for a Nasdanika CLI distribution.
  *
  * <p>A Nasdanika CLI distribution runs on a mixed module-path + class-path
- * layout with ~1000 jars under {@code <home>/lib}. The exact split between the
+ * layout with dozens to hundreds of jars under {@code <home>/lib}. The exact split between the
  * module path and the class path is computed at build time and materialized in
  * an argfile (by default {@code <home>/options}) with paths <em>relative</em> to
  * the distribution root. Java resolves those relative paths against the current
  * working directory, and {@code %~dp0}/{@code $0} are not expanded inside
- * argfiles, so the generated {@code nsd}/{@code nsd.bat} scripts only work when
+ * argfiles, so the generated {@code nsdk}/{@code nsdk.bat} scripts only work when
  * invoked from the install directory.</p>
  *
  * <p>This bootstrap fixes that. It:</p>
@@ -31,7 +31,7 @@ import java.util.Properties;
  *       location &mdash; independent of the working directory.</li>
  *   <li>Reads the build-time launch options and rewrites every relative
  *       {@code lib/...} entry to an absolute path under {@code home}.</li>
- *   <li>Writes a temporary argfile (an argfile is required because ~1000
+ *   <li>Writes a temporary argfile (an argfile is required because hundreds of
  *       absolute paths exceed the Windows {@code CreateProcess} 32&nbsp;KB
  *       command-line limit).</li>
  *   <li>Launches a child JVM ({@code java @argfile <user args>}), wiring

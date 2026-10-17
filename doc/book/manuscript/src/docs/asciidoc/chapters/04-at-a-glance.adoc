@@ -221,7 +221,7 @@ Commands are capabilities; capability factories are services; wiring is adaptati
 
 === One command, end to end
 
-To see the parts work together, follow one command through a distribution: `nsd library save shelf.xmi`, which saves the library the `library` command supplies to a file.
+To see the parts work together, follow one command through a distribution: `nsdk library save shelf.xmi`, which saves the library the `library` command supplies to a file.
 <<one-command>> shows the main steps.
 
 [#one-command]
@@ -260,11 +260,12 @@ If a `TRACEPARENT` environment variable is set, by a CI step for example, the la
 Everything that follows reports to this instance and to no other (<<distributions>>).
 
 . *The capability loader assembles the command tree.*
-It asks for root commands; the root command's factory produces `nsd`, and every command factory on the module path is asked whether its command fits under `nsd`, then under each command added so far.
-The `library` command fits under `nsd` because it declares the root command as its parent.
+It asks for root commands; the root command's factory produces `nsdk`, and every command factory on the module path is asked whether its command fits under `nsdk`, then under each command added so far.
+The `library` command fits under `nsdk` because it declares the root command as its parent.
 The runtime's `save` command fits under `library` because it declares that its parent must supply a collection of EMF objects, and `library` declares an adapter that does (<<commands>>).
+Each command arrives with its own sub-commands and mix-ins attached, so what the loader returns is the whole tree.
 
-. *picocli parses the arguments* against that tree and finds `nsd library save` with one positional parameter.
+. *picocli parses the arguments* against that tree and finds `nsdk library save` with one positional parameter.
 
 . *Wiring injects parents.*
 After parsing, from the root to the executed command, each command's `@Parent` members are filled by adapting its parent.
@@ -279,13 +280,6 @@ Closing the SDK exports what is pending, and the exporters save `traces.yml`, `l
 
 Nothing in that sequence was configured.
 The commands are present because their modules are on the module path, the wiring follows from their declared types, and the telemetry is there because the runtime's code reports through the OpenTelemetry API to whatever instance is current.
-
-ifdef::editor-notes[]
-[IMPORTANT,caption="Editor's note"]
-====
-Step 2 describes the intended behavior. In the working tree as of this edition, `Application` and `Launcher` call `CapabilityLoader.loadAll` for the root command, and `loadAll` returns as soon as the root command line is emitted, while `SubCommandCapabilityFactory` attaches sub-commands later, in `thenAccept`, on the same pump. The result is a tree with only the static `launcher` sub-command. The book's CLI example assembles the tree by settling the pump instead (<<commands>>), which produces the full tree. Either `SubCommandCapabilityFactory.commandLine` should emit the command line after its sub-commands and mix-ins are combined, or the launcher should settle the pump.
-====
-endif::[]
 
 === Where things are in the repository
 

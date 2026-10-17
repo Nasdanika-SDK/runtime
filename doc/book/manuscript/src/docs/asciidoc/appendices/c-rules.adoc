@@ -25,13 +25,17 @@ Each rule names the chapter that explains it.
 . Prefer `getReferrers` to an opposite reference when the inverse is not part of the model's meaning (<<core-model>>).
 . Fill markers. A loader, an importer and an agent record where an element came from (<<core-model>>).
 . Keep a vocabulary in Meta when it has to be projected to more than one language (<<meta>>).
+. Give a model a module of its own, a micro-model, only for a dependency the others do not want, a different set of consumers or a different maturity; otherwise add a nano-model, an `.xcore` file, to the module it changes with (<<principles>>).
+. Keep the core concepts of a model on one diagram that a newcomer understands in a quarter of an hour. A model that needs two diagrams is two models (<<principles>>).
+. Anchor long documentation to the element it describes, a page per element with `docRef`: a micro-wiki (<<core-model>>).
 
 === Types, flows and capabilities
 
 . Ask with wildcards, `? extends`, at every level that is only read from (<<generic-types>>, <<wiring>>).
 . Use ground types in requirements: classes, or parameterized types whose arguments are classes or wildcards (<<capabilities>>).
 . Remember that objects carry no type arguments: what matches is always what was declared, a return type or a generic supertype (<<generic-types>>).
-. Drive asynchronous work that must be ordered and settled with a `Pump`, and settle it before using results that factories attach after emitting them (<<flows>>, <<commands>>).
+. Drive asynchronous work that must be ordered and settled with a `Pump` (<<flows>>).
+. Emit only complete results from a capability factory: attach what a result needs before emitting it, so that a blocking load returns it whole (<<capabilities>>, <<commands>>).
 . Do not return null from a `first` mapping to skip a source; distinguish sources by type, or use `all` (<<flows>>).
 . Explain a resolution with a listener before guessing why a capability is missing (<<capabilities>>).
 
@@ -65,6 +69,14 @@ Each rule names the chapter that explains it.
 . Offer with `@Adapter` what any child may use; hand down with plain methods what only children written for the parent should use (<<wiring>>).
 . Never let help fail. Wiring is skipped for help; keep constructors and option defaults free of work (<<wiring>>).
 
+=== User interfaces
+
+. Build pages and components as models of HTML, Bootstrap and React, and let generators write the text (<<web>>).
+. Deliver applications as static files where you can, and serve the same bytes for previews and live data (<<web>>).
+. Resolve the view of an element by its class, nearest first along its lineage, with a reflective view of last resort (<<polymorphic-ui>>).
+. Ask for the view of an exact class at each level; do not leave the choice between views to the order of capabilities (<<polymorphic-ui>>).
+. Write the general view once, and specific views only where they earn their place (<<polymorphic-ui>>).
+
 === The Groovy DSL
 
 . Set a negative number with `upperBound = -1` or `upperBound(-1)`, never `upperBound -1` (<<groovy-dsl>>).
@@ -79,3 +91,5 @@ Each rule names the chapter that explains it.
 . Propose changes as recorded change sets or diffs that a person reviews; do not apply them silently.
 . Write original prose when documenting the JDK and other licensed specifications; never reproduce their text (<<jvm>>).
 . Prefer the surfaces the runtime gives you, commands and files, to new integrations.
+. When you learn something about a model element, write it into the element's documentation page, its micro-wiki stub, so the next person or assistant finds it there (<<core-model>>).
+. Spend effort at the right altitude: change the model or the generator rather than the code it generates (<<built-with-ai>>).

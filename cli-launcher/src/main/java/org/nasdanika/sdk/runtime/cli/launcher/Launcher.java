@@ -124,7 +124,10 @@ public class Launcher {
 		return extension;
 	}
 
-	private static final String SCOPE = "org.nasdanika.sdk.cli.launcher";
+	/**
+	 * The instrumentation scope of the launcher's own telemetry: its module name.
+	 */
+	private static final String SCOPE = Launcher.class.getModule().isNamed() ? Launcher.class.getModule().getName() : Launcher.class.getPackageName();
 	
 	/**
 	 * Builds the instance. The SDK owns the exporters, and the exporters own the telemetry

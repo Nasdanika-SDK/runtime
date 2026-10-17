@@ -5,7 +5,6 @@ import java.util.ArrayList;
 import java.util.Collections;
 import java.util.List;
 import java.util.Map.Entry;
-import java.util.Objects;
 import java.util.concurrent.CompletableFuture;
 import java.util.concurrent.Flow.Publisher;
 import java.util.concurrent.atomic.AtomicInteger;
@@ -121,79 +120,91 @@ public abstract class SubCommandCapabilityFactory<T> extends ReflectiveCapabilit
 			} else {
 				Publisher<T> commandPublisher = createCommand(parentPath, loader, span, logger);
 				if (commandPublisher != null) {
-					Publisher<CommandLineAndPath> commandLineAndPathPublisher = Flows.map(commandPublisher, command -> createCommandLine(command, serviceRequirement, span, logger));		
-					Publisher<CommandLine> commandLineWithSubCommandsAndMixInsPublisher = Flows.map(commandLineAndPathPublisher, commandLineAndPath -> {
-						if (commandLineAndPath != null) {
-							int totalCommands = serviceRequirement.commandCounter().incrementAndGet(); // Incrementing command counter for the parent path to prevent creating too many commands 							
-							
-							CompletableFuture<List<CommandLine>> subCommandsCF = createSubCommands(commandLineAndPath.path(), serviceRequirement.commandCounter(), loader, span, logger);
-							subCommandsCF
-								.thenAccept(subCommands -> combineSubCommands(commandLineAndPath, subCommands))
-								.whenComplete((_, ex) -> {
-									if (ex != null) {
-										logger
-											.logRecordBuilder()
-											.setSeverity(Severity.ERROR)
-											.setBody("Error creating sub-commands for command line " + commandLineAndPath.commandLine().getCommandName() + ": " + ex.getMessage())
-											.setAttribute("commandLine", commandLineAndPath.commandLine().getCommandName())
-											.setAttribute("exception", ex.toString())
-											.emit();
-									}									
-								});
-							
-							CompletableFuture<List<MixInRecord>> mixInsCF = createMixIns(commandLineAndPath.path(), loader, span, logger);
-							mixInsCF
-								.thenAccept(mixIns -> combineMixIns(commandLineAndPath.commandLine(), mixIns))
-								.whenComplete((_, ex) -> {
-									if (ex != null) {
-										logger
-											.logRecordBuilder()
-											.setSeverity(Severity.ERROR)
-											.setBody("Error creating mix-ins for command line " + commandLineAndPath.commandLine().getCommandName() + ": " + ex.getMessage())
-											.setAttribute("commandLine", commandLineAndPath.commandLine().getCommandName())
-											.setAttribute("exception", ex.toString())
-											.emit();
-									}									
-								});
-							
-							if (parentPath == null || parentPath.isEmpty()) {
-								logger
-									.logRecordBuilder()
-									.setSeverity(Severity.INFO)
-									.setBody("Created command line " + commandLineAndPath.commandLine().getCommandName() + ", total commands " + totalCommands)
-									.setAttribute("commandLine", commandLineAndPath.commandLine().getCommandName())
-									.setAttribute("totalCommands", totalCommands)
-									.emit();
-							} else {
-								StringBuilder commandPath = new StringBuilder();
-								for (CommandLine pathElement: parentPath) {
-									if (commandPath.length() > 0) {
-										commandPath.append(" ");
-									}
-									commandPath.append(pathElement.getCommandName());
-								}
-								logger
-									.logRecordBuilder()
-									.setSeverity(Severity.INFO)
-									.setBody("Created command line %s, parent path %s, total commands %d".formatted(commandLineAndPath.commandLine().getCommandName(), commandPath.toString(), totalCommands))
-									.setAttribute("name", commandLineAndPath.commandLine().getCommandName())
-									.setAttribute("parentPath", commandPath.toString())
-									.setAttribute("totalCommands", totalCommands)
-									.emit();
-							}
-
-							return commandLineAndPath.commandLine();
-						}
-																		
-						return null;
-					});		
-										
-					return Flows.of(CapabilityProvider.of(Flows.filter(commandLineWithSubCommandsAndMixInsPublisher, Objects::nonNull)));
+					Publisher<CommandLineAndPath> commandLineAndPathPublisher = Flows.map(commandPublisher, command -> createCommandLine(command, serviceRequirement, span, logger));
+					// A command line is emitted once its sub-commands and mix-ins are in place, so that whoever
+					// receives it, CapabilityLoader.loadAll included, gets the whole tree rather than a root whose
+					// branches are still being resolved on the pump
+					Publisher<CommandLine> commandLinePublisher = Flows.concatMap(
+							commandLineAndPathPublisher,
+							commandLineAndPath -> commandLineAndPath == null
+								? Flows.<CommandLine>empty()
+								: Flows.fromFuture(complete(commandLineAndPath, serviceRequirement, loader, span, logger)));
+					return Flows.of(CapabilityProvider.of(commandLinePublisher));
 				}
 			}
 		}
-		
+
 		return Flows.empty();
+	}
+
+	/**
+	 * Adds sub-commands and mix-ins to a new command line, and completes with the command line when they
+	 * are in place. A failure to create them is logged, and the command line completes without them.
+	 */
+	private CompletableFuture<CommandLine> complete(
+			CommandLineAndPath commandLineAndPath,
+			SubCommandRequirement serviceRequirement,
+			Loader loader,
+			Span span,
+			Logger logger) {
+
+		CommandLine commandLine = commandLineAndPath.commandLine();
+		int totalCommands = serviceRequirement.commandCounter().incrementAndGet(); // Incrementing command counter for the parent path to prevent creating too many commands
+
+		CompletableFuture<Void> subCommandsCF = createSubCommands(commandLineAndPath.path(), serviceRequirement.commandCounter(), loader, span, logger)
+			.thenAccept(subCommands -> combineSubCommands(commandLineAndPath, subCommands))
+			.exceptionally(ex -> {
+				logger
+					.logRecordBuilder()
+					.setSeverity(Severity.ERROR)
+					.setBody("Error creating sub-commands for command line " + commandLine.getCommandName() + ": " + ex.getMessage())
+					.setAttribute("commandLine", commandLine.getCommandName())
+					.setAttribute("exception", ex.toString())
+					.emit();
+				return null;
+			});
+
+		CompletableFuture<Void> mixInsCF = createMixIns(commandLineAndPath.path(), loader, span, logger)
+			.thenAccept(mixIns -> combineMixIns(commandLine, mixIns))
+			.exceptionally(ex -> {
+				logger
+					.logRecordBuilder()
+					.setSeverity(Severity.ERROR)
+					.setBody("Error creating mix-ins for command line " + commandLine.getCommandName() + ": " + ex.getMessage())
+					.setAttribute("commandLine", commandLine.getCommandName())
+					.setAttribute("exception", ex.toString())
+					.emit();
+				return null;
+			});
+
+		List<CommandLine> parentPath = serviceRequirement.parentPath();
+		if (parentPath == null || parentPath.isEmpty()) {
+			logger
+				.logRecordBuilder()
+				.setSeverity(Severity.INFO)
+				.setBody("Created command line " + commandLine.getCommandName() + ", total commands " + totalCommands)
+				.setAttribute("commandLine", commandLine.getCommandName())
+				.setAttribute("totalCommands", totalCommands)
+				.emit();
+		} else {
+			StringBuilder commandPath = new StringBuilder();
+			for (CommandLine pathElement: parentPath) {
+				if (commandPath.length() > 0) {
+					commandPath.append(" ");
+				}
+				commandPath.append(pathElement.getCommandName());
+			}
+			logger
+				.logRecordBuilder()
+				.setSeverity(Severity.INFO)
+				.setBody("Created command line %s, parent path %s, total commands %d".formatted(commandLine.getCommandName(), commandPath.toString(), totalCommands))
+				.setAttribute("name", commandLine.getCommandName())
+				.setAttribute("parentPath", commandPath.toString())
+				.setAttribute("totalCommands", totalCommands)
+				.emit();
+		}
+
+		return subCommandsCF.thenCombine(mixInsCF, (_, _) -> commandLine);
 	}
 			
 	protected CommandLineAndPath createCommandLine(

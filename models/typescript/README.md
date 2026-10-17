@@ -1,58 +1,37 @@
-# Typescript Model
+# TypeScript model
 
-An Ecore micro-model of the TypeScript declaration surface, and a generator which writes
-npm packages from it.
+A model of the TypeScript declaration surface, and a generator that writes npm packages from it.
+What the model is for, and why it is a model rather than a template, is in
+[`model/doc/readme.md`](model/doc/readme.md).
 
-See https://typescript.models.nasdanika.org/
+Part of the [Nasdanika SDK Runtime](https://github.com/Nasdanika-SDK/runtime). Documentation home:
+`https://runtime.sdk.nasdanika.org/models/typescript`.
 
 ## Layout
 
 | Path | What it is |
 |---|---|
-| [`model/`](model) | The Xcore model, the generator, and the tests |
-| [`model/src/main/resources/org/nasdanika/models/typescript/typescript.xcore`](model/src/main/resources/org/nasdanika/models/typescript/typescript.xcore) | The model itself |
-| [`model/src/main/java/org/nasdanika/models/typescript/generator/Generator.java`](model/src/main/java/org/nasdanika/models/typescript/generator/Generator.java) | Model to TypeScript sources, including import management |
-| [`model/src/test/java/.../BankTests.java`](model/src/test/java/org/nasdanika/models/typescript/tests/BankTests.java) | Builds a bank package - Bank, Customer, Account, Statement, Transaction - programmatically and generates it |
-| [`model/doc/readme.md`](model/doc/readme.md) | What the model is for and where it sits on the tower |
-| [`ecore/`](ecore) | `EcoreGenerator` - EPackage to a TypeScript package model. Generates Ecore itself, in one pass |
-| [`ecore/src/main/resources/.../runtime/runtime.ts`](ecore/src/main/resources/org/nasdanika/models/typescript/ecore/runtime/runtime.ts) | The **hand written** Ecore runtime: registry, metamodel bootstrap, and one reflective loader for EMF JSON. Ships inside the generated `@nasdanika/ecore` |
-| [`test-project/`](test-project) | The same language surface written **by hand**, with a readme that teaches TypeScript and npm from scratch |
+| [`model/`](model) | The Xcore model, the generator, and the tests. Maven `org.nasdanika.sdk.runtime.models.typescript:model`, Java module `org.nasdanika.sdk.runtime.models.typescript` |
+| [`model/src/main/resources/.../typescript.xcore`](model/src/main/resources/org/nasdanika/sdk/runtime/models/typescript/typescript.xcore) | The model itself |
+| [`model/src/main/java/.../generator/Generator.java`](model/src/main/java/org/nasdanika/sdk/runtime/models/typescript/generator/Generator.java) | Model to TypeScript sources, including import management, written to a volume of text |
+| [`model/src/test/java/.../BankTests.java`](model/src/test/java/org/nasdanika/sdk/runtime/models/typescript/tests/BankTests.java) | Builds a sample package programmatically, exercising every construct the model can express, and generates it |
+| [`model/doc/readme.md`](model/doc/readme.md) | What the model is for and where it sits among the runtime's models |
+| [`ecore/`](ecore) | `EcoreGenerator`: an `EPackage` to a TypeScript package model. Not part of the build yet: it still uses the previous generation's packages and is to be migrated |
 
 ## Building
 
 ```bash
-# The model, the generator and the tests. Generates a demo npm package into
-# model/target/bank.
-mvn -o clean test
+# The model, the generator and the tests. Generates a demo npm package into model/target/bank.
+mvn clean test
 
-# Compile what the generator produced. --verbatimModuleSyntax is the strict
-# check: it makes a wrong type/value import decision a compile error.
+# Compile what the generator produced. --verbatimModuleSyntax is the strict check:
+# it makes a wrong type or value import decision a compile error.
 cd model/target/bank
 npm install
 npx tsc --noEmit --verbatimModuleSyntax --isolatedModules
 npm run build
 ```
 
-```bash
-# Generate npm packages from Ecore and nxcore, then compile them. nxcore imports
-# @nasdanika/ecore, so install the generated Ecore package into it first.
-cd ecore/target/npm/ecore && npm install && npx tsc
-cd ../nxcore && npm install ../ecore && npm install && npx tsc --noEmit
-
-# The runtime, end to end: a metamodel built in Java, generated to TypeScript,
-# with instance data written by EMF itself and loaded reflectively.
-# The Maven build does not depend on Node, so this step is separate.
-cd ../family && npm install ../ecore && npm install && npm test
-```
-
-```bash
-# The hand written tour: read it, build it, run it.
-cd test-project
-npm install
-npm start
-npm test
-```
-
-`model/target/bank` is deliberately excluded from `mvn clean`, so an `npm install` done
-there to verify the output survives the next build. `BankTests` wipes its own `src`
-directory instead.
+The test wipes only the generated `src` directory, so an `npm install` done in
+`model/target/bank` survives the next test run, but not `mvn clean`. The Maven build does not
+depend on Node, so compiling the generated package is a separate step.

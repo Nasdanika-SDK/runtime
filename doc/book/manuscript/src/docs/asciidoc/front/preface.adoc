@@ -30,12 +30,12 @@ The runtime is my answer to making structure cheap enough to keep. You do not ne
 
 === How this book is organized
 
-<<why>> explains the problem the runtime addresses, the principles it follows and how its parts fit together.
+<<why>> explains the problem the runtime addresses, the principles it follows, how it is built with an AI assistant, and how its parts fit together.
 <<foundations>> covers the `common` module: models with EMF, generic types at run time, reactive flows on the JDK, and the capability framework.
 <<observability>> is about telemetry: how the runtime instruments itself, how to watch work while it runs, and how telemetry becomes a model.
 <<files>> introduces volumes, the runtime's file abstraction, and serving them over HTTP and WebDAV.
 <<command-line>> shows how commands are contributed by modules and wired by generic types.
-<<models-in-the-runtime>> tours the models that ship with the runtime: the Groovy DSL for authoring, the core model, Meta, the JVM model, and the models that generate the web.
+<<models-in-the-runtime>> tours the models that ship with the runtime: the Groovy DSL for authoring, the core model, Meta, the JVM model, the models that generate the web, and user interfaces assembled from views chosen by the class of what they show.
 <<looking-ahead>> is the roadmap and the vision.
 The appendices are references: modules, telemetry names, rules of thumb, a glossary, and how this book is built.
 

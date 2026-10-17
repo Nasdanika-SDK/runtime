@@ -674,7 +674,7 @@ Wiring into EMF: implement an `EValidator` (or contribute via `EValidator.Regist
 **Persisting + Java generation.** The authored model can be serialized to `.ecore`/`.genmodel` (`resource.save(...)` with the XMI factory) and Java generated two ways:
 
 - **Eclipse** — the genmodel "Generate Model Code" path, for interactive work.
-- **CLI / headless** — EMF's `org.eclipse.emf.codegen.ecore.Generator` invoked headlessly, or via Maven (`emf-maven-plugin` / `org.eclipse.emf.codegen` Ant tasks), which fits your CLI-first, reproducible-build posture. This is the route to wire into `nsd`. Constraints authored as annotations survive into the generated `validate...` methods if you map them to OCL/EMF-validation annotations, or live as runtime `EValidator` contributions if you keep them in Groovy/SpEL.
+- **CLI / headless** — EMF's `org.eclipse.emf.codegen.ecore.Generator` invoked headlessly, or via Maven (`emf-maven-plugin` / `org.eclipse.emf.codegen` Ant tasks), which fits your CLI-first, reproducible-build posture. This is the route to wire into `nsdk`. Constraints authored as annotations survive into the generated `validate...` methods if you map them to OCL/EMF-validation annotations, or live as runtime `EValidator` contributions if you keep them in Groovy/SpEL.
 
 Recommendation: ship **Groovy closures as the first constraint language** (already on classpath, IDE-checkable), add **SpEL behind the same SPI** as the lightweight option, and keep OCL interop in mind but don't gate on it.
 

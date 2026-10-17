@@ -46,5 +46,6 @@
 		<module>meta</module>
 		<module>jvm</module>
 		<module>web</module>
+		<module>ui</module>
 	</modules>
 </project>

@@ -1,105 +1,155 @@
+# Telemetry model
 
-```drawio-resource
-../telemetry.drawio
-```
+> Directory `models/telemetry/model` · Maven `org.nasdanika.sdk.runtime.models.telemetry:model` ·
+> Java module `org.nasdanika.sdk.runtime.models.telemetry` ·
+> Packages `https://runtime.sdk.nasdanika.org/models/telemetry`, `.../traces`, `.../logs` and `.../metrics` ·
+> Part of the [Nasdanika SDK Runtime](https://github.com/Nasdanika-SDK/runtime)
 
-[TOC levels=6]
-
-An [Ecore](https://ecore.models.nasdanika.org) micro-model of [OpenTelemetry](https://opentelemetry.io/) signals - traces, spans, logs, and resources - stored beside the models they describe rather than shipped to an observability backend.
-It is a balcony off the [work](https://work.models.nasdanika.org) floor of the micro-model tower: a span *is* work (`Span extends AbstractWork`), a resource is an actor working on spans,
-and metrics are recorded as [accounting](https://accounting.models.nasdanika.org/) entries on span and resource accounts - monotonic counters as transactions, gauges as assertions.
-The model is populated through OpenTelemetry APIs; see [Model-based telemetry as code](https://medium.com/nasdanika/model-based-telemetry-as-code-cd1541478be6) for the original argument.
+[OpenTelemetry](https://opentelemetry.io/) signals as EMF models: traces, log records and metrics,
+kept beside the models they describe, in the same formats and the same repositories, rather than
+shipped to a backend and forgotten on its schedule. The
+[exporters](../../exporters/doc/readme.md) fill it from the OpenTelemetry SDK.
 
 ## Every signal is precious
 
-This model uses telemetry in the opposite way from the mainstream.
-Mainstream observability collects enormous volumes cheaply, samples, retains for days or weeks, and routinely drowns in its own signals - the industry's recurring complaint about itself.
-Here the volumes are strategic-scale, collection is deliberate, and retention is indefinite: every signal is precious, and the collection and storage price is paid knowingly, in exchange for explainability and troubleshootability years after the fact.
-Storage is cheap and compute is cheap at this scale; what is expensive is not being able to answer, two years later, *"Actor A called tool T, and it changed the value of attribute A in object O from X to Y"* - with the actor, the tool, the object, and the attribute all resolvable model elements, and the change record and the span that produced it stored next to the model in Git.
+This model uses telemetry the opposite way from the mainstream. Mainstream observability collects
+enormous volumes cheaply, samples them, keeps them for days or weeks, and routinely drowns in its
+own signals. Here collection is deliberate and retention is indefinite: every signal is precious,
+and its price is paid knowingly, in exchange for being able to explain, years later, what happened.
 
-Operational telemetry answers "is it healthy right now"; this model answers "who did what to what, and why does it look the way it does."
-The two are complementary, and the same instrumented code can feed both - one exporter streams to the operational backend and is sampled and forgotten, the other loads into the model and is kept.
+Storage and compute are cheap at this scale. What is expensive is not being able to answer, two
+years later: *in the course of the work named "Correct the year", the attribute `year` of the book
+"Domain-Driven Design" changed to 2004*, with the work, the object and the attribute all model
+elements you can navigate to, and the record stored next to the model in Git.
 
-## Core concepts
+Operational telemetry answers "is it healthy right now". This model answers "who did what to
+what, and why does it look the way it does". The two are complementary, and the same instrumented
+code feeds both: one exporter streams to an operational backend, sampled and forgotten; the other
+writes to the model, and it is kept.
 
-* **Span is work.** A span - a named, timed unit of execution with a parent and a status - extends the work model's `AbstractWork`. Span nesting is work nesting; span attribution is a role engagement; a span is transitively staged, governed, access-controlled, and accountable like all work. Spans are facts: like sojourns and ledger entries, they are never rewritten.
-* **Resource is an actor.** The OpenTelemetry `Resource` - the entity producing signals, identified by semantic-convention attributes - extends the role model's `Actor`, so "who executed this span" is the same question, with the same typed answer, as "who is responsible for this work."
-* **Metrics are accounting.** OpenTelemetry metrics are double-entry accounting that doesn't know it yet: a monotonic counter is a stream of transactions (movements - requests served, tokens consumed), a gauge is an assertion (a statement of fact at an instant - CPU utilization, queue depth), and histograms decompose into both. The loader maps metric streams to entries on span and resource accounts; exemplars become provenance markers from entries to the spans that produced them. There is no separate metric storage in the model - the accounting floor is the metric storage.
-* **Logs and events** attach to spans and resources as records, completing the OTel signal set.
-* **Resolution by URI.** Semantic-convention attributes resolve to model element URIs at load time and are recorded as nested markers - "from where," never "how." This is what keeps the balcony at the work floor while spans refer to elements anywhere in the tower, including far above it.
+The discipline that keeps this affordable is choosing what is a unit of work worth keeping: a
+command that changes models, a release, an agent run, a migration. Every request a server
+handles is operational telemetry and belongs in an operational backend.
 
-Because plans and executions now share one vocabulary, they join: a planned `Work` item's actuals *are* the spans that executed it, its estimate is an assertion, and estimate-vs-actual is a fold over one element's records rather than a reconciliation between a tracker and a metrics system.
+## Faithful to OpenTelemetry, navigable as a graph
 
-## Applications
+The model follows OpenTelemetry's own data model, OTLP, so that nothing is lost on the way in:
 
-**Agentic systems.** Agent spans and tool-call spans (the OTel `gen_ai.*` semantic conventions) resolve to elements of the [agent](https://agent.models.nasdanika.org/) and [MCP](https://mcp.models.nasdanika.org) models; token-usage metrics land as transactions on agent accounts.
-An agentic system that burns tokens and money becomes attributable at the feature level - which agent spent what, executing which work, changing which elements - with the span as the receipt. Agent frameworks offer callbacks and session dashboards; none offers execution records resolved against a typed model of the system that executed.
+| Package | Contents |
+|---|---|
+| `telemetry` | `Resource` (the entity that produced the signals), `InstrumentationScope`, and typed attribute values: `KeyValue` and `AnyValue` |
+| `traces` | `TracesData`, `ResourceSpans`, `ScopeSpans`, `Span`, `SpanEvent`, `SpanLink`, `SpanStatus`, `SpanReference`, and the change recording classes `ChangeDescription`, `FeatureChange` and `ResourceChange` |
+| `logs` | `LogsData`, `ResourceLogs`, `ScopeLogs`, `LogRecord`, `SeverityNumber` |
+| `metrics` | `MetricsData`, `ResourceMetrics`, `ScopeMetrics`, `Gauge`, `Sum`, `Histogram`, `ExponentialHistogram`, `Summary`, their data points, and `Exemplar` |
 
-**Feature-level change records.** The original model-based telemetry case: EMF change recording captures which attribute of which element changed, before and after values, linked to the span in whose execution the change happened.
-A commit stops being "files changed" and becomes "this work, executed by this actor, changed these features" - a longitudinal audit trail at the semantic level, retained as long as the repository.
+On top of OTLP, it adds what makes telemetry a graph rather than a stream of records:
 
-**Compliance and audit.** Governance evidence wants operational records with provenance; span records with markers and signed sojourns are exactly that shape.
-"Show me every change to this element in the audit period, who made it, and in the course of what work" is a query, not an archaeology project.
+* **Spans nest.** A span contains its children within an instrumentation scope, so a trace reads as
+  a tree. Across scopes, spans reference their parent by id.
+* **Log records live in their spans.** A log record emitted in a span is contained by the span, not
+  stored in a separate stream to be joined later.
+* **Changes live in their spans.** A span contains the description of the model changes recorded
+  while it was current.
+* **References resolve.** Span links and the change classes reference spans as objects, not only by
+  id, and every span knows what references it. An exemplar references the span that produced a
+  measurement.
 
-**Estate analysis during modernization.** Runtime invocation records make dead-process detection a query - zero spans in N months makes retirement the leading disposition, and retirement is the cheapest outcome.
-The [BW5 model](https://bw5.models.nasdanika.org/) is the first consumer.
+Spans are keyed by trace and span id, so their URIs are stable and readable.
 
-**AI observability literacy.** AI observability and AI literacy are hot topics, and much of the audience is meeting the terminology for the first time - trace versus span versus metric, evaluation versus monitoring, observability versus governance monitoring - usually through vendor glossaries with a product to sell.
-A typed model is a teaching instrument the way a glossary is not: every term is a class with definitions, relationships, and generated documentation, and a small synthetic example - one agent run, its tool-call spans, its token metrics - can be browsed, diagrammed, and animated end to end.
-This is the same posture as the accounting model's financial-education angle: a thirty-second walk through a synthetic trace teaches what a span *is* better than any definition, and synthetic examples are safe to build and share.
+## Recording changes
 
-**The observability landscape as data - the organization flavor.** "AI observability" is a label currently covering profoundly different products: Datadog observes *operations* - is the model-backed service healthy right now, latency, errors, cost of LLM calls - while a platform like Lumenova observes *the AI itself as a governance concern* - bias, drift, model risk, regulatory compliance evidence.
-Both say "AI observability" on the website; a buyer who cannot tell them apart is the norm, not the exception.
-An organization can state its own landscape as instance data on this model and the capability floor: which tools it uses, which signals each collects, which concerns each answers, where they overlap and where nobody is looking.
-The typed vocabulary is what makes the distinction statable at all - and "which AI observability do you mean" becomes a question the model answers rather than a meeting derails over.
+Change recording is EMF's, extended so that recorded changes know their spans.
+`Changes.record(target, body)` records the changes the body makes to a resource set, a resource or
+an object, and hands the description to the sink current in the OpenTelemetry context; the span
+exporter is such a sink, and puts each description into the span it was recorded in.
 
-**Replay - the moving ball.** Because spans carry timing and nesting, resolve to model elements, and sit beside feature-level change records, an execution can be *re-rendered*: play the trace back over a diagram of the system, a moving ball traveling the graph, with attribute changes appearing as they happened.
-For agentic systems this is the killer view: watch the agent traverse its tools, see which element changed at each stop, pause on the tool call that made the surprising edit - an execution replayed against the governed model of the system that executed, not a scrolling log.
-The same replay is a *verification* instrument: in engine-based modernization, replaying recorded executions of the old runtime and the new engine side by side over the same process diagram makes behavioral parity reviewable by eye and by query (the BW5 modernization case, where the diagram - with its original designer layout - already exists in the model).
-Rendering rides the diagram substrate: [Sprotty](https://sprotty.models.nasdanika.org/) for live animated views, embedded Draw.io as an alternative surface, and the Draw.io <-> Sprotty exchange through the shared [diagram model](https://diagram.models.nasdanika.org/) means the authored diagram and the replay view are the same picture.
-The volume posture applies here at its sharpest: replay is not for the operational firehose - it is for executions worth watching, which is exactly the every-signal-is-precious contract.
+```java
+try (OpenTelemetrySdk openTelemetry = ...;                  // SDK with the model exporters
+        Scope telemetryScope = Telemetry.makeCurrent(openTelemetry);
+        Scope changesScope = Changes.makeCurrent(spanExporter)) {
 
-**Dashboards, shared with accounting.** Because metrics are entries, a telemetry dashboard and an account dashboard are the same componentry over the same data - one chart substrate, one AI-assisted construction path over a scoped model, one mental model to learn.
-Trends, roll-ups along containment, and period comparisons come from the accounting floor rather than a charting stack of their own.
+    Telemetry.inSpan(tracer, "Correct the year", null, span -> Changes.record(models, () -> {
+        book.setYear(2004);
+        resource.save(null);
+        return null;
+    }));
+}
+```
 
-## Competitive landscape
+The stored description is turned forward and detached from the model:
 
-**Observability platforms** (Datadog, Grafana, Honeycomb, New Relic, Jaeger/Tempo/Prometheus). Built for the firehose: high-cardinality ingestion, sampling, short retention, health-now questions.
-This model is not a competitor and would be a terrible one - it is for the small fraction of signals worth keeping forever, resolved against a typed model.
-The honest relationship is complementary: same instrumentation, different exporters, different questions.
+* Objects added in the body are copied into the description, as objects to attach.
+* Objects removed in the body are moved into the description, so their state when they were removed
+  is kept for audit.
+* Other objects are referenced by proxies with their URIs, so the description can be saved in its
+  own resource and still resolves to the model wherever the model is saved.
 
-**LLM/agent observability** (LangSmith, Langfuse, Arize Phoenix, OpenLLMetry/OpenInference). Session-scoped traces of prompts and tool calls, excellent for debugging an agent run, but the trace refers to string names in someone else's SaaS - not to a governed model of the agent, its tools, its risk tier, and the work it was doing
- Here the span lands *in* that model, and the cost lands in its ledger.
+Nothing is recorded without a current sink or outside a sampled span, so the same code runs
+unchanged in a unit of work that does not record.
 
-**OpenTelemetry itself.** The specification says how signals travel; the collector and backends say where they go.
-Neither says what signals *mean* against a model of the system.
-This model is a destination that adds meaning - OTel-faithful at the loader boundary (span kind, status, events, links, scope), tower-shaped inside.
+## What it is for
 
-**Audit logs and W3C PROV.** Audit logs have the retention instinct but no types and no joins.
-PROV has the right concepts (activity, agent, entity - nearly span, actor, element) but is a standalone vocabulary to adopt; here provenance is not a separate system but the same model, with markers carrying the derivation trees.
+* **Audit and compliance.** Every change to an element during an audit period, who made it, and in
+  the course of what work, is a query instead of an archaeology project.
+* **Agents.** An agent's run is a trace whose spans are its tool calls, and the changes it made to
+  models are in the spans that made them. Reviewing an agent's work means reading that trace, and
+  reverting it means applying the changes in reverse.
+* **Evidence.** Telemetry kept with the build or the release it describes is evidence of what ran:
+  a command line launch saves its telemetry as models in a directory per launch.
+* **Teaching.** Trace versus span versus metric is easier to show than to define. A small trace,
+  saved as a model, can be browsed, diagrammed and walked through element by element.
 
-**The status quo.** As usual, the real competitor: grep over log archives, a wiki page titled "why did this change," and the person who remembers.
-The model's claim is that the person who remembers can be a query.
+## Landscape
 
-## Model overview
+* **Observability platforms** are built for the firehose: high-cardinality ingestion, sampling,
+  short retention, health-now questions. This model is not a competitor and would be a poor one. It
+  is for the small fraction of signals worth keeping, with the same instrumentation and a different
+  exporter.
+* **LLM and agent observability tools** keep session-scoped traces of prompts and tool calls, which
+  refer to names in someone else's service. Here a span lands next to the models the agent worked
+  on, and its changes are in it.
+* **OpenTelemetry itself** says how signals travel; collectors and backends say where they go.
+  Neither says what signals mean against a model of the system. This model is a destination that
+  stays faithful to OpenTelemetry at its boundary.
+* **Audit logs and W3C PROV.** Audit logs have the retention instinct but no types and no joins.
+  PROV has the right concepts, activity, agent and entity, as a separate vocabulary to adopt. Here
+  provenance is part of the same models.
+* **The status quo** is grep over log archives, a wiki page titled "why did this change", and the
+  person who remembers. The claim of this model is that the person who remembers can be a query.
 
-| Area | Types |
-|------|-------|
-| Tracing | `Trace`, `Span` (extends work `AbstractWork`; kind, status, never rewritten), `SpanLink`, `Event` |
-| Identity | `Resource` (extends role `Actor`), `InstrumentationScope` |
-| Logs | `LogRecord` (attached to span/resource) |
-| Metrics | none - loader maps counters -> accounting transactions, gauges -> assertions; exemplars -> markers to spans |
-| Reused, not redefined | work `AbstractWork`/`Workable`; role `Actor`/`Undergoer`; accounting `Account`/`Entry` via inherited `Accountable`; nxcore markers for resolution |
+## Status
 
-## Relation to other Nasdanika work
+**Available:** the four packages, change recording with `Changes`, the
+[exporters](../../exporters/doc/readme.md), and the command line launcher saving the telemetry of
+every launch as models.
 
-The [work model](https://work.models.nasdanika.org) supplies the base: spans are work, so plan and execution share a vocabulary.
-The [role model](https://role.models.nasdanika.org) supplies actors;
-the [accounting model](https://accounting.models.nasdanika.org/) supplies metric storage and the dashboard substrate; 
-[nxcore](https://nxcore.models.nasdanika.org) markers carry resolution from semantic-convention attributes to model element URIs.
-The [agent](https://agent.models.nasdanika.org) and [MCP](https://mcp.models.nasdanika.org) models are the flagship resolution targets;
-the [governance model](https://governance.models.nasdanika.org) consumes span records as evidence.
-Change recording (the [change model](https://change.models.nasdanika.org/)) is the sibling concern: changes say what moved, spans say in the course of what, and the pair is the audit trail.
-This model is populated through OpenTelemetry APIs and stays faithful to OTel semantics at that boundary; upper-floor models needing typed joins to spans define them on their own floors (shadow classes), never here.
+**Planned:**
 
-> Note: `Trace` may not deserve a class - a trace is an ID shared by spans, and reifying it adds a container with no behavior; consider trace-as-attribute with derived groupings. And check whether `LogRecord` volume discipline needs a stated convention like the metrics one - "logs load only when attached to a kept span" is probably the right default, or the every-signal-is-precious posture erodes one log line at a time.*
+* **Queries.** Questions about traces asked in a query language rather than in Java loops.
+* **Replay.** Spans carry timing and nesting, so an execution can be played back over a diagram of
+  the system that ran it, with model changes appearing where they happened.
+* **Resolution of attributes.** Semantic-convention attributes, such as a code function or a URL,
+  resolved to the model elements they name and recorded as markers.
+* **Higher floors.** Spans as work, resources as actors, metrics as accounting entries: models for
+  work, roles and accounting will connect to telemetry on their own floors, so that this model stays
+  faithful to OpenTelemetry.
+
+## Using it
+
+Import the runtime's BOM and depend on the module:
+
+```xml
+<dependency>
+    <groupId>org.nasdanika.sdk.runtime.models.telemetry</groupId>
+    <artifactId>model</artifactId>
+</dependency>
+```
+
+The four packages are contributed as Java services, so a resource set created with
+`NasdanikaResourceSet.createAndConfigure()` loads telemetry in any format the runtime reads:
+`yml` and `json` to read, `xmi` to interchange, `ebin` and `egz` for size.
+
+## Further reading
+
+The Nasdanika SDK Runtime book, chapters "Telemetry in the runtime", "Watching work live" and
+"Telemetry as a model".

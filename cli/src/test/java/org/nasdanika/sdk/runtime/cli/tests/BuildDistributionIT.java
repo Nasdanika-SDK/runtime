@@ -1,4 +1,4 @@
-package org.nasdanika.cli.tests;
+package org.nasdanika.sdk.runtime.cli.tests;
 
 import java.io.File;
 import java.io.FileWriter;
@@ -41,7 +41,7 @@ public class BuildDistributionIT {
 				"-f", "options",
 				"-j", "@java",
 //				"-r", "org.nasdanika.**",
-				"-o", "nsd.bat");
+				"-o", "nsdk.bat");
 		
 		launcherCommandLine.execute(
 				"-b", "target/dist",
@@ -49,14 +49,14 @@ public class BuildDistributionIT {
 				"-f", "options",
 				"-j", "@java -Xdebug -Xrunjdwp:transport=dt_socket,address=8998,server=y",
 //				"-r", "org.nasdanika.**",
-				"-o", "nsd-debug.bat");		
+				"-o", "nsdk-debug.bat");		
 		
 		launcherCommandLine.execute(
 				"-b", "target/dist", 
 				"-M", "target/dist/modules", 
 				"-j", "#!/bin/bash\n\njava",
 				"--add-modules", "ALL-SYSTEM",
-				"-o", "nsd",
+				"-o", "nsdk",
 //				"-r", "org.nasdanika.**",
 				"-p", ":",
 				"-a", "$@");		
@@ -64,7 +64,7 @@ public class BuildDistributionIT {
 		launcherCommandLine.execute(
 				"-b", "target/dist", 
 				"-M", "target/dist/modules", 
-				"-o", "nsd-debug",
+				"-o", "nsdk-debug",
 				"-j", "#!/bin/bash\n\njava -Xdebug -Xrunjdwp:transport=dt_socket,address=8998,server=y",
 				"--add-modules", "ALL-SYSTEM",
 //				"-r", "org.nasdanika.**",

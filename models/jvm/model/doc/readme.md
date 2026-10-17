@@ -1,29 +1,31 @@
+# JVM model
 
-```drawio-resource
-../jvm.drawio
-```
+> Directory `models/jvm/model` · Maven `org.nasdanika.sdk.runtime.models.jvm:model` ·
+> Java module `org.nasdanika.sdk.runtime.models.jvm` · Package `https://runtime.sdk.nasdanika.org/models/jvm` ·
+> Part of the [Nasdanika SDK Runtime](https://github.com/Nasdanika-SDK/runtime)
 
-An [Ecore](https://www.eclipse.org/modeling/emf/) model of what a Java virtual machine can name:
-layers, class loaders, modules, packages, types, methods, fields and parameters.
+A model of what a Java virtual machine can name: layers, class loaders, modules, packages, types,
+methods, fields and parameters.
 
-It is a spine rather than a complete picture, and that is the design. Source information, bytecode,
-and runtime observations all attach to these elements rather than restating them: a [Java source
-model](https://java.models.nasdanika.org/) adds positions, comments and source-level type text, 
-a bytecode model adds instructions and constant pools,
-[telemetry](https://telemetry.models.nasdanika.org/) attaches measurements, and all of them point at the same nodes.
+It is a spine rather than a complete picture, and that is the design. Source information, bytecode
+and runtime observations attach to these elements rather than restating them: a Java source model
+adds positions, comments and source-level type text, a bytecode model adds instructions and
+constant pools, the [telemetry model](../../../telemetry/model/doc/readme.md) and coverage reports
+attach measurements, and all of them point at the same elements.
 
 ## Why
 
-**Everything below is already available and almost nobody asks for it.** `ModuleLayer.boot()` gives
-the running module graph, `Configuration` reports what resolution actually produced, and reflection
-has exposed types and members since 1997. The information was never the problem. Getting an answer
-meant writing a program, which means only questions worth writing a program for ever got asked, and
-that is a small set. A typed model with a query language over it drops the cost of a question to the
-cost of typing it.
+**Everything below is already available, and almost nobody asks for it.** `ModuleLayer.boot()`
+gives the running module graph, `Configuration` reports what resolution actually produced, and
+reflection has exposed types and members since Java 1.1. The information was never the problem.
+Getting an answer meant writing a program, so only questions worth a program were ever asked, and
+that is a small set. A typed model, saved and queried, lowers the cost of a question to the cost of
+asking it.
 
 **There is a gap between what you declared and what is running, and nothing reports it.** A
-dependency tree describes what could be on the path, including test scope, optional dependencies and
-things nothing ever loads. The resolved module graph is shorter and truer. The clearest instance:
+dependency tree describes what could be on the path, including test scope, optional dependencies
+and libraries nothing ever loads. The resolved module graph is shorter and truer. The clearest
+instance is modules that read something they never required:
 
 ```
 MATCH (m:Module)-[:reads]->(other)
@@ -31,28 +33,26 @@ WHERE NOT (m)-[:requires]->(other)
 RETURN m.name, other.name
 ```
 
-Modules that read something they never asked for. Usually correct and by design, because
-`requires transitive` propagates readability and, more interestingly, because **service binding
-pulls a provider into the resolved graph that no dependency declaration mentions**. That fact is
-absent from every POM by construction, since it is a property of resolution rather than of the
-build, so no dependency tool can report it.
+Usually that is correct and by design: `requires transitive` propagates readability, service
+binding pulls providers into the resolved graph that no dependency declaration mentions, and a
+module that reads one automatic module reads all of them. It is a property of resolution rather
+than of the build, so it is absent from every POM and every bill of materials by construction, and
+no dependency tool can report it. A snapshot is **what your assembly became**.
 
-**Non-modular code is as visible as modular code.** The module system is one feature here rather
-than the reason for existing. Classpath code lives in a class loader's unnamed module, which is a
-value with packages and types inside it, not an absence. This model is useful on an application that
-has never heard of JPMS.
+**Non-modular code is as visible as modular code.** Code on the class path lives in a class
+loader's unnamed module, which is a value with packages and types in it, not an absence. The model
+is useful for an application that has never heard of the module system.
 
 ## Identity: the decision everything else rests on
 
-Elements are named the way the JVM names them: **binary names and method descriptors**.
-`com.foo.Bar`, `[I`, `baz(Ljava/lang/String;)I`.
+Elements are named the way the JVM names them: **binary names and method descriptors**, such as
+`com.example.Bar`, `[I` and `baz(Ljava/lang/String;)I`.
 
 That is not a local convention. It is the form in the constant pool, in stack traces, in `jdeps`
-output, in JFR events, and in every profiler and coverage tool, and OpenTelemetry's
-`code.namespace` and `code.function` carry its two halves. So a build scan, a coverage report, a
-profiler trace and a distributed span all name the same method identically, and independently
-produced models merge on the [NxCore](https://nxcore.models.nasdanika.org/) URI scheme with no
-translation step. The recommended URI forms:
+output, in JFR events, and in profilers and coverage tools, and OpenTelemetry's `code.namespace` and
+`code.function` attributes carry its two halves. A build scan, a coverage report, a profile and a
+span name the same method the same way, and independently produced models merge on URIs with no
+translation step:
 
 | Element | URI |
 |---|---|
@@ -63,155 +63,144 @@ translation step. The recommended URI forms:
 | Field | `jvm:field/<owner binary name>#<name>:<descriptor>` |
 | Parameter | `jvm:parameter/<owner method tail>#<index>` |
 
-The payoff is that joining static structure to runtime observation is mechanical rather than a
-project, which is what makes the telemetry and coverage stories below possible at all. JaCoCo is the
-worked example: its XML report already keys classes by VM name and methods by name plus descriptor,
-so coverage merges onto these elements with no mapping layer and no per-project configuration.
+Joining static structure to runtime observation is then mechanical rather than a project. JaCoCo
+is the worked example: its XML report already keys classes by binary name and methods by name and
+descriptor, so coverage attaches to these elements with no mapping layer and no per-project
+configuration.
 
 ## Scope
 
 | | |
 |---|---|
 | **In** | Layers, class loaders, modules and their directives, packages, types, methods, fields, parameters, resolved readability, access flags, class file version |
-| **Erased identity, generics as data** | Identity is by descriptor, and descriptors are erased. Generic types are carried as the class file `Signature` attribute, verbatim, in `signature` on types and members - data rather than identity, since overloads are told apart by erasure. Parsing them into a type structure is left to consumers such as the projection to Meta |
+| **Generics as data** | Identity is by descriptor, and descriptors are erased. Generic types are carried as the class file's `Signature` attribute, verbatim, on types and members: data rather than identity, since overloads are told apart by erasure. Parsing them into type structure is left to consumers such as the projection to Meta |
 | **Out** | Source positions, instructions, constant pools, annotations |
-| **Projected, not extended** | [Meta](https://meta.models.nasdanika.org/). See below |
+| **Projected, not extended** | [Meta](../../../meta/model/doc/readme.md), see below |
 
-**Annotations are the most likely first addition** and are deliberately absent from the first cut.
-They are among the most query-valuable things in a JVM estate ("every method marked deprecated",
-"every type carrying a given framework annotation"), and they are also a self-contained increment
-that can be added without disturbing anything here. Left out to keep the first version to one day.
+**Annotations are the most likely first addition.** They are among the most query-valuable things
+in a JVM estate ("every deprecated method", "every type carrying a given framework annotation"),
+and a self-contained increment that disturbs nothing here.
 
-## Relation to Meta, and why this does not extend it
+## Relation to Meta, and why this model does not extend it
 
-The [Meta model](https://meta.models.nasdanika.org/) covers packages, classes, features and operations, loads from
-Java among other formats, and states that it is "deliberately not a superset of any of its sources",
-with whatever does not fit dropped by design or carried in an annotation. That is a published
-language, and a published language is a projection target rather than a base class.
+Meta covers packages, classes, features and operations, loads from Java among other formats, and
+is deliberately not a superset of any of its sources: whatever does not fit is dropped by design or
+carried in an annotation. That is a published language, and a published language is a projection
+target rather than a base class.
 
 The concrete test: bridge methods, synthetic accessors, access flags and overloads that differ only
-in erased parameter types are first-class JVM realities that Meta has said it will not grow to hold.
-Extending Meta would shape a model whose entire value is fidelity to the JVM's own reference scheme
-by one that is deliberately lossy about it.
+in erased parameter types are realities of the JVM that Meta will not grow to hold. Extending Meta
+would shape a model whose whole value is fidelity to the JVM's own naming by one that is
+deliberately lossy about it. So this model sits on the [core model](../../../core/doc/readme.md)
+and projects to Meta, which gives anyone comparing a Java type with an Ecore class or a JSON Schema
+the route they expect.
 
-So this model sits on NxCore, and **projects** to Meta, which gives Meta the Java source it already
-advertises and gives anyone comparing a Java type with an Ecore class or a JSON Schema type the
-route they expect.
-
-## Model overview
+## What it models
 
 | Area | Types |
-|---|---|
-| Root | `JavaVirtualMachine`: `live`, VM name, version, vendor, specification version; contains modules, layers, class loaders |
+|------|-------|
+| Root | `JavaVirtualMachine`: `live`, VM name, version, vendor, specification version; contains modules, layers and class loaders |
 | Runtime structure | `Layer` (`boot`, parents, modules), `ClassLoader` (parent, unnamed module) |
-| Modules | `Module` (`named`, version, modifiers, main class, `uses`, **`reads`** as resolved readability), `Requires` with `RequiresModifier`, `Exports` and `Opens` with targets, `Provides` with service and providers |
+| Modules | `Module` (`named`, version, modifiers, main class, `uses`, and `reads` as resolved readability), `Requires` with `RequiresModifier`, `Exports` and `Opens` with targets, `Provides` with the service and its providers |
 | Types | `Package`, `Type` (`TypeKind`, `AccessLevel`, binary name, descriptor, signature, supertype, interfaces, component type, class file version) |
-| Members | `Member` abstract (access, descriptor, signature), `Method` (covers constructors as `<init>` and static initializers as `<clinit>`), `Field` (constant value), `Parameter` |
+| Members | `Member` (access, descriptor, signature), `Method` (constructors as `<init>`, static initializers as `<clinit>`), `Field` (constant value), `Parameter` |
 | Enumerations | `TypeKind`, `AccessLevel`, `ModuleModifier`, `RequiresModifier`, `DirectiveModifier` |
-| Reused, not redefined | NxCore `ModelElement`, `NamedElement` |
+| Reused, not redefined | The core model's `ModelElement` and `NamedElement` |
 
-Three shape decisions worth knowing before reading the xcore:
+Three decisions worth knowing before reading the Xcore:
 
 * **Modules are contained by the root, not by a layer.** A named module belongs to a layer and an
-  unnamed module belongs to a class loader, and one containment cannot express both, so layers and
-  loaders reference modules instead.
+  unnamed module to a class loader, and one containment cannot express both, so layers and loaders
+  reference modules.
 * **Constructors are methods.** In the JVM a constructor is a method named `<init>` and a static
-  initializer is `<clinit>`; the descriptor distinguishes overloads and the identity scheme works
+  initializer is `<clinit>`; the descriptor distinguishes overloads, and the identity scheme works
   uniformly. Reflection separates them, bytecode does not, and this model follows bytecode because
   that is where its identity comes from.
-* **Access flags are booleans, not a packed integer.** openCypher 9 has no bitwise operators, so a
-  flags int would be unqueryable from the query surface this model exists to feed. Mutually
-  exclusive choices, such as access level and type kind, are enumerations instead.
+* **Access flags are booleans, not a packed integer.** A query language without bitwise operators
+  could not ask about a flags integer. Mutually exclusive choices, such as access level and type
+  kind, are enumerations.
 
 ## Loading
 
-**A live loader comes first**, before any build-time scanner. It walks `ModuleLayer.boot()` and its
-parents, reads each `ModuleDescriptor`, takes resolved readability from the `Configuration`, and
-reflects over loaded types. It is smaller than a static scan (no jar traversal, no ASM, no
-multi-release decision) and it is what produces a real graph to query.
+**A live loader comes first** (Planned), before any build-time scanner. It walks the boot layer and
+its parents, reads each module descriptor, takes resolved readability from the configuration, and
+reflects over loaded types. It is smaller than a static scan, with no jar traversal and no
+multi-release decision, and it produces a real graph to query. Where reflection does not reach, as
+for a field's constant value, it reads the loaded type's own class file through the JDK's class
+file API, final since Java 24, without a dependency. The Nasdanika SDK Runtime book shows a minimal
+live loader of modules in a page of code.
 
-Reflection does not reach everything, and `Field.constantValue` is the case that matters: a field
-initialized by a constant and one initialized in a static initializer look the same through
-`java.lang.reflect`. For that the live loader reads the loaded type's own class file, through its
-class loader's resource. The JDK's class file API (`java.lang.classfile`, final since Java 24) does
-that without a dependency, and is an option for the scanner below as well.
+**A build-time class file scanner follows** (Planned), and adds what a running VM cannot show:
+types that were never loaded. It populates this model directly, and must handle two things
+deliberately: **multi-release jars**, recording which release it modeled, and **automatic
+modules**, whose names come from `Automatic-Module-Name` or the file name rather than from a
+descriptor.
 
-A build-time class-file scanner using [ASM](https://asm.ow2.io/) follows, and adds what a running VM
-cannot show: types that were never loaded. Note that a scanner needs a metamodel of neither ASM nor
-the class file format; it populates this model directly. A bytecode model is a separate thing,
-needed only to reason about instructions.
-
-Two things the scanner must handle deliberately, both noted in the assessment:
-
-* **Multi-release jars.** A jar with `META-INF/versions/N/` holds different class files, and possibly
-  different module descriptors, per Java release. A scan must record which release it modelled or it
-  silently describes a configuration nobody runs. This is also a real instance of the occupancy design
-  - one thing being at multiple coordinates in a multi-dimensional space with delta transitions between them.
-* **Automatic modules**, whose names come from `Automatic-Module-Name` or the filename rather than
-  from a descriptor.
-
-Loaders are expected to be slow and produce large models. A moderate application yields thousands of
-types and tens of thousands of members, which makes this a useful stress case for anything querying
+Loaders are expected to produce large models: a moderate application yields thousands of types and
+tens of thousands of members, which makes the model a useful stress case for anything that queries
 it.
 
 ## Applications
 
-**Ask a running process what it is.** The structural question has no observability signal: logs,
-metrics, traces and profiles all describe behaviour over time, and none describes composition. This
-model plus a query language is that missing view.
+**Ask a running process what it is.** Logs, metrics, traces and profiles describe behavior over
+time; none describes composition. This model is the missing view.
 
 **Deployed versus running.** The difference between a dependency tree and a resolved module graph,
 computed rather than argued.
 
-**Estate reports that are currently expensive.** Which class file versions are present across an
-estate, which modules are automatic, which packages are opened for deep reflection and to whom.
+**Reports that are expensive today.** Which class file versions are present, which modules are
+automatic, which packages are opened for deep reflection and to whom.
 
 **Version questions with an answer.** With layers, which version of a module a given piece of code
-actually reads. On a classpath this is genuinely unanswerable.
+actually reads. On a class path this is genuinely unanswerable.
 
 **A join point for telemetry.** Because identity is the JVM's own, a stack trace, a JFR event, a
-profiler's hot list and an OpenTelemetry span resolve to model elements without a mapping. Combined
-with the [telemetry model](https://telemetry.models.nasdanika.org/), a slow span resolves to a method, in a module,
-from an artifact, owned by a team. Static analysis cannot see reflective calls and runtime cannot
-see what was never exercised, so the union is a call graph with evidence rather than inference.
+profiler's hot list and an OpenTelemetry span resolve to model elements without a mapping. A slow
+span resolves to a method, in a module, from an artifact, owned by a team. Static analysis cannot
+see reflective calls and the runtime cannot see what was never exercised, so the union is a call
+graph with evidence rather than inference.
 
-**Coverage that knows what runs.** The [coverage model](https://coverage.models.nasdanika.org/)
-sits on this spine, with JaCoCo results collected from pipeline builds and attached to types and
-members. Because a live loader also records what was actually loaded and executed, two lists become
-available that a coverage tool alone cannot produce: **covered but never loaded**, which is tests
-for code that does not run, and **loaded but not covered**, which is the real risk list ranked by
-production usage. Aggregate counters attach to JVM elements; line-level detail stays in the coverage
-model, which is where it belongs since this model carries no source information.
+**Coverage that knows what runs.** With a live loader recording what was loaded and coverage
+attached from builds, two lists appear that a coverage tool alone cannot produce: **covered but
+never loaded**, tests for code that does not run, and **loaded but not covered**, the real risk
+list.
 
-This consumes the same reports a coverage dashboard does and answers different questions. It does
-not attempt any of what such tools actually sell: no IDE integration, no issue tracker, no rules
-engine, no new-code quality gate.
+**The JVM as files.** A snapshot presented as a volume and served over HTTP or WebDAV is a running
+system that an agent reads with the file tools it already has.
 
-**Test material.** A real JVM graph is a better corpus for a query engine than anything hand
-authored: realistic size, deep containment, heavy cross-referencing, and many instances of few
-classes. Coverage adds the dimension that varies between builds, which is what makes semantic diff
-demonstrable.
+**Test material.** A real JVM graph is a better corpus for a query engine than anything written by
+hand: realistic size, deep containment, heavy cross-referencing, and many instances of few classes.
 
 ## Documentation, and a licensing constraint
 
-Element documentation is intended to be generated, and there is a constraint that applies to every
-element here. Java SE specifications sit under Oracle's terms, and OpenJDK Javadoc lives in source
-under GPLv2 with Classpath Exception; neither is compatible with publishing derived documentation
-text under EPL-2.0.
+Element documentation is meant to be generated, and a constraint applies to every element here. The
+Java SE specifications are under Oracle's terms, and OpenJDK's Javadoc is under GPLv2 with the
+Classpath Exception; neither permits publishing derived text under the runtime's license.
 
-This does not block generated documentation, because concepts are not copyrightable and expression
-is. It does mean an assistant asked to describe `requires transitive` may reproduce Javadoc it
-memorised. **Generate original prose, never paste, and check output for verbatim overlap with the
+That does not block generated documentation, because concepts are not copyrightable and expression
+is. It does mean that an assistant asked to describe `requires transitive` may reproduce Javadoc it
+memorized. **Generate original prose, never paste, and check output for verbatim overlap with the
 official text before publishing.**
 
-## Relation to other Nasdanika work
+## Status
 
-Base classes come from [NxCore](https://nxcore.models.nasdanika.org/). 
-Above it sit a Java source model and a bytecode model, both adding to these elements rather
-than restating them, and a [Maven model](https://maven.models.nasdanika.org/) maps artifacts to the modules they provide.
-The [coverage model](https://coverage.models.nasdanika.org/) moves onto this spine as the first instance
-of a general pattern: measurements produced by an external tool, keyed by element URI, merged onto
-structure. The [telemetry model](https://telemetry.models.nasdanika.org/) is the second instance of the same pattern,
-which means the attachment mechanism is built once and each further source is close to free. It
-projects to [Meta](https://meta.models.nasdanika.org/) and is the intended second data source for the
-[Cypher](https://cypher.models.nasdanika.org/) engine.
+**Available:** the model, with generated code, contributed as a Java service.
+
+**Planned:** the live loader, the class file scanner, annotations, the projection to Meta, and
+queries over snapshots.
+
+## Using it
+
+Import the runtime's BOM and depend on the module:
+
+```xml
+<dependency>
+    <groupId>org.nasdanika.sdk.runtime.models.jvm</groupId>
+    <artifactId>model</artifactId>
+</dependency>
+```
+
+## Further reading
+
+The Nasdanika SDK Runtime book, chapter "The JVM model", which builds a snapshot of a module layer
+and asks it which modules read what they never required.

@@ -181,13 +181,6 @@ Each creates a pump and pumps it on the calling thread until the result is compl
 Inside a larger asynchronous computation, call `load(requirement, pump)` with the computation's pump instead, so that resolution is ordered and settled with the rest of the work.
 `load(requirement)` without a pump resolves on virtual threads, for subscribers that do not pump.
 
-ifdef::editor-notes[]
-[IMPORTANT,caption="Editor's note"]
-====
-A resolution whose factories attach results to objects after emitting them, as `SubCommandCapabilityFactory` attaches sub-commands to a command line in `thenAccept`, finishes that work after `loadAll` has returned. The command line examples settle the pump instead (<<commands>>). Worth deciding whether such factories should emit only complete results, which keeps `loadAll` correct, or whether `loadAll` should settle rather than join.
-====
-endif::[]
-
 === Composing sources and loaders
 
 A loader resolves against a *source* of factories, and the two can be composed separately, with different effects.

@@ -43,13 +43,6 @@ On top of OTLP, the model adds what makes telemetry navigable as a graph:
 * *Changes live in their spans.* A span contains the description of the model changes recorded while it was current.
 * *References resolve.* Span links and the change classes reference spans as objects, not only by id, and an exemplar references the span that produced a measurement.
 
-ifdef::editor-notes[]
-[IMPORTANT,caption="Editor's note"]
-====
-The module's `doc/readme.md` describes the tower version of this model: a span extends the work model's `AbstractWork`, a resource is an actor, and metrics are accounting entries. The Xcore in the runtime is the OTLP-faithful model described here, with no dependency on work, role or accounting. The readme should say which is current and which is the plan.
-====
-endif::[]
-
 === Exporting to the model
 
 The model exporters are OpenTelemetry SDK exporters: `ModelSpanExporter`, `ModelLogRecordExporter` and `ModelMetricExporter`, in the module `org.nasdanika.sdk.runtime.models.telemetry:exporters`.

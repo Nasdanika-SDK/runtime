@@ -36,13 +36,15 @@ include::front/preface.adoc[]
 = The Why
 
 [partintro]
-Why the runtime exists, the principles it follows, and how its parts fit together. No code is needed to read this part; it is the argument the rest of the book makes concrete.
+Why the runtime exists, the principles it follows, how it is built with an AI assistant, and how its parts fit together. No code is needed to read this part; it is the argument the rest of the book makes concrete.
 
 include::chapters/01-more-structure.adoc[]
 
 include::chapters/02-principles.adoc[]
 
-include::chapters/03-at-a-glance.adoc[]
+include::chapters/03-built-with-ai.adoc[]
+
+include::chapters/04-at-a-glance.adoc[]
 
 [#foundations]
 = Foundations
@@ -50,15 +52,15 @@ include::chapters/03-at-a-glance.adoc[]
 [partintro]
 The `common` module and the habits the rest of the runtime is built on: models without an IDE, generic types matched at run time, reactive flows on the JDK, and the capability framework that finds what code needs.
 
-include::chapters/04-getting-started.adoc[]
+include::chapters/05-getting-started.adoc[]
 
-include::chapters/05-models.adoc[]
+include::chapters/06-models.adoc[]
 
-include::chapters/06-generic-types.adoc[]
+include::chapters/07-generic-types.adoc[]
 
-include::chapters/07-flows.adoc[]
+include::chapters/08-flows.adoc[]
 
-include::chapters/08-capabilities.adoc[]
+include::chapters/09-capabilities.adoc[]
 
 [#observability]
 = Observability
@@ -66,11 +68,11 @@ include::chapters/08-capabilities.adoc[]
 [partintro]
 Telemetry as part of the code: how the runtime instruments itself, how to watch a unit of work while it runs, and how telemetry and recorded changes become models kept next to the models they describe.
 
-include::chapters/09-telemetry.adoc[]
+include::chapters/10-telemetry.adoc[]
 
-include::chapters/10-watching.adoc[]
+include::chapters/11-watching.adoc[]
 
-include::chapters/11-telemetry-model.adoc[]
+include::chapters/12-telemetry-model.adoc[]
 
 [#files]
 = Files and Serving
@@ -78,9 +80,9 @@ include::chapters/11-telemetry-model.adoc[]
 [partintro]
 Volumes, the runtime's small file abstraction, and what they make possible: models loaded from anywhere, content written on demand, and anything presented as files over HTTP and WebDAV.
 
-include::chapters/12-volumes.adoc[]
+include::chapters/13-volumes.adoc[]
 
-include::chapters/13-serving.adoc[]
+include::chapters/14-serving.adoc[]
 
 [#command-line]
 = The Command Line
@@ -88,27 +90,29 @@ include::chapters/13-serving.adoc[]
 [partintro]
 Commands contributed by modules, found as capabilities and wired to their parents by generic type, and the launcher that runs them as units of work with their telemetry saved as models.
 
-include::chapters/14-commands.adoc[]
+include::chapters/15-commands.adoc[]
 
-include::chapters/15-wiring.adoc[]
+include::chapters/16-wiring.adoc[]
 
-include::chapters/16-distributions.adoc[]
+include::chapters/17-distributions.adoc[]
 
 [#models-in-the-runtime]
 = Models in the Runtime
 
 [partintro]
-The models that ship with the runtime: a Groovy DSL to author any of them, the core model of identity, documentation and provenance, Meta, the JVM model, and the models that make the web a generation target.
+The models that ship with the runtime: a Groovy DSL to author any of them, the core model of identity, documentation and provenance, Meta, the JVM model, the models that make the web a generation target, and user interfaces assembled from views chosen by the class of what they show.
 
-include::chapters/17-groovy-dsl.adoc[]
+include::chapters/18-groovy-dsl.adoc[]
 
-include::chapters/18-core-model.adoc[]
+include::chapters/19-core-model.adoc[]
 
-include::chapters/19-meta.adoc[]
+include::chapters/20-meta.adoc[]
 
-include::chapters/20-jvm.adoc[]
+include::chapters/21-jvm.adoc[]
 
-include::chapters/21-web.adoc[]
+include::chapters/22-web.adoc[]
+
+include::chapters/23-polymorphic-ui.adoc[]
 
 [#looking-ahead]
 = Looking Ahead
@@ -116,7 +120,7 @@ include::chapters/21-web.adoc[]
 [partintro]
 Where the runtime is going: what comes next, what is designed, and the North Star that orders the work.
 
-include::chapters/22-vision.adoc[]
+include::chapters/24-vision.adoc[]
 
 include::appendices/a-modules.adoc[]
 

@@ -117,14 +117,29 @@ One class can declare many such members behind a single entry in `module-info`, 
 The honest caveat goes with it: objects carry no type arguments at run time, so what is matched is always a declaration, never an instance.
 A method declared to return `Supplier<Library>` is matched as one, whatever it actually returns.
 
-=== A model is a source file, not a module
+=== Micro-models and nano-models
 
-A Maven module holds as many Xcore models as are reused and changed together.
-One model per project was an Eclipse convention, and one repository per model came from each model having its own documentation site.
-Neither reason applies: the Xtext Maven plugin generates every `.xcore` file under its source root in one go, and the SDK is consumed as one unit with one body of documentation.
+Models rot the way applications do: they accrete concepts until every consumer pays for every concept.
+The answer is the one the industry found for applications and for code: decompose along concerns, and make the dependencies explicit.
+Microservices decompose deployment, Java modules decompose code, and micro-models decompose meaning.
 
-A new module is justified by a dependency the others do not want, a different set of consumers, or a different maturity.
-That is why the telemetry model is one module with four models in it (core, traces, logs and metrics), and the exporters, which need the OpenTelemetry SDK, are a separate module.
+A *micro-model* is a small model with a single concern, explicit dependencies on other models, and no knowledge of its consumers, in a module of its own, so that it is versioned, released and adopted on its own.
+Extension happens at the edge: a model extends the models below it, and they never learn about it.
+Meta and the JVM model are micro-models.
+
+A *nano-model* is smaller still: one of several models in one module, because they are reused and changed together.
+The core model and its `kind` package are two nano-models in one module; telemetry, traces, logs and metrics are four in another.
+The Xtext Maven plugin generates every `.xcore` file under its source root in one go, so a nano-model costs one file.
+One model per project was an Eclipse convention, and nothing in the runtime needs it.
+
+A new module, rather than a new file, is justified by a dependency the others do not want, a different set of consumers, or a different maturity.
+The telemetry exporters need the OpenTelemetry SDK, so they are a module of their own, while the four telemetry models share one.
+
+The size of a model has a budget, and the budget is attention.
+Code hides its implementation behind an interface; a model hides nothing, because its concepts are its interface.
+So a model should fit in the head of the team that maintains it, and its core concepts should fit in one diagram that a newcomer understands in a quarter of an hour.
+A model whose diagram outgrows a page is two models; a model whose diagram teaches nothing that a package name would not is a package that lost its way.
+The same budget makes a model fit in the context of an AI assistant (<<built-with-ai>>).
 
 === One identity per module
 
@@ -141,16 +156,6 @@ Every module has one path in the repository, and every name it has is derived fr
 
 One rule means any identity can be computed from the others, and someone who has seen one module knows where to find the next.
 It also removes name and version clashes with the older Nasdanika organizations by construction: nothing in the runtime shares a Maven group, a module name or a package with them, so the old and the new line can sit on one machine during a migration.
-
-ifdef::editor-notes[]
-[IMPORTANT,caption="Editor's note"]
-====
-Two places where the code and the design notes disagree:
-
-* The runtime README gives Maven coordinates as `org.nasdanika.sdk.runtime:models-inference` (the path with `/` as `-`). The poms use a group per directory (`org.nasdanika.sdk.runtime.models.telemetry:model`). The table above describes the poms. Decide which is the rule before the first release to Central, since coordinates cannot be redirected.
-* The README says the OpenTelemetry instrumentation scope is the JPMS module name. The runtime's own spans and log records all use one scope, `+Telemetry.INSTRUMENTATION_SCOPE = "org.nasdanika.sdk.runtime"+`, while the launcher uses `org.nasdanika.sdk.cli.launcher`. The book's examples follow the README and use their module name.
-====
-endif::[]
 
 === Pull, don't push
 
@@ -220,6 +225,9 @@ The runtime borrows freely, and saying from where helps to read it.
 | Blocking by pumping | `ForkJoinTask.join`, SWT's `readAndDispatch`, Kotlin's `runBlocking`
 | A Published Language | Domain-Driven Design
 | Diagrams as views of a model | The C4 model, and "Beyond Diagrams"
+| Micro-models | Microservices and Java modules, applied to meaning
+| User interfaces chosen by the class of what they show | JFace content and label providers, EMF.Edit item providers, Naked Objects
+| Documentation anchored to model elements | Wikis, with the model as the site map
 |===
 
-With the principles stated, the next chapter puts the pieces on one page: the modules, how they depend on each other, and what happens when a unit of work runs.
+With the principles stated, the next chapter tells how the runtime is built, by one engineer and an AI assistant, and why that changes which technologies are practical.

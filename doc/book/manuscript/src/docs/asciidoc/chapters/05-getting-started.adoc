@@ -222,10 +222,11 @@ They are built and tested with the runtime, before the book is rendered, so a li
 | `recording` | <<telemetry-model>>
 | `volume` | <<volumes>>, <<serving>>
 | `cli` | <<commands>>, <<wiring>>
-| `dsl` | <<groovy-dsl>>
+| `dsl` | <<groovy-dsl>>, <<core-model>>
 | `meta` | <<meta>>
 | `jvm` | <<jvm>>
 | `web` | <<web>>
+| `ui` | <<web>>, <<polymorphic-ui>>
 |===
 
 To build and test one of them with what it depends on, from the runtime's root:

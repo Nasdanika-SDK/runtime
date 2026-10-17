@@ -790,7 +790,7 @@ Evaluating script
 
 This section shows how to add DSL support for a **new metamodel** - i.e. a new file qualifier (like `ecore`) that binds the generic reflective DSL to a
 specific `EPackage` and installs that package's classes as entry points. 
-The worked example is the Ecore binding itself: `EcoreResourceContentsHandler` and `EcoreResourceContentsHandlerCapabilityFactory`.
+The worked example is the Ecore binding itself: `EcoreResourceContentsHandler` and the `ecore` method of `GroovyCapabilityFactory`.
 
 #### 2.1 The handler / factory pair
 

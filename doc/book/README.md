@@ -9,19 +9,20 @@ It is written in AsciiDoc, built with the runtime, and published on Leanpub as P
 doc/                     Documentation parent: deploy, javadoc and sources are skipped
   book/
     examples/            One Maven module per topic, compiled and tested with the runtime
-      start/             Chapter 4: a first model, saving and loading, watching telemetry
-      library/           Chapter 5 and 18: the library model in Xcore, used by most examples
-      generics/          Chapter 6: types, type tokens, adapters
-      flow/              Chapter 7: flows, the pump, transformations
-      capability/        Chapter 8: requirements, factories, loaders, the CSV case study
-      telemetry/         Chapters 9 and 10: spans, units of work, live span trees
-      recording/         Chapter 11: telemetry and recorded changes saved as models
-      volume/            Chapters 12 and 13: volumes, content, HTTP, WebDAV
-      cli/               Chapters 14 and 15: commands, groups, mix-ins, wiring
-      dsl/               Chapters 17 and 18: the Groovy DSL, evaluators
-      meta/              Chapter 19: a vocabulary in Meta and two projections
-      jvm/               Chapter 20: a JVM snapshot
-      web/               Chapter 21: a Bootstrap site generated from a model
+      start/             Chapter 5: a first model, saving and loading, watching telemetry
+      library/           Chapters 6 and 19: the library model in Xcore, used by most examples
+      generics/          Chapter 7: types, type tokens, adapters
+      flow/              Chapter 8: flows, the pump, transformations
+      capability/        Chapter 9: requirements, factories, loaders, the CSV case study
+      telemetry/         Chapters 10 and 11: spans, units of work, live span trees
+      recording/         Chapter 12: telemetry and recorded changes saved as models
+      volume/            Chapters 13 and 14: volumes, content, HTTP, WebDAV
+      cli/               Chapters 15 and 16: commands, groups, mix-ins, wiring
+      dsl/               Chapters 18 and 19: the Groovy DSL, evaluators
+      meta/              Chapter 20: a vocabulary in Meta and two projections
+      jvm/               Chapter 21: a JVM snapshot
+      web/               Chapter 22: a Bootstrap site generated from a model
+      ui/                Chapters 22 and 23: React from Java without npm, polymorphic UI
     manuscript/
       src/docs/asciidoc/ book.adoc, front/, chapters/, appendices/, images/, diagrams/
       src/docs/themes/   nasdanika-theme.yml, the PDF theme (7 x 9.25 in)

@@ -99,6 +99,25 @@ include::{examplesdir}/library/src/test/java/org/example/library/TestCoreFeature
 Beyond the documentation and its reference, `docContents` adds a list of contents, inline or by reference, each with a content type, and `docSections` adds a tree of titled sections.
 Documentation can be written where it belongs, a sentence inline, a chapter in a Markdown file next to the model, and still be assembled into one site.
 
+==== Micro-wikis
+
+Documentation anchored to model elements grows into a way of sharing knowledge of its own: the micro-wiki.
+Every element of a model anchors its own documentation space, a Markdown page referenced by `docRef`, with sections and contents beside it.
+
+A wiki has depth and is easy to contribute to, and it has no structure: pages multiply, links rot, and nobody knows which page is the one about a given thing.
+A model has structure, and it is a poor place for long prose.
+A micro-wiki takes the depth and the ease of contribution of the wiki, and gives it what it never had: the model as its site map.
+Navigation, cross-references and diagrams are generated from the model, and the pages are where people write.
+
+Two properties make micro-wikis worth the name:
+
+* *Documentation cannot drift away from what it describes*, because it lives at it. Rename an element and its page moves with it; remove the element and the page goes too, in the same change.
+* *Generated stubs say which file documents what.* A documentation stub per element tells people, and assistants, which file to edit when they learn something about that element. An assistant asked to map a set of guidelines onto a model edits the stub of each element with the paragraphs that govern it, and the published site shows, for every element, the rules that apply to it.
+
+Micro-models decompose meaning (<<principles>>); micro-wikis decompose the documentation of that meaning, along the same lines.
+The core model provides the structure today.
+Generating micro-wiki sites, with stubs and a site map, was part of the previous generation of Nasdanika's tools and is planned for the runtime [.planned]#PLANNED#.
+
 === Provenance
 
 `Marked` elements carry markers that record where an element, or one feature of it, came from:
@@ -143,13 +162,6 @@ It prints "The Art of Computer Programming", "On the Origin of Species" and "War
 
 The planned evaluators are declared in the model, so that models can contain them today, and throw `UnsupportedOperationException` when evaluated.
 Their implementations are to be loaded as services, which keeps the core model free of the engines' dependencies.
-
-ifdef::editor-notes[]
-[IMPORTANT,caption="Editor's note"]
-====
-The module's `doc/readme.md` describes more than the Xcore defines. It describes a time dimension, `Temporal`, `Period` and `NamedPeriod`, which is not in `core.xcore`, and Git markers "populated automatically when loading models" by a `DslMarker`, which does not exist in the runtime. It calls the model NxCore, and does not mention `XPathEvaluator` or that three of the four evaluators are not implemented. The `kind` package next to the core package has one placeholder interface. The readme should say which parts are current and which are the plan.
-====
-endif::[]
 
 === Why a shared core matters
 

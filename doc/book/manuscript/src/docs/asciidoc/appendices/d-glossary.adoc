@@ -50,11 +50,20 @@ A value that a parent produces for a child while the child executes, in the chil
 Explaining listener::
 A listener that tells, line by line, which factories a capability loader asked about a requirement, which declined, and what each produced (<<capabilities>>).
 
+Import map::
+A script in a web page that maps bare module specifiers, such as `react`, to URLs, so that a browser loads libraries as ES modules from a CDN with no build step (<<web>>).
+
 Marker::
 A record of where an element, or one of its features, came from: a location, a position, a date, a digest, or a commit (<<core-model>>).
 
 Meta::
 The language-neutral type system of the runtime: packages, classes, features, operations and type references, to write a vocabulary once and project it to many languages (<<meta>>).
+
+Micro-model::
+A small model with a single concern, explicit dependencies on other models and no knowledge of its consumers, in a module of its own (<<principles>>).
+
+Micro-wiki::
+Documentation anchored to model elements: a page per element, with the model as the site map, so that documentation cannot drift from what it describes and everyone knows which file to edit (<<core-model>>).
 
 Mix-in::
 A set of options contributed to a command, by a factory or by a picocli `@Mixin` field (<<commands>>).
@@ -62,11 +71,17 @@ A set of options contributed to a command, by a factory or by a picocli `@Mixin`
 Model tower::
 The stack of small models, each extending the ones below: the core model at the bottom, then Meta, the JVM model, telemetry and the floors above (<<vision>>).
 
+Nano-model::
+One of several small models in one module, because they are reused and changed together, such as the four telemetry models (<<principles>>).
+
 nsURI::
 The namespace URI of an EMF package: its identity, under `https://runtime.sdk.nasdanika.org/` for the runtime's models (<<principles>>).
 
 Planes::
 The data plane where data sits, the semantic plane of models with resolved references, and the presentation plane of what people and agents read, separated by volumes, with commands writing down (<<vision>>).
+
+Polymorphic UI::
+A user interface that renders each element with the view of its class, or of its nearest superclass that has one, or with a reflective view of last resort, the way a method call dispatches on the class of its receiver (<<polymorphic-ui>>).
 
 Published Language::
 In Domain-Driven Design, a documented, shared vocabulary that bounded contexts translate into and out of. Meta is one that is machine-checkable (<<meta>>).
@@ -79,6 +94,9 @@ Code that depends on the JDK, EMF core and the OpenTelemetry API and nothing els
 
 Qualifier::
 A dot-separated part of a file name, read right to left, that selects a handler for a resource's contents: `reading-group.library.groovy` has the qualifiers `groovy` and `library` (<<capabilities>>, <<groovy-dsl>>).
+
+Reflective view::
+The view of last resort in a polymorphic user interface: what the metamodel says about an element, its class and the features it has values for (<<polymorphic-ui>>).
 
 Requirement::
 A type, possibly generic, and payloads that select and parameterize what is required (<<capabilities>>).

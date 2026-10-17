@@ -104,7 +104,7 @@ An exporter takes its parent by class:
 include::{examplesdir}/cli/src/main/java/org/example/cli/MarkdownExporter.java[tag=markdown,indent=0]
 ----
 
-`nsd library export` prints `csv` and `markdown`, and `nsd library export markdown` prints the library as Markdown.
+`nsdk library export` prints `csv` and `markdown`, and `nsdk library export markdown` prints the library as Markdown.
 A module that contributes a `JsonExporter` adds a format without touching the export command.
 
 === Why export hides its library
