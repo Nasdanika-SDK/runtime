@@ -12,7 +12,7 @@ Step back and there is no structure that connects them.
 The definition of a customer lives in a database schema, a JSON Schema, a partner's XML Schema, a Java class, a Confluence table and three spreadsheets, and nothing relates them.
 Each is a projection of a model that nobody ever wrote down.
 
-This chapter is about why that happens, what changed recently that makes it fixable, and what the Nasdanika SDK Runtime is in that picture.
+This chapter is about why that happens, what changed recently that makes it fixable, what kind of structure lasts, and what the Nasdanika SDK Runtime is in that picture.
 
 === Structure has been expensive
 
@@ -74,6 +74,18 @@ One of them starts lacing up his running shoes. "You cannot outrun a bear!" "I d
 Businesses do not have to outrun AI either.
 They have to harness it: ground it in their own terms, systems and rules, so that people and assistants speak the same language.
 The harness is structure.
+
+=== Small, formal, composable
+
+Cheap structure is necessary but not sufficient: structure also has to last.
+It lasts when it has the three properties that keep code and its libraries alive while the documents around them rot: it is small, formal and composable.
+Take away any one of them and the failure is familiar.
+Small and formal but not composable is the monolithic repository of an enterprise architecture tool.
+Small and composable but not formal is the wiki that drifts the day it is written.
+Formal and composable but not small is the canonical enterprise data model that nobody updates.
+
+The runtime is built to make all three cheap.
+Micro-models keep structure small (<<principles>>), Xcore keeps it formal (<<models>>), and models that reference each other across repositories, with capabilities and commands that find each other by type, keep it composable (<<capabilities>>, <<wiring>>).
 
 === What the runtime is
 

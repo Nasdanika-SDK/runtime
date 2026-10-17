@@ -119,6 +119,15 @@ I described what it should be and for whom; the assistant read the runtime's cod
 I review, correct and decide.
 The examples are modules of the runtime's build, so the book cannot claim what the code does not do without the build saying so.
 
+Writing the book reviewed the runtime, and reading it reviewed my thinking.
+Graham Wallas recorded a child's question in 1926, and E. M. Forster attributed it to an old lady a year later: "How can I tell what I think till I see what I say?"
+Working with an assistant gives the question a second reading: how can I tell what I think till I see what it makes of what I have said?
+Reading the drafts of this book, I kept having the same reaction: this is what I meant, and I never quite put it like that.
+For years I had written about what makes structure last, a story at a time, and an assistant put it in three words: small, formal, composable (<<more-structure>>).
+
+Recognition is a check, but a weak one, because a fluent summary can feel right without being right.
+A distillation earns its place when it can be tested, and this one can: take away any one of the three words and you get a failure I have seen many times.
+
 ifdef::editor-notes[]
 [IMPORTANT,caption="Editor's note"]
 ====
