@@ -9,14 +9,14 @@ This edition describes Nasdanika SDK Runtime {runtime-version}. Every code listi
 
 Copyright (C) 2026 Pavel Vlasov.
 
-The code examples are licensed under the Eclipse Public License 2.0, the same license as the runtime.
+The text and figures of this book are licensed under the https://creativecommons.org/licenses/by/4.0/[Creative Commons Attribution 4.0 International License] (CC BY 4.0).
+You may share and adapt them for any purpose, commercial purposes included, provided you give appropriate credit, provide a link to the license, and indicate if you made changes.
+A suggested credit: "Pavel Vlasov, _Nasdanika SDK Runtime: More Structure with Less Effort_, licensed under CC BY 4.0", with a link to {runtime-repo}.
 
-ifdef::editor-notes[]
-[IMPORTANT,caption="Editor's note"]
-====
-Choose a license for the text before publishing. "Beyond Diagrams" is "All rights reserved". For a free book with optional payment on Leanpub, CC BY-NC-ND 4.0 keeps the text intact while allowing sharing; CC BY 4.0 is the most open. The manuscript lives in an EPL-2.0 repository, so state the text license explicitly here and in the repository's `doc/book/README.md`.
-====
-endif::[]
+The code examples are licensed under the Eclipse Public License 2.0, the license of the runtime.
+In addition, you may use the code of this book's listings in your own programs and documentation without asking for permission and without attribution.
+
+Neither license covers the Nasdanika name or logo: CC BY 4.0 grants no trademark rights.
 
 Eclipse, EMF and Xtext are trademarks of the Eclipse Foundation. Java and OpenJDK are trademarks or registered trademarks of Oracle and its affiliates. OpenTelemetry is a project of the Cloud Native Computing Foundation. Other names may be trademarks of their owners. Their use here identifies the technologies the runtime builds on and implies no endorsement.
 

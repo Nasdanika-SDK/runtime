@@ -6,6 +6,10 @@ _EMF: Eclipse Modeling Framework_ explained not only how to generate code from a
 _The C4 model for visualising software architecture_ took something every architect does badly, drawing boxes and lines, and gave it a vocabulary small enough to remember.
 Neither is a reference manual. Both are arguments, made one chapter at a time, with enough "how" to make the "why" concrete.
 
+Two books about programming languages shaped how I build software too, from the side of the code.
+Bjarne Stroustrup's _The {cpp} Programming Language_, in its third and special editions, teaches its key features together with the design techniques they exist to support, gives its last part to design, and ends each chapter with numbered advice.
+Bruce Eckel's _Thinking in Java_ teaches a way of thinking rather than a syntax; Eckel put it on the web while he was writing it, gave its early editions away, and let what readers sent him shape the editions that followed.
+
 This book tries to do the same for the Nasdanika SDK Runtime.
 
 The runtime is the part of the Nasdanika SDK you install first and build everything else on: models defined in Xcore and handled by EMF, a capability framework that finds what is needed by generic type, telemetry that is part of the code rather than bolted on, volumes that present anything as files, and a command line assembled from whatever modules happen to be present.

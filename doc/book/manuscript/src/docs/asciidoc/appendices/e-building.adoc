@@ -74,4 +74,5 @@ java src/cover/Cover.java \
 
 The book is published on Leanpub as a "Bring Your Own Book" title: Leanpub does not build it; each release uploads the PDF and the EPUB built here, and a sample if one is wanted.
 The minimum price is zero with a suggested price, so the book is free and readers can choose to pay.
+The text and figures are licensed under CC BY 4.0 and the examples under EPL-2.0, as the colophon states; the legal code of CC BY 4.0 is in `doc/book/manuscript/LICENSE`.
 A release of the book follows a release of the runtime, and has its version.

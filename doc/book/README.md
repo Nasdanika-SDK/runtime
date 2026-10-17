@@ -3,6 +3,17 @@
 The book about the runtime: why it exists, its key capabilities, and how they work at a high level.
 It is written in AsciiDoc, built with the runtime, and published on Leanpub as PDF and EPUB.
 
+## License
+
+| What | License |
+|---|---|
+| The text and figures of the book: `manuscript/src/docs/asciidoc` | [CC BY 4.0](https://creativecommons.org/licenses/by/4.0/), legal code in [`manuscript/LICENSE`](manuscript/LICENSE) |
+| The examples, the build files, the PDF theme and the cover generator | EPL-2.0, the license of the runtime ([`LICENSE`](../../LICENSE)) |
+
+Readers may also use the code of the book's listings in their own programs and documentation without
+permission and without attribution, as the colophon says. Neither license covers the Nasdanika name
+or logo.
+
 ## Layout
 
 ```
@@ -106,7 +117,5 @@ The single-page HTML is the edition to give a coding assistant.
 
 ## Open decisions
 
-- **The license of the text.** The runtime is EPL-2.0; a book is usually licensed separately, for
-  example CC BY 4.0 or CC BY-NC-ND 4.0. The colophon has an editor's note until this is decided.
 - **Central coordinates.** The getting-started chapter assumes the runtime is on Maven Central;
   until it is, readers build it first.

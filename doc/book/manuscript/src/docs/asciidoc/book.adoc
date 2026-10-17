@@ -23,6 +23,7 @@ Pavel Vlasov
 :runtime-repo: https://github.com/Nasdanika-SDK/runtime
 :runtime-site: https://runtime.sdk.nasdanika.org
 :medium: https://medium.com/nasdanika
+:copyright: Copyright (C) 2026 Pavel Vlasov. Text and figures licensed under CC BY 4.0; code examples under EPL-2.0.
 // Defaults for previews in an editor; the Maven build sets these
 ifndef::examplesdir[:examplesdir: ../../../../examples]
 ifndef::runtime-version[:runtime-version: 2026.10.0]
