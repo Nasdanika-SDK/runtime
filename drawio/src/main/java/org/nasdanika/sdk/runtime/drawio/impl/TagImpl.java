@@ -52,7 +52,7 @@ public class TagImpl implements Tag {
 					}
 				}
 			}
-		});
+		}, null);
 		return ret;
 	}
 

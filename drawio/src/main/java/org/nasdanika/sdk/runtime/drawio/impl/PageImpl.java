@@ -3,28 +3,23 @@ package org.nasdanika.sdk.runtime.drawio.impl;
 import java.io.IOException;
 import java.net.URLEncoder;
 import java.nio.charset.StandardCharsets;
-import java.util.Collections;
 import java.util.HashMap;
+import java.util.LinkedHashMap;
 import java.util.List;
 import java.util.Map;
-import java.util.concurrent.CompletableFuture;
-import java.util.function.Function;
+import java.util.function.BiFunction;
 
 import javax.xml.parsers.ParserConfigurationException;
 import javax.xml.transform.TransformerException;
 
 import org.eclipse.emf.common.util.URI;
-import org.eclipse.emf.ecore.EObject;
-import org.nasdanika.common.Realm;
+import org.nasdanika.sdk.runtime.drawio.ConnectionBase;
 import org.nasdanika.sdk.runtime.drawio.Document;
 import org.nasdanika.sdk.runtime.drawio.Document.Context;
 import org.nasdanika.sdk.runtime.drawio.Element;
 import org.nasdanika.sdk.runtime.drawio.Model;
 import org.nasdanika.sdk.runtime.drawio.ModelElement;
 import org.nasdanika.sdk.runtime.drawio.Page;
-import org.nasdanika.sdk.runtime.drawio.model.ModelFactory;
-import org.nasdanika.sdk.runtime.drawio.model.Tag;
-import org.nasdanika.persistence.Marker;
 import org.xml.sax.SAXException;
 
 class PageImpl extends ElementImpl<Page> implements Page {
@@ -60,8 +55,12 @@ class PageImpl extends ElementImpl<Page> implements Page {
 	}
 	
 	@Override
-	public List<Model> getChildren() {
-		return Collections.singletonList(getModel());
+	public <T> T accept(BiFunction<Element<?>, Map<Element<?>, T>, T> visitor, ConnectionBase connectionBase) {
+		Map<org.nasdanika.sdk.runtime.drawio.Element<?>, T> childResults = new LinkedHashMap<>();
+		if (model != null) {
+			childResults.put(model, model.accept(visitor, connectionBase));
+		}
+		return visitor.apply(this, childResults);
 	}
 
 	@Override
@@ -149,41 +148,6 @@ class PageImpl extends ElementImpl<Page> implements Page {
 		return ((DocumentImpl) getDocument()).getMarkerLocation();
 	}
 
-	org.nasdanika.sdk.runtime.drawio.model.Page toModelPage(
-			ModelFactory factory, 
-			Function<org.nasdanika.persistence.Marker, org.nasdanika.ncore.Marker> markerFactory, 
-			Function<Element<?>, CompletableFuture<EObject>> modelElementProvider) {
-		org.nasdanika.sdk.runtime.drawio.model.Page mPage = factory.createPage();
-		modelElementProvider.apply(this).complete(mPage);
-		mPage.setName(getName());
-		mPage.setId(getId());
-		
-		mPage.setModel(((ModelImpl) getModel()).toModelModel(
-				factory, 
-				markerFactory, 
-				modelElementProvider,
-				tag -> {
-					Tag mTag = mPage.getTag(tag.getName());
-					if (mTag == null) {
-						mTag = ModelFactory.eINSTANCE.createTag();
-						mTag.setName(tag.getName());
-						for (Marker marker: getMarkers()) {
-							org.nasdanika.ncore.Marker tagMarker = markerFactory.apply(marker);
-							tagMarker.setLocation(tagMarker.getLocation() + ", tag=" + tag.getName());
-							mTag.getMarkers().add(tagMarker);
-						}
-						
-						mPage.getTags().add(mTag);
-					}
-					return mTag;
-				}));
-		
-		for (Marker marker: getMarkers()) {
-			mPage.getMarkers().add(markerFactory.apply(marker));
-		}
-		return mPage;
-	}
-
 	@Override
 	public Map<String, org.nasdanika.sdk.runtime.drawio.Tag> getTags() {
 		Map<String, org.nasdanika.sdk.runtime.drawio.Tag> ret = new HashMap<>();
@@ -194,7 +158,7 @@ class PageImpl extends ElementImpl<Page> implements Page {
 					ret.put(tag.getName(), tag);
 				}
 			}
-		});
+		}, null);
 		return ret;
 	}
 
@@ -212,11 +176,6 @@ class PageImpl extends ElementImpl<Page> implements Page {
 	public void remove() {
 		org.w3c.dom.Element toRemove = getElement();
 		toRemove.getParentNode().removeChild(toRemove);
-	}
-
-	@Override
-	protected Realm getRealm() {
-		return getDocument().getRealmElement().getRealm();
 	}
 
 }

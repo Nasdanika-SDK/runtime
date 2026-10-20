@@ -4,13 +4,10 @@ import java.util.AbstractList;
 import java.util.ArrayList;
 import java.util.List;
 import java.util.Objects;
-import java.util.concurrent.CompletableFuture;
 import java.util.function.Consumer;
-import java.util.function.Function;
 import java.util.function.Predicate;
 import java.util.stream.Stream;
 
-import org.eclipse.emf.ecore.EObject;
 import org.nasdanika.sdk.runtime.drawio.Connection;
 import org.nasdanika.sdk.runtime.drawio.ConnectionBase;
 import org.nasdanika.sdk.runtime.drawio.ConnectionPoint;
@@ -21,9 +18,7 @@ import org.nasdanika.sdk.runtime.drawio.LayerElement;
 import org.nasdanika.sdk.runtime.drawio.ModelElement;
 import org.nasdanika.sdk.runtime.drawio.Node;
 import org.nasdanika.sdk.runtime.drawio.Rectangle;
-import org.nasdanika.sdk.runtime.drawio.Tag;
 import org.nasdanika.sdk.runtime.drawio.impl.ConnectionImpl.ConnectionPointSpecAdapter;
-import org.nasdanika.sdk.runtime.drawio.model.ModelFactory;
 import org.nasdanika.sdk.runtime.drawio.style.NodeStyle;
 import org.nasdanika.sdk.runtime.drawio.style.impl.NodeStyleImpl;
 import org.w3c.dom.Element;
@@ -166,28 +161,6 @@ class NodeImpl extends LayerImpl<Node> implements Node {
 			logicalChildren.addAll(getAllIncomingConnections());			
 		}
 		return logicalChildren;
-	}
-	
-	org.nasdanika.sdk.runtime.drawio.model.Node toModelNode(
-			ModelFactory factory, 
-			Function<org.nasdanika.persistence.Marker, org.nasdanika.ncore.Marker> markerFactory,
-			Function<org.nasdanika.sdk.runtime.drawio.Element<?>, CompletableFuture<EObject>> modelElementProvider,
-			Function<Tag, org.nasdanika.sdk.runtime.drawio.model.Tag> tagProvider) {
-		org.nasdanika.sdk.runtime.drawio.model.Node mNode = toModelLayer(factory, factory.createNode(), markerFactory, modelElementProvider, tagProvider);
-		Rectangle geometry = getGeometry();
-		if (geometry != null) {
-			org.nasdanika.sdk.runtime.drawio.model.Geometry mGeometry = factory.createGeometry();
-			mGeometry.setX(geometry.getX());
-			mGeometry.setY(geometry.getY());
-			mGeometry.setHeight(geometry.getHeight());
-//			mGeometry.setOffsetPoint(Point);
-//			mGeometry.setRelative(boolean);
-//			mGeometry.setSourcePoint(Point);
-//			mGeometry.setTargetPoint(Point);
-			mGeometry.setWidth(geometry.getWidth());
-			mNode.setGeometry(mGeometry);
-		}
-		return mNode;
 	}
 	
 	@Override

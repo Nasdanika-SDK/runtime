@@ -1,10 +1,5 @@
 package org.nasdanika.sdk.runtime.drawio.util;
 
-import java.util.Collection;
-import java.util.Collections;
-import java.util.Stack;
-import java.util.stream.Collectors;
-
 import org.nasdanika.sdk.runtime.common.NasdanikaException;
 import org.nasdanika.sdk.runtime.drawio.Marker;
 

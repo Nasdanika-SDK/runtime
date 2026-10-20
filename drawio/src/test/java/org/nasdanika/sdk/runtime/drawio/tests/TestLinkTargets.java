@@ -1,4 +1,4 @@
-package org.nasdanika.drawio.tests;
+package org.nasdanika.sdk.runtime.drawio.tests;
 
 import static org.assertj.core.api.Assertions.assertThat;
 import static org.junit.jupiter.api.Assertions.assertEquals;
@@ -10,12 +10,12 @@ import java.util.function.Consumer;
 
 import org.eclipse.emf.common.util.URI;
 import org.junit.jupiter.api.Test;
-import org.nasdanika.drawio.Document;
-import org.nasdanika.drawio.Element;
-import org.nasdanika.drawio.LinkTarget;
-import org.nasdanika.drawio.ModelElement;
-import org.nasdanika.drawio.Node;
-import org.nasdanika.drawio.Page;
+import org.nasdanika.sdk.runtime.drawio.Document;
+import org.nasdanika.sdk.runtime.drawio.Element;
+import org.nasdanika.sdk.runtime.drawio.LinkTarget;
+import org.nasdanika.sdk.runtime.drawio.ModelElement;
+import org.nasdanika.sdk.runtime.drawio.Node;
+import org.nasdanika.sdk.runtime.drawio.Page;
 
 public class TestLinkTargets {
 	
@@ -86,7 +86,7 @@ public class TestLinkTargets {
 		
 		document.accept(visitor, null);
 		System.out.println("===");
-		document.accept(org.nasdanika.drawio.Util.withLinkTargets(visitor, null), null);
+		document.accept(org.nasdanika.sdk.runtime.drawio.util.Util.withLinkTargets(visitor, null), null);
 	}
 	
 	// --- Element links ---

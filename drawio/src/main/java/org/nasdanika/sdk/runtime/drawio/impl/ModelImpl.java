@@ -13,10 +13,10 @@ import java.util.AbstractList;
 import java.util.ArrayList;
 import java.util.Collections;
 import java.util.IdentityHashMap;
+import java.util.LinkedHashMap;
 import java.util.List;
 import java.util.Map;
-import java.util.concurrent.CompletableFuture;
-import java.util.function.Function;
+import java.util.function.BiFunction;
 import java.util.function.Predicate;
 import java.util.zip.Deflater;
 import java.util.zip.DeflaterOutputStream;
@@ -35,16 +35,15 @@ import javax.xml.transform.stream.StreamResult;
 
 import org.apache.commons.codec.binary.Base64;
 import org.eclipse.emf.common.util.URI;
-import org.eclipse.emf.ecore.EObject;
 import org.json.JSONObject;
 import org.nasdanika.sdk.runtime.common.Util;
+import org.nasdanika.sdk.runtime.drawio.ConnectionBase;
 import org.nasdanika.sdk.runtime.drawio.Document.Context;
 import org.nasdanika.sdk.runtime.drawio.Element;
 import org.nasdanika.sdk.runtime.drawio.Model;
 import org.nasdanika.sdk.runtime.drawio.ModelElement;
 import org.nasdanika.sdk.runtime.drawio.Page;
 import org.nasdanika.sdk.runtime.drawio.Root;
-import org.nasdanika.sdk.runtime.drawio.Tag;
 import org.w3c.dom.Node;
 import org.w3c.dom.NodeList;
 import org.xml.sax.InputSource;
@@ -111,8 +110,13 @@ class ModelImpl extends ElementImpl<Model> implements Model {
 	}
 	
 	@Override
-	public List<Root> getChildren() {
-		return Collections.singletonList(getRoot());
+	public <T> T accept(BiFunction<Element<?>, Map<Element<?>, T>, T> visitor, ConnectionBase connectionBase) {
+		Map<org.nasdanika.sdk.runtime.drawio.Element<?>, T> childResults = new LinkedHashMap<>();
+		Root root = getRoot();
+		if (root != null) {
+			childResults.put(root, root.accept(visitor, connectionBase));
+		}
+		return visitor.apply(this, childResults);
 	}
 
 	@Override
@@ -259,22 +263,6 @@ class ModelImpl extends ElementImpl<Model> implements Model {
 	public int hashCode() {
 		return getPage().hashCode() ^ getClass().hashCode();
 	}
-
-	org.nasdanika.sdk.runtime.drawio.model.Model toModelModel(
-			ModelFactory factory, 
-			Function<org.nasdanika.persistence.Marker, org.nasdanika.ncore.Marker> markerFactory,
-			Function<Element<?>, CompletableFuture<EObject>> modelElementProvider,
-			Function<Tag, org.nasdanika.sdk.runtime.drawio.model.Tag> tagProvider) {
-		org.nasdanika.sdk.runtime.drawio.model.Model mModel = factory.createModel();		
-		modelElementProvider.apply(this).complete(mModel);
-		
-		mModel.setRoot(((RootImpl) getRoot()).toModelRoot(factory, markerFactory, modelElementProvider, tagProvider));
-		
-		for (Marker marker: getMarkers()) {
-			mModel.getMarkers().add(markerFactory.apply(marker));
-		}
-		return mModel;
-	}
 	
 	private void setAttribute(String name, String value) {
 		if (Util.isBlank(value)) {
@@ -361,11 +349,6 @@ class ModelImpl extends ElementImpl<Model> implements Model {
 	public Model setPageView(boolean pageView) {
 		setAttribute(ATTRIBUTE_PAGE, pageView ? "1" : "0");
 		return this;
-	}
-
-	@Override
-	protected Realm getRealm() {
-		return getPage().getDocument().getRealmElement().getRealm();
 	}
 	
 }

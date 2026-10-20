@@ -1,29 +1,22 @@
 package org.nasdanika.sdk.runtime.drawio.util;
 
-import java.awt.Point;
-import java.awt.Rectangle;
-import java.util.ArrayList;
 import java.util.Collection;
 import java.util.Collections;
 import java.util.HashMap;
 import java.util.HashSet;
-import java.util.IdentityHashMap;
 import java.util.LinkedHashMap;
-import java.util.List;
 import java.util.Map;
-import java.util.Map.Entry;
-import java.util.Set;
 import java.util.function.BiFunction;
 import java.util.function.Consumer;
-import java.util.function.Function;
-import java.util.function.Predicate;
-import java.util.function.Supplier;
-import java.util.stream.Stream;
 
 import org.nasdanika.sdk.runtime.drawio.Connectable;
+import org.nasdanika.sdk.runtime.drawio.Connection;
+import org.nasdanika.sdk.runtime.drawio.ConnectionBase;
 import org.nasdanika.sdk.runtime.drawio.ConnectionPoint;
+import org.nasdanika.sdk.runtime.drawio.Element;
+import org.nasdanika.sdk.runtime.drawio.LinkTarget;
+import org.nasdanika.sdk.runtime.drawio.ModelElement;
 import org.nasdanika.sdk.runtime.drawio.Node;
-import org.nasdanika.sdk.runtime.drawio.Root;
 
 public final class Util {
 	
@@ -350,342 +343,217 @@ public final class Util {
 //		return Stream.of(element).flatMap(childrenMapper(predicate));
 //	}
 //	
-//	/**
-//	 * @param <T>
-//	 * @param visitor
-//	 * @param connectionBase Connection base for visiting linked pages.
-//	 * @return Visitor which passes itself to linked pages and adds linked pages' result to child results.
-//	 */
-//	public static <T> BiFunction<Element<?>, Map<Element<?>, T>, T> withLinkTargets(BiFunction<? super Element<?>, Map<? extends Element<?>, T>, T> visitor, ConnectionBase connectionBase) {
-//		return new BiFunction<Element<?>, Map<Element<?>, T>, T>() {
-//			
-//			Map<LinkTarget<?>, T> results = new HashMap<>();
-//
-//			@Override
-//			public T apply(Element<?> element, Map<Element<?>, T> childResults) {				
-//				if (element instanceof ModelElement) {
-//					LinkTarget<?> linkTarget = ((ModelElement<?>) element).getLinkTarget();
-//					if (linkTarget != null) {
-//						Map<Element<?>, T> cr = new LinkedHashMap<>();
-//						if (childResults != null) {
-//							cr.putAll(childResults);
-//						}
-//						T linkTargetResult;
-//						if (results.containsKey(linkTarget)) {
-//							linkTargetResult = results.get(linkTarget);
-//						} else {
-//							linkTargetResult = linkTarget.accept(this, connectionBase);
-//						}
-//						if (linkTargetResult != null) {
-//							cr.put(linkTarget, linkTargetResult);
-//						}
-//						return visitor.apply(element, cr);
-//					}
-//				}
-//				return visitor.apply(element, childResults);
-//			}
-//			
-//		};
-//	}
-//	
-//	/**
-//	 * @param <T>
-//	 * @param visitor
-//	 * @param connectionBase Connection base for visiting linked pages.
-//	 * @return Visitor which passes itself to linked pages.
-//	 */
-//	public static <T> Consumer<Element<?>> withLinkTargets(Consumer<Element<?>> visitor, ConnectionBase connectionBase) {
-//		return new Consumer<Element<?>>() {
-//			
-//			Collection<LinkTarget<?>> visited = new HashSet<>();
-//
-//			@Override
-//			public void accept(Element<?> element) {				
-//				if (element instanceof ModelElement) {
-//					LinkTarget<?> linkTarget = ((ModelElement<?>) element).getLinkTarget();
-//					if (linkTarget != null && visited.add(linkTarget)) { // No double-visiting
-//						linkTarget.accept(this, connectionBase);
-//					}
-//				}
-//				visitor.accept(element);
-//			}
-//			
-//		};
-//	}
-//	
-//	
-//	/**
-//	 * @param <T>
-//	 * @param visitor
-//	 * @param connectionBase Connection base for visiting linked pages.
-//	 * @return Visitor which passes itself to connected elements (incoming and outgoing connnections for nodes and source and target nodes for connections) and linked pages and adds linked pages' result to child results.
-//	 */
-//	public static <T> BiFunction<Element<?>, Map<Element<?>, T>, T> traverser(BiFunction<? super Element<?>, Map<? extends Element<?>, T>, T> visitor, ConnectionBase connectionBase) {
-//		return new BiFunction<Element<?>, Map<Element<?>, T>, T>() {
-//			
-//			Map<Element<?>, T> results = new HashMap<>();
-//
-//			@Override
-//			public T apply(Element<?> element, Map<Element<?>, T> childResults) {
-//				if (results.containsKey(element)) {
-//					return results.get(element);
-//				}
-//				
-//				if (element instanceof Connectable) {
-//					Connectable connectable = (Connectable) element;
-//					for (Connection oc: connectable.getOutgoingConnections()) {
-//						if (!results.containsKey(oc)) {
-//							results.put(oc, oc.accept(this, connectionBase));
-//						}
-//					}
-//					for (Connection ic: connectable.getIncomingConnections()) {
-//						if (!results.containsKey(ic)) {
-//							results.put(ic, ic.accept(this, connectionBase));
-//						}
-//					}
-//				}
-//				if (element instanceof Connection) {
-//					Connection connection = (Connection) element;
-//					Node source = getConnectableNode(connection.getTarget());
-//					if (source != null && !results.containsKey(source)) {
-//						results.put(source, source.accept(this, connectionBase));
-//					}
-//					Node target = getConnectableNode(connection.getTarget());
-//					if (target != null && !results.containsKey(target)) {
-//						results.put(target, target.accept(this, connectionBase));
-//					}
-//				}
-//				
-//				if (element instanceof ModelElement) {
-//					ModelElement<?> modelElement = (ModelElement<?>) element;
-//					ModelElement<?> parent = modelElement.getParent();
-//					if (parent != null && !results.containsKey(parent)) {
-//						results.put(parent, parent.accept(this, connectionBase));						
-//					}
-//					
-//					LinkTarget<?> linkTarget = modelElement.getLinkTarget();
-//					if (linkTarget != null) {
-//						Map<Element<?>, T> cr = new LinkedHashMap<>();
-//						if (childResults != null) {
-//							cr.putAll(childResults);
-//						}
-//						T linkTargetResult;
-//						if (results.containsKey(linkTarget)) {
-//							linkTargetResult = results.get(linkTarget);
-//						} else {
-//							linkTargetResult = linkTarget.accept(this, connectionBase);
-//						}
-//						if (linkTargetResult != null) {
-//							cr.put(linkTarget, linkTargetResult);
-//						}
-//						return visitor.apply(element, cr);
-//					}
-//				}								
-//				
-//				return visitor.apply(element, childResults);
-//			}
-//			
-//		};
-//	}
-//	
-//	/**
-//	 * @param <T>
-//	 * @param visitor
-//	 * @param connectionBase Connection base for visiting linked pages.
-//	 * @return Visitor which passes itself to connected elements (incoming and outgoing connnections for nodes and source and target nodes for connections) and linked pages and adds linked pages' result to child results.
-//	 */
-//	public static Consumer<Element<?>> traverser(Consumer<Element<?>> visitor, ConnectionBase connectionBase) {
-//		return new Consumer<Element<?>>() {
-//			
-//			Collection<Element<?>> visited = new HashSet<>();
-//
-//			@Override
-//			public void accept(Element<?> element) {
-//				if (element != null && visited.add(element)) {
-//					if (element instanceof Connectable) {
-//						Connectable connectable = (Connectable) element;
-//						for (Connection oc: connectable.getOutgoingConnections()) {
-//							oc.accept(this, connectionBase);
-//						}
-//						for (Connection ic: connectable.getIncomingConnections()) {
-//							ic.accept(this, connectionBase);
-//						}
-//					}
-//					if (element instanceof Connection) {
-//						Connection connection = (Connection) element;
-//						Node source = getConnectableNode(connection.getSource());
-//						if (source != null) {
-//							source.accept(this, connectionBase);
-//						}
-//						Node target = getConnectableNode(connection.getTarget());
-//						if (target != null) {
-//							target.accept(this, connectionBase);
-//						}
-//					}
-//					
-//					if (element instanceof ModelElement) {
-//						ModelElement<?> modelElement = (ModelElement<?>) element;
-//						ModelElement<?> parent = modelElement.getParent();
-//						if (parent != null) {
-//							parent.accept(this, connectionBase);						
-//						}
-//						
-//						LinkTarget<?> linkTarget = modelElement.getLinkTarget();
-//						if (linkTarget != null && visited.add(linkTarget)) { // No double-visiting
-//							linkTarget.accept(this, connectionBase);
-//						}
-//					}
-//					visitor.accept(element);
-//				}
-//			}
-//			
-//		};
-//	}
-//	
-//	/**
-//	 * Lays out using JGraphT algorithms
-//	 * @param elements
-//	 * @return
-//	 */
-//	public static void layout(
-//			Collection<Node> nodes, 
-//			LayoutAlgorithm2D<Node, Connection> layout,
-//			LayoutModel2D<Node> layoutModel) {
-//		// Using JGraphT for force layout
-//		DefaultUndirectedGraph<Node, Connection> dGraph = new DefaultUndirectedGraph<>(Connection.class);
-//		
-//		// Populating
-//		for (Node node: nodes) {
-//			dGraph.addVertex(node);
-//		}	
-//		
-//		for (Node node: nodes) {
-//			for (Connection connection: node.getAllOutgoingConnections()) {
-//				if (dGraph.getEdge(getConnectableNode(connection.getTarget()), node) == null) { // Not yet connected, connect
-//					dGraph.addEdge(node, getConnectableNode(connection.getTarget()), connection);
-//				}
-//			}
-//		}		
-//		
-//		layout.layout(dGraph, layoutModel);
-//		layoutModel.forEach(ne -> {
-//			Node node = ne.getKey();
-//			Point2D point = ne.getValue();
-//			org.nasdanika.sdk.runtime.drawio.Rectangle geometry = node.getGeometry();
-//			geometry.setX(point.getX());
-//			geometry.setY(point.getY());
-//		});
-//		
-//	}	
-//	
-//	/**
-//	 * Uses JGraphT {@link FRLayoutAlgorithm2D} to force layout the graph.
-//	 * @param graph
-//	 */
-//	public static void forceLayout(
-//			Root root, 
-//			double layoutWidth, 
-//			double layoutHeight) {
-//		
-//		List<Node> topLevelNodes = root.getLayers().stream().flatMap(layer -> layer.getElements().stream()).filter(Node.class::isInstance).map(Node.class::cast).toList();
-//		
-//		FRLayoutAlgorithm2D<Node, Connection> forceLayout = new FRLayoutAlgorithm2D<>() {
-//			
-//			@Override
-//			protected java.util.Map<Node,Point2D> calculateRepulsiveForces(org.jgrapht.Graph<Node, Connection> graph, org.jgrapht.alg.drawing.model.LayoutModel2D<Node> model) {
-//		        Point2D drawableArea = Point2D.of(
-//		        		model.getDrawableArea().getWidth(), 
-//		        		model.getDrawableArea().getHeight());
-//		        
-//		        double daLen = Points.length(drawableArea);
-//			
-//				Map<Node, Point2D> disp = super.calculateRepulsiveForces(graph, model);
-//				for (Node v : graph.vertexSet()) {
-//					Point2D vPos = model.get(v);
-//		            Point2D vDisp = Point2D.of(0d, 0d);
-//		            
-//		            int intersections = 0;
-//					for (Node u : graph.vertexSet()) {
-//						if (v.equals(u)) {
-//							continue;
-//						}
-//						Point2D uPos = model.get(u);
-//						if (intersects(v, vPos, u, uPos)) {
-//							++intersections;
-//							Point2D delta = Points.subtract(vPos, uPos);
-//							if (comparator.compare(vPos.getX(), uPos.getX()) == 0 && comparator.compare(vPos.getY(), uPos.getY()) == 0) {
-//								// At the same position - using hash code to position one of them under another
-//								delta = Point2D.of(0, v.hashCode() > u.hashCode() ? 10 : -10);
-//							}
-//							double deltaLength = Points.length(delta);	
-//							Point2D dispContribution = Points.scalarMultiply(delta, 1.0 / deltaLength); // Normalization
-//							vDisp = Points.add(vDisp, dispContribution);	
-//						}
-//					}
-//	
-//					if (intersections > 0) {						
-//						if (comparator.compare(vDisp.getX(), 0.0) == 0 && comparator.compare(vDisp.getY(), 0.0) == 0) {
-//							// Sum of the intersection forces is zero - do nothing.
-//							continue;
-//						}
-//						
-//						vDisp = Points.scalarMultiply(vDisp, daLen / Points.length(vDisp)); // Shall beat any attractive force
-//						disp.put(v, Points.add(vDisp, disp.get(v)));
-//					}
-//				}
-//				return disp;
-//			};
-//			
-//		};
-//		MapLayoutModel2D<Node> model = new MapLayoutModel2D<Node>(new Box2D(layoutWidth, layoutHeight));
-//		layout(topLevelNodes, forceLayout, model);
-//	}
-//	
-//	private static boolean intersects(Node v, Point2D vPos, Node u, Point2D uPos) {
-//		double gutter = 30.0;
-//		// Adapted from awt rectangle
-//        org.nasdanika.sdk.runtime.drawio.Rectangle vGeometry = v.getGeometry();
-//		double vw = vGeometry.getWidth() + gutter;
-//        double vh = vGeometry.getHeight() + gutter;
-//        org.nasdanika.sdk.runtime.drawio.Rectangle uGeometry = u.getGeometry();
-//		double uw = uGeometry.getWidth() + gutter;
-//        double uh = uGeometry.getHeight() + gutter;
-//        if (uw <= 0 || uh <= 0 || vw <= 0 || vh <= 0) {
-//            return false;
-//        }
-//        double vx = vPos.getX();
-//        double vy = vPos.getY();
-//        double ux = uPos.getX();
-//        double uy = uPos.getY();
-//        uw += ux;
-//        uh += uy;
-//        vw += vx;
-//        vh += vy;
-//        return ((uw < ux || uw > vx) &&
-//                (uh < uy || uh > vy) &&
-//                (vw < vx || vw > ux) &&
-//                (vh < vy || vh > uy));
-//    }	
-//	
-//	/**
-//	 * Loads style map from a string
-//	 * @return
-//	 */
-//	public static Map<String, String> loadStyle(String styleStr) {
-//		DelimitedStringMap styleMap = new DelimitedStringMap(";", "=") {
-//
-//			@Override
-//			protected String getState() {
-//				return styleStr;
-//			}
-//
-//			@Override
-//			protected void setState(String state) {
-//				throw new UnsupportedOperationException();
-//			}
-//			
-//		};
-//		return Collections.unmodifiableMap(styleMap);
-//	}
+	/**
+	 * @param <T>
+	 * @param visitor
+	 * @param connectionBase Connection base for visiting linked pages.
+	 * @return Visitor which passes itself to linked pages and adds linked pages' result to child results.
+	 */
+	public static <T> BiFunction<Element<?>, Map<Element<?>, T>, T> withLinkTargets(BiFunction<? super Element<?>, Map<? extends Element<?>, T>, T> visitor, ConnectionBase connectionBase) {
+		return new BiFunction<Element<?>, Map<Element<?>, T>, T>() {
+			
+			Map<LinkTarget<?>, T> results = new HashMap<>();
+
+			@Override
+			public T apply(Element<?> element, Map<Element<?>, T> childResults) {				
+				if (element instanceof ModelElement) {
+					LinkTarget<?> linkTarget = ((ModelElement<?>) element).getLinkTarget();
+					if (linkTarget != null) {
+						Map<Element<?>, T> cr = new LinkedHashMap<>();
+						if (childResults != null) {
+							cr.putAll(childResults);
+						}
+						T linkTargetResult;
+						if (results.containsKey(linkTarget)) {
+							linkTargetResult = results.get(linkTarget);
+						} else {
+							linkTargetResult = linkTarget.accept(this, connectionBase);
+						}
+						if (linkTargetResult != null) {
+							cr.put(linkTarget, linkTargetResult);
+						}
+						return visitor.apply(element, cr);
+					}
+				}
+				return visitor.apply(element, childResults);
+			}
+			
+		};
+	}
+	
+	/**
+	 * @param <T>
+	 * @param visitor
+	 * @param connectionBase Connection base for visiting linked pages.
+	 * @return Visitor which passes itself to linked pages.
+	 */
+	public static <T> Consumer<Element<?>> withLinkTargets(Consumer<Element<?>> visitor, ConnectionBase connectionBase) {
+		return new Consumer<Element<?>>() {
+			
+			Collection<LinkTarget<?>> visited = new HashSet<>();
+
+			@Override
+			public void accept(Element<?> element) {				
+				if (element instanceof ModelElement) {
+					LinkTarget<?> linkTarget = ((ModelElement<?>) element).getLinkTarget();
+					if (linkTarget != null && visited.add(linkTarget)) { // No double-visiting
+						linkTarget.accept(this, connectionBase);
+					}
+				}
+				visitor.accept(element);
+			}
+			
+		};
+	}
+	
+	
+	/**
+	 * @param <T>
+	 * @param visitor
+	 * @param connectionBase Connection base for visiting linked pages.
+	 * @return Visitor which passes itself to connected elements (incoming and outgoing connnections for nodes and source and target nodes for connections) and linked pages and adds linked pages' result to child results.
+	 */
+	public static <T> BiFunction<Element<?>, Map<Element<?>, T>, T> traverser(BiFunction<? super Element<?>, Map<? extends Element<?>, T>, T> visitor, ConnectionBase connectionBase) {
+		return new BiFunction<Element<?>, Map<Element<?>, T>, T>() {
+			
+			Map<Element<?>, T> results = new HashMap<>();
+
+			@Override
+			public T apply(Element<?> element, Map<Element<?>, T> childResults) {
+				if (results.containsKey(element)) {
+					return results.get(element);
+				}
+				
+				if (element instanceof Connectable) {
+					Connectable connectable = (Connectable) element;
+					for (Connection oc: connectable.getOutgoingConnections()) {
+						if (!results.containsKey(oc)) {
+							results.put(oc, oc.accept(this, connectionBase));
+						}
+					}
+					for (Connection ic: connectable.getIncomingConnections()) {
+						if (!results.containsKey(ic)) {
+							results.put(ic, ic.accept(this, connectionBase));
+						}
+					}
+				}
+				if (element instanceof Connection) {
+					Connection connection = (Connection) element;
+					Node source = getConnectableNode(connection.getTarget());
+					if (source != null && !results.containsKey(source)) {
+						results.put(source, source.accept(this, connectionBase));
+					}
+					Node target = getConnectableNode(connection.getTarget());
+					if (target != null && !results.containsKey(target)) {
+						results.put(target, target.accept(this, connectionBase));
+					}
+				}
+				
+				if (element instanceof ModelElement) {
+					ModelElement<?> modelElement = (ModelElement<?>) element;
+					ModelElement<?> parent = modelElement.getParent();
+					if (parent != null && !results.containsKey(parent)) {
+						results.put(parent, parent.accept(this, connectionBase));						
+					}
+					
+					LinkTarget<?> linkTarget = modelElement.getLinkTarget();
+					if (linkTarget != null) {
+						Map<Element<?>, T> cr = new LinkedHashMap<>();
+						if (childResults != null) {
+							cr.putAll(childResults);
+						}
+						T linkTargetResult;
+						if (results.containsKey(linkTarget)) {
+							linkTargetResult = results.get(linkTarget);
+						} else {
+							linkTargetResult = linkTarget.accept(this, connectionBase);
+						}
+						if (linkTargetResult != null) {
+							cr.put(linkTarget, linkTargetResult);
+						}
+						return visitor.apply(element, cr);
+					}
+				}								
+				
+				return visitor.apply(element, childResults);
+			}
+			
+		};
+	}
+	
+	/**
+	 * @param <T>
+	 * @param visitor
+	 * @param connectionBase Connection base for visiting linked pages.
+	 * @return Visitor which passes itself to connected elements (incoming and outgoing connnections for nodes and source and target nodes for connections) and linked pages and adds linked pages' result to child results.
+	 */
+	public static Consumer<Element<?>> traverser(Consumer<Element<?>> visitor, ConnectionBase connectionBase) {
+		return new Consumer<Element<?>>() {
+			
+			Collection<Element<?>> visited = new HashSet<>();
+
+			@Override
+			public void accept(Element<?> element) {
+				if (element != null && visited.add(element)) {
+					if (element instanceof Connectable) {
+						Connectable connectable = (Connectable) element;
+						for (Connection oc: connectable.getOutgoingConnections()) {
+							oc.accept(this, connectionBase);
+						}
+						for (Connection ic: connectable.getIncomingConnections()) {
+							ic.accept(this, connectionBase);
+						}
+					}
+					if (element instanceof Connection) {
+						Connection connection = (Connection) element;
+						Node source = getConnectableNode(connection.getSource());
+						if (source != null) {
+							source.accept(this, connectionBase);
+						}
+						Node target = getConnectableNode(connection.getTarget());
+						if (target != null) {
+							target.accept(this, connectionBase);
+						}
+					}
+					
+					if (element instanceof ModelElement) {
+						ModelElement<?> modelElement = (ModelElement<?>) element;
+						ModelElement<?> parent = modelElement.getParent();
+						if (parent != null) {
+							parent.accept(this, connectionBase);						
+						}
+						
+						LinkTarget<?> linkTarget = modelElement.getLinkTarget();
+						if (linkTarget != null && visited.add(linkTarget)) { // No double-visiting
+							linkTarget.accept(this, connectionBase);
+						}
+					}
+					visitor.accept(element);
+				}
+			}
+			
+		};
+	}
+	
+	/**
+	 * Loads style map from a string
+	 * @return
+	 */
+	public static Map<String, String> loadStyle(String styleStr) {
+		DelimitedStringMap styleMap = new DelimitedStringMap(";", "=") {
+
+			@Override
+			protected String getState() {
+				return styleStr;
+			}
+
+			@Override
+			protected void setState(String state) {
+				throw new UnsupportedOperationException();
+			}
+			
+		};
+		return Collections.unmodifiableMap(styleMap);
+	}
 
 }

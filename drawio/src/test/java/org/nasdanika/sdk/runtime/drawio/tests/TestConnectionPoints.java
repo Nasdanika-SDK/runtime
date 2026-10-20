@@ -1,25 +1,14 @@
-package org.nasdanika.drawio.tests;
+package org.nasdanika.sdk.runtime.drawio.tests;
 
-import static org.assertj.core.api.Assertions.assertThat;
 import static org.junit.jupiter.api.Assertions.assertEquals;
 
 import java.io.File;
 import java.nio.file.Files;
-import java.util.List;
-import java.util.Map;
-import java.util.Optional;
 
 import org.junit.jupiter.api.Test;
-import org.nasdanika.drawio.Connection;
-import org.nasdanika.drawio.Document;
-import org.nasdanika.drawio.Layer;
-import org.nasdanika.drawio.Model;
-import org.nasdanika.drawio.Node;
-import org.nasdanika.drawio.Page;
-import org.nasdanika.drawio.Point;
-import org.nasdanika.drawio.PointList;
-import org.nasdanika.drawio.Rectangle;
-import org.nasdanika.drawio.Root;
+import org.nasdanika.sdk.runtime.drawio.Connection;
+import org.nasdanika.sdk.runtime.drawio.Document;
+import org.nasdanika.sdk.runtime.drawio.Point;
 
 public class TestConnectionPoints {
 	
@@ -120,53 +109,6 @@ public class TestConnectionPoints {
 		assertEquals(980, removedPoint.getY());		
 		
 		Files.writeString(new File("target/connection-remove-points.drawio").toPath(), document.save(null));
-	}
-	
-	@Test
-	public void testPointsLayout() throws Exception {
-		Document document = Document.create(false, null);
-		Page page = document.createPage();
-		page.setName("My first new page with points");
-
-		Model model = page.getModel();
-		Root root = model.getRoot();
-		List<Layer<?>> layers = root.getLayers();
-		assertThat(layers).singleElement();
-
-		// Add layer
-		Layer<?> newLayer = root.createLayer();
-		newLayer.setLabel("My new layer");
-
-		// Add nodes
-		Node source = newLayer.createNode();
-		source.setLabel("My source node");
-		Rectangle sourceGeometry = source.getGeometry();
-		sourceGeometry.setWidth(120);
-		sourceGeometry.setHeight(50);
-		source.getTags().add(page.createTag("aws"));
-
-		Node target = newLayer.createNode();
-		target.setLabel("My target node");
-		target.getGeometry().setBounds(60, 140, 100, 30);
-
-		// Add connection
-		Connection connection = newLayer.createConnection(source, target);
-		connection.setLabel("My connection");
-		Map<String, String> connectionStyle = connection.getStyle();
-		connectionStyle.put("rounded", "1");
-		connectionStyle.put("orthogonalLoop", "1");
-		connectionStyle.put("jettySize", "auto");
-		connectionStyle.put("html", "1");
-		
-		PointList points = connection.getPoints();
-		points.add(80,110);
-		points.add(310,110);
-		points.add(310,260);
-		points.add(125,260);
-
-		org.nasdanika.drawio.Util.layout(root, 20);
-
-		Files.writeString(new File("target/layout_points.drawio").toPath(), document.save(null));
 	}
 	
 }
