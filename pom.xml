@@ -444,6 +444,7 @@
 	
 	<modules>
 		<module>common</module>
+		<module>drawio</module>
 		<module>volume</module>
 		<module>emf-json</module>
 		<module>picocli</module>

@@ -61,7 +61,7 @@ public abstract class CommandBase implements Callable<Integer>, Closeable {
 					.filter(e -> e.getValue().getCommandSpec().userObject() instanceof Closeable)
 					.toList();
 			
-			List<Entry<String, CommandSpec>> closeableMixIns= spec
+			List<Entry<String, CommandSpec>> closeableMixIns = spec
 					.mixins()
 					.entrySet()
 					.stream()

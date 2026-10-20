@@ -1,0 +1,40 @@
+<mxfile host="Electron" agent="Mozilla/5.0 (Windows NT 10.0; Win64; x64) AppleWebKit/537.36 (KHTML, like Gecko) draw.io/29.3.0 Chrome/140.0.7339.249 Electron/38.7.2 Safari/537.36" version="29.3.0">
+  <diagram id="O7xMnYN76NBTG_cgu26A" name="Page-1">
+    <mxGraphModel dx="810" dy="1377" grid="1" gridSize="10" guides="1" tooltips="1" connect="1" arrows="1" fold="1" page="1" pageScale="1" pageWidth="850" pageHeight="1100" math="0" shadow="0">
+      <root>
+        <mxCell id="0" />
+        <mxCell id="1" parent="0" />
+        <object label="" classification="top-secret" id="alice-to-bob">
+          <mxCell edge="1" parent="1" source="alice" style="edgeStyle=orthogonalEdgeStyle;rounded=0;orthogonalLoop=1;jettySize=auto;html=1;" target="bob">
+            <mxGeometry relative="1" as="geometry">
+              <Array as="points">
+                <mxPoint x="520" y="680" />
+                <mxPoint x="520" y="680" />
+              </Array>
+            </mxGeometry>
+          </mxCell>
+        </object>
+        <object label="Alice" my-property="xyz" id="alice">
+          <mxCell parent="1" style="rounded=1;whiteSpace=wrap;html=1;fillColor=#dae8fc;strokeColor=#6c8ebf;" vertex="1">
+            <mxGeometry height="60" width="120" x="360" y="650" as="geometry" />
+          </mxCell>
+        </object>
+        <object label="Bob&#39;s House" id="bobs-house">
+          <mxCell parent="1" style="swimlane;" vertex="1">
+            <mxGeometry height="130" width="200" x="540" y="600" as="geometry" />
+          </mxCell>
+        </object>
+        <object label="Bob" alias="bobby" id="bob">
+          <mxCell parent="bobs-house" style="rounded=1;whiteSpace=wrap;html=1;" vertex="1">
+            <mxGeometry height="60" width="120" x="40" y="50" as="geometry" />
+          </mxCell>
+        </object>
+        <object label="Library" id="library">
+          <mxCell parent="1" style="rounded=1;whiteSpace=wrap;html=1;" vertex="1">
+            <mxGeometry height="60" width="120" x="460" y="790" as="geometry" />
+          </mxCell>
+        </object>
+      </root>
+    </mxGraphModel>
+  </diagram>
+</mxfile>
