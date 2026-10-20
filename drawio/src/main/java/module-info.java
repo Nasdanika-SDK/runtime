@@ -11,5 +11,7 @@ module org.nasdanika.sdk.runtime.drawio {
 	requires java.desktop;
 	requires org.json;
 	requires org.jsoup;
+	requires org.apache.commons.codec;
+	requires org.apache.commons.text;
 	
 }

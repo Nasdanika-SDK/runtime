@@ -1,8 +1,8 @@
 package org.nasdanika.sdk.runtime.drawio.style.impl;
 
 
-import org.nasdanika.common.DelimitedStringMap;
 import org.nasdanika.sdk.runtime.drawio.style.Style;
+import org.nasdanika.sdk.runtime.drawio.util.DelimitedStringMap;
 
 public abstract class StyleImpl extends DelimitedStringMap implements Style {
 	

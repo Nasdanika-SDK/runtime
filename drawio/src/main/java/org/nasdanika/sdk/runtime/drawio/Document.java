@@ -201,6 +201,16 @@ public interface Document extends Element<Document> {
 		
 	}
 	
+	interface EvaluatingContext extends Context {
+		
+		default <T> T evaluate(ModelElement<?> modelElement, String propertyName, Class<T> type) {
+			return evaluate(modelElement, propertyName, Collections.emptyMap(), type);
+		}
+
+		<T> T evaluate(ModelElement<?> modelElement, String propertyName, Map<String,Object> variables, Class<T> type);
+		
+	}
+	
 	/**
 	 * @return a list of pages. This list supports add() method to insert pages from other documents. The add() method creates a clone of the page passed as a parameter. 
 	 */

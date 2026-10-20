@@ -19,7 +19,6 @@ import org.nasdanika.sdk.runtime.drawio.Node;
 import org.nasdanika.sdk.runtime.drawio.Point;
 import org.nasdanika.sdk.runtime.drawio.PointList;
 import org.nasdanika.sdk.runtime.drawio.Tag;
-import org.nasdanika.sdk.runtime.drawio.model.ModelFactory;
 import org.nasdanika.sdk.runtime.drawio.style.ConnectionStyle;
 import org.nasdanika.sdk.runtime.drawio.style.impl.ConnectionStyleImpl;
 import org.w3c.dom.Element;
@@ -87,26 +86,6 @@ class ConnectionImpl extends ModelElementImpl<Connection> implements Connection 
 	@Override
 	public String toString() {
 		return super.toString() + " " + getSource() + " -> " + getTarget();
-	}
-	
-	org.nasdanika.sdk.runtime.drawio.model.Connection toModelConnection(
-			ModelFactory factory, 
-			Function<org.nasdanika.persistence.Marker, org.nasdanika.ncore.Marker> markerFactory,
-			Function<org.nasdanika.sdk.runtime.drawio.Element<?>, CompletableFuture<EObject>> modelElementProvider,
-			Function<Tag, org.nasdanika.sdk.runtime.drawio.model.Tag> tagProvider) {
-		org.nasdanika.sdk.runtime.drawio.model.Connection mConnection = toModelElement(factory.createConnection(), markerFactory, modelElementProvider, tagProvider);
-		
-		Node sourceNode = getSource();
-		if (sourceNode != null) {
-			modelElementProvider.apply(sourceNode).thenAccept(sn -> mConnection.setSource((org.nasdanika.sdk.runtime.drawio.model.Node) sn));
-		}
-		
-		Node targetNode = getTarget();
-		if (targetNode != null) {
-			modelElementProvider.apply(targetNode).thenAccept(tn -> mConnection.setTarget((org.nasdanika.sdk.runtime.drawio.model.Node) tn));
-		}
-		
-		return mConnection;
 	}
 
 	@Override

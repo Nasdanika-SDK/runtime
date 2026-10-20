@@ -17,9 +17,9 @@ import org.eclipse.emf.common.util.URI;
  */
 public interface Element<E extends Element<E>> {
 	
-	Collection<? extends Marker> getMarkers();	
+	Marker getMarker();	
 	
-	URI getUri();
+	URI getURI();
 	
 	/**
 	 * @return The underlying XML element.

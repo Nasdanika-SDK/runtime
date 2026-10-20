@@ -10,13 +10,11 @@ import java.net.URLEncoder;
 import java.nio.charset.StandardCharsets;
 import java.util.AbstractList;
 import java.util.ArrayList;
-import java.util.HashMap;
 import java.util.LinkedHashMap;
 import java.util.List;
 import java.util.Map;
 import java.util.Objects;
 import java.util.UUID;
-import java.util.concurrent.CompletableFuture;
 import java.util.function.BiFunction;
 import java.util.function.Function;
 import java.util.function.Predicate;
@@ -34,18 +32,12 @@ import javax.xml.transform.stream.StreamResult;
 import org.apache.commons.codec.binary.Base64;
 import org.apache.commons.text.StringEscapeUtils;
 import org.eclipse.emf.common.util.URI;
-import org.eclipse.emf.ecore.EObject;
 import org.json.JSONException;
 import org.json.JSONObject;
-import org.nasdanika.common.NasdanikaException;
-import org.nasdanika.common.Realm;
+import org.nasdanika.sdk.runtime.common.NasdanikaException;
 import org.nasdanika.sdk.runtime.drawio.ConnectionBase;
 import org.nasdanika.sdk.runtime.drawio.Document;
-import org.nasdanika.sdk.runtime.drawio.Element;
 import org.nasdanika.sdk.runtime.drawio.Page;
-import org.nasdanika.sdk.runtime.drawio.model.ModelFactory;
-import org.nasdanika.ncore.NcoreFactory;
-import org.nasdanika.persistence.Marker;
 import org.w3c.dom.Node;
 import org.w3c.dom.NodeList;
 import org.xml.sax.InputSource;
@@ -385,50 +377,10 @@ public class DocumentImpl extends ElementImpl<Document> implements Document {
 	protected String getMarkerLocation() {
 		return uri == null || "data".equals(uri.scheme()) ? null : uri.toString();
 	}
-
-	@Override
-	public org.nasdanika.sdk.runtime.drawio.model.Document toModelDocument(ModelFactory factory, Function<org.nasdanika.persistence.Marker, org.nasdanika.ncore.Marker> markerFactory) throws IOException, TransformerException {	
-		Map<Element<?>, CompletableFuture<EObject>> registry = new HashMap<>();		
-		Function<Element<?>, CompletableFuture<EObject>> modelElementProvider = e -> registry.computeIfAbsent(e, f -> new CompletableFuture<EObject>());
-		org.nasdanika.sdk.runtime.drawio.model.Document ret = factory.createDocument();
-		modelElementProvider.apply(this).complete(ret);
-		if (uri != null) {
-			ret.setUri(uri.toString());
-		}
-		
-		if (markerFactory == null) {
-			markerFactory = marker -> {
-				if (marker == null) {
-					return null;
-				}
-				org.nasdanika.ncore.Marker mMarker = NcoreFactory.eINSTANCE.createMarker();
-				mMarker.setLocation(marker.getLocation());
-				mMarker.setPosition(marker.getPosition());
-				return mMarker;
-			};
-		}
-		for (Page page: getPages()) {
-			org.nasdanika.sdk.runtime.drawio.model.Page mPage = ((PageImpl) page).toModelPage(factory, markerFactory, modelElementProvider);
-			ret.getPages().add(mPage);
-		}
-		
-		for (Marker marker: getMarkers()) {
-			ret.getMarkers().add(markerFactory.apply(marker));
-		}
-		
-		ret.setSource(toDataURI(true).toString());
-		
-		return ret;
-	}
 	
 	@Override
 	public String toString() {
 		return super.toString() + " " + uri;
-	}
-	
-	@Override
-	protected Realm getRealm() {
-		return context.getRealm();
 	}
 
 }

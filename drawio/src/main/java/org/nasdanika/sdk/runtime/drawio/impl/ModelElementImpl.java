@@ -9,14 +9,14 @@ import java.util.Arrays;
 import java.util.Collection;
 import java.util.Collections;
 import java.util.HashSet;
+import java.util.LinkedHashMap;
 import java.util.List;
 import java.util.Map;
-import java.util.Map.Entry;
 import java.util.Optional;
 import java.util.Set;
-import java.util.concurrent.CompletableFuture;
 import java.util.function.BiFunction;
 import java.util.function.Function;
+import java.util.function.Predicate;
 import java.util.regex.Matcher;
 import java.util.regex.Pattern;
 import java.util.stream.Collectors;
@@ -24,24 +24,22 @@ import java.util.stream.Collectors;
 import javax.xml.parsers.ParserConfigurationException;
 
 import org.eclipse.emf.common.util.URI;
-import org.eclipse.emf.ecore.EObject;
 import org.jsoup.Jsoup;
-import org.nasdanika.common.AbstractSplitJoinSet;
-import org.nasdanika.common.Realm;
 import org.nasdanika.sdk.runtime.common.Util;
+import org.nasdanika.sdk.runtime.drawio.Connection;
 import org.nasdanika.sdk.runtime.drawio.ConnectionBase;
 import org.nasdanika.sdk.runtime.drawio.Document.Context;
+import org.nasdanika.sdk.runtime.drawio.Document.EvaluatingContext;
 import org.nasdanika.sdk.runtime.drawio.Element;
 import org.nasdanika.sdk.runtime.drawio.LinkTarget;
 import org.nasdanika.sdk.runtime.drawio.Model;
 import org.nasdanika.sdk.runtime.drawio.ModelElement;
 import org.nasdanika.sdk.runtime.drawio.Page;
-import org.nasdanika.sdk.runtime.drawio.SpelContext;
 import org.nasdanika.sdk.runtime.drawio.Tag;
 import org.nasdanika.sdk.runtime.drawio.style.Style;
 import org.nasdanika.sdk.runtime.drawio.style.impl.StyleImpl;
-import org.nasdanika.persistence.ConfigurationException;
-import org.nasdanika.persistence.Marker;
+import org.nasdanika.sdk.runtime.drawio.util.AbstractSplitJoinSet;
+import org.nasdanika.sdk.runtime.drawio.util.ConfigurationException;
 import org.w3c.dom.Attr;
 import org.w3c.dom.NamedNodeMap;
 import org.xml.sax.SAXException;
@@ -52,7 +50,6 @@ class ModelElementImpl<M extends ModelElement<M>> extends ElementImpl<M> impleme
 	protected static final String PATH_SEGMENT_SEPARATOR = "/";
 	protected static final String EQUALS = "=";
 	
-	private static final String SPEL_PREFIX = "$spel:";
 	private static final String STYLE_PREFIX = "$style:";
 	private static final String GEOMETRY_ROLE = "geometry";
 	static final String AS_ATTRIBUTE = "as";
@@ -68,8 +65,6 @@ class ModelElementImpl<M extends ModelElement<M>> extends ElementImpl<M> impleme
 			
 	private static final String ELEMENT_LINK_ID_PREFIX = "data:element/" + ID_PREFIX;
 	private static final String ELEMENT_LINK_NAME_PREFIX = "data:element/" + NAME_PREFIX;
-	
-	private static final String SPEL_LINK_PREFIX = "data:spel,";	
 	
 	private static final String ATTRIBUTE_TAGS = "tags";
 	static final String ATTRIBUTE_VALUE = "value";
@@ -117,14 +112,33 @@ class ModelElementImpl<M extends ModelElement<M>> extends ElementImpl<M> impleme
 		return null;
 	}
 	
-	@Override
-	public List<? extends Element<?>> getChildren() {
+	protected List<? extends Element<?>> getChildren() {
 		if (element.hasAttribute(ATTRIBUTE_ID)) {
 			return model.collect(e -> ModelElementImpl.getCellElement(e).hasAttribute(ATTRIBUTE_PARENT) && ModelElementImpl.getCellElement(e).getAttribute(ATTRIBUTE_PARENT).equals(element.getAttribute(ATTRIBUTE_ID)));
 		}
 		return Collections.emptyList();
 	}
 	
+	@Override
+	public <T> T accept(BiFunction<Element<?>, Map<Element<?>, T>, T> visitor, ConnectionBase connectionBase) {
+		Map<org.nasdanika.sdk.runtime.drawio.Element<?>, T> childResults = new LinkedHashMap<>();
+		for (Element<?> child: getLogicalChildren(connectionBase)) {
+			if (child != null) {
+				childResults.put(child, child.accept(visitor, connectionBase));
+			}
+		}
+		return visitor.apply(this, childResults);
+	}
+	
+	protected List<? extends Element<?>> getLogicalChildren(ConnectionBase connectionBase) {
+		if (connectionBase == null || connectionBase == ConnectionBase.PARENT) {
+			return getChildren();
+		}
+		
+		Predicate<Element<?>> isConnection = Connection.class::isInstance;
+		return getChildren().stream().filter(isConnection.negate()).toList();
+	}
+		
 	protected org.w3c.dom.Element getCellElement() {
 		return getCellElement(element);
 	}	
@@ -242,21 +256,8 @@ class ModelElementImpl<M extends ModelElement<M>> extends ElementImpl<M> impleme
 				if (pName.startsWith(STYLE_PREFIX)) {
 					String styleKey = pName.substring(STYLE_PREFIX.length());
 					pValue = Util.isBlank(styleKey) ? null : getStyle().get(styleKey);
-				} else if (pName.startsWith(SPEL_PREFIX)) {
-					String expr = pName.substring(SPEL_PREFIX.length());
-					if (Util.isBlank(expr)) {
-						pValue = null;
-					} else {
-						try {
-							if (context instanceof SpelContext) {
-								pValue = ((SpelContext) context).evaluate(this, expr, String.class);
-							} else {
-								pValue = evaluate(expr, String.class);
-							}
-						} catch (Exception ex) {
-							pValue = "Error evaluating '" + expr + "': " + ex;
-						}
-					}
+				} else if (context instanceof EvaluatingContext evaluatingContext) {
+					pValue = evaluatingContext.evaluate(this, pName, String.class);
 				} else {				
 					pValue = getRawProperty(pName);
 				}
@@ -471,7 +472,6 @@ class ModelElementImpl<M extends ModelElement<M>> extends ElementImpl<M> impleme
 				|| link.startsWith(PAGE_LINK_NAME_PREFIX)
 				|| link.startsWith(ELEMENT_LINK_ID_PREFIX)
 				|| link.startsWith(ELEMENT_LINK_NAME_PREFIX)
-				|| link.startsWith(SPEL_LINK_PREFIX)
 				);
 	}
 	
@@ -495,7 +495,7 @@ class ModelElementImpl<M extends ModelElement<M>> extends ElementImpl<M> impleme
 			try {
 				document = (DocumentImpl) document.getDocument(URI.createURI(docLocation));
 			} catch (IOException | ParserConfigurationException | SAXException | URISyntaxException e) {
-				throw new ConfigurationException("Error loading document from " + docLocation + "': " + e, e, this);
+				throw new ConfigurationException("Error loading document from " + docLocation + "': " + e, e, getMarker());
 			}
 			pageSelector = pageSelector.substring(hashIdx + 1);
 		}
@@ -508,7 +508,7 @@ class ModelElementImpl<M extends ModelElement<M>> extends ElementImpl<M> impleme
 				name = true;				
 				pageSelector = pageSelector.substring(NAME_PREFIX.length());
 			} else {			
-				throw new ConfigurationException("Invalid qualified page selector: '" + pageSelector, this);
+				throw new ConfigurationException("Invalid qualified page selector: '" + pageSelector, getMarker());
 			}
 		}
 		
@@ -519,7 +519,7 @@ class ModelElementImpl<M extends ModelElement<M>> extends ElementImpl<M> impleme
 					return page;
 				}
 			}
-			throw new ConfigurationException("Page with name '" + pageName + "' not found in " + document.getURI(), this);			
+			throw new ConfigurationException("Page with name '" + pageName + "' not found in " + document.getURI(), getMarker());			
 		}
 		
 		for (Page page: document.getPages()) {
@@ -527,7 +527,7 @@ class ModelElementImpl<M extends ModelElement<M>> extends ElementImpl<M> impleme
 				return page;
 			}
 		}
-		throw new ConfigurationException("Page with id '" + pageSelector + "' not found in " + document.getURI(), this);
+		throw new ConfigurationException("Page with id '" + pageSelector + "' not found in " + document.getURI(), getMarker());
 	}
 
 	@Override
@@ -568,7 +568,7 @@ class ModelElementImpl<M extends ModelElement<M>> extends ElementImpl<M> impleme
 				.findFirst();
 				
 			if (target.isEmpty()) {
-				throw new ConfigurationException("Element with id '" + id + "' not found on page '" + page.getName() + "' in " + document.getURI(), this);
+				throw new ConfigurationException("Element with id '" + id + "' not found on page '" + page.getName() + "' in " + document.getURI(), getMarker());
 			}
 			return target.get();
 		}
@@ -592,14 +592,9 @@ class ModelElementImpl<M extends ModelElement<M>> extends ElementImpl<M> impleme
 					.findFirst();
 					
 			if (target.isEmpty()) {
-				throw new ConfigurationException("Element with name '" + name + "' not found on page '" + page.getName() + "' in " + document.getURI(), this);
+				throw new ConfigurationException("Element with name '" + name + "' not found on page '" + page.getName() + "' in " + document.getURI(), getMarker());
 			}
 			return target.get();
-		}
-		
-		if (link.startsWith(SPEL_LINK_PREFIX)) {
-			String expr = link.substring(SPEL_LINK_PREFIX.length());
-			return evaluate(expr, LinkTarget.class);
 		}
 
 		return null;
@@ -667,42 +662,6 @@ class ModelElementImpl<M extends ModelElement<M>> extends ElementImpl<M> impleme
 		return pNames;
 	}
 	
-	protected <T extends org.nasdanika.sdk.runtime.drawio.model.ModelElement> T toModelElement(
-			T mElement, 
-			Function<org.nasdanika.persistence.Marker, org.nasdanika.ncore.Marker> markerFactory,
-			Function<Element<?>, CompletableFuture<EObject>> modelElementProvider,
-			Function<Tag, org.nasdanika.sdk.runtime.drawio.model.Tag> tagProvider) {
-		modelElementProvider.apply(this).complete(mElement);
-		mElement.setId(getId());
-		mElement.setLabel(getLabel());
-		mElement.setLink(getLink());
-		LinkTarget<?> linkTarget = getLinkTarget();
-		if (linkTarget != null) {
-			modelElementProvider.apply(linkTarget).thenAccept(mlp -> mElement.setLinkTarget((org.nasdanika.sdk.runtime.drawio.model.LinkTarget) mlp));
-		}
-		for (String pName: getPropertyNames()) {
-			mElement.getProperties().put(pName, getProperty(pName));
-		}		
-		for (Entry<String, String> se: getStyle().entrySet()) {
-			mElement.getStyle().put(se.getKey(), se.getValue());			
-		}
-		
-		for (Tag tag: getTags()) {
-			mElement.getTags().add(tagProvider.apply(tag));
-			
-		}
-		mElement.setTooltip(getTooltip());
-		mElement.setVisible(isVisible());
-		
-		for (Marker marker: getMarkers()) {
-			mElement.getMarkers().add(markerFactory.apply(marker));
-		}
-		
-		// TODO - geometry for nodes and connections. Refactor Rectangle to Geometry?
-		
-		return mElement;
-	}
-	
 	protected void onRemove() {
 		
 	}
@@ -765,11 +724,6 @@ class ModelElementImpl<M extends ModelElement<M>> extends ElementImpl<M> impleme
 		org.w3c.dom.Element toRemove = getElement();
 		toRemove.getParentNode().removeChild(toRemove);
 		onRemove();
-	}
-
-	@Override
-	protected Realm getRealm() {
-		return getModel().getPage().getDocument().getRealmElement().getRealm();
 	}
 	
 	protected static String getQualifier(String segment, String selector) {

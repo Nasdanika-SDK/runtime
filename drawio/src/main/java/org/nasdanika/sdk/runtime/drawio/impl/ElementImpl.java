@@ -1,15 +1,7 @@
 package org.nasdanika.sdk.runtime.drawio.impl;
 
-import java.util.Collections;
-import java.util.LinkedHashMap;
-import java.util.List;
-import java.util.Map;
 import java.util.Objects;
-import java.util.function.BiFunction;
-import java.util.function.Predicate;
 
-import org.nasdanika.sdk.runtime.drawio.Connection;
-import org.nasdanika.sdk.runtime.drawio.ConnectionBase;
 import org.nasdanika.sdk.runtime.drawio.Element;
 import org.nasdanika.sdk.runtime.drawio.Marker;
 
@@ -24,25 +16,25 @@ abstract class ElementImpl<E extends Element<E>> implements Element<E> {
 		return element;
 	}
 
-	@Override
-	public <T> T accept(BiFunction<Element<?>, Map<Element<?>, T>, T> visitor, ConnectionBase connectionBase) {
-		Map<org.nasdanika.sdk.runtime.drawio.Element<?>, T> childResults = new LinkedHashMap<>();
-		for (Element<?> child: getLogicalChildren(connectionBase)) {
-			if (child != null) {
-				childResults.put(child, child.accept(visitor, connectionBase));
-			}
-		}
-		return visitor.apply(this, childResults);
-	}
+//	@Override
+//	public <T> T accept(BiFunction<Element<?>, Map<Element<?>, T>, T> visitor, ConnectionBase connectionBase) {
+//		Map<org.nasdanika.sdk.runtime.drawio.Element<?>, T> childResults = new LinkedHashMap<>();
+//		for (Element<?> child: getLogicalChildren(connectionBase)) {
+//			if (child != null) {
+//				childResults.put(child, child.accept(visitor, connectionBase));
+//			}
+//		}
+//		return visitor.apply(this, childResults);
+//	}
 	
-	protected List<? extends Element<?>> getLogicalChildren(ConnectionBase connectionBase) {
-		if (connectionBase == null || connectionBase == ConnectionBase.PARENT) {
-			return getChildren();
-		}
-		
-		Predicate<Element<?>> isConnection = Connection.class::isInstance;
-		return getChildren().stream().filter(isConnection.negate()).toList();
-	}
+//	protected List<? extends Element<?>> getLogicalChildren(ConnectionBase connectionBase) {
+//		if (connectionBase == null || connectionBase == ConnectionBase.PARENT) {
+//			return getChildren();
+//		}
+//		
+//		Predicate<Element<?>> isConnection = Connection.class::isInstance;
+//		return getChildren().stream().filter(isConnection.negate()).toList();
+//	}
 	
 	@Override
 	public int hashCode() {
@@ -79,13 +71,13 @@ abstract class ElementImpl<E extends Element<E>> implements Element<E> {
 	}
 	
 	@Override
-	public List<Marker> getMarkers() {
+	public Marker getMarker() {
 		String markerLocation = getMarkerLocation();
 		String markerPosition = getMarkerPosition();
 		if (org.nasdanika.sdk.runtime.common.Util.isBlank(markerLocation) && org.nasdanika.sdk.runtime.common.Util.isBlank(markerPosition)) {
-			return Collections.emptyList();
+			return null;
 		}
-		return Collections.singletonList(new MarkerImpl(markerLocation, markerPosition));
+		return new MarkerImpl(markerLocation, markerPosition);
 	}
 		
 	protected String getMarkerPosition() {
@@ -95,24 +87,5 @@ abstract class ElementImpl<E extends Element<E>> implements Element<E> {
 	protected String getMarkerLocation() {
 		return null;
 	}
-
-	@Override
-	public Realm.Element<E> getRealmElement() {
-		return new Realm.Element<E>() {
-
-			@SuppressWarnings("unchecked")
-			@Override
-			public E get() {
-				return (E) ElementImpl.this;
-			}
-
-			@Override
-			public Realm getRealm() {
-				return ElementImpl.this.getRealm();
-			}
-		};
-	}
-	
-	protected abstract Realm getRealm();
 	
 }
