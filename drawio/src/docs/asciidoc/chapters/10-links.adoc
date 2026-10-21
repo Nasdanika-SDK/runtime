@@ -1,0 +1,112 @@
+// Defaults for previewing this file on its own; index.adoc and the Maven build set these
+ifndef::booktests[:booktests: ../../../test/java/org/nasdanika/sdk/runtime/drawio/tests/book]
+
+[#links]
+== Links between pages, elements and documents
+
+Links are how a diagram gets levels of detail: an element on a system context page links to the page that shows what is inside it.
+Draw.io links an element to a URL or to a page of the same file.
+The API reads those links, and extends them to elements, and to pages and elements of other documents, so a set of files becomes one network of diagrams.
+
+=== Link syntax
+
+Draw.io writes a link to a page as `data:page/id,<page ID>`.
+The API accepts four forms, two of which are Draw.io's own:
+
+[cols="3,4",options="header"]
+|===
+| Link | Points to
+
+| `data:page/id,<page>`
+| A page by ID. Draw.io writes this form when you choose a page in the _Edit Link_ dialog.
+
+| `data:page/name,<page>`
+| A page by name, URL-encoded: `data:page/name,System+Context`.
+
+| `data:element/id,<element>`
+| An element by ID.
+
+| `data:element/name,<element>`
+| An element by the text of its label, HTML removed, URL-encoded.
+|===
+
+The part after the comma can say where to look:
+
+* `<document>#<page>` for a page in another document, where `<document>` is a URI resolved against the URI of the linking document: `data:page/name,overview.drawio#Page+2`;
+* `[<document>#]<page selector>/<element>` for an element on another page, where the page selector is `id,<page ID>` or `name,<page name>`: `data:element/id,id,system-context/ibs`, `data:element/name,overview.drawio#name,Page+2/Linked`.
+
+An element link without a page selector looks on the linking element's own page.
+Element links and links to other documents are an extension: Draw.io itself opens them as URLs, so they work in programs built on the API and not when clicked in the editor or the viewer.
+
+=== Resolving links
+
+`getLinkTarget()` returns what a link points to: a `Page` or a `ModelElement`, both `LinkTarget`s.
+`isTargetLink()` says whether the link is in one of the four forms at all; a link to a web page returns `false`, and its target is `null`.
+
+.Links within the running example (`LinkTests.java`)
+[source,java]
+----
+include::{booktests}/LinkTests.java[tag=links,indent=0]
+----
+<1> The Internet Banking System links to the _Containers_ page, by ID, as Draw.io wrote it.
+<2> The boundary on the _Containers_ page links back to the Internet Banking System, by page ID and element ID.
+<3> The Mainframe Banking System on the _Containers_ page links to its namesake on the _System Context_ page, by page name and element ID.
+
+A link that cannot be resolved, to a page or an element that does not exist, throws a `ConfigurationException` with a marker that names the page and the element that has the link.
+That makes checking a diagram's links a one-line test: visit every element with `isTargetLink()` and call `getLinkTarget()`.
+
+=== Following links
+
+Visitors and streams stay within the element they start from.
+`Util.withLinkTargets` wraps a visitor so that it also visits what elements link to, each link target once:
+
+.Visiting linked pages
+[source,java]
+----
+include::{booktests}/LinkTests.java[tag=follow,indent=0]
+----
+<1> The wrapped visitor visits the _Containers_ page because the Internet Banking System links to it.
+
+`Util.traverser` goes further: it visits connected elements and parents too, and with them everything reachable from the starting element.
+
+=== Other documents
+
+A link to another document loads it, with the same context, and caches it, so documents that link to each other are loaded once each and links between them come back to the same objects:
+
+.A link to an element in another document
+[source,java]
+----
+include::{booktests}/LinkTests.java[tag=cross-document,indent=0]
+----
+<1> `compressed.drawio` is resolved against the URI of `links.drawio`, loaded, and searched for an element labeled _Linked_ on its page _Page 2_.
+<2> `getDocument(uri)` returns a linked document from the same cache, so this is the document the link was resolved in.
+
+With cross-document links, several teams can each keep their own diagrams in their own repositories, and the enterprise's diagrams become one network: a system context diagram owned by enterprise architects links to container diagrams owned by the teams that build the systems.
+
+ifdef::editor-notes[]
+[IMPORTANT,caption="Editor's note"]
+====
+A linked document is always parsed as XML, so a link cannot point to a diagram embedded in a PNG image, such as the figures of this book. `DocumentImpl.getDocument` could recognize PNG images by their signature, or by the `.png` extension, and load them with `loadFromPngMetadata`. Until it does, diagrams that link to each other have to be `.drawio` files.
+====
+endif::[]
+
+=== Logical URIs
+
+The URIs in links do not have to be locations.
+A context's `openStream(URI)` opens every linked document, so it can map logical URIs to wherever the documents are: a classpath, a Maven artifact, a GitLab repository read through its API without cloning, or a different location for each environment:
+
+.Logical URIs resolved by the context
+[source,java]
+----
+include::{booktests}/LinkTests.java[tag=logical,indent=0]
+----
+<1> URIs with the scheme `catalog` are read from the classpath; everything else is opened as a URL.
+<2> The link uses the logical URI. Nothing in the diagram says where the document is.
+
+With placeholders on, a link can also depend on the context: `data:page/name,%release%/overview.drawio#Overview`, with `release` supplied by the context, links each release's diagram to that release's overview.
+
+=== Element URIs
+
+`getURI()` returns a URI for every element: the document's URI with a fragment of the IDs from the page down, so it identifies the element across documents.
+`resolveURI(base, provider, connectionBase)` builds URIs of your own, from a property of each element resolved against its logical parent's, with the connection base of <<navigating>> deciding whether a connection's parent is its layer, its source or its target.
+That is how a diagram maps to a hierarchy of resources, such as the pages of a documentation site, or the paths of an API.

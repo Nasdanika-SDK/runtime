@@ -1,0 +1,76 @@
+[#problem-domain]
+== What a diagram is made of
+
+Before Draw.io, a look at diagrams in general: what they are made of, whatever the tool, paper and pencil included.
+Most of the API in part two is a Draw.io-specific way of reaching these few concepts.
+
+=== Nodes, connections and what they stand for
+
+Diagrams show *things* and their relationships with *shapes* joined by *lines*.
+I call the shapes *nodes*, the lines *connections*, and the things they stand for *entities*.
+Entities have information associated with them, which I call *features*, and they can do things, which I call *operations*.
+
+Think of entities as nouns, features as adjectives and operations as verbs.
+In "the quick brown fox jumps over the lazy dog", the fox and the dog are entities; quick, brown and lazy are features; jumps over is an operation, perhaps with "over" as its argument.
+
+A *diagram* contains *diagram elements*, nodes and connections, and describes a *domain*, a collection of entities with their features and operations.
+A few facts about this structure matter throughout the book:
+
+* A node can contain other diagram elements. A system contains its containers, a container its components.
+* A connection joins a source node to a target node, but either end can be missing. A dangling connection is legitimate: an arrow from a system to "somewhere we have not decided yet".
+* A diagram element can stand for one entity, for a group of entities, for a feature or an operation, or for nothing at all. A frame, a legend or a decorative line is a purely visual element.
+* The relationship between an element and what it stands for is not in the picture. It is established by the shape, the label, the tooltip, a link, a property, and the shared understanding of the people who read it.
+
+Features come in two kinds.
+*Attributes* have scalar values, or collections of them: a name, a color, an age.
+*References* point to other entities: a person's employer, the systems a team owns.
+On a diagram, a reference is often a connection, and sometimes containment: the teams inside a department, the containers inside a system.
+
+=== Visual features
+
+Diagram elements have features of their own, apart from what they stand for, and the visual ones can carry information as surely as a label.
+Most diagram editors support visual features only, and Draw.io adds non-visual ones, properties, which <<properties>> is about.
+Each visual feature below can encode both categories and quantities.
+
+*Label.*
+Text on an element or a connection, plain or formatted.
+In Draw.io, labels are often HTML, which matters when a program reads them (<<navigating>>).
+
+*Shape.*
+Circle, rectangle, cylinder, cloud.
+Circles for apples and rectangles for oranges is a category; the ratio of a rectangle's sides can be a quantity.
+
+*Icon.*
+An image used instead of a shape.
+There are millions of icons, and Draw.io has libraries of thousands, from cloud providers to network equipment.
+
+*Border.*
+Width, color and pattern: solid, dashed, dotted.
+In this book's figures, a dashed border means planned.
+
+*Connection.*
+Width, color and pattern, as for a border, and also decorations at both ends and labels along the line.
+
+*Size.*
+Lines of code, account balance, transaction volume: the bigger the shape, the larger the number.
+
+*Geometry.*
+Position and distance.
+Position can order nodes, left to right and top to bottom, or clockwise around a hub, and distance can carry a value.
+<<order>> turns geometry into order with comparators.
+
+*Color.*
+Colors can be ordered, by hue on the HSV or HSB scale, or put in buckets, by distance to a set of base colors: blue for in progress and green for done, as in many issue trackers.
+Matching colors exactly is brittle; matching by least distance is not.
+
+*Opacity.*
+A translucent element can be less important, or not available yet.
+
+*Gradient.*
+A gradient between two colors can say that an element belongs to two categories.
+
+*Z-order.*
+When shapes overlap, which one is on top can carry meaning, alone or together with position.
+
+A diagram that uses visual features to carry information should say so, in a legend or in its documentation.
+A diagram that a program reads can do better: it can read those features, because in Draw.io every one of them is in the element's style, which the API reads as a map (<<changing>>).

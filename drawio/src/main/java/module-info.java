@@ -1,3 +1,4 @@
+// tag::module[]
 module org.nasdanika.sdk.runtime.drawio {
 	
 	exports org.nasdanika.sdk.runtime.drawio;
@@ -15,3 +16,4 @@ module org.nasdanika.sdk.runtime.drawio {
 	requires org.apache.commons.text;
 	
 }
+// end::module[]

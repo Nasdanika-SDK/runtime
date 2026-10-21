@@ -22,6 +22,21 @@
 		<url>https://github.com/Nasdanika-SDK/runtime</url>
 	</scm>
 
+	<properties>
+		<!--
+			Nasdanika Zephyr Books, see the zephyr-book profile below.
+			maven.multiModuleProjectDirectory is the repository root because of the .mvn directory there.
+		-->
+		<zephyr.dir>${maven.multiModuleProjectDirectory}/doc/zephyr</zephyr.dir>
+		<zephyr.editor-notes>true</zephyr.editor-notes>
+		<zephyr.epub.skip>true</zephyr.epub.skip>
+		<asciidoctor.skip>false</asciidoctor.skip>
+		<zephyr.asciidoctor.maven.plugin.version>3.2.0</zephyr.asciidoctor.maven.plugin.version>
+		<zephyr.asciidoctorj.version>3.0.1</zephyr.asciidoctorj.version>
+		<zephyr.asciidoctorj.pdf.version>2.3.27</zephyr.asciidoctorj.pdf.version>
+		<zephyr.asciidoctorj.epub3.version>2.2.0</zephyr.asciidoctorj.epub3.version>
+	</properties>
+
 	<build>
 	    <extensions>
 	      <extension>
@@ -409,8 +424,211 @@
 	</dependencies>
 
 	 <profiles>
+		<!--
+			Nasdanika Zephyr Books: module documentation in AsciiDoc, in the Bootswatch Zephyr look.
+
+			A module opts in by adding src/docs/asciidoc/index.adoc, with no change to its pom.
+			After the tests pass, the package phase renders target/book/<artifactId>-<version>-book.pdf
+			and .html (and .epub when zephyr.epub.skip is false, for the books on Leanpub), and attaches
+			them with the classifier "book", and the test sources with the classifier "test-sources".
+
+			Listings are tagged regions of the module's tests and test resources, included through the
+			testdir and testresourcesdir attributes. Warnings fail the build, as in the SDK book.
+
+			Skip rendering:     -Dasciidoctor.skip=true
+			Without notes:      -Dzephyr.editor-notes=false   (the central profile sets it)
+		-->
+		<profile>
+			<id>zephyr-book</id>
+			<activation>
+				<file>
+					<exists>${basedir}/src/docs/asciidoc/index.adoc</exists>
+				</file>
+			</activation>
+			<properties>
+				<zephyr.book.name>${project.artifactId}-${project.version}-book</zephyr.book.name>
+				<maven.build.timestamp.format>yyyy-MM-dd</maven.build.timestamp.format>
+			</properties>
+			<build>
+				<plugins>
+					<plugin>
+						<!-- Bootswatch Zephyr and the bridge in one stylesheet, for Asciidoctor to embed -->
+						<groupId>org.apache.maven.plugins</groupId>
+						<artifactId>maven-antrun-plugin</artifactId>
+						<version>3.1.0</version>
+						<executions>
+							<execution>
+								<id>zephyr-stylesheet</id>
+								<phase>prepare-package</phase>
+								<goals>
+									<goal>run</goal>
+								</goals>
+								<configuration>
+									<target>
+										<concat destfile="${project.build.directory}/zephyr/zephyr.css" encoding="UTF-8" outputencoding="UTF-8" fixlastline="yes">
+											<filelist dir="${zephyr.dir}/css" files="bootstrap.min.css,zephyr-bridge.css"/>
+										</concat>
+									</target>
+								</configuration>
+							</execution>
+						</executions>
+					</plugin>
+					<plugin>
+						<groupId>org.asciidoctor</groupId>
+						<artifactId>asciidoctor-maven-plugin</artifactId>
+						<version>${zephyr.asciidoctor.maven.plugin.version}</version>
+						<dependencies>
+							<dependency>
+								<groupId>org.asciidoctor</groupId>
+								<artifactId>asciidoctorj</artifactId>
+								<version>${zephyr.asciidoctorj.version}</version>
+							</dependency>
+							<dependency>
+								<groupId>org.asciidoctor</groupId>
+								<artifactId>asciidoctorj-pdf</artifactId>
+								<version>${zephyr.asciidoctorj.pdf.version}</version>
+							</dependency>
+							<dependency>
+								<groupId>org.asciidoctor</groupId>
+								<artifactId>asciidoctorj-epub3</artifactId>
+								<version>${zephyr.asciidoctorj.epub3.version}</version>
+							</dependency>
+						</dependencies>
+						<configuration>
+							<sourceDirectory>${project.basedir}/src/docs/asciidoc</sourceDirectory>
+							<sourceDocumentName>index.adoc</sourceDocumentName>
+							<outputDirectory>${project.build.directory}/book</outputDirectory>
+							<doctype>book</doctype>
+							<logHandler>
+								<outputToConsole>true</outputToConsole>
+								<failIf>
+									<severity>WARN</severity>
+								</failIf>
+							</logHandler>
+							<attributes>
+								<revnumber>${project.version}</revnumber>
+								<revdate>${maven.build.timestamp}</revdate>
+								<runtime-version>${project.version}</runtime-version>
+								<module-name>${project.name}</module-name>
+								<runtime-root>${maven.multiModuleProjectDirectory}</runtime-root>
+								<group-id>${project.groupId}</group-id>
+								<artifact-id>${project.artifactId}</artifact-id>
+								<testdir>${project.basedir}/src/test/java</testdir>
+								<testresourcesdir>${project.basedir}/src/test/resources</testresourcesdir>
+								<editor-notes>${zephyr.editor-notes}</editor-notes>
+								<source-highlighter>rouge</source-highlighter>
+								<sectanchors>true</sectanchors>
+								<idprefix />
+								<idseparator>-</idseparator>
+								<xrefstyle>short</xrefstyle>
+								<experimental>true</experimental>
+							</attributes>
+						</configuration>
+						<executions>
+							<execution>
+								<id>zephyr-pdf</id>
+								<phase>package</phase>
+								<goals>
+									<goal>process-asciidoc</goal>
+								</goals>
+								<configuration>
+									<backend>pdf</backend>
+									<outputFile>${zephyr.book.name}.pdf</outputFile>
+									<attributes>
+										<pdf-themesdir>${zephyr.dir}/themes</pdf-themesdir>
+										<pdf-theme>zephyr</pdf-theme>
+										<icons>font</icons>
+									</attributes>
+								</configuration>
+							</execution>
+							<execution>
+								<id>zephyr-html</id>
+								<phase>package</phase>
+								<goals>
+									<goal>process-asciidoc</goal>
+								</goals>
+								<configuration>
+									<backend>html5</backend>
+									<outputFile>${zephyr.book.name}.html</outputFile>
+									<attributes>
+										<!-- Airtight: icons stay unset, so no icon font from a CDN; admonitions are labeled -->
+										<stylesdir>${project.build.directory}/zephyr</stylesdir>
+										<stylesheet>zephyr.css</stylesheet>
+										<toc>left</toc>
+										<toclevels>3</toclevels>
+										<data-uri>true</data-uri>
+									</attributes>
+								</configuration>
+							</execution>
+							<execution>
+								<id>zephyr-epub</id>
+								<phase>package</phase>
+								<goals>
+									<goal>process-asciidoc</goal>
+								</goals>
+								<configuration>
+									<skip>${zephyr.epub.skip}</skip>
+									<backend>epub3</backend>
+									<outputFile>${zephyr.book.name}.epub</outputFile>
+									<attributes>
+										<!-- EPUB packs images by their path relative to the document: zephyr-epub-imagesdir, set by the book -->
+										<zephyr-epub>true</zephyr-epub>
+									</attributes>
+								</configuration>
+							</execution>
+						</executions>
+					</plugin>
+					<plugin>
+						<groupId>org.codehaus.mojo</groupId>
+						<artifactId>build-helper-maven-plugin</artifactId>
+						<version>3.6.2</version>
+						<executions>
+							<execution>
+								<id>attach-zephyr-book</id>
+								<phase>package</phase>
+								<goals>
+									<goal>attach-artifact</goal>
+								</goals>
+								<configuration>
+									<skipAttach>${asciidoctor.skip}</skipAttach>
+									<artifacts>
+										<artifact>
+											<file>${project.build.directory}/book/${zephyr.book.name}.pdf</file>
+											<type>pdf</type>
+											<classifier>book</classifier>
+										</artifact>
+										<artifact>
+											<file>${project.build.directory}/book/${zephyr.book.name}.html</file>
+											<type>html</type>
+											<classifier>book</classifier>
+										</artifact>
+									</artifacts>
+								</configuration>
+							</execution>
+						</executions>
+					</plugin>
+					<plugin>
+						<groupId>org.apache.maven.plugins</groupId>
+						<artifactId>maven-source-plugin</artifactId>
+						<version>3.4.0</version>
+						<executions>
+							<execution>
+								<id>attach-test-sources</id>
+								<goals>
+									<goal>test-jar-no-fork</goal>
+								</goals>
+							</execution>
+						</executions>
+					</plugin>
+				</plugins>
+			</build>
+		</profile>
 		<profile>
 			<id>central</id>
+			<properties>
+				<!-- Central is immutable: published Zephyr Books leave the editor's notes out -->
+				<zephyr.editor-notes>false</zephyr.editor-notes>
+			</properties>
 			<build>
 				<plugins>
 					<plugin>

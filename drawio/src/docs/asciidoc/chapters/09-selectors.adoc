@@ -1,0 +1,117 @@
+// Defaults for previewing this file on its own; index.adoc and the Maven build set these
+ifndef::booktests[:booktests: ../../../test/java/org/nasdanika/sdk/runtime/drawio/tests/book]
+
+[#selectors]
+== Selectors and property paths
+
+Streams and loops find elements anywhere.
+Selectors find them *relative to an element*: its parent, its children, the elements its connections lead to, and what it links to.
+A selector is a path of segments separated by slashes, and `ModelElement.select` returns the elements at its end.
+
+=== Segments
+
+[cols="2,3,2",options="header"]
+|===
+| Segment | Selects | On
+
+| `..`
+| The parent.
+| Any model element
+
+| `child`
+| The children: for a node, the nodes and connections it contains.
+| Any model element
+
+| `link-target`
+| What the element's link points to: an element, or the root of a linked page (<<links>>).
+| Any model element
+
+| `incoming-connection`
+| The connections that end at the node or at its connection points.
+| Nodes
+
+| `outgoing-connection`
+| The connections that start at the node or at its connection points.
+| Nodes
+
+| `source`
+| The source node of the connection.
+| Connections
+
+| `target`
+| The target node of the connection.
+| Connections
+|===
+
+`child`, `incoming-connection` and `outgoing-connection` take a qualifier in square brackets.
+`[id]` keeps the elements with that ID; `[name=value]` keeps the elements whose property `name` equals `value`.
+Matching is exact and case-sensitive, with no wildcards.
+
+=== Following connections
+
+.Selecting along connections (`SelectorTests.java`)
+[source,java]
+----
+include::{booktests}/SelectorTests.java[tag=select,indent=0]
+----
+<1> From the customer, along its outgoing connections, to their targets.
+<2> Only the connection whose `protocol` is `SMTP`.
+
+=== Containment
+
+.Selecting parents and children
+[source,java]
+----
+include::{booktests}/SelectorTests.java[tag=containment,indent=0]
+----
+
+=== Across pages
+
+`link-target` follows the element's link, so a selector crosses from one page to another, and from one document to another, wherever the diagram's links lead:
+
+.From the Containers page back to the System Context page
+[source,java]
+----
+include::{booktests}/SelectorTests.java[tag=across-pages,indent=0]
+----
+<1> The boundary on the Containers page links to the Internet Banking System on the System Context page; from there, the selector follows its outgoing connections.
+
+=== Property paths
+
+A property name with slashes is a property path: a selector, then the name of a property.
+`getProperty` selects with all but the last segment, and reads the last one from the first element selected:
+
+.Property paths
+[source,java]
+----
+include::{booktests}/SelectorTests.java[tag=paths,indent=0]
+----
+<1> From the single-page application to its parent, the boundary, to what the boundary links to, the Internet Banking System, and its `owner`.
+
+Property paths work with `getProperty`, and so with everything built on it, such as the property comparator of <<order>>.
+They do not work inside placeholders: `%../owner%` in a label is not expanded (<<properties>>).
+
+=== When nothing matches
+
+A selector that matches nothing returns an empty list, and a property path that selects nothing returns `null`.
+An unknown segment is not an error: it matches nothing.
+The exception is `link-target` on an element without a link, which returns `null` rather than an empty list; check `getLink()` or `isTargetLink()` first.
+
+.Selectors that match nothing
+[source,java]
+----
+include::{booktests}/SelectorTests.java[tag=no-match,indent=0]
+----
+
+ifdef::editor-notes[]
+[IMPORTANT,caption="Editor's note"]
+====
+Three defects found while writing this chapter, each reproduced against {runtime-version}:
+
+* `select("link-target")` on an element without a link returns `null`, not an empty list, and a property path through it, such as `getProperty("link-target/owner")`, throws a `NullPointerException`. `ModelElementImpl.selectSegment` returns `null` for an unresolved `link-target`; it should return an empty list.
+* `..` on the root returns a list that contains `null`, so a property path that climbs past the root throws a `NullPointerException`.
+* Placeholders read raw attributes and fall back to the parent's `getProperty`, so a placeholder that is a property path, such as `%../id%`, is either left unexpanded or resolved against the parent and its ancestors, and can throw for the reason above. Either support paths in placeholders or reject them with a clear message.
+
+Separately, a property that is not set reads as an empty string, while a property path that selects nothing reads as `null` (<<properties>>). Code that reads both has to check for both. Consider returning `null` for both, or document the difference in the Javadoc of `ModelElement.getProperty`.
+====
+endif::[]

@@ -1,0 +1,53 @@
+[#looking-ahead]
+== The rest of the continuum
+
+This module covers the middle of the continuum: a diagram as data, read, checked, changed and written by programs, and shared as an interactive page.
+The points to its right exist in Nasdanika core, built on its graph, mapping and HTML application modules.
+In the runtime they will be rebuilt on its own foundation, and this chapter says how, as far as it is designed.
+Everything in it is [.planned]#PLANNED# unless it says otherwise.
+
+=== Documented diagrams
+
+A documentation site generated from a diagram: a page per documented element, a navigation tree from the diagram's containment and links, the diagrams embedded in the viewer and linked to the pages, and search.
+In Nasdanika core, the `drawio html-app site` command of the Nasdanika CLI, and a GitHub template repository that runs it, generate such sites, from documentation in properties, from Markdown files that elements refer to, and from prototypes that mount other sites.
+
+In the runtime, sites will be generated with its HTML and Bootstrap modules, which its own site is planned to be generated with as well.
+The diagram supplies the tree, the element properties supply the pages, and the API of this book reads both.
+
+=== Executable diagrams
+
+Behavior bound to diagram elements: a property names the code an element stands for, and the code is wired to its neighbors along the diagram's connections.
+Nasdanika core does this with graph processors, which exchange handlers and endpoints along connections, synchronously or concurrently, and are created from invocable URIs in element properties.
+
+The design for the runtime is open.
+Its natural foundation is the runtime's capability framework, which finds and creates the code that a requirement names, with the diagram as the wiring, and its telemetry, which would record what the diagram did.
+
+=== Diagrams as models
+
+Diagram elements mapped to the objects of a typed model, so that a diagram is one of the sources of a model alongside spreadsheets, scripts and code.
+In Nasdanika core, semantic mapping does this: element properties name the classes and features of an Ecore metamodel, and a diagram loaded into a resource set is a model.
+
+The runtime takes a different road there.
+Its models are EMF models, defined in Xcore and loaded through its resource set, and its Groovy DSL can already read other resources while it builds a model.
+Two pieces will join them to this module: a resource factory that loads Draw.io files and PNG images as resources, and a mapping from elements to model objects, driven by element properties as in core, or written as a Groovy script over the API of this book.
+
+=== One diagram model, many pictures
+
+The runtime will have a diagram model of its own: nodes, connections, containment and labels, independent of any editor.
+Draw.io documents map to it, and so will PowerPoint slides and diagrams generated from the runtime's models, such as module graphs of a running JVM.
+The diagram model is laid out once, with Eclipse ELK, and rendered with React Flow where a diagram should be interactive or generated, or with Draw.io's own viewer where a hand-drawn diagram should look exactly as drawn.
+
+The same path makes diagrams scenes of narrated videos: a diagram on screen, with elements highlighted as a narration mentions them, regenerated when the diagram changes.
+
+=== Rendering generated diagrams
+
+A diagram written by a program has no picture until something renders it (<<changing>>).
+For people working in Draw.io that does not matter: the editor renders as it opens.
+For documentation built in a pipeline, such as this book, it does.
+The runtime will render diagrams in a headless browser with Draw.io's own viewer, the way this book's figures were first rendered, so that a generated diagram can be a PNG with the diagram embedded, like a drawn one.
+
+=== Diagrams and AI assistants
+
+A diagram as data is good context for an assistant: a graph of short texts, labels, tooltips and properties, joined by containment, connections and links.
+An assistant that is given the elements near the one a person asks about, by graph distance as well as by similarity of text, answers questions about an architecture more precisely than one given the whole diagram as an image.
+The API of this book is enough to build that context today; the runtime's plans for assistants will build it in.

@@ -1,0 +1,76 @@
+// Defaults for previewing this file on its own; index.adoc and the Maven build set these
+ifndef::booktests[:booktests: ../../../test/java/org/nasdanika/sdk/runtime/drawio/tests/book]
+ifndef::imagesdir[:imagesdir: ../../../test/resources/org/nasdanika/sdk/runtime/drawio/tests/book]
+
+[#document-model]
+== The document model
+
+The API is a set of interfaces over the XML of a Draw.io file, one per part of it, implemented in the `impl` package.
+This chapter is the map; the chapters after it use it.
+
+.The document model. Open arrows are references, named after their getters; closed arrows are generalizations.
+image::metamodel.png[The Draw.io document model,pdfwidth=100%,width=900]
+
+=== From document to element
+
+*`Document`* is the file, the `mxfile` element.
+It has a list of pages, creates new ones, finds a page by name or by ID, saves itself, and loads documents that it links to.
+
+*`Page`* is a `diagram` element: a name, an ID and a model.
+A page is also where tags live.
+
+*`Model`* is the page's `mxGraphModel`: the grid, the background, the shadow and the page view.
+It has one *`Root`*, the root cell, which contains the layers.
+For most purposes a page, its model and its root are one thing; the API keeps them apart because the format does.
+
+*`Layer`* contains the elements of a page.
+Every page has at least one layer; in Draw.io, the _Layers_ panel shows them.
+
+*`LayerElement`* is what a layer contains: a node or a connection.
+
+*`Node`* is a shape.
+A node is also a layer: it contains nodes and connections of its own, which is how a system contains its containers.
+It has a geometry and connection points, and it is *`Connectable`*: connections start and end at nodes.
+
+*`Connection`* is a line from a source to a target, either of which can be missing.
+It has points along its path and a node of its own for each extra label.
+
+*`ConnectionPoint`* is a fixed point on the outline of a node where a connection leaves or arrives, and is connectable too.
+
+*`Tag`* is a name that elements of a page share, so that they can be shown and hidden together.
+
+The figure leaves out three interfaces that the others extend.
+*`Element`* is the base of everything above: it has a URI, a marker that says where it came from in its file, the DOM element behind it, and the visitor and stream methods of <<navigating>>.
+*`ModelElement`* is the base of the root, layers, nodes and connections: an ID, a label, a tooltip, a link, a style, properties, tags and visibility, and the selectors of <<selectors>>.
+*`LinkTarget`* marks what a link can point to: a page or a model element (<<links>>).
+
+=== The figure checks the API
+
+The figure is a diagram that a test reads.
+Its node labels are interface names, its open arrows are labeled with the names of getters, and its closed arrows have a `relationship` property of `extends`.
+The test checks the figure against the API with reflection, so a renamed interface or getter fails the build of this book until the figure is redrawn:
+
+.Checking the figure against the API (`MetamodelTests.java`)
+[source,java]
+----
+include::{booktests}/MetamodelTests.java[tag=check,indent=0]
+----
+<1> Every node names an interface of the API's package.
+<2> A generalization arrow is an `extends`: the source type is assignable to the target type.
+<3> A reference arrow is a getter of its source whose return type mentions its target. `getPages()` returns `List<Page>`, `getTags()` on a page returns `Map<String, Tag>`.
+
+It is a small example of the continuum at work.
+The diagram is documentation for people and a specification for a test, and the test keeps the documentation honest.
+
+=== Types and generics
+
+The interfaces are generic in themselves: `Element<E extends Element<E>>`, `ModelElement<M extends ModelElement<M>>`, `Layer<L extends Layer<L>>`.
+The parameter lets methods such as `style` return the element's own type, and in client code it is almost always a wildcard: `ModelElement<?>`, `Layer<?>`.
+`Node` and `Connection` are not generic, so code that works with them reads as plain Java.
+
+A model element that is a node or a connection is a `LayerElement`, and you tell them apart with `instanceof`.
+Streams of a document are streams of `Element<?>`, filtered and cast to what a listing needs, as the next chapter shows.
+
+`getElement()` returns the `org.w3c.dom.Element` behind any part of a diagram.
+It is there for what the API does not cover, such as attributes of the model that have no getter.
+Changes made through the DOM are saved like any others.

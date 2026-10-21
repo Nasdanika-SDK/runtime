@@ -1,0 +1,135 @@
+// Defaults for previewing this file on its own; index.adoc and the Maven build set these
+ifndef::booktests[:booktests: ../../../test/java/org/nasdanika/sdk/runtime/drawio/tests/book]
+ifndef::imagesdir[:imagesdir: ../../../test/resources/org/nasdanika/sdk/runtime/drawio/tests/book]
+ifndef::runtime-root[:runtime-root: ../../../../..]
+
+[#getting-started]
+== Getting started
+
+This chapter adds the module to a project, loads the book's running example, and saves, shares and reloads it in the forms the API supports.
+
+=== Adding the module
+
+The runtime publishes a bill of materials, `org.nasdanika.sdk.runtime:bom`, which manages the versions of its modules and of the libraries they use.
+Import it, then depend on `org.nasdanika.sdk.runtime:drawio` without a version:
+
+.Importing the runtime's bill of materials
+[source,xml]
+----
+include::{runtime-root}/doc/book/examples/pom.xml[tag=bom,indent=0]
+----
+
+ifdef::editor-notes[]
+[IMPORTANT,caption="Editor's note"]
+====
+The listing is the BOM import of the SDK book's examples, which use `${project.version}` because they are built in the runtime's reactor. A project of your own uses the runtime's version, {runtime-version}, in its place. Until the runtime is on Maven Central, build it from {runtime-repo} with `mvn clean install` first.
+====
+endif::[]
+
+The module is a named Java module.
+Its declaration shows what it exports and what it brings with it:
+
+.The module declaration of `drawio`
+[source,java]
+----
+include::{runtime-root}/drawio/src/main/java/module-info.java[tag=module,indent=0]
+----
+
+Your own `module-info.java` needs `requires org.nasdanika.sdk.runtime.drawio;`.
+The module requires `common` transitively, which brings the runtime's foundation with it: EMF's `URI` class, used for document locations throughout the API, and the OpenTelemetry API.
+`java.xml` is transitive too, because `Element.getElement()` returns the DOM element behind any part of a diagram.
+`java.desktop` is there only for reading PNG images.
+
+=== The running example
+
+Most listings in this book work on one diagram, drawn after the Internet Banking System example of the C4 model:
+
+.The running example: the System Context page of `internet-banking.png`
+image::internet-banking.png[Internet Banking System context,pdfwidth=90%,width=760]
+
+It has two pages.
+_System Context_, in the figure, has a person, three software systems and the connections between them, and a _Notes_ layer with the note in the corner.
+Its elements carry properties, such as `type`, `owner` and `protocol`, and tags, such as `internal` and `legacy`.
+_Containers_, the second page, shows what is inside the Internet Banking System: a single-page application, an API application and a database, inside a boundary that links back to the system on the first page.
+A PNG image shows only the first page of the diagram it embeds; open the file in Draw.io to see the second.
+
+=== Loading a diagram
+
+A PNG image can embed more than one diagram, so `Document.loadFromPngMetadata` returns a list.
+The tests load the figures with a small helper:
+
+.Loading a diagram embedded in a PNG image (`Diagrams.java`)
+[source,java]
+----
+include::{booktests}/Diagrams.java[tag=load,indent=0]
+----
+<1> `loadFromPngMetadata` takes a `URL`, or an `InputStream` with the URI of the image, and optionally a `Context` (<<properties>>).
+
+The first listing loads the running example and lists its pages:
+
+.A first diagram (`GettingStartedTests.java`)
+[source,java]
+----
+include::{booktests}/GettingStartedTests.java[tag=first,indent=0]
+----
+
+=== Saving and loading
+
+`save` writes the document as XML.
+Its argument decides compression: `false` writes pages as plain XML, `true` compresses them, and `null` keeps each document as it was loaded.
+
+.Saving a diagram as a `.drawio` file and loading it back
+[source,java]
+----
+include::{booktests}/GettingStartedTests.java[tag=save,indent=0]
+----
+<1> Uncompressed, indented XML, which reads well in a diff and in a code review.
+<2> The document remembers where it was loaded from. Relative links to other documents are resolved against that URI (<<links>>).
+
+A compressed document is smaller and opaque.
+Loading from a string needs a base URI only if the document links to other documents:
+
+.Compressed pages, and loading from a string
+[source,java]
+----
+include::{booktests}/GettingStartedTests.java[tag=compressed,indent=0]
+----
+<1> The pages are deflated and Base64-encoded, so the XML of the model is not visible.
+<2> The URI is `null`: the document has no location of its own.
+
+The API loads documents from every source Java has.
+`Document.create` makes an empty one, which <<changing>> fills:
+
+.Every way to get a document
+[source,java]
+----
+include::{booktests}/GettingStartedTests.java[tag=sources,indent=0]
+----
+
+Each `load` method also takes a `Context`, which supplies properties, filters them, and opens the streams of linked documents (<<properties>>, <<links>>).
+Loading from a `URL` or a `File` goes through a cache of documents, so documents that link to each other are loaded once each.
+
+=== Sharing a diagram
+
+Most people who should see a diagram do not have Draw.io.
+`toHtml` produces a `div` with the diagram and a `script` element for Draw.io's viewer, ready to be put into any web page:
+
+.A web page with the diagram in Draw.io's viewer
+[source,java]
+----
+include::{booktests}/GettingStartedTests.java[tag=html,indent=0]
+----
+<1> Without arguments, the diagram is compressed into the page and the viewer is loaded from jsDelivr, pinned to a release of Draw.io. `toHtml(compress, viewer)` takes another viewer URL, or `null` for no `script` element when the page loads the viewer itself.
+
+The viewer shows a toolbar for zoom, layers, tags and full screen, highlights links, and opens the diagram in the editor in a new window.
+
+A diagram can also travel as a URI.
+`toDataURI` encodes the document as a `data:` URI, which `Document.load` decodes, so a diagram fits wherever a URI does: in a property, a configuration file, a message or a link:
+
+.A diagram as a `data:` URI
+[source,java]
+----
+include::{booktests}/GettingStartedTests.java[tag=data-uri,indent=0]
+----
+<1> `true` compresses the pages inside the URI.
+<2> `Document.isDataURI` tells such a URI apart from a location.

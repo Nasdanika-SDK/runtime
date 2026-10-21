@@ -1,0 +1,96 @@
+= Draw.io: A Nasdanika Zephyr Book
+Pavel Vlasov
+:doctype: book
+:description: Diagrams that people draw and programs read: the visual communication continuum, and the Nasdanika SDK Runtime's Java API for Draw.io documents.
+:keywords: Draw.io, diagrams.net, diagrams, visual communication, Java, Nasdanika, models, architecture
+:lang: en
+:sectnums:
+:sectnumlevels: 2
+:partnums:
+:chapter-signifier: Chapter
+:part-signifier: Part
+:appendix-caption: Appendix
+:toc:
+:toclevels: 2
+:title-page:
+:listing-caption: Listing
+:figure-caption: Figure
+:table-caption: Table
+:source-language: java
+:tabsize: 4
+:hide-uri-scheme:
+:runtime-repo: https://github.com/Nasdanika-SDK/runtime
+:runtime-site: https://runtime.sdk.nasdanika.org
+:medium: https://medium.com/nasdanika
+:drawio-site: https://www.drawio.com
+:copyright: Copyright (C) 2026 Pavel Vlasov. Text and figures licensed under CC BY 4.0; code under EPL-2.0.
+// Defaults for previews in an editor; the Maven build sets these
+ifndef::testdir[:testdir: ../../test/java]
+ifndef::testresourcesdir[:testresourcesdir: ../../test/resources]
+ifndef::runtime-root[:runtime-root: ../../../..]
+ifndef::runtime-version[:runtime-version: 2026.10.0]
+:booktests: {testdir}/org/nasdanika/sdk/runtime/drawio/tests/book
+:imagesdir: {testresourcesdir}/org/nasdanika/sdk/runtime/drawio/tests/book
+// The EPUB converter resolves images relative to this directory and packs them by that path
+ifdef::zephyr-epub[:imagesdir: ../../test/resources/org/nasdanika/sdk/runtime/drawio/tests/book]
+
+include::front/colophon.adoc[]
+
+include::front/preface.adoc[]
+
+[#why]
+= The Why
+
+[partintro]
+What diagrams are for, how much structure a diagram should carry, and why Draw.io is the editor this book builds on. No code is needed to read this part.
+
+include::chapters/01-communication.adoc[]
+
+include::chapters/02-continuum.adoc[]
+
+include::chapters/03-problem-domain.adoc[]
+
+include::chapters/04-drawio.adoc[]
+
+[#how]
+= The How
+
+[partintro]
+The Java API, one task at a time, on one running example: loading and saving diagrams, the document model, navigation, properties, selectors, links, changing diagrams and putting their elements in order.
+
+include::chapters/05-getting-started.adoc[]
+
+include::chapters/06-document-model.adoc[]
+
+include::chapters/07-navigating.adoc[]
+
+include::chapters/08-properties.adoc[]
+
+include::chapters/09-selectors.adoc[]
+
+include::chapters/10-links.adoc[]
+
+include::chapters/11-changing.adoc[]
+
+include::chapters/12-order.adoc[]
+
+[#ahead]
+= Looking Ahead
+
+[partintro]
+The points of the continuum that this module does not reach yet, and how the runtime will reach them.
+
+include::chapters/13-looking-ahead.adoc[]
+
+include::appendices/a-reference.adoc[]
+
+include::appendices/b-migrating.adoc[]
+
+include::appendices/c-building.adoc[]
+
+include::appendices/d-glossary.adoc[]
+
+ifdef::backend-pdf[]
+[index]
+== Index
+endif::[]

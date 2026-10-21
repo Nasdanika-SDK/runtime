@@ -1,0 +1,64 @@
+[#why-drawio]
+== Why Draw.io
+
+There are many diagram editors.
+This book builds on Draw.io, also known as diagrams.net, for reasons that have little to do with drawing and much to do with what happens to a diagram after it is drawn.
+
+=== What it gives you
+
+Draw.io is a diagram editor written in HTML5 and JavaScript, developed by JGraph, open source under the Apache License 2.0, and free.
+
+* *It runs everywhere.* In the browser, as a desktop application for Windows, macOS and Linux, inside Confluence and Visual Studio Code, and self-hosted as a web application or a container.
+* *It stores diagrams where you already keep files.* The local disk, Google Drive, OneDrive, Dropbox, GitHub and GitLab. A diagram is a file, versioned and reviewed like any other.
+* *It has a large library of shapes*, more than two thousand, and accepts images pasted from anywhere.
+* *It has a viewer.* A diagram embedded in a web page can be clicked, zoomed, shown full screen, its layers and tags toggled, and opened in the editor, without a Draw.io installation.
+* *Elements have tooltips, editable IDs and properties*, in the _Edit Data_ dialog, so an element can carry information that is not drawn.
+* *A file has pages, and elements link to pages*, so one file holds a hierarchy of diagrams, from a system context down to the code.
+* *Layers and tags* show and hide elements in groups, so one diagram serves several audiences or reveals its details step by step in a presentation.
+* *Placeholders* put property values into labels and tooltips.
+* *Libraries and templates* make reusable sets of elements, preconfigured with names, tooltips and links, the beginning of a diagramming ecosystem in an organization.
+
+=== What it does not give you
+
+What Draw.io lacks is what the rest of the continuum needs.
+A tooltip is too small for documentation.
+Links between pages stop at the file: you cannot link to an element, or to a page in another file.
+And there is no programmatic way, outside the browser, to read a diagram, to navigate it as a structure, to check it, or to change it.
+
+That is what the module provides, and, in the runtime's plans, what the points to its right build on (<<looking-ahead>>).
+
+=== The file format
+
+A Draw.io file is XML, and its structure is the structure the API exposes (<<document-model>>):
+
+* `mxfile`, the document, contains one `diagram` element per page;
+* a `diagram` contains an `mxGraphModel`, with the page's settings;
+* the model contains a `root`, which contains `mxCell` elements: a root cell, the layers, and the nodes and connections of each layer, each with a `parent` attribute;
+* a cell with properties is wrapped in an `object` element, which holds the properties, the label, the tooltip and the link as attributes;
+* a cell's `style` attribute holds its visual features as `key=value;` pairs, and an `mxGeometry` child holds its position, size and the points of a connection.
+
+The content of a page may be *compressed*: deflated, Base64-encoded text inside the `diagram` element, which is how the desktop application saves by default.
+Compressed files are smaller; uncompressed ones can be read, diffed and merged.
+The API reads both and writes either (<<getting-started>>).
+
+=== Diagrams in PNG images
+
+Draw.io can save a diagram *inside* a PNG image: "Include a copy of my diagram" on export, or a file named `.drawio.png`, which the editor opens and saves directly.
+The result is one file that is an ordinary image to everything that shows images, and a diagram to Draw.io.
+
+Every figure in this book is such a file.
+A figure cannot drift away from its source, because the figure is the source.
+The module reads the diagram out of the image, so the book's tests load the very figures you see, and a listing that works on a figure works on what the figure shows.
+
+Two notes for your own diagrams:
+
+* *Export above 100 percent.* A PNG is raster. A diagram exported at 1x looks soft in print and on high-density screens; this book's figures are rendered at 2x.
+* *Prefer PNG to SVG for documents built with Asciidoctor PDF.* Draw.io can embed a diagram in SVG as well, but it writes formatted labels as HTML inside `foreignObject` elements, which Asciidoctor PDF does not draw.
+
+=== The module
+
+The module is a salvage of the Draw.io API that Nasdanika core has had for years.
+It keeps the API for reading, navigating, changing and writing documents, and leaves out what tied it to the rest of core: graph processing, the Ecore model of Draw.io documents, and Spring Expression Language (<<migrating>>).
+
+It is small, and it depends on little: the JDK's XML and image APIs, four small libraries for JSON, HTML, text and encoding, and the runtime's `common` module, which brings EMF's core libraries and the OpenTelemetry API.
+You can use it without the rest of the runtime.

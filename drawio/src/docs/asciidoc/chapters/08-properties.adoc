@@ -1,0 +1,94 @@
+// Defaults for previewing this file on its own; index.adoc and the Maven build set these
+ifndef::booktests[:booktests: ../../../test/java/org/nasdanika/sdk/runtime/drawio/tests/book]
+
+[#properties]
+== Properties and placeholders
+
+Properties are what turn a picture into data.
+In Draw.io, select an element, choose _Edit Data_ from its context menu (Ctrl+M or Cmd+M), and add a property by name.
+The file stores it as an attribute of the element's `object` element, next to the label, the tooltip and the link.
+
+=== Reading properties
+
+.Properties of the Internet Banking System (`PropertiesTests.java`)
+[source,java]
+----
+include::{booktests}/PropertiesTests.java[tag=properties,indent=0]
+----
+<1> `getPropertyNames()` returns the names of the attributes that hold properties, `id` and `placeholders` included. The attributes with getters of their own, `label`, `tooltip`, `link`, `tags`, `style` and `visible`, are left out.
+<2> A property that is not set is an empty string, not `null`. Check with `isEmpty()` or `Util.isBlank`.
+
+The label, the tooltip and the link are properties too: `getProperty("tooltip")` returns the same as `getTooltip()`.
+A property name that contains a slash is a property path, which reads a property of a related element (<<selectors>>).
+
+=== Placeholders
+
+Draw.io replaces `%name%` in labels and tooltips with the value of the element's property `name`, when the element has _Placeholders_ checked in its _Edit Data_ dialog, which sets the property `placeholders` to `1`.
+The API does the same, in labels and in every property it returns:
+
+.Placeholders, and the style of an element as properties
+[source,java]
+----
+include::{booktests}/PropertiesTests.java[tag=placeholders,indent=0]
+----
+<1> The tooltip in the file is "... Owned by %owner%.", and `owner` is a property of the same element.
+<2> `%$style:key%` is the value of a key of the element's style. Here the property `colors` is set from code, then read back with its placeholder expanded.
+
+A placeholder is resolved in this order:
+
+. `$style:key`, from the element's style;
+. if the document was loaded with an `EvaluatingContext`, the context evaluates the name, which is a hook for an expression language of your choice;
+. otherwise the element's own property of that name;
+. if that is empty, the same property of the element's parent, its parent's parent, and so on up to the root;
+. and finally the document's context, which can supply properties of its own.
+
+Values are expanded recursively, and a placeholder that refers to itself, directly or through others, is expanded once.
+A placeholder that resolves to nothing is left as it is, so a missing value shows in the result rather than disappearing.
+A placeholder names a property, not a property path: `%../owner%` does not read the parent's owner (<<selectors>>).
+
+=== Properties from outside the diagram
+
+The last step of the resolution is the `Context` the document was loaded with.
+A context's `getProperty` supplies values that are not in the diagram at all: the environment, the release, the region.
+`Context.fromPropertySource` makes one from any `Function<String, String>`, and a map's `get` is one:
+
+.Properties from the context
+[source,java]
+----
+include::{booktests}/PropertiesTests.java[tag=context,indent=0]
+----
+<1> Every `load` method has a variant that takes a context.
+<2> The API Application inherits nothing from its parents, so `%environment%` comes from the context.
+
+The same diagram loaded with another context reads differently, and nothing in the file changes.
+That is a way to use one diagram for several environments, or for several releases, with links and labels that follow them.
+
+=== Filtering properties
+
+A context also sees every property as it is read, and can change it.
+`filterProperty` receives the element, the name and the value, and returns the value to use.
+Filters suit cross-cutting rules, such as redaction for a diagram published outside the team:
+
+.A context that hides owners
+[source,java]
+----
+include::{booktests}/PropertiesTests.java[tag=filter,indent=0]
+----
+<1> The filter sees every value read through `getProperty`, the tooltip and the link included, before its placeholders are expanded. Labels, and the values that placeholders pull in, are read without it.
+
+Contexts compose: `Context.from(a, b)` and `a.compose(b)` ask `a` first and fall back to `b`, run both filters in turn, and open streams with whichever context can.
+
+=== Writing properties
+
+`setProperty` writes a property, and setting it to `null` or an empty string removes it.
+An element that has no properties yet is a bare `mxCell` in the file; the first property wraps it in an `object` element, as Draw.io does.
+
+.Writing properties
+[source,java]
+----
+include::{booktests}/PropertiesTests.java[tag=write,indent=0]
+----
+<1> `null` removes the property.
+
+Writing properties from code is how a program puts what it learned back into the diagram, where people see it: an owner looked up in a directory, a retirement date from a portfolio, a status from a deployment.
+<<changing>> does the same with styles.

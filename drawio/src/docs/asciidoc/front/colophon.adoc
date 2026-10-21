@@ -1,0 +1,27 @@
+[colophon]
+== Colophon
+
+*Draw.io: A Nasdanika Zephyr Book*
+
+Edition {revnumber}, built on {revdate}.
+
+This edition describes the `drawio` module of the Nasdanika SDK Runtime {runtime-version}, Maven coordinates `{group-id}:{artifact-id}:{runtime-version}`.
+Every code listing in it is included from the module's tests, and every figure is a PNG image with its Draw.io diagram embedded, which those tests load.
+When the book is built, the tests run first, so a listing in this book is code that compiled and passed against this version of the module, and a figure shows the very diagram its test read.
+
+Copyright (C) 2026 Pavel Vlasov.
+
+The text and figures of this book are licensed under the https://creativecommons.org/licenses/by/4.0/[Creative Commons Attribution 4.0 International License] (CC BY 4.0).
+You may share and adapt them for any purpose, commercial purposes included, provided you give appropriate credit, provide a link to the license, and indicate if you made changes.
+A suggested credit: "Pavel Vlasov, _Draw.io: A Nasdanika Zephyr Book_, licensed under CC BY 4.0", with a link to {runtime-repo}.
+
+The code is licensed under the Eclipse Public License 2.0, the license of the runtime.
+In addition, you may use the code of this book's listings in your own programs and documentation without asking for permission and without attribution.
+
+Neither license covers the Nasdanika name or logo: CC BY 4.0 grants no trademark rights.
+
+draw.io and diagrams.net are trademarks of JGraph Ltd. Java and OpenJDK are trademarks or registered trademarks of Oracle and its affiliates. Eclipse and EMF are trademarks of the Eclipse Foundation. Other names may be trademarks of their owners. Their use here identifies the technologies the module works with and implies no endorsement. This book and the module are not affiliated with JGraph Ltd.
+
+The figures were drawn in Draw.io and rendered by Draw.io's own viewer. The source of this book, its tests and the module it describes are at {runtime-repo}, in the `drawio` directory.
+
+Typeset with Asciidoctor PDF in Noto Sans and M+ 1mn, in the look of the Nasdanika Zephyr Books.

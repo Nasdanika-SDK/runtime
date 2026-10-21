@@ -1,0 +1,155 @@
+[appendix]
+[#reference]
+== API reference
+
+A summary of the API by package, for looking things up.
+The Javadoc of the module is the complete reference.
+
+=== `org.nasdanika.sdk.runtime.drawio`
+
+[cols="2,5",options="header"]
+|===
+| Type | What it is for
+
+| `Document`
+| The file. Static `load` methods for strings, readers, streams, files, URLs and URIs, `data:` URIs included; `loadFromPngMetadata` for PNG images; `create` for a new document. Instance methods: `getPages`, `createPage`, `getPageByName`, `getPageById`, `save`, `toHtml`, `toDataURI`, `getDocument(URI)` for linked documents, `getProperty` from the context.
+
+| `Document.Context`
+| What a document is loaded with: `openStream(URI)` for linked documents, `getProperty(name)` for placeholders, `filterProperty(element, name, value)`. Factories `fromPropertySource`, `fromURIHandler`, `fromURIConverter`; `from(...)`, `compose` and `reduce` to combine contexts.
+
+| `Document.EvaluatingContext`
+| A context that evaluates placeholders itself, for an expression language of your choice.
+
+| `Page`
+| A page: `getName`, `getId`, `getModel`, `getDocument`, `getTags`, `createTag`, `remove`.
+
+| `Model`
+| The page's settings: grid, grid size, background color and image, shadow, page view. `getRoot`.
+
+| `Root`
+| The root cell: `getLayers`, `createLayer`.
+
+| `Layer`
+| `getElements`, `createNode`, `createConnection(source, target)`.
+
+| `Node`
+| A shape, and a layer of its own. `getGeometry`, `getConnectionPoints`, `createConnectionPoint`, incoming and outgoing connections with and without connection points, a `NodeStyle`.
+
+| `Connection`
+| `getSource`, `getTarget` and their setters, source and target points, `getPoints`, label `getOffset`, `createNode` for labels, a `ConnectionStyle`.
+
+| `ConnectionPoint`, `ConnectionPointSpec`
+| A position relative to a node, `x` and `y` from 0 to 1, offsets `dx` and `dy` in pixels, and `perimeter`.
+
+| `Element`
+| The base of everything: `getURI`, `getMarker`, `getElement` for the DOM, `accept` visitors, `stream`, `getModelElementById`, `getModelElementByProperty`, `getModelElementsByProperty`.
+
+| `ModelElement`
+| The base of the root, layers, nodes and connections: `getId`, `getLabel`, `getTooltip`, `getLink`, `getStyle`, `getProperty`, `setProperty`, `getPropertyNames`, `getTags`, `isVisible`, `getParent`, `getModel`, `getPath`, `getPosition`, `getLinkTarget`, `isTargetLink`, `select`, `resolve`, `resolveURI`, `getEnumarateValue`, `remove`.
+
+| `ConnectionBase`
+| `PARENT`, `SOURCE` or `TARGET`: the logical parent of connections for visitors, streams and URIs.
+
+| `Geometry`, `Rectangle`, `Point`, `PointList`
+| Positions and sizes, the alternate bounds of a collapsed container, and the points of a connection.
+
+| `Tag`, `Marker`, `LinkTarget`, `Connectable`, `LayerElement`
+| As in <<document-model>>.
+|===
+
+=== `org.nasdanika.sdk.runtime.drawio.style`
+
+[cols="2,5",options="header"]
+|===
+| Type | Typed methods, on top of `Map<String, String>`
+
+| `Style`
+| `opacity`, `rounded`, `shadow`, `enumerate`, `enumerateValue`
+
+| `LineStyle`
+| `color` (`strokeColor`), `width` (`strokeWidth`), `dashed`
+
+| `NodeStyle`
+| `backgroundColor` (`fillColor`), `shape`, `align`, `verticalAlign`, `fontSize`, `fontColor`, `fontStyle`, `labelBackgroundColor`, `labelBorderColor`, `rotation`, `container`, `collapsible`
+
+| `ConnectionStyle`
+| `edgeStyle`, `startArrow`, `endArrow`, `startFill`, `endFill`, `jump`
+
+| `Arrow`, `Jump`
+| The common values of the arrow and line jump keys.
+|===
+
+=== `org.nasdanika.sdk.runtime.drawio.comparators`
+
+[cols="2,5",options="header"]
+|===
+| Comparator | Order
+
+| `LabelModelElementComparator`
+| By label text, HTML removed, empty labels last.
+
+| `PropertyModelElementComparator`
+| By the value of a property, empty values last.
+
+| `PositionModelElementComparator`
+| By position in the parent: the order of the file.
+
+| `FlowComparator`
+| By the number of steps along connections from one element to the other, optionally only along connections that match a predicate. Not total.
+
+| `EnumerateComparator`
+| By Draw.io enumeration values, compared as dotted paths of numbers and words. Not total.
+
+| `AngularNodeComparator`
+| By angle around a hub node, counterclockwise from a base angle in radians, twelve o'clock by default.
+
+| `CartesianNodeComparator`
+| By columns and rows, in one of eight directions.
+
+| `Comparators`
+| Keys for the orders above, such as `label`, `property`, `flow`, `clockwise`, `right-down`, `position`, `enumerate`, and their reverses.
+|===
+
+=== `org.nasdanika.sdk.runtime.drawio.util`
+
+`Util.getConnectableNode` returns the node of a connection point, or the node itself.
+`Util.withLinkTargets` wraps a visitor so that it visits link targets; `Util.traverser` wraps one so that it visits connected elements, parents and link targets.
+`Util.loadStyle` parses a style string into a read-only map.
+`DelimitedStringMap` and the `AbstractSplitJoin` collections are the live views behind styles and tags, available for attributes of your own in the same formats.
+`ConfigurationException` is thrown for links and selectors that cannot be resolved, with the marker of the element at fault.
+
+ifdef::editor-notes[]
+[IMPORTANT,caption="Editor's note"]
+====
+`Util.traverser` has two overloads. The one that takes a `BiFunction` visits the target of a connection twice and never its source: it calls `getConnectableNode(connection.getTarget())` for both. The `Consumer` overload is correct. The `package-info.java` of the module links to the documentation of Nasdanika core, and the Javadoc of `Document.Context.getVariables` still mentions `$spel` magic properties, which the module no longer has; `getVariables` itself is not used by the module. The `impl` and `style.impl` packages are exported, which makes the implementation classes part of the API.
+====
+endif::[]
+
+=== Selectors
+
+[cols="2,4",options="header"]
+|===
+| Selector | Selects
+
+| `..` | The parent.
+| `child`, `child[id]`, `child[name=value]` | Children, all or filtered.
+| `link-target` | What the link points to: an element, or the root of a page.
+| `incoming-connection`, `outgoing-connection`, with `[id]` or `[name=value]` | A node's connections, including those of its connection points.
+| `source`, `target` | A connection's ends.
+| `segment/segment/...` | A path. As a property name, the last segment is the property.
+|===
+
+=== Links
+
+[cols="3,3",options="header"]
+|===
+| Link | Example
+
+| `data:page/id,[<document>#]<page ID>` | `data:page/id,containers`
+| `data:page/name,[<document>#]<page name>` | `data:page/name,overview.drawio#System+Context`
+| `data:element/id,[[<document>#]<page>/]<element ID>` | `data:element/id,id,system-context/ibs`
+| `data:element/name,[[<document>#]<page>/]<label>` | `data:element/name,name,Page+2/Linked`
+|===
+
+In element links, `<page>` is `id,<page ID>` or `name,<page name>`.
+Names and labels are URL-encoded.

@@ -1,0 +1,95 @@
+// Defaults for previewing this file on its own; index.adoc and the Maven build set these
+ifndef::imagesdir[:imagesdir: ../../../test/resources/org/nasdanika/sdk/runtime/drawio/tests/book]
+
+[#continuum]
+== The visual communication continuum
+
+A diagram does not have to be either a picture or a model.
+Between the two lies a continuum of small steps, and each step adds a little structure to the same file.
+A diagram can stop at any point and move further later, when its readers need more, without being redrawn in another tool.
+
+.The visual communication continuum. Points in solid blue are what this module does; dashed points are planned.
+image::continuum.png[The visual communication continuum,pdfwidth=100%,width=900]
+
+The figure is itself a diagram that a program reads.
+Its points carry a `status` property, and the arrows between them say what each step adds.
+<<order>> loads it and puts the points in the order of the arrows, which is how this chapter could be generated from its figure rather than written next to it.
+
+=== Picture
+
+Shapes, lines and labels.
+The meaning is in the heads of the people who drew it and of those who were in the room.
+
+A picture is the right place to stop more often than people think.
+It is cheap to draw, it gets the problem out of one head and onto a page, and it is often thrown away after the meeting it was drawn for.
+Its consumption cost is high, but if it has few readers, that cost is never paid.
+
+=== Interactive diagram
+
+The same picture, with a little more of the author's knowledge put into it:
+
+* *tooltips* on elements, so a reader can hover to see what a shape is;
+* *links* from an element to another page of the diagram, for the next level of detail, or to a page elsewhere;
+* *layers* and *tags*, so that one diagram shows several levels of detail, or several concerns, and a reader or a presenter turns them on and off;
+* a *viewer in the browser*, so that anyone can read the diagram, click through its pages and toggle its layers without a Draw.io installation.
+
+All of this is plain Draw.io.
+What the module adds at this point is the ability to do it from code: to publish a diagram as a page with the viewer embedded (<<getting-started>>), and to check that its links resolve (<<links>>).
+[.available]#AVAILABLE#
+
+=== Documented diagram
+
+Elements get documentation: a paragraph, a page, a page with sub-diagrams.
+A documentation site is generated from the diagram, with a page per documented element, a navigation tree that follows the containment and the links of the diagram, and search over the text of the pages and of the diagrams themselves.
+
+This is the first point where the consumption cost drops sharply.
+A reader no longer has to ask the author what an element is; it has a page.
+The author documents what matters now and leaves the rest for later, for others, or for never.
+An element without documentation still appears on the diagram; it simply has no page.
+
+Nasdanika core generates such sites from Draw.io diagrams today, and the Internet Banking System demo is one.
+In the runtime, site generation is [.planned]#PLANNED# (<<looking-ahead>>).
+
+=== Diagram as data
+
+Elements get *properties* with agreed meanings: an `owner`, a `type`, a `protocol`, a `criticality`, a `cost-center`.
+Draw.io stores them with the element and shows them in its _Edit Data_ dialog.
+A program can then read the diagram as data:
+
+* to *check* it: every system has an owner, no customer-facing system talks to the mainframe directly, every connection has a protocol;
+* to *report* from it: the systems each team owns, the connections that cross a trust boundary;
+* to *configure* something with it: a diagram of a deployment, a pipeline or an integration, from which a program reads its settings;
+* to *change* it: color the systems that are past their retirement date, add a tag to every element a change touches, and save the diagram for people to see.
+
+This is the point the module is built for, and most of part two is about it.
+[.available]#AVAILABLE#
+
+=== Executable diagram
+
+Behavior is bound to elements.
+A property names the code that an element stands for, a processor is created for each element, and processors talk to each other along the connections of the diagram.
+The diagram is the program's wiring, and someone who can draw can rewire it.
+
+Nasdanika core has a framework for executable graphs and diagrams, with processors, handlers and endpoints wired along connections, synchronously or concurrently.
+In the runtime, it is [.planned]#PLANNED#.
+
+=== Diagram as a model
+
+Elements are mapped to the objects of a typed model, with a metamodel that defines what a system, a team or a capability is, which properties each has, and how they relate.
+The diagram becomes one of the sources of that model.
+Everything a model gives is then available: validation against the metamodel, references across diagrams, spreadsheets and code, generation, and tools that understand the model without knowing that it was drawn.
+
+This is the point where the enterprise's own language gets written down, as a metamodel, while the people who speak it keep drawing in the editor they know.
+In the runtime, mapping diagrams to models is [.planned]#PLANNED#.
+
+=== Choosing a point
+
+Every step to the right costs the author more and the readers less.
+A few rules of thumb have served me well:
+
+* *Start on the left.* Draw the picture first. Structure added before anyone has looked at the diagram is often structure nobody needed.
+* *Move right when readers ask the same question twice.* The second "what is this?" is a tooltip, the second "where are the details?" is a link or a page, and the second "who owns this?" is a property.
+* *Move right when a program needs the answer.* As soon as a check, a report or a deployment depends on what the diagram says, the diagram is data, whether or not anyone admits it. Better to admit it and give its properties names.
+* *Never redraw to move.* Each point keeps the file of the point before it. A documented diagram is still a picture, and a diagram mapped to a model can still be opened, read and changed by someone who has never heard of the model.
+
+The rest of this book is about the middle of the continuum: diagrams as data, read and written from Java.

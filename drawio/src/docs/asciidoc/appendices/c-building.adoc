@@ -1,0 +1,48 @@
+[appendix]
+[#building]
+== Building this book, and editing its figures
+
+This book is AsciiDoc in the `drawio` module of the runtime, in `src/docs/asciidoc`.
+It is built with the module, after the module's tests have passed.
+
+=== Building
+
+From the runtime's root directory:
+
+[source,text]
+----
+mvn -pl drawio -am verify                           # the module, its tests and this book
+mvn -pl drawio verify -Dzephyr.editor-notes=false    # without editor's notes, for publication
+mvn -pl drawio verify -Dasciidoctor.skip=true        # the module without the book
+----
+
+The build writes three editions into `drawio/target/book`, named after the module and its version: a PDF at 7.5 by 9.25 inches, a single HTML page with every image embedded, and an EPUB.
+The PDF and the HTML are attached to the module's artifact with the classifier `book`, and the module's test sources with the classifier `test-sources`, so the code behind every listing is published with the book.
+
+A module of the runtime has a Nasdanika Zephyr Book when it has `src/docs/asciidoc/index.adoc`.
+That file activates the `zephyr-book` profile of the runtime's parent POM, which renders and attaches the book; the module's own POM changes only to render the EPUB, which this book has because it is on Leanpub.
+The theme, the stylesheets and the title page are in the runtime's `doc/zephyr` directory and shared by all the Zephyr Books.
+
+=== Conventions
+
+* *Listings are tagged regions of the module's tests*, included with `+include::{booktests}/...[tag=name,indent=0]+`. Callouts are comments of the form `// <1>` in the test source.
+* *A listing line holds 96 characters* at the PDF's code font size. Wrap longer lines in the test source.
+* *Warnings fail the build*: a missing include, a missing tag, a broken cross-reference.
+* *Editor's notes* are `IMPORTANT` blocks with the caption "Editor's note", inside `ifdef::editor-notes[]`.
+
+=== Editing the figures
+
+The figures are in the module's test resources, in `src/test/resources/org/nasdanika/sdk/runtime/drawio/tests/book`, as PNG images with the diagram embedded.
+To change one, open the PNG in Draw.io: the desktop application or the Visual Studio Code extension open it directly, and the web application opens it with _File_, _Open from_, _Device_.
+Edit the diagram, then save it as PNG again with _Include a copy of my diagram_ checked, a zoom of 200 percent, and _Transparent Background_ unchecked.
+
+The figures are test inputs, so a change to one can fail a test: rename an element and the listing that finds it by ID fails, change an arrow of the metamodel figure and the test that checks it against the API fails.
+That is the point.
+Run the tests after editing a figure, and change the test, or the figure, until they agree.
+
+ifdef::editor-notes[]
+[IMPORTANT,caption="Editor's note"]
+====
+The figures of this edition were authored as XML and rendered with Draw.io's viewer, version 32.5.5, in headless Chrome at 2x, then written as PNG with the diagram in a `tEXt` chunk named `mxfile`, which is what Draw.io writes. Check that each opens and saves in the desktop application before the first release, and resave them from Draw.io if its rendering differs.
+====
+endif::[]

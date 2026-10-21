@@ -1,0 +1,91 @@
+[#communication]
+== Diagrams are communication
+
+Diagrams are older than writing.
+People drew maps, tallies and kinship long before they wrote sentences, and they still reach for a whiteboard when a conversation gets complicated.
+You might expect such an old form of communication to be well understood.
+In my experience it is not: there is a gap in how people approach diagramming, and it costs organizations a great deal of time.
+
+Like writing, diagramming is not an innate skill.
+Being able to connect two boxes with an arrow does not make someone a good diagrammer, any more than being able to write a sentence makes someone a good writer.
+And I've seen many diagrams where people can't even connect two boxes correctly - they draw arrows between boxes, but the arrows do not connect to the boxes - so there is no relationship.
+This part of the book is about thinking in diagrams: what a diagram is for, who it is for, and how much structure it should carry.
+
+=== What a diagram is
+
+A diagram is a symbolic representation of information, and in the sense this book uses, a particular genre of it: shapes connected by lines, arrows or other visual links, which show things and their relationships.
+I extend the genre to quantitative information too, because the size, position and color of a shape can carry numbers as well as categories (<<problem-domain>>).
+
+Diagrams fall into two broad groups.
+
+*Representations only.*
+The diagram leaves it to the beholder to work out what a shape means.
+A blue rounded rectangle might be a system, a team or a deployment unit, and only a legend, a convention or a conversation says which.
+Draw.io, Visio and PowerPoint produce diagrams of this kind.
+
+*Representations in a domain language.*
+UML, BPMN, ArchiMate and SysML define what each shape means, so a reader who knows the language reads the diagram without help.
+
+Enterprise IT is dominated by the first kind, and Draw.io and PowerPoint are its common formats.
+UML has been around for about thirty years and is still used narrowly and often misused.
+Simon Brown, the author of the C4 model, made the same observation: many teams have abandoned the modeling languages for simpler boxes-and-lines diagrams, and in doing so have lost some of their ability to communicate visually.
+
+I think the reason is that every enterprise has a language of its own, rarely written down.
+It speaks of products, channels, platforms, capabilities, controls and owners, with meanings that are local to it.
+It does not speak UML or BPMN, and a tool that imposes either one is resisted.
+Tools that make it easy to build a specialized diagram editor for such a language, Eclipse Sirius among them, are not widely used either, because a specialized editor is one more tool to install, learn and keep.
+
+What remains is the general-purpose editor and the boxes-and-lines diagram, which everybody can draw and nobody can check.
+
+=== Who a diagram is for
+
+A diagram is a message, and a message has readers.
+I find it useful to name four of them.
+
+*Yourself, now.*
+You draw to understand the problem in front of you and to break it into pieces.
+Such a diagram may never be shown to anyone, and that is fine.
+
+*Yourself, later.*
+The faintest ink is better than the strongest memory.
+What is obvious today will not be obvious in a year, when you come back to a decision and need to know why it was made.
+
+*Other people.*
+You draw to explain an intent, to gather feedback, or to instruct.
+This is where most diagrams are aimed, and where most of their cost lies: every time a reader has to ask the author what a shape means, the diagram has failed a little.
+
+*Computers.*
+You draw to tell a program what to do: to configure it, to generate code or documentation from the diagram, or to execute it.
+And, increasingly, *AI assistants*, which read diagrams as context, summarize them for people, or let people ask questions of them.
+An assistant is a reader that does not get tired of asking what a shape means, as long as the diagram has an answer.
+
+=== The cost of a diagram
+
+A diagram has two costs.
+The *production cost* is the effort of drawing it and keeping it current.
+The *consumption cost* is the effort its readers spend to get what they need from it: to find it, to understand it, to ask about what they do not understand, and to act on it.
+
+I call a diagram *efficient* when it is cheap to produce and *effective* when it is cheap to consume.
+The two pull against each other.
+A sketch is cheap to draw and costly to read, because everything not on the page has to be explained in person.
+A diagram with documented elements, links between levels of detail and properties that programs can check is more work to draw and much less work to read.
+
+The right balance depends on the readers.
+A whiteboard sketch for a one-hour meeting should stay a sketch.
+An architecture diagram that a hundred people consult over three years deserves documentation, and one that drives a deployment deserves properties that a program can check.
+The goal is the least *total* effort to communicate, production and consumption together.
+
+=== What I wanted from a diagram
+
+For years I wanted a way of working with diagrams that would let me:
+
+* create a diagram in an editor that everyone can use;
+* share it with people who do not have that editor, in a browser;
+* document its elements with rich text, beyond what a tooltip holds;
+* give its elements sub-diagrams, nested as deeply as needed;
+* read it from a program, as data;
+* associate behavior with its elements, so that the diagram is executable;
+* and map its elements to a model with a defined meaning, when a defined meaning is what the readers need.
+
+Each of these is a point on a continuum, from a bare picture to a model.
+The next chapter walks along it.

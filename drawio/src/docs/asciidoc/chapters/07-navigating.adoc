@@ -1,0 +1,130 @@
+// Defaults for previewing this file on its own; index.adoc and the Maven build set these
+ifndef::booktests[:booktests: ../../../test/java/org/nasdanika/sdk/runtime/drawio/tests/book]
+
+[#navigating]
+== Navigating a diagram
+
+A program that reads a diagram walks it, searches it, follows its connections and folds it into a result.
+The API has a way to do each.
+
+=== Walking the containment
+
+Pages contain a model, the model a root, the root layers, and layers their elements.
+A loop over that structure is the most direct way to read a diagram:
+
+.Walking pages, layers and elements (`NavigationTests.java`)
+[source,java]
+----
+include::{booktests}/NavigationTests.java[tag=walk,indent=0]
+----
+
+The layer with ID `1` is the default layer that Draw.io creates on every page; the _Notes_ layer of the running example has the ID `notes`.
+Elements come in the order of the file, which is the z-order of the page: what was drawn later is on top.
+`getElements()` returns the elements directly in a layer; a node's own `getElements()` returns what it contains, because a node is a layer.
+
+=== Streams
+
+`stream()` returns an element and everything it contains, depth first, as a `Stream<Element<?>>`.
+On a document, that is every page, model, layer, node and connection in it.
+Filtering by type and property is the everyday way to find things:
+
+.Finding the software systems by a property
+[source,java]
+----
+include::{booktests}/NavigationTests.java[tag=stream,indent=0]
+----
+
+Labels with `html=1` in their style are HTML.
+The running example's labels have a bold name and a line break before the C4 type, so the listing reads them through a helper that keeps the text:
+
+.The text of a label (`Diagrams.java`)
+[source,java]
+----
+include::{booktests}/Diagrams.java[tag=text,indent=0]
+----
+
+The helper uses jsoup, which the module requires as well; add it to your own project if you need it.
+
+Two shortcuts search a whole document or page for a single element:
+
+.Finding an element by ID and by property
+[source,java]
+----
+include::{booktests}/NavigationTests.java[tag=find,indent=0]
+----
+
+`getModelElementsByProperty(name, value)` returns all of them.
+IDs are unique within a page, not within a document; `getModelElementById` on a document returns the first match in page order.
+Draw.io generates IDs such as `7KSC1_O8d7ACaxm1iSCq-1`, and lets you edit them: right-click, _Edit Data_, and click the ID.
+Readable IDs, as in the running example, make diagrams far easier to work with from code, and worth the minute they take.
+
+=== Connections
+
+A node knows the connections that start and end at it.
+`getOutgoingConnections()` and `getIncomingConnections()` return the ones attached to the node itself; `getAllOutgoingConnections()` and `getAllIncomingConnections()` add the ones attached to its connection points (<<changing>>).
+
+.Following connections
+[source,java]
+----
+include::{booktests}/NavigationTests.java[tag=connections,indent=0]
+----
+<1> A connection's source and target are `Connectable`: a node or a connection point. `Util.getConnectableNode` returns the node in both cases.
+
+=== Visitors
+
+`accept` visits an element and its children bottom up: children first, then the element itself, with a map from each child to the result of visiting it.
+That makes a visitor a fold, in which every element computes its result from its children's:
+
+.Counting nodes with a visitor
+[source,java]
+----
+include::{booktests}/NavigationTests.java[tag=visitor,indent=0]
+----
+<1> The results of the children. `null` results are left out of the map.
+<2> Four nodes on the default layer and the note on the _Notes_ layer.
+
+`accept` also takes a `Consumer<Element<?>>` and a connection base, for visitors that collect rather than compute.
+
+=== Connection base
+
+Draw.io puts a connection in a layer, or in the node that contains both of its ends.
+For many purposes that parent is not the logical one.
+In a diagram of systems, a connection from the Internet Banking System to the mainframe is something the Internet Banking System does, so it belongs under its *source*.
+In a mind map, where arrows point from a topic to its parent, a connection belongs under its *target*.
+
+`ConnectionBase` says which:
+
+* `PARENT`, the default, keeps connections where the file puts them;
+* `SOURCE` makes each connection a child of its source node;
+* `TARGET` makes each connection a child of its target node.
+
+The connection base applies to visitors, to `stream(ConnectionBase)` and to URI resolution (<<links>>):
+
+.The same page under two connection bases
+[source,java]
+----
+include::{booktests}/NavigationTests.java[tag=connection-base,indent=0]
+----
+<1> Under `SOURCE`, connections leave the layer and appear under the nodes they start at.
+
+=== Tags and layers
+
+Tags are names in an element's `tags` property, separated by spaces, and Draw.io's _Edit Tags_ dialog and the viewer's tag filter work with them.
+A page collects the tags of its elements:
+
+.Tags of a page and of an element
+[source,java]
+----
+include::{booktests}/NavigationTests.java[tag=tags,indent=0]
+----
+<1> `getTags()` on a page is computed from its elements, so it has exactly the tags in use. `createTag(name)` makes a tag to add to an element's `getTags()` set, which writes the `tags` property.
+
+Layers have a label, which Draw.io's _Layers_ panel shows, and visibility.
+Hiding a layer hides it in the editor and in the viewer, which makes layers a way to keep notes, annotations or work in progress in a diagram without showing them:
+
+.Hiding a layer
+[source,java]
+----
+include::{booktests}/NavigationTests.java[tag=layers,indent=0]
+----
+<1> `setVisible` works on any model element, not only on layers. An invisible element is still in the document and still found by streams and visitors.

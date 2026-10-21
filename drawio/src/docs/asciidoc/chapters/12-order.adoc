@@ -1,0 +1,96 @@
+// Defaults for previewing this file on its own; index.adoc and the Maven build set these
+ifndef::booktests[:booktests: ../../../test/java/org/nasdanika/sdk/runtime/drawio/tests/book]
+ifndef::imagesdir[:imagesdir: ../../../test/resources/org/nasdanika/sdk/runtime/drawio/tests/book]
+
+[#order]
+== Geometry and order
+
+The elements of a diagram come in the order of the file, which is the order in which they were drawn.
+That order rarely means anything.
+The order people see does: the steps of a process clockwise around a hub, the stages of a pipeline from left to right, the numbered steps of a sequence, the flow of the arrows.
+A program that turns a diagram into a list, a table of contents, a sequence of slides, or the steps of a plan needs that order, and the module's comparators compute it.
+
+.A release cycle, drawn as people draw cycles
+image::release-cycle.png[Release cycle,pdfwidth=55%,width=420]
+
+The figure has a hub, four steps around it, arrows from step to step, and the numbered badges that Draw.io draws for elements with _Enumerate_ checked in their style.
+Each step also has an `owner` property.
+
+=== Orders that are not geometry
+
+The listings sort the four steps with a small helper:
+
+.Sorting nodes and returning their labels (`OrderTests.java`)
+[source,java]
+----
+include::{booktests}/OrderTests.java[tag=steps,indent=0]
+----
+
+.Orders by label, property, flow and enumeration
+[source,java]
+----
+include::{booktests}/OrderTests.java[tag=orders,indent=0]
+----
+<1> By the `owner` property: Assurance, Engineering, Operations, Product.
+<2> By the arrows: an element comes before the elements it leads to.
+
+`LabelModelElementComparator` compares the text of labels, HTML removed, and `PropertyModelElementComparator` compares a property, both with empty values last.
+`FlowComparator` counts the steps along connections from one element to the other, so it orders a chain by its arrows; a predicate restricts the connections it follows.
+`EnumerateComparator` compares Draw.io's enumeration values as paths of numbers and words, so `1.10` comes after `1.9` and before `2`.
+
+=== Geometry
+
+.Orders by angle and by position
+[source,java]
+----
+include::{booktests}/OrderTests.java[tag=geometry,indent=0]
+----
+<1> By angle around the hub, starting at twelve o'clock and going counterclockwise, as angles do in mathematics.
+<2> By columns from left to right, then by rows from top to bottom. Nodes that overlap horizontally are in the same column.
+
+`AngularNodeComparator` takes the hub and a base angle in radians, which defaults to π/2, twelve o'clock.
+Reversing it gives a clockwise order, but one that starts just before the base angle, so the step at twelve o'clock comes last; to start a clockwise order at twelve o'clock, reverse it with a base angle a little past twelve o'clock.
+`CartesianNodeComparator` has eight directions: `rightDown` and `downRight` above, and the other combinations of right or left with down or up.
+Geometry is absolute: a node inside a container is compared by its position on the page.
+
+=== Enumeration
+
+Draw.io's _Enumerate_ checkbox puts a badge on an element, and the badge shows a number that Draw.io computes, or the value of `enumerateValue` when the style has one.
+
+.Enumeration in the style
+[source,java]
+----
+include::{booktests}/OrderTests.java[tag=enumerate,indent=0]
+----
+
+`getEnumarateValue()` returns the value of the badge, or `null` without one.
+The method name has a typo, kept for compatibility with Nasdanika core.
+
+=== Comparators that are not orders
+
+`FlowComparator` and `EnumerateComparator` do not define a total order on every set of elements.
+Two elements that no path connects are equal to the flow comparator, and so are two elements without enumeration values to the enumeration comparator, which treats them as equal to everything.
+Java's sorting assumes a consistent order, and on such sets it gives an order that depends on the input.
+Chain them with a comparator that is total, `thenComparing(new PositionModelElementComparator())` for the order of the file or the label comparator, and keep cycles out of what you sort by flow.
+
+=== The continuum, again
+
+The figure of <<continuum>> is a diagram whose arrows are its order.
+Sorting its points by flow gives the chapter's sections in order, and their `status` property says what this module does:
+
+.The points of the continuum, in order (`OrderTests.java`)
+[source,java]
+----
+include::{booktests}/OrderTests.java[tag=continuum,indent=0]
+----
+<1> The legend has a `role` property; the points do not.
+
+`Comparators` lists keys for all of these orders, such as `clockwise`, `flow`, `right-down` and `reverse-enumerate`, for diagrams and configurations that choose an order by name.
+In this module the keys are only names; code that reads them chooses the comparator.
+
+ifdef::editor-notes[]
+[IMPORTANT,caption="Editor's note"]
+====
+The Javadoc of `AngularNodeComparator`'s constructor documents a `clockwise` parameter that does not exist and calls the base angle degrees, while the code uses radians. The comparator orders counterclockwise, as the listing shows. Fix the Javadoc, or add the parameter, and consider a factory that maps the keys of `Comparators` to comparators, which Nasdanika core had in its mapping module.
+====
+endif::[]

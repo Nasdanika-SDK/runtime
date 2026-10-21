@@ -10,6 +10,18 @@
 	<artifactId>drawio</artifactId>
 	<packaging>jar</packaging>
 	<name>Nasdanika SDK Runtime Draw.io API</name>
+	<description>
+		Reading, navigating, changing and writing Draw.io diagrams in Java: documents, pages, layers,
+		nodes and connections, properties and placeholders, selectors, links across pages and documents,
+		styles, and diagrams embedded in PNG images.
+
+		Its Nasdanika Zephyr Book, "Draw.io", is built from src/docs/asciidoc with listings from the tests.
+	</description>
+
+	<properties>
+		<!-- The Draw.io Zephyr Book is on Leanpub, where readers expect EPUB -->
+		<zephyr.epub.skip>false</zephyr.epub.skip>
+	</properties>
 
 	<dependencyManagement>
 		<dependencies>

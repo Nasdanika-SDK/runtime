@@ -1,0 +1,56 @@
+[preface]
+== Preface
+
+This book is about diagrams that people draw and programs read.
+Most diagrams in an organization are drawn once, looked at a few times and then left to drift away from what they describe.
+They do not have to be.
+A diagram drawn in Draw.io is a structured document, and with a little discipline it can be documentation, configuration, a program's wiring or the source of a model, while it stays a picture that anyone can open and change.
+
+The first part of the book is the why: what diagrams are for, how much structure a particular diagram should carry, and why Draw.io is a good editor to build on.
+The second part is the how, for Java developers: the Draw.io module of the Nasdanika SDK Runtime, which reads, navigates, changes and writes Draw.io documents.
+The third part says what is coming next.
+
+=== Who this book is for
+
+*People who draw.* Architects, analysts and engineers who already use Draw.io, and who would like their diagrams to do more than sit in a wiki.
+Part one is for you, and needs no code.
+
+*Java developers* who are handed diagrams and asked to do something with them: check them, generate from them, publish them, or keep them in step with a system.
+Read the book in order; part two assumes part one.
+
+*Anyone who builds tools on diagrams.* The module is small and has few dependencies, and its document model mirrors Draw.io's file format closely enough that what you learn here holds for the format itself.
+
+=== A book that stands on its own
+
+This book is one of the Nasdanika Zephyr Books: in-depth technical manuals, one per module of the Nasdanika SDK Runtime, in the manner of IBM Redbooks.
+The runtime has a book of its own, _Nasdanika SDK Runtime: More Structure with Less Effort_, which is the overview: why the runtime exists, its principles and its modules.
+You do not need to read it first.
+Where the two books touch, this one repeats what you need, so that someone who has never heard of the runtime and only wants to read their diagrams from Java can start and finish here.
+Where the runtime goes further than this module, the last part says so and points to it.
+
+The series is named after the Bootswatch theme it is styled with, Zephyr.
+The books have nothing to do with the Zephyr real-time operating system of the Linux Foundation, or with SmartBear's Zephyr test management.
+
+The why in this book grew out of two earlier pieces of mine: the book _Beyond Diagrams_ (2024), written for the Draw.io API in Nasdanika core, from which this module was salvaged, and the Medium story "Visual communication continuum" ({medium}).
+This book keeps their argument and rebuilds their how on the runtime.
+
+=== What you need
+
+* *A JDK for Java 25* and *Maven 3.9.16 or later* to build against the module. Its Java module is `org.nasdanika.sdk.runtime.drawio`, and its Maven coordinates are `{group-id}:{artifact-id}:{runtime-version}`.
+* *Draw.io*, to draw: the desktop application, the web application at {drawio-site}, or the Draw.io extension for Visual Studio Code. All of them read and write the same files.
+
+=== Conventions
+
+* *Every listing is included from a test* of the module and compiled and run when the book is built. Callouts, such as <1>, explain the lines they mark.
+* *Every figure is a diagram.* The figures are PNG images with the Draw.io diagram embedded. Open one in Draw.io and you can edit it; load it with the API and you get the document the listings work on (<<getting-started>>).
+* *Status labels* mark what this module does not do yet: [.planned]#PLANNED# for designed but not built, [.sketch]#SKETCH# for partly built.
+* *Voice.* I write in the first person. "The author" is ten times as many letters, and a book about effective communication should not start with an ineffective construct.
+
+ifdef::editor-notes[]
+[IMPORTANT,caption="Editor's note"]
+====
+Editor's notes like this one record inconsistencies between the module and its documentation found while writing. They are shown in builds for the author and left out of published editions (`-Dzephyr.editor-notes=false`, set by the `central` profile).
+
+The SDK book's preface describes this book as covering "diagrams as resources in a resource set, and the mapping of diagram elements to model elements". The migrated module has neither: the EMF resource factory, the Ecore model of Draw.io documents and semantic mapping were left out of the salvage, along with graph processing and SpEL. This book describes them as planned (<<looking-ahead>>). Align the SDK book's preface, <<looking-ahead>> and the SDK book's module reference before the edition is published.
+====
+endif::[]

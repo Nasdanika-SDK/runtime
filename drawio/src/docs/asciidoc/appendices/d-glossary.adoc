@@ -1,0 +1,57 @@
+[appendix]
+[#glossary]
+== Glossary
+
+Connection::
+A line between two connectables. Either end may be missing.
+
+Connection base::
+Which element a connection is a logical child of: its parent in the file, its source or its target.
+
+Connection point::
+A fixed point on the outline of a node where connections leave or arrive.
+
+Consumption cost::
+The effort readers spend to get what they need from a diagram.
+
+Context::
+What a document is loaded with: the streams of linked documents, properties for placeholders, and a filter for properties.
+
+Diagram as data::
+A diagram whose elements carry properties with agreed meanings that programs read.
+
+Element link::
+A link from a diagram element to another element, on the same page, another page or another document, in the form `data:element/...`.
+
+Entity::
+A thing a diagram element stands for.
+
+Layer::
+A part of a page that is shown and hidden as a whole. Every page has at least one.
+
+Node::
+A shape. A node can contain nodes and connections.
+
+Placeholder::
+A `%name%` in a label or a property, replaced with the value of the property `name` when the element has placeholders on.
+
+Production cost::
+The effort of drawing a diagram and keeping it current.
+
+Property::
+A named value of a diagram element, set in Draw.io's _Edit Data_ dialog.
+
+Property path::
+A property name with a selector in front of it, such as `outgoing-connection/target/owner`, which reads a property of a related element.
+
+Representation filtering::
+Changing how a diagram looks, from code, to show the current state of what it describes, without changing what people drew.
+
+Selector::
+A path of segments, such as `..`, `child` and `outgoing-connection`, which selects elements relative to an element.
+
+Tag::
+A name that elements of a page share, so that they can be shown and hidden together.
+
+Visual communication continuum::
+The range of structure a diagram can carry, from a picture to a diagram mapped to a model, with each step adding a little to the same file.

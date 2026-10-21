@@ -1,0 +1,58 @@
+[appendix]
+[#migrating]
+== Migrating from Nasdanika core
+
+The module is a salvage of `org.nasdanika.core:drawio`, the Draw.io API of Nasdanika core.
+Code written against core moves to it with a few mechanical changes, unless it uses what was left out.
+
+=== What moves
+
+[cols="2,3",options="header"]
+|===
+| Nasdanika core | The runtime
+
+| Maven `org.nasdanika.core:drawio`
+| Maven `org.nasdanika.sdk.runtime:drawio`, versioned with the runtime's BOM
+
+| Java module `org.nasdanika.drawio`
+| Java module `org.nasdanika.sdk.runtime.drawio`
+
+| Package `org.nasdanika.drawio`
+| Package `org.nasdanika.sdk.runtime.drawio`, with `comparators`, `style` and `impl` subpackages as before
+
+| `org.nasdanika.drawio.Util`
+| `org.nasdanika.sdk.runtime.drawio.util.Util`
+
+| `org.nasdanika.common.Util`, `NasdanikaException`
+| `org.nasdanika.sdk.runtime.common.Util`, `NasdanikaException`, in the runtime's `common` module
+|===
+
+`Document`, its `Context`, the element interfaces, links, selectors, property paths, placeholders with `$style`, styles, comparators and PNG loading work as they did.
+
+=== What was left out
+
+*Graph processing.*
+In core, `Element`, `Node` and `Connection` extend the interfaces of Nasdanika's graph module, so diagrams can be made executable with graph processors and dispatched to `@Handler` methods.
+In the runtime, the elements extend nothing outside the module (<<looking-ahead>>).
+
+*The Ecore model of Draw.io documents.*
+Core's `drawio.model` module and `Document.toModelDocument()`, with bi-directional references between elements and tags as objects, are not in the runtime, and neither is the loading of a document from that model.
+
+*Semantic mapping.*
+Core's mapping module, which maps diagram elements to the objects of Ecore models, depends on both of the above (<<looking-ahead>>).
+
+*Spring Expression Language.*
+The `$spel:` magic property, `data:spel,` links and the SpEL evaluation context are gone, together with the dependency on Spring.
+`Document.EvaluatingContext` remains as the hook for an expression language: implement `evaluate` to resolve placeholders with the language of your choice.
+
+*Layout.*
+`Util.layout` and `Util.forceLayout`, which laid out nodes with JGraphT, are gone with their dependency.
+In the runtime, layout belongs to the diagram model, with Eclipse ELK (<<looking-ahead>>).
+
+*The capability factories* that registered Draw.io as a resource type and as processor factories with core's capability loader.
+
+=== Dependencies
+
+Core's module required `java.desktop`, the graph, mapping, capability and Draw.io model modules, Ecore, and Apache Commons Lang, most of them transitively.
+The runtime's requires `common` and `java.xml` transitively, and `java.desktop`, jsoup, JSON, Commons Codec and Commons Text without exporting them (<<getting-started>>).
+Code that used `java.desktop` or one of these libraries through the Draw.io module has to require it itself.
