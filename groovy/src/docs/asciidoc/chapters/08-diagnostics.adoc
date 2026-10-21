@@ -1,0 +1,74 @@
+// Defaults for previewing this file on its own; index.adoc and the Maven build set these
+ifndef::booktests[:booktests: ../../../test/java/org/nasdanika/sdk/runtime/groovy/tests/book]
+ifndef::dslscripts[:dslscripts: ../../../test/resources/book]
+ifndef::bookresources[:bookresources: ../../../test/resources/org/nasdanika/sdk/runtime/groovy/tests/book]
+
+[#diagnostics]
+== Errors and telemetry
+
+=== Errors
+
+Failures to build or to resolve are reported with the script's URI and the line they were written on, even when the failure happens after the script has run, as an unresolved reference does:
+
+.A reference to a class that is not there (`broken.ecore.groovy`)
+[source,groovy]
+----
+include::{dslscripts}/broken.ecore.groovy[]
+----
+
+.The failure names the line
+[source,java]
+----
+include::{booktests}/DiagnosticsTests.java[tag=error,indent=0]
+----
+<1> What went wrong: the path segment that matched nothing.
+<2> Where: a `DslException` in the cause chain, `<uri>:8: ...`, the line of `eType`.
+
+The column is not reported: the Groovy runtime does not expose it.
+
+=== Telemetry
+
+Loading is traced with the OpenTelemetry instance current for the unit of work, or the one attached to the resource set:
+
+.Watching a script load
+[source,java]
+----
+include::{booktests}/DiagnosticsTests.java[tag=spans,indent=0]
+----
+<1> A publishing instance, current while the resource loads, so the spans can be watched without an SDK.
+<2> The spans of the script, from compiling it on, compared with a file.
+
+For this script,
+
+.A small script (`tiny.ecore.groovy`)
+[source,groovy]
+----
+include::{dslscripts}/tiny.ecore.groovy[]
+----
+
+the spans nest as the script does:
+
+.Its spans (`tiny-spans.txt`)
+[source,text]
+----
+include::{bookresources}/tiny-spans.txt[]
+----
+
+The supertype is set on line 5, recorded there, and resolved after the script, under "Resolving references", with the line it was written on.
+
+[cols="2,4",options="header"]
+|===
+| Span | Attributes
+| `Compiling script` | The URI; the line of a syntax error
+| `Evaluating script` | The URI and the number of roots; the line of a failure
+| `Loading <Type>` | `nasdanika.dsl.type`, the type as `<nsURI>#<name>`; `nasdanika.dsl.type.superseded` when it superseded less specific types; the line; `nasdanika.dsl.prototype.uri` for a copy
+| `Setting <feature>` | `nasdanika.dsl.feature`, `nasdanika.dsl.feature.class`, `nasdanika.dsl.feature.kind` (`attribute`, `containment` or `reference`), the line; `nasdanika.dsl.deferred` when resolved after the script
+| `Resolving references` | `nasdanika.dsl.references`, the number of deferred references
+| `Resolving <feature>` | The feature's attributes, and the line the reference was written on
+| `Loading resource` | `nasdanika.dsl.target.uri`, for `loadResource`
+|===
+
+`global` emits a log record, `nasdanika.dsl.global`, with the URI, the type and the line.
+Resolving the capabilities that compile and evaluate the script is traced too, before "Compiling script".
+
+The spans carry locations and types, never values: a model may hold data that a trace must not.

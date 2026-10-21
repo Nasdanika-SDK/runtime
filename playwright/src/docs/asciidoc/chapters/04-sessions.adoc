@@ -54,7 +54,7 @@ include::{booktests}/WalkthroughTests.java[tag=walkthrough,indent=0]
 <3> A relative URL: the server's page.
 <4> Playwright's assertions wait for the page: the list has one item once the server has answered the search.
 
-Each step is a span named after it.
+Each step is a span named after it, and narrated: the second argument is what a person would say about the step, recorded as it starts (<<narration>>).
 With the default options, a step takes a screenshot before its body runs and another after, except before the first page is loaded, when there is nothing to see.
 
 .After the second step (`003-search-for-dune-after.png`)
@@ -96,5 +96,7 @@ The body receives a `Session`:
 | `server()` | The harness server
 | `options()` | The options
 | `step(name, body)` | Runs the body in a span, with screenshots
+| `step(name, narration, body)` | The same, narrated as it starts: after the "before" screenshot
+| `narrate(text)`, `narrate(narration)` | Records a line of narration in the current span (<<narration>>)
 | `screenshot(name)` | Takes a screenshot now, in the current span, and returns the file
 |===

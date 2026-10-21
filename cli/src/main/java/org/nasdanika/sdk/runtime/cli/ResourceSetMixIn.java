@@ -45,7 +45,10 @@ public class ResourceSetMixIn {
 	public ResourceSet createResourceSet(Consumer<ResourceSet> configurator) {		
 		NasdanikaResourceSet resourceSet = NasdanikaResourceSet.createAndConfigure();
 		configureResourceSet(resourceSet);
-		return resourceSet; 
+		if (configurator != null) {
+			configurator.accept(resourceSet); // Last, so that it can override the options
+		}
+		return resourceSet;
 	}
 	
 	protected void configureResourceSet(ResourceSet resourceSet) {

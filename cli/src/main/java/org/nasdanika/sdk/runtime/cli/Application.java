@@ -5,7 +5,6 @@ import java.util.Collections;
 import java.util.List;
 import java.util.concurrent.atomic.AtomicInteger;
 
-import org.nasdanika.sdk.runtime.common.Closeable;
 import org.nasdanika.sdk.runtime.common.capability.CapabilityFactorySource;
 import org.nasdanika.sdk.runtime.common.capability.CapabilityLoader;
 import org.nasdanika.sdk.runtime.common.capability.Requirement;
@@ -44,9 +43,7 @@ public class Application {
 				try {
 					exitCode = rootCommand.execute(args);
 				} finally {
-					if (rootCommand instanceof Closeable closeable) {
-						closeable.close();
-					}
+					CommandBase.close(rootCommand);
 				}
 				System.exit(exitCode);
 			}

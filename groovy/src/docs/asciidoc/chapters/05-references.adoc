@@ -1,0 +1,76 @@
+// Defaults for previewing this file on its own; index.adoc and the Maven build set these
+ifndef::booktests[:booktests: ../../../test/java/org/nasdanika/sdk/runtime/groovy/tests/book]
+ifndef::dslscripts[:dslscripts: ../../../test/resources/book]
+
+[#references]
+== References
+
+A non-containment reference points at an element that exists elsewhere: a supertype, the type of a feature, an opposite.
+Its value can be given in three ways.
+
+.The rest of the library metamodel (`library.ecore.groovy`)
+[source,groovy]
+----
+include::{dslscripts}/library.ecore.groovy[tag=classes,indent=0]
+----
+<1> An *element*, held in a variable: used as it is.
+<2> A *path*, anchored at the root of the resource by the leading slash: the classifier named `Book`, written further down the file.
+<3> The assignment form, because the value is negative.
+<4> A *closure*, run after the script with the reference as its delegate and its argument: `eContainer()` is the `EClass`, its container the package. A closure may return an element or a path.
+<5> A *relative path*: `..` is the container of the current element, the `EClass`, and `../..` the package.
+
+.The model the script built
+[source,java]
+----
+include::{booktests}/LanguageTests.java[tag=model,indent=0]
+----
+
+Paths and closures are resolved after the whole script has run, which is why `books` can refer to `Book` before `Book` is written.
+
+=== Paths
+
+A path is a sequence of EMF URI fragment segments separated by slashes:
+
+* a *leading slash* anchors it at the root of the current element's tree; without one, it starts at the current element;
+* `..` goes to the container, and `.` stays, which is useful as `./Name` to force a path where a name could also be a classifier (below);
+* a segment names a feature and selects an element of it: by an attribute, `eClassifiers[name='Book']`, by position, `eClassifiers.2`, or by key. The `@` EMF puts in front of a feature name is optional;
+* a path that contains `#` is a *URI*, resolved against the script's own URI and through the resource set: another resource, a global object, a proxy.
+
+Predicate values are quoted.
+In a double-quoted Groovy string, single quotes need no escaping: `"/eClassifiers[name='Book']"`.
+
+=== Names of classifiers
+
+A value without a slash is tried first as the name of a classifier of the metamodel, which is how `eType 'EString'` finds Ecore's string type:
+
+[cols="1,2,3",options="header"]
+|===
+| Form | Example | Resolves to
+| Simple | `'EString'`, `'eString'` | The classifier with that name, capitalized or not: in the current element's package first, then in all of them
+| Qualified | `'c4.Component'` | The trailing segment is the class; the leading ones are a package path, matched against the package's full path or any trailing part of it
+| URI | `'http://www.eclipse.org/emf/2002/Ecore#EClass'` | `<nsURI>#<Class>`: never ambiguous
+|===
+
+A local element named like a metamodel classifier is reached with `./`: `eType "./Book"` is a path, even if the metamodel had a `Book`.
+
+=== Supersession
+
+When a simple name matches several classes and one of them is a subtype of another, the most specific wins.
+This is what makes refinements work: a governance model whose `ModelElement` extends the core model's `ModelElement` gets the governed one for `modelElement { }`, as an entry point, by type dispatch, and even inside an element of the core package.
+The superseded classes are recorded in the telemetry (<<diagnostics>>).
+Two refinements of the same class are ambiguous, because neither is more specific, and a name that stays ambiguous fails with the qualified alternatives listed.
+Qualified and URI names select exactly what they name.
+
+=== Global objects
+
+`global '<uri>'` registers the current element with the resource set under a URI, so any resource of the set can refer to it by that URI, without knowing which file defines it:
+
+.A global object (`LanguageTests.java`)
+[source,java]
+----
+include::{booktests}/LanguageTests.java[tag=global,indent=0]
+----
+<1> The library package, registered by `global 'urn:example:library'`, found by its URI alone.
+
+Inside a script, a selector containing `#`, or `ref('<uri>')` at the top level, reaches a global object.
+`proxy '<uri>'` is the other direction: it turns the element being built into an EMF proxy for the URI, which EMF resolves when the element is used, so a model can refer to a global object that is loaded later.

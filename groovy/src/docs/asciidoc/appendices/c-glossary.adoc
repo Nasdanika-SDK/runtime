@@ -1,0 +1,17 @@
+[appendix]
+[#glossary]
+== Glossary
+
+Binding:: A DSL tied to a metamodel by a contents handler and a qualifier: `ecore`, or one of your own.
+Builder:: The delegate of a closure: the element being built, which receives feature calls, class calls and keywords.
+Copy:: A deep snapshot of a prototype element, configured like a new one.
+Deferred reference:: A reference given as a path or a closure, resolved after the script has run, with the line it was written on.
+Derivation:: A model computed by a script from other resources, run again rather than edited again when its source changes.
+Entry point:: A top-level keyword created from a concrete class of the bound metamodel: `ePackage { }`.
+Feature dispatch:: A call named after a feature of the current element, which sets it.
+Global object:: An element registered with the resource set under a URI, reachable from any resource of the set.
+Qualifier:: A dot-separated part of a file name, read from the right, which selects the contents handler: `groovy`, `ecore`.
+Selector:: A path, a URI or a closure that names a reference's target.
+Short form:: A value for a containment reference that the binding turns into an element.
+Supersession:: A more specific class winning a simple name over the less specific classes it extends.
+Type dispatch:: A call named after a class, which creates an element of it and routes it into the containment feature that accepts it.

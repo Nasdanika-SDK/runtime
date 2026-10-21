@@ -14,8 +14,24 @@ public class RectangleImpl extends PointImpl implements Rectangle {
 	static final String ATTRIBUTE_WIDTH = "width"; 
 	static final String ATTRIBUTE_HEIGHT = "height";
 		
+	/**
+	 * An element is empty, and can be removed, when nothing but its role is left: no attributes
+	 * other than "as", such as "relative", and no children, such as points.
+	 */
 	protected boolean isEmpty(Element element) {
-		return !element.hasAttribute(ATTRIBUTE_HEIGHT) && !element.hasAttribute(ATTRIBUTE_WIDTH) && !element.hasAttribute(ATTRIBUTE_X) && !element.hasAttribute(ATTRIBUTE_Y); 
+		org.w3c.dom.NamedNodeMap attributes = element.getAttributes();
+		for (int i = 0; i < attributes.getLength(); ++i) {
+			if (!ATTRIBUTE_AS.equals(attributes.item(i).getNodeName())) {
+				return false;
+			}
+		}
+		org.w3c.dom.NodeList children = element.getChildNodes();
+		for (int i = 0; i < children.getLength(); ++i) {
+			if (children.item(i) instanceof Element) {
+				return false;
+			}
+		}
+		return true;
 	}
 			
 	@Override

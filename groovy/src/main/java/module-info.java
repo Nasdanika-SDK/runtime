@@ -3,6 +3,7 @@ import org.nasdanika.sdk.runtime.common.services.ResourceSetContributor;
 import org.nasdanika.sdk.runtime.groovy.GroovyCapabilityFactory;
 import org.nasdanika.sdk.runtime.groovy.GroovyResourceFactoryContributor;
 
+// tag::module[]
 module org.nasdanika.sdk.runtime.groovy {
 
 	exports org.nasdanika.sdk.runtime.groovy;
@@ -21,3 +22,4 @@ module org.nasdanika.sdk.runtime.groovy {
 		GroovyResourceFactoryContributor;
 
 }
+// end::module[]

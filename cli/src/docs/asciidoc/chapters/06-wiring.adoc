@@ -1,0 +1,135 @@
+// Defaults for previewing this file on its own; index.adoc and the Maven build set these
+ifndef::booktests[:booktests: ../../../test/java/org/nasdanika/sdk/runtime/cli]
+
+[#wiring]
+== Wiring by type
+
+=== One class, two types
+
+The suppliers of the text and the model groups are the same class at run time, and different types in their declarations:
+
+.Types, not classes (`PipelineTests.java`)
+[source,java]
+----
+include::{booktests}/PipelineTests.java[tag=types,indent=0]
+----
+<1> Both are `Supplier` objects, and nothing in either says what it supplies.
+<2> The declarations do: the text group can be adapted to what `print` needs, a `Supplier<? extends CharSequence>`, and the model group cannot.
+
+`Adapters.isAdaptable` answers from declarations: an object's own generic supertypes, and the generic types of its `@Adapter` fields and methods, matched with Java's rules for assignment.
+The runtime's `common` module implements it, and its Zephyr Book, _Matching and Wiring_, describes the rules in detail.
+
+=== What a command needs from its parent
+
+`@Parent` on a field, or on a method taking one parameter, says what a command needs from its parent: the member's generic type.
+
+* *Matching*, when the tree is built: the command goes under a parent whose class is adaptable to the type of any of its `@Parent` members.
+* *Injection*, after parsing and before execution: the parent is adapted to the members' types, the most specific first, and the first value obtained is injected. A command has one parent, so several `@Parent` members are alternative ways to take it, and only one is set.
+
+The runtime's `save` command takes its parent two ways:
+
+.Two ways to take a parent (`SaveModelCommand.java`)
+[source,java]
+----
+include::{clisrc}/SaveModelCommand.java[tag=parents,indent=0]
+----
+
+Ask with wildcards, `? extends` at every level that is only read from: each wildcard admits more parents.
+`Supplier<? extends CharSequence>` takes a supplier of strings and of string builders; `Supplier<CharSequence>` takes only suppliers declared exactly so.
+
+=== What is expensive, ask for lazily
+
+A parent that loads a model, calls a service or asks an AI model should do it only if a command needs it, and inside that command's span, so that the cost is attributed to the command.
+`ExecutionSupplier<T>` is a supplier that takes the executing command's span, logger and meter:
+
+.A parent that loads when asked, and a command that asks (`WiringTests.java`)
+[source,java]
+----
+include::{booktests}/WiringTests.java[tag=catalog,indent=0]
+----
+<1> The offer: an `ExecutionSupplier` of a list of model objects, whose work is a span of its own.
+<2> The need: an `ExecutionSupplier` of any collection of any model objects.
+<3> The work happens here, in the command's execution, with the command's span as the parent.
+
+.Loaded once, in the command's span
+[source,java]
+----
+include::{booktests}/WiringTests.java[tag=lazy,indent=0]
+----
+<1> Asking for help runs nothing: nothing is loaded.
+<2> `Load the catalog` is a child of `count`, the command that needed it.
+
+=== What a command accepts as sub-commands
+
+`@SubCommand` on a field, or on a method taking one parameter, says what a command accepts as sub-commands.
+A member typed as an array, a `List`, a `Collection`, an `Iterable` or a `Set` takes all the sub-commands adaptable to its element type; any other member takes the first.
+
+.Sub-commands by type (`WiringTests.java`)
+[source,java]
+----
+include::{booktests}/WiringTests.java[tag=exporters,indent=0]
+----
+<1> Every sub-command that is an `Exporter`.
+
+.Only the exporters
+[source,java]
+----
+include::{booktests}/WiringTests.java[tag=sub-commands,indent=0]
+----
+<1> `count` is a sub-command too, but not an exporter, so the list has `json` only.
+
+When the tree is built, a sub-command goes under a command that accepts its class through a `@SubCommand` member, as well as under a parent its own `@Parent` members take.
+The two are the two directions of one relation: a child that knows what it needs, and a parent that knows what it accepts.
+
+Sub-commands not on the command line have not had their options parsed when they are injected.
+They are there to be inspected, listed or delegated to, as the export command lists its formats.
+
+=== Offers and hand-downs
+
+What a parent offers with `@Adapter`, it offers to every command that might match: any command that needs that type goes under it.
+Sometimes a parent has something only for children written for it.
+A plain public method, not an `@Adapter`, is an offer only to children that take the parent by its class, `@Parent ExportCommand export`, and call the method.
+
+Offer with `@Adapter` what any child may use; hand down with plain methods what only children written for this parent should use.
+
+=== When a parent cannot provide
+
+An adapter may decline at run time by returning null:
+
+.A parent that has nothing to supply (`WiringTests.java`)
+[source,java]
+----
+include::{booktests}/WiringTests.java[tag=decline,indent=0]
+----
+
+.Execution fails, help does not
+[source,java]
+----
+include::{booktests}/WiringTests.java[tag=declined,indent=0]
+----
+<1> The command cannot be wired, and picocli reports the failure with the exit code for a software error. The message names the command, the types it needed, and the parent's class.
+<2> Help skips wiring, so asking for help never fails on a parent that cannot provide.
+
+=== When wiring happens
+
+`WiringExecutionStrategy` injects the `@Parent` and `@SubCommand` members of the commands on the command line, and the `@Parent` members of their mix-ins, and then executes as its delegate does, picocli's `RunLast` by default.
+
+* *After parsing*: a parent's options are parsed by then, and its adapters see their values.
+* *From the root to the executed command*: a parent's own members are in place before it is adapted for its child, so a value can flow down several levels.
+* *Not for help or version requests.*
+
+The factories set the strategy on the root commands they create.
+A command line assembled by hand needs `commandLine.setExecutionStrategy(new WiringExecutionStrategy())`, as the tests of this chapter do.
+
+=== Rules
+
+* Members are found once per class, on the class and its superclasses, and must be accessible: in a package opened to the runtime, as picocli needs anyway. An inaccessible member fails with a message that names the package to open.
+* A `@Parent` or `@SubCommand` member is a field or an instance method with one parameter, never static.
+* `@Parent` is unrelated to picocli's `@ParentCommand`, which keeps working as picocli defines it.
+
+ifdef::editor-notes[]
+[IMPORTANT,caption="Editor's note"]
+====
+"The most specific first" orders members by the specificity of their erased types, so two members of the same raw type, `Supplier<String>` and `Supplier<CharSequence>`, tie and are ordered by name. The same tie is described in the Zephyr Book _Matching and Wiring_; the fix belongs in `Types` in the `common` module.
+====
+endif::[]

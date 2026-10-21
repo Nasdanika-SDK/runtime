@@ -1,0 +1,54 @@
+[#picocli]
+== Standing on picocli
+
+The commands of this module are picocli commands, and the module would not exist without picocli.
+
+=== A domain, expressed
+
+https://picocli.info[Picocli], created by Remko Popma, is a framework for command line applications in Java.
+A command is a class; `@Command` names it and describes it; `@Option` and `@Parameters` on fields declare its options and parameters, typed, with defaults, arity, validation and descriptions; `@Mixin` reuses a set of options; `@ParentCommand` and `@Spec` give a command its context.
+From those declarations picocli parses arguments, converts them to the fields' types, generates usage help in color, version information, shell completion scripts and documentation, supports argument groups, and compiles to native images.
+
+All of it is plain Java, without a line of parsing code in the command.
+When I first read picocli commands, I was super-impressed by how Remko Popma had expressed the problem domain of command lines in Java: options, parameters, sub-commands, mix-ins, help, each a Java construct that a Java developer already reads fluently.
+It is an internal DSL in the best sense: a language for a domain, made of the host language's own parts, so that learning the domain is learning nothing new about the language.
+
+It is also the sensory bias at work again, the idea from evolutionary biology that a preference which evolved for one purpose is exploited for another.
+Java developers' eyes were trained by annotations on fields and by typed values, for persistence, for dependency injection, for web endpoints; picocli speaks to that trained eye about a different domain.
+Nasdanika does the same with generic types, as the next chapter explains.
+
+The first time I heard Londoners speak, I said to myself: "Oh, this is how this language is supposed to be spoken."
+I had a similar feeling reading picocli: this is how a command line is supposed to be written in Java.
+
+=== What picocli does, and the runtime does not redo
+
+Everything about a single command, and about a command line once it is assembled, is picocli's:
+
+* parsing, type conversion, defaults and validation of options and parameters;
+* usage help, version help and error messages;
+* mix-ins, reused sets of options;
+* the command tree's model, `CommandLine` and `CommandSpec`, which the runtime builds programmatically;
+* execution strategies, which decide what runs after parsing; the runtime adds one.
+
+A command written for this module is a picocli command first, and everything in picocli's documentation applies to it.
+
+=== Bundled, for now
+
+The runtime bundles picocli in a module of its own, `org.nasdanika.sdk.runtime.picocli`, which exports the `picocli` package unchanged in its use: commands import `picocli.CommandLine` as usual.
+The bundle carries changes contributed by Nasdanika to picocli, and will be replaced by picocli itself when a picocli release includes them, planned for picocli 4.8.
+
+ifdef::editor-notes[]
+[IMPORTANT,caption="Editor's note"]
+====
+Name the contributions to picocli, and link to the pull request or issue, before publishing. The bundled module's descriptor and pom say only "Waiting for Picocli 4.8.0 with Nasdanika contributions".
+====
+endif::[]
+
+=== Where picocli stops
+
+Picocli assembles a command tree from what a command lists: `subcommands` in `@Command` names the classes of the sub-commands, or code adds them with `addSubcommand`.
+The parent knows its children, by class.
+For a tool with one team that is exactly right.
+
+For a command line contributed by modules it is the wrong way round: the parent cannot know the children that modules written later will contribute.
+Picocli's programmatic API makes any other way possible, and that is where this module starts.

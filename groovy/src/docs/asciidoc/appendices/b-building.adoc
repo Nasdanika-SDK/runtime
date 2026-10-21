@@ -1,0 +1,19 @@
+[appendix]
+[#building-this-book]
+== Building this book
+
+This book is AsciiDoc in `groovy/src/docs/asciidoc`, built with the module after its tests have passed:
+
+[source,text]
+----
+mvn -pl groovy verify                                # the module, its tests and this book
+mvn -pl groovy verify -Dzephyr.editor-notes=false    # without editor's notes
+mvn -pl groovy verify -Dasciidoctor.skip=true        # without the book
+----
+
+The PDF, the single-page HTML and the EPUB are written to `target/book`; the PDF and the HTML are attached to the module's artifact with the classifier `book`, and the test sources with the classifier `test-sources`.
+The look comes from the runtime's `doc/zephyr` directory, shared by all the Nasdanika Zephyr Books.
+
+Listings are tagged regions of the tests in `src/test/java/org/nasdanika/sdk/runtime/groovy/tests/book`, of the scripts in `src/test/resources/book`, and of the module's `module-info.java`.
+Every script in the book is loaded by a test.
+A listing line holds at most 96 characters, and a warning fails the build.

@@ -10,7 +10,7 @@ import picocli.CommandLine.ParameterException;
 import picocli.CommandLine.ParseResult;
 
 /**
- * Injects {@link Parent} and {@link SubCommand} members of the commands on the command line, and
+ * Injects {@link Parent}, {@link SubCommand} and {@link MixIns} members of the commands on the command line, and
  * {@link Parent} members of their mix-ins, then executes as its delegate does - {@link CommandLine.RunLast}
  * by default, picocli's own default.
  *
@@ -50,6 +50,7 @@ public class WiringExecutionStrategy implements IExecutionStrategy {
 						CommandWiring.injectParent(command, parent);
 					}
 					CommandWiring.injectSubCommands(command, spec.subcommands().values().stream().map(sc -> sc.getCommandSpec().userObject()).toList());
+					CommandWiring.injectMixIns(command, spec.mixins().values().stream().map(CommandSpec::userObject).toList());
 					for (CommandSpec mixIn: spec.mixins().values()) {
 						CommandWiring.injectParent(mixIn.userObject(), command);
 					}

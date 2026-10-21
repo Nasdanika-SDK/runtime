@@ -15,10 +15,10 @@ After the recording is closed, the walk-through is a model, and a test can read 
 ----
 include::{booktests}/WalkthroughTests.java[tag=model,indent=0]
 ----
-<1> The step's log records include its screenshots, with the files' paths.
+<1> The step's log records, in order: its "before" screenshot, its narration, its "after" screenshot. A screenshot's body is the step's name, its path an attribute.
 <2> The step's child is the server's span for the search, with the handler's log record.
 
-The test also reduces the trace to an outline of what does not change from run to run, and compares it with this file:
+The test also reduces the trace to an outline of what does not change from run to run, the narration included, and compares it with this file:
 
 .The walk-through in outline (`walkthrough-outline.txt`)
 [source,text]
@@ -44,6 +44,34 @@ A screenshot is a log record with the event name `nasdanika.screenshot`, in the 
 |===
 
 The body of the record is the name, so a log viewer that knows nothing of screenshots still shows something readable.
+
+[#narration]
+=== Narration
+
+A walk-through can record what a person would say about it: the script of a video, the text of a guide.
+`session.narrate(text)` records a line as a log record in the current span, with the event name `nasdanika.narration` and the text as its body, in order with the screenshots; `session.step(name, narration, body)` narrates a step as it starts.
+
+.Narration in a step (`WalkthroughTests.java`)
+[source,java]
+----
+include::{booktests}/WalkthroughTests.java[tag=narration,indent=0]
+----
+<1> A line of narration, anywhere in a step.
+<2> A line with a language, a voice and a pause after it, for speech synthesis and walk-throughs narrated in several languages.
+<3> The step's records: the "before" screenshot, the two lines, the "after" screenshot.
+
+The order is what a video or a guide is generated from.
+A line of narration is spoken over the last screenshot taken before it, and a line before the first screenshot of a session over the first one: a step narrated as it starts is spoken over its "before" screenshot, while the page still shows what the step is about to change.
+
+[cols="2,4",options="header"]
+|===
+| Attribute | Value
+| `nasdanika.narration.index` | The position in the session, from 1
+| `nasdanika.narration.language` | A BCP 47 tag, if given
+| `nasdanika.narration.voice` | A voice by the name a renderer knows it, if given
+| `nasdanika.narration.pause_ms` | Silence after the line, in milliseconds, if given
+| `url.full` | The page's URL
+|===
 
 === The browser's console
 

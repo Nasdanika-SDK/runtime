@@ -3,6 +3,7 @@ import org.nasdanika.sdk.runtime.cli.RootCommandFactory;
 import org.nasdanika.sdk.runtime.cli.SaveModelCommandFactory;
 import org.nasdanika.sdk.runtime.common.capability.CapabilityFactory;
 
+// tag::module[]
 module org.nasdanika.sdk.runtime.cli {
 			
 	exports org.nasdanika.sdk.runtime.cli;
@@ -23,3 +24,4 @@ module org.nasdanika.sdk.runtime.cli {
 		EcoreCommandFactory;
 		
 }
+// end::module[]

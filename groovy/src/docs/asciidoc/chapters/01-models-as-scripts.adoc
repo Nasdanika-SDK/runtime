@@ -1,0 +1,49 @@
+[#models-as-scripts]
+== Models as scripts
+
+A model has to be written down somewhere, and every way of writing it down has a cost.
+
+*XMI* is what EMF saves by default: complete, exact, and written for machines.
+A person can read a small XMI file, and nobody wants to write one.
+
+*YAML and JSON* are friendlier, and the runtime reads models from both.
+They are data, though: no variables, no loops, no computation, and every reference spelled out as a path.
+
+*Diagrams* are the friendliest of all for some models, an architecture or a process, and the runtime reads Draw.io diagrams as models.
+They are the wrong tool for a model of four hundred rules, or for one that is computed from another.
+
+*Editors* generated from the metamodel, forms and trees, are good for changing one element and poor for seeing the whole, comparing two versions, or reviewing a change.
+
+=== A script is a model with a language around it
+
+A Groovy script that builds a model reads like a structured document: braces for containment, a call for each feature.
+It is also a program, so it can do what data cannot:
+
+* *name things and refer to them*, with a variable instead of a path;
+* *repeat and compute*: a loop for twenty similar elements, a function for a pattern used in ten places;
+* *derive*: load a diagram, a spreadsheet or another model, and emit a model from it;
+* *write itself back*: a script can decide what saving the model means, rewriting its own source or pushing the model to another system.
+
+A script is text, so it is diffed, reviewed and merged like code, and versioned with the code that uses it.
+
+=== One DSL for every metamodel
+
+A DSL usually means work: a grammar, a parser, an editor, a code generator, for each language.
+This one is derived from the metamodel at load time.
+Every concrete class of the metamodel is a keyword that creates an instance of it; every feature is a call that sets it; containment is nesting.
+Bind the DSL to Ecore and you write metamodels; bind it to a rules metamodel and you write rule sets; bind it to an architecture metamodel and you write architectures.
+The metamodel changes, and the language follows on the next load, with nothing to regenerate.
+
+=== Transcription and derivation
+
+Most model files are transcriptions: someone knows the model and writes it down.
+Scripts can also be derivations: the model is computed from something else, and the script says how.
+A derivation stays true when its source changes, because it is run again rather than edited again.
+The two mix in one file: copy the structure from a diagram, and add by hand what only a person knows.
+
+=== Code is executable
+
+There is a price, and it must be said plainly.
+A `.groovy` model file is a program, and loading it runs it, with the permissions of the process that loads it.
+Load scripts you trust, from repositories you trust, as you would build files and test code.
+A model that arrives from an untrusted source belongs in a data format, YAML, JSON or XMI, which loads without running anything.

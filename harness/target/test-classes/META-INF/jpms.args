@@ -1,4 +1,0 @@
---patch-module
-org.nasdanika.sdk.runtime.harness=_
---add-reads
-org.nasdanika.sdk.runtime.harness=ALL-UNNAMED

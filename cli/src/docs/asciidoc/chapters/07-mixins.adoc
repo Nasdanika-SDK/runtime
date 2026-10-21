@@ -1,0 +1,75 @@
+// Defaults for previewing this file on its own; index.adoc and the Maven build set these
+ifndef::booktests[:booktests: ../../../test/java/org/nasdanika/sdk/runtime/cli]
+
+[#mixins]
+== Mix-ins
+
+A picocli mix-in is a reusable set of options: a class with `@Option` fields, mixed into a command with `@Mixin` or `addMixin`.
+In this module, mix-ins can also be contributed: a factory adds a mix-in to the commands it matches, the way a command factory places a command.
+
+=== A contributed mix-in
+
+.A mix-in for commands that supply text, and its factory (`ContributionTests.java`)
+[source,java]
+----
+include::{booktests}/ContributionTests.java[tag=mixin,indent=0]
+----
+<1> For a mix-in, the parent is the command it is mixed into: this one goes into any command that supplies some kind of text, and is injected with the command's supplier.
+<2> The mix-in's name, by which picocli knows it.
+
+.Mixed into the text group only
+[source,java]
+----
+include::{booktests}/ContributionTests.java[tag=mixins,indent=0]
+----
+<1> The text group got the mix-in, and its `--shout` option; the model group did not.
+<2> The mix-in's parent was injected with the group's supplier when the command line ran.
+
+=== Mix-ins by type
+
+The other direction is the command choosing its mix-ins.
+`@MixIns` on a field, or on a method taking one parameter, says what mix-ins a command accepts, by the member's generic type, as `@SubCommand` does for sub-commands; and the accepted mix-ins are injected into the member.
+
+.Two formatters, of text and of model elements (`LifecycleTests.java`)
+[source,java]
+----
+include::{booktests}/LifecycleTests.java[tag=formatters,indent=0]
+----
+<1> A `Formatter<String>`, with an option of its own.
+<2> A `Formatter<EObject>`: the same interface, another type argument.
+
+.A command that accepts formatters of text
+[source,java]
+----
+include::{booktests}/LifecycleTests.java[tag=echo,indent=0]
+----
+<1> Every contributed mix-in that can format a `String`: a `Formatter<String>`, or a `Formatter<Object>` or `Formatter<CharSequence>`, which can format strings too. `? super` is the wildcard of a consumer, as `? extends` is of a producer.
+
+.Only the text formatter
+[source,java]
+----
+include::{booktests}/LifecycleTests.java[tag=typed-mixins,indent=0]
+----
+<1> The text formatter was mixed in, and the model formatter, the same class at run time, was not.
+<2> Its option is the command's option, and the command applies it.
+
+A member typed as an array, a `List`, a `Collection`, an `Iterable` or a `Set` takes all the accepted mix-ins; any other member takes the first.
+
+=== Matching mix-ins
+
+A mix-in factory adds its mix-in to a command when:
+
+* the mix-in takes the command through a `@Parent` member, matched by type;
+* the command accepts the mix-in through a `@MixIns` member, matched by type; or
+* the command's class, or a superclass, is annotated with `@MixIns` listing types, and the mix-in is adaptable to one of them. Classes cannot carry type arguments, so this form matches raw types only, and nothing is injected: the command finds its mix-ins through picocli, `spec.mixins()`.
+
+=== Mix-ins with fields
+
+Mix-ins a command always has need no factory: a picocli `@Mixin` field is enough, and the runtime's `ResourceSetMixIn` and `PropertiesMixIn` are used that way (<<runtime-commands>>).
+Contribute a mix-in when the command should not have to know it: an option that a module adds to every command that supplies a model, for example.
+
+=== Mix-in or command
+
+The previous generation of Nasdanika relied on mix-ins for separation of concerns, and it led to option explosion and name collisions: every concern added options to every command.
+A sub-command is often the better unit: it has its own options, it appears only where it applies, and it composes into pipelines.
+I usually write the base of a concern as a class without `@Command`, so it can be mixed in, and a command that extends it, so it can be a step of a pipeline; which one to contribute is a judgement call.

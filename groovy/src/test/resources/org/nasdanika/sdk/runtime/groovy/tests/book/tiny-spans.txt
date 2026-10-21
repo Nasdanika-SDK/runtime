@@ -1,0 +1,13 @@
+Compiling script
+Evaluating script
+  Loading EPackage (line 1)
+    Setting name (line 2)
+    Setting eClassifiers (line 3)
+      Loading EClass (line 3)
+        Setting name (line 4)
+        Setting eSuperTypes (line 5)
+    Setting eClassifiers (line 7)
+      Loading EClass (line 7)
+        Setting name (line 7)
+  Resolving references
+    Resolving eSuperTypes (line 5)

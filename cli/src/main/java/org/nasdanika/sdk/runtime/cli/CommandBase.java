@@ -1,7 +1,5 @@
 package org.nasdanika.sdk.runtime.cli;
 
-import java.util.List;
-import java.util.Map.Entry;
 import java.util.concurrent.Callable;
 
 import org.nasdanika.sdk.runtime.common.Closeable;
@@ -49,37 +47,45 @@ public abstract class CommandBase implements Callable<Integer>, Closeable {
 	protected abstract Integer execute(Span span, Logger logger, Meter meter) throws Exception;
 	
 	/**
-	 * Closes all mix-ins and sub-commands implementing {@link Closeable}
+	 * Closes the command's sub-commands and mix-ins, see {@link #closeSubCommandsAndMixIns(CommandSpec)}.
 	 */
 	@Override
 	public void close() {
-		if (spec != null) {
-			List<Entry<String, CommandLine>> closeableSubCommands = spec
-					.subcommands()
-					.entrySet()
-					.stream()
-					.filter(e -> e.getValue().getCommandSpec().userObject() instanceof Closeable)
-					.toList();
-			
-			List<Entry<String, CommandSpec>> closeableMixIns = spec
-					.mixins()
-					.entrySet()
-					.stream()
-					.filter(e -> e.getValue().userObject() instanceof Closeable)
-					.toList();
-			
-			int size = closeableSubCommands.size() + closeableMixIns.size();
-			if (size > 0) {
-				for (Entry<String, CommandLine> subCommandEntry: closeableSubCommands) {
-					Object userObject = subCommandEntry.getValue().getCommandSpec().userObject();
-					((Closeable) userObject).close();
-				}
-				for (Entry<String, CommandSpec> mixInEntry: closeableMixIns) {
-					Object userObject = mixInEntry.getValue().userObject();
-					((Closeable) userObject).close();
-				}
+		closeSubCommandsAndMixIns(spec);
+	}
+
+	/**
+	 * Closes a command line: its command if it implements {@link Closeable}, which closes what it
+	 * holds, and otherwise its sub-commands and mix-ins. What an application calls when a run is over.
+	 */
+	public static void close(CommandLine commandLine) {
+		if (commandLine != null) {
+			if (commandLine.getCommandSpec().userObject() instanceof Closeable closeable) {
+				closeable.close();
+			} else {
+				closeSubCommandsAndMixIns(commandLine.getCommandSpec());
 			}
-		}		
+		}
+	}
+
+	/**
+	 * Closes the sub-commands of a command, the whole tree below it, and its mix-ins that implement
+	 * {@link Closeable}. A sub-command implementing {@link Closeable} is closed, and closes its own;
+	 * the sub-commands and mix-ins of one that does not are closed here, so that a plain picocli
+	 * command in the tree does not keep the commands below it open.
+	 */
+	public static void closeSubCommandsAndMixIns(CommandSpec spec) {
+		if (spec == null) {
+			return;
+		}
+		for (CommandLine subCommand: spec.subcommands().values()) {
+			close(subCommand);
+		}
+		for (CommandSpec mixIn: spec.mixins().values()) {
+			if (mixIn.userObject() instanceof Closeable closeable) {
+				closeable.close();
+			}
+		}
 	}
 
 }

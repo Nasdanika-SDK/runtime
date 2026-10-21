@@ -5,6 +5,7 @@ import static org.assertj.core.api.Assertions.assertThat;
 import static org.assertj.core.api.Assertions.assertThatThrownBy;
 
 import java.nio.file.Path;
+import java.time.Duration;
 import java.util.List;
 import java.util.Map;
 import java.util.concurrent.CopyOnWriteArrayList;
@@ -22,6 +23,7 @@ import org.nasdanika.sdk.runtime.models.telemetry.traces.Span;
 import org.nasdanika.sdk.runtime.models.telemetry.traces.SpanKind;
 import org.nasdanika.sdk.runtime.models.telemetry.traces.StatusCode;
 import org.nasdanika.sdk.runtime.playwright.Browsing;
+import org.nasdanika.sdk.runtime.playwright.Narration;
 import org.nasdanika.sdk.runtime.playwright.Options;
 
 import io.opentelemetry.api.OpenTelemetry;
@@ -92,7 +94,7 @@ class WalkthroughTests {
 
 	/**
 	 * The parts of a recorded walk-through that do not change from run to run: the spans of the
-	 * body and the steps, the screenshots and console messages logged in them, and the server spans
+	 * body and the steps, the screenshots and narration in their order, the console messages, and the server spans
 	 * for data, with their log records. Static files are left out: the browser loads them in
 	 * parallel, and may ask for a favicon at any time.
 	 */
@@ -103,6 +105,8 @@ class WalkthroughTests {
 			String path = attribute(log, Browsing.SCREENSHOT_PATH.getKey());
 			if (path != null) {
 				outline.append(inner).append("screenshot ").append(path).append('\n');
+			} else if (Browsing.NARRATION_EVENT.equals(log.getEventName())) {
+				outline.append(inner).append("narration ").append(log.getBody().getStringValue()).append('\n');
 			}
 		}
 		for (LogRecord log : span.getLogRecords()) {
@@ -146,15 +150,15 @@ class WalkthroughTests {
 			Harness.inServer(recording.getOpenTelemetry(), "Catalog", Catalog::routes, server ->
 				Browsing.inBrowser(server, options(dir), session -> { // <2>
 					Page page = session.page();
-					session.step("Open the catalog", () -> {
+					session.step("Open the catalog", "The catalog lists the library's books.", () -> {
 						page.navigate("/index.html"); // <3>
 						assertThat(page.locator("#books li")).hasCount(4);
 					});
-					session.step("Search for Dune", () -> {
+					session.step("Search for Dune", "Type a title to narrow the list.", () -> {
 						page.getByLabel("Title").fill("dune");
 						assertThat(page.locator("#books li")).hasCount(1); // <4>
 					});
-					session.step("Open Dune", () -> {
+					session.step("Open Dune", "Click a title to see its author.", () -> {
 						page.getByText("Dune").click();
 						assertThat(page.locator("#book-author")).hasText("Frank Herbert");
 					});
@@ -166,8 +170,11 @@ class WalkthroughTests {
 		// tag::model[]
 		Span search = span(recording, "Search for Dune");
 		assertThat(search.getLogRecords()) // <1>
+			.extracting(log -> log.getBody().getStringValue())
+			.containsExactly("Search for Dune", "Type a title to narrow the list.", "Search for Dune");
+		assertThat(search.getLogRecords())
 			.extracting(log -> attribute(log, Browsing.SCREENSHOT_PATH.getKey()))
-			.containsExactly("002-search-for-dune-before.png", "003-search-for-dune-after.png");
+			.containsExactly("002-search-for-dune-before.png", null, "003-search-for-dune-after.png");
 
 		Span served = search.getChildren().getFirst(); // <2>
 		assertThat(served.getName()).isEqualTo("GET /data");
@@ -241,6 +248,46 @@ class WalkthroughTests {
 			.extracting(Span::getName)
 			.contains("GET /");
 		// end::origins[]
+	}
+
+	@Test
+	void narration() {
+		Path dir = Path.of("target", "narration");
+		// tag::narration[]
+		Recording recording = Recording.builder().directory(dir, "yml").build();
+		try (recording) {
+			Harness.inServer(recording.getOpenTelemetry(), "Catalog", Catalog::routes, server ->
+				Browsing.inBrowser(server, options(dir), session -> {
+					Page page = session.page();
+					session.step("Open the catalog", () -> page.navigate("/index.html"));
+					session.step("Search for Solaris", () -> {
+						session.narrate("Type the title."); // <1>
+						page.getByLabel("Title").fill("solaris");
+						assertThat(page.locator("#books li")).hasCount(1);
+						session.narrate(Narration.of("Une seule réponse.") // <2>
+							.withLanguage("fr")
+							.withVoice("narrator-2")
+							.withPause(Duration.ofSeconds(2)));
+					});
+					return null;
+				}));
+		}
+		Span search = span(recording, "Search for Solaris");
+		assertThat(search.getLogRecords()) // <3>
+			.extracting(LogRecord::getEventName)
+			.containsExactly(
+				Browsing.SCREENSHOT_EVENT, // before
+				Browsing.NARRATION_EVENT,
+				Browsing.NARRATION_EVENT,
+				Browsing.SCREENSHOT_EVENT); // after
+		LogRecord french = search.getLogRecords().get(2);
+		assertThat(attribute(french, Browsing.NARRATION_LANGUAGE.getKey())).isEqualTo("fr");
+		assertThat(attribute(french, Browsing.NARRATION_VOICE.getKey())).isEqualTo("narrator-2");
+		// end::narration[]
+		assertThat(french.getAttributes())
+			.filteredOn(a -> a.getKey().equals(Browsing.NARRATION_PAUSE.getKey()))
+			.singleElement()
+			.satisfies(a -> assertThat(a.getValue().getIntValue()).isEqualTo(2000L));
 	}
 
 }

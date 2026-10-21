@@ -13,11 +13,13 @@ import com.microsoft.playwright.Page;
 import com.microsoft.playwright.Playwright;
 
 import io.opentelemetry.api.common.Attributes;
+import io.opentelemetry.api.common.AttributesBuilder;
 import io.opentelemetry.api.logs.Logger;
 import io.opentelemetry.api.logs.Severity;
 
 /**
- * A browser session of a {@link Browsing} body: the Playwright objects, steps, and screenshots.
+ * A browser session of a {@link Browsing} body: the Playwright objects, steps, screenshots and
+ * narration.
  */
 public final class Session {
 
@@ -42,6 +44,7 @@ public final class Session {
 	private final Logger logger;
 	private int steps;
 	private int screenshots;
+	private int narrations;
 
 	Session(Server server, Options options, Playwright playwright, Browser browser, BrowserContext context, Page page) {
 		this.server = server;
@@ -93,10 +96,30 @@ public final class Session {
 	 * failure is recorded on the span and rethrown.
 	 */
 	public <E extends Throwable> void step(String name, StepBody<E> body) throws E {
+		step(name, (Narration) null, body);
+	}
+
+	/**
+	 * A step narrated as it starts: the narration follows the "before" screenshot, and is spoken
+	 * over it.
+	 */
+	public <E extends Throwable> void step(String name, String narration, StepBody<E> body) throws E {
+		step(name, Narration.of(narration), body);
+	}
+
+	/**
+	 * A step narrated as it starts, with the narration's language, voice or pause.
+	 *
+	 * @param narration Null for none
+	 */
+	public <E extends Throwable> void step(String name, Narration narration, StepBody<E> body) throws E {
 		int index = ++steps;
 		Telemetry.inSpan(Telemetry.tracer(server.openTelemetry()), name, Attributes.of(Browsing.STEP_INDEX, (long) index), span -> {
 			if (options.stepScreenshots() == Options.StepScreenshots.BEFORE_AND_AFTER && !"about:blank".equals(page.url())) {
 				take(name, "before");
+			}
+			if (narration != null) {
+				narrate(narration);
 			}
 			try {
 				body.run();
@@ -111,6 +134,33 @@ public final class Session {
 			}
 			return null;
 		});
+	}
+
+	/**
+	 * Records a line of narration in the current span, in order with the screenshots: the script of
+	 * a video, the text of a guide. Spoken over the last screenshot taken before it.
+	 */
+	public void narrate(String text) {
+		narrate(Narration.of(text));
+	}
+
+	/**
+	 * Records a line of narration with its language, voice or pause.
+	 */
+	public void narrate(Narration narration) {
+		AttributesBuilder attributes = Attributes.builder()
+			.put(Browsing.NARRATION_INDEX, (long) ++narrations)
+			.put(Browsing.URL_FULL, page.url());
+		if (narration.language() != null) {
+			attributes.put(Browsing.NARRATION_LANGUAGE, narration.language());
+		}
+		if (narration.voice() != null) {
+			attributes.put(Browsing.NARRATION_VOICE, narration.voice());
+		}
+		if (narration.pause() != null) {
+			attributes.put(Browsing.NARRATION_PAUSE, narration.pause().toMillis());
+		}
+		Telemetry.log(logger, Severity.INFO, Browsing.NARRATION_EVENT, narration.text(), attributes.build());
 	}
 
 	/**

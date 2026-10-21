@@ -1,0 +1,12 @@
+[#looking-ahead]
+== What comes next
+
+[.planned]#PLANNED#:
+
+* *A list of all contents.* A keyword that returns all the contents of a resource or an element as a list, so that Groovy's collection methods work on it without the tree-iterator trap of <<deriving>>.
+* *Resources found by capability.* Scripts that hold global objects are found and loaded through a capability, a requirement with a namespace URI answered by the modules that contribute models of it, so that a script can refer to `people:pavel` without knowing which file defines it.
+* *Editor support.* `@DelegatesTo` on the builders, so that editors that support Groovy complete feature and class names inside a closure.
+* *Validation.* The model a script built, validated with EMF's validator after the references are resolved, with diagnostics on the lines they concern.
+* *Untrusted scripts.* A restricted profile, with Groovy's `SecureASTCustomizer`, for loading scripts from sources that are not fully trusted.
+* *Kotlin.* Kotlin's type-safe builders as a second surface, in a module of its own, for checking at compile time; heavier than Groovy, and slower to start, so opt in.
+* *Scripts from diagrams.* Draw.io diagrams turned into models by scripts that load them, as the runtime's Draw.io module makes possible, with the structure drawn and the detail written.

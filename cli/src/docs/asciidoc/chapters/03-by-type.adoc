@@ -1,0 +1,48 @@
+[#by-type]
+== What Nasdanika adds: assembly by type
+
+Nasdanika adds two things on top of picocli: declarative assembly through capabilities, and matching by generic types rather than classes.
+
+=== Declarative assembly through capabilities
+
+A module contributes a command with a capability factory, provided as a service in its module descriptor.
+The runtime builds the tree by resolving one requirement, "the root commands", and every factory that creates a command asks, within the same resolution, for the command's sub-commands and mix-ins.
+The tree grows until no factory matches a new place, and arrives whole: a command line is emitted only when its sub-commands and mix-ins are attached.
+
+The factory decides whether its command goes under a parent, and in the ordinary case it does not decide in code: it reads the command's declarations.
+The assembly is declarative in that sense: a command states what it needs and what it accepts, and the placement follows.
+
+=== From classes to types
+
+In the 2024 releases of Nasdanika, a command stated its parents with `@ParentCommands`, listing classes or interfaces: the save command was a sub-command of any command implementing `EObjectSupplier`.
+It worked, and it built the pipelines described in <<pipelines>>, but a class is a coarse contract.
+`EObjectSupplier` said "I supply model objects", and more interfaces grew around it to say what else commands supplied: `LabelSupplier` for application models, `Document.Supplier` for Draw.io documents, a `BindingsSupplier` planned for scripts.
+Each was a type that existed to be matched, and each new kind of thing to pass along needed one.
+
+The runtime matches on generic types instead.
+A command declares a member with `@Parent`, and the member's declared type is what it needs:
+
+* `@Parent Supplier<? extends CharSequence> text` needs a parent that supplies text;
+* `@Parent Supplier<? extends EObject> model` needs a parent that supplies a model element.
+
+`Supplier<String>` and `Supplier<EObject>` are two different types, though the same class at run time.
+Erasure removes the type argument from the objects, not from the declarations: the class file keeps the generic signature of every field and method, the compiler has checked each of them, and the runtime matches them with the compiler's rules.
+A parent offers what it supplies through a method annotated `@Adapter`, whose generic return type is the offer: `Supplier<String> text()`.
+No marker interfaces, no string names, no registration: a parent that supplies text attracts the commands that consume text, and only those.
+
+=== Matching is checked twice
+
+The match is made at two times, with two kinds of evidence:
+
+* *Before anything runs*, the tree is built from declarations: a command is placed under a parent whose class can be adapted to the type of one of its `@Parent` members, by declarations only, because no options are parsed yet. Help lists exactly the commands that will work where they are listed.
+* *When a command runs*, after parsing, the parent is asked for the value, and the value is injected. A parent may still decline, and then the command fails with a message that says what it needed and what the parent provided.
+
+This is the pattern of the compiler, applied at run time: a call is matched to a method by its signature, generics validate the match, and `@Override` validates an override.
+Here a command is matched to a parent by its declared needs, and the generic types validate the match.
+
+=== A trained eye
+
+Java developers read `Supplier<? extends CharSequence>` without effort: generics trained them for twenty years, on collections.
+The runtime asks for nothing more.
+A command's contract is written in the language's own type system, read with a skill every Java developer already has, and checked by the compiler where it is written.
+Picocli did that for options and parameters; this module does it for the shape of the command tree.

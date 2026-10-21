@@ -1,0 +1,80 @@
+// Defaults for previewing this file on its own; index.adoc and the Maven build set these
+ifndef::booktests[:booktests: ../../../test/java/org/nasdanika/sdk/runtime/groovy/tests/book]
+ifndef::dslscripts[:dslscripts: ../../../test/resources/book]
+
+[#deriving]
+== Deriving models
+
+=== Loading other resources
+
+`loadResource '<uri>'` loads another resource and returns it.
+With it a script stops being a transcription of a model and becomes a derivation of one:
+
+.A package of data transfer classes derived from the library (`derived.ecore.groovy`)
+[source,groovy]
+----
+include::{dslscripts}/derived.ecore.groovy[tag=derived,indent=0]
+----
+<1> A relative URI is resolved against the script's own URI, so a sibling file is its name. The resource is loaded through the script's resource set, with every resource factory and handler it has, Groovy scripts included.
+<2> Every element of the library resource, collected into a list: the concrete classes.
+<3> A plain loop over the list. Inside it, `eClass` is type dispatch on the package being built.
+<4> An element found through the loaded model, the attribute's type, used directly as a reference value.
+
+.What the derivation produced
+[source,java]
+----
+include::{booktests}/DerivationTests.java[tag=derived,indent=0]
+----
+<1> A class per concrete class of the library, with its attributes.
+<2> Both resources are in one resource set, which is what lets the derived model refer to the elements of the library.
+
+A resource already loaded in the set is returned as it is, not loaded again.
+
+=== Iterating a loaded resource
+
+`resource.allContents` and `element.eAllContents()` are EMF tree iterators, and they hide a trap.
+EMF's tree iterator keeps its stack of iterators in a list, so the object is both an iterator and a collection, and Groovy's collection methods do not know which to use: applied to it, `findAll` and `each` iterate the stack, which starts empty, and find nothing, and `toList()` was seen to return every element in one run and nothing in another.
+Collect the elements with the iterator's own Java method, `forEachRemaining`, or a `while` loop over `hasNext()` and `next()`, as the listing does, and use Groovy's collection methods on the list.
+`resource.contents`, a plain list, has no such problem.
+
+ifdef::editor-notes[]
+[IMPORTANT,caption="Editor's note"]
+====
+Found while writing: the module's former readme showed `resource.allContents.findAll { ... }.each { ... }`, which finds nothing, for the reason above. Consider a DSL helper that returns all the contents of a resource or an element as a list, so that the natural idiom works (<<looking-ahead>>).
+====
+endif::[]
+
+=== Copying prototypes
+
+`copy('<selector>') { }` copies an element and configures the copy as if it had just been created.
+The structure comes from wherever it is cheapest to author, a diagram, another model, another script, and the script adds what only code can say:
+
+.A branch, copied from the library (`branch.ecore.groovy`)
+[source,groovy]
+----
+include::{dslscripts}/branch.ecore.groovy[tag=copy,indent=0]
+----
+<1> The prototype: the class `Library` of the library resource, by URI. A relative path, an element or a closure work too, as for any reference.
+<2> The closure configures the copy: a new name, and one more attribute.
+
+.The copy and its prototype
+[source,java]
+----
+include::{booktests}/DerivationTests.java[tag=copied,indent=0]
+----
+<1> The copied features, and the added one.
+<2> References out of the copied subtree still point where the prototype's did: `books` is typed by the library's `Book`.
+<3> The prototype is unchanged.
+
+A copy is a *snapshot*, not a link: later changes to the prototype do not reach it, and changes to it never reach the prototype, until the script runs again.
+It is deep, the whole containment subtree comes along, and references within the subtree are rewired to the copies, as `EcoreUtil.copy` does.
+
+Inside a builder, the copy is routed into the containment feature that accepts it; at the top level it becomes a root.
+When several features accept it, the DSL names them and asks for one: `nodes dsl.copy('<uri>')` places a detached copy in a named feature.
+
+=== Containment is exclusive
+
+An element of a loaded resource can be a reference value, as the copied `books` reference to the library's `Book` is.
+Put into a *containment* feature, it would be moved out of its resource.
+The builder does not do that silently: it wraps the element in a reference type when the metamodel has one, and otherwise reports that the attachment would move it.
+Copy the element to contain it.

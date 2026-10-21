@@ -11,7 +11,11 @@
     <artifactId>groovy</artifactId>
     <packaging>jar</packaging>
     <name>Groovy Support</name>
-    <description>Groovy resource contents handler and Ecore-backed DSL</description>
+    <description>Groovy DSL for EMF models: models and metamodels authored as Groovy scripts, loaded as resources, bound to any metamodel. The module's Zephyr Book takes its listings from the tests.</description>
+    <properties>
+        <zephyr.book.name>groovy-dsl-${project.version}-book</zephyr.book.name>
+        <zephyr.epub.skip>false</zephyr.epub.skip>
+    </properties>
 
 	<dependencyManagement>
 		<dependencies>

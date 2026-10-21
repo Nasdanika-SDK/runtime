@@ -52,6 +52,31 @@ public final class Browsing {
 	public static final String SCREENSHOT_EVENT = "nasdanika.screenshot";
 
 	/**
+	 * Event name of the log record of a {@link Narration}. The body is the text.
+	 */
+	public static final String NARRATION_EVENT = "nasdanika.narration";
+
+	/**
+	 * The narration's language, a BCP 47 tag.
+	 */
+	public static final AttributeKey<String> NARRATION_LANGUAGE = AttributeKey.stringKey("nasdanika.narration.language");
+
+	/**
+	 * The voice to speak the narration with.
+	 */
+	public static final AttributeKey<String> NARRATION_VOICE = AttributeKey.stringKey("nasdanika.narration.voice");
+
+	/**
+	 * Silence after the narration, in milliseconds.
+	 */
+	public static final AttributeKey<Long> NARRATION_PAUSE = AttributeKey.longKey("nasdanika.narration.pause_ms");
+
+	/**
+	 * The position of a narration line in the session, from 1.
+	 */
+	public static final AttributeKey<Long> NARRATION_INDEX = AttributeKey.longKey("nasdanika.narration.index");
+
+	/**
 	 * Event name of the log record of a browser console message.
 	 */
 	public static final String CONSOLE_EVENT = "nasdanika.browser.console";

@@ -1,0 +1,136 @@
+// Defaults for previewing this file on its own; index.adoc and the Maven build set these
+ifndef::booktests[:booktests: ../../../test/java/org/nasdanika/sdk/runtime/cli]
+ifndef::bookresources[:bookresources: ../../../test/resources/org/nasdanika/sdk/runtime/cli]
+
+[#commands]
+== Commands and factories
+
+The examples of this chapter and the next are four commands: two that supply something, text and a model element, and two that consume one of them.
+
+=== Commands
+
+A command extends `CommandBase` or `CommandGroup` and is annotated with picocli's `@Command`.
+
+.A group that supplies text (`PipelineTests.java`)
+[source,java]
+----
+include::{booktests}/PipelineTests.java[tag=text,indent=0]
+----
+<1> Where the command goes: under a parent that is a `RootCommand`, the root of the tree.
+<2> What it offers its sub-commands: a `Supplier<String>`, from the value of its option.
+
+.A group that supplies a model element
+[source,java]
+----
+include::{booktests}/PipelineTests.java[tag=model,indent=0]
+----
+<1> A `Supplier<EObject>`: the same class as the text group's supplier, a different type.
+
+.A command that prints text
+[source,java]
+----
+include::{booktests}/PipelineTests.java[tag=print,indent=0]
+----
+<1> Any parent that supplies some kind of character sequence.
+
+.A command that describes a model element
+[source,java]
+----
+include::{booktests}/PipelineTests.java[tag=describe,indent=0]
+----
+<1> Any parent that supplies some kind of model element.
+
+`CommandBase` runs `execute` in a span named after the command, with the command's qualified name, class, module and module version as attributes, and hands it the span and the logger and meter of the current OpenTelemetry instance.
+It also closes the command's sub-commands and mix-ins that implement `Closeable` when it is closed.
+`CommandGroup` is a command that does nothing itself: run alone, it fails with "Missing required subcommand", which picocli reports with the usage help.
+
+=== Factories
+
+A command is contributed by a factory:
+
+.A command's factory
+[source,java]
+----
+include::{booktests}/PipelineTests.java[tag=factory,indent=0]
+----
+<1> The command's class, whose declarations decide where it goes.
+<2> Creating the command, once it is known to go under a parent. A publisher, so a factory can create several commands, or none, or create them later.
+
+`SubCommandCapabilityFactory` does the rest.
+For each place in the tree it is asked about, it checks whether the command goes there (<<wiring>>), creates it with `doCreateCommand`, wraps it in a picocli `CommandLine`, and asks, in the same resolution, for the command's own sub-commands and mix-ins.
+
+A factory that decides in code overrides `match(parentPath)`, which sees the whole path from the root, or `createCommand`, which is called for every place and creates the command where it should be.
+The runtime's root command factory does that: it creates the root where the path is empty.
+
+=== Assembling the tree
+
+The tree is built by resolving one requirement:
+
+.Assembling a command line
+[source,java]
+----
+include::{booktests}/PipelineTests.java[tag=assemble,indent=0]
+----
+<1> A loader over the factories. In an application, `CapabilityFactorySource.serviceLoader()` gives the factories of every module on the module path.
+<2> The requirement for root commands: a `CommandLine` with an empty parent path, and a counter shared by the whole tree.
+<3> A blocking load. It pumps the resolution on the calling thread until it completes, and the root it returns carries the whole tree.
+
+Printed by walking the command lines,
+
+.Walking the tree
+[source,java]
+----
+include::{booktests}/PipelineTests.java[tag=tree,indent=0]
+----
+
+the tree is:
+
+.The tree (`pipeline-tree.txt`)
+[source,text]
+----
+include::{bookresources}/pipeline-tree.txt[]
+----
+
+`launcher` is the root command's own sub-command, declared in its `@Command` (<<distributions>>).
+`print` is under `text` and not under `model`, and `describe` the other way round, because of the type arguments of what the groups supply.
+A sub-command's place is computed from declarations alone, before any option is parsed.
+
+=== Running
+
+Running a command is picocli's `execute`:
+
+.Running commands
+[source,java]
+----
+include::{booktests}/PipelineTests.java[tag=run,indent=0]
+----
+<1> The group's option is parsed before its sub-command runs, so the supplier the sub-command gets supplies a package named "shelf".
+
+=== Closing
+
+A command that holds resources, a connection, a resource set, a temporary directory, implements `Closeable`, as `CommandBase` does: closing a command closes its sub-commands and mix-ins that implement `Closeable`, and the whole tree below them, also below commands that do not implement it.
+
+.A command that knows when it is closed (`LifecycleTests.java`)
+[source,java]
+----
+include::{booktests}/LifecycleTests.java[tag=closeable,indent=0]
+----
+<1> Closes what is below it first.
+
+.Closing a command line
+[source,java]
+----
+include::{booktests}/LifecycleTests.java[tag=closing,indent=0]
+----
+<1> The root is a plain picocli command, not `Closeable`.
+<2> `CommandBase.close` closes a command line all the same: its command if it is `Closeable`, and otherwise its sub-commands and mix-ins. The application and the launcher call it when a run is over.
+
+=== Limits
+
+A command that takes any parent, or a pair of commands that take each other, would grow the tree forever.
+Two limits stop it, with a warning in the log:
+
+* a parent path of at most 15 commands, set with the system property `org.nasdanika.sdk.runtime.cli.maxCommandPath`;
+* at most 2,000 commands in a tree, set with `org.nasdanika.sdk.runtime.cli.maxCommands`.
+
+A factory can also refuse places by itself: the runtime's `ecore` command, which filters what its parent supplies and supplies the result, refuses to go under another filter, which would otherwise nest without end.

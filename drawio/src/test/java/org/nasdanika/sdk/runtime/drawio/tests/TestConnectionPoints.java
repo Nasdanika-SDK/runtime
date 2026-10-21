@@ -86,6 +86,27 @@ public class TestConnectionPoints {
 	}
 		
 	@Test
+	public void testGetConnectionPoints() throws Exception {
+		Document document = Document.load(getClass().getResource("connections.drawio"));
+		Connection c4 = document
+			.stream()
+			.filter(Connection.class::isInstance)
+			.map(Connection.class::cast)
+			.filter(c -> "c4".equals(c.getId()))
+			.findAny()
+			.get();
+		
+		Point second = c4.getPoints().get(1);
+		assertEquals(230, second.getX());
+		assertEquals(1260, second.getY());
+		int count = 0;
+		for (Point point: c4.getPoints()) {
+			assertEquals(point.getX(), c4.getPoints().get(count++).getX());
+		}
+		assertEquals(5, count);
+	}
+		
+	@Test
 	public void testRemoveConnectionPoints() throws Exception {
 		Document document = Document.load(getClass().getResource("connections.drawio"));
 		Connection c4 = document

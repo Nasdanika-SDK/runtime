@@ -1,0 +1,47 @@
+[preface]
+== Preface
+
+This book is about writing models as Groovy scripts.
+It describes the Groovy module of the Nasdanika SDK Runtime, which loads a file such as `library.ecore.groovy` as an EMF resource: the script builds a tree of model objects, and the objects become the resource's contents.
+The language is derived from the metamodel by reflection, so every metamodel, Ecore itself included, has a DSL without anyone writing one.
+
+The first part is the why: why models should be writable as scripts, and the decisions that shape the DSL.
+The second part is the how: the language, references, scripts that derive models and write themselves back, diagnostics, and binding the DSL to a metamodel of your own.
+The third says what comes next.
+
+=== Who this book is for
+
+*Modelers* who would rather write a model than click it together or read it as XMI: metamodels, architectures, rule sets, catalogs.
+
+*Developers* who derive models from other models, diagrams, spreadsheets or systems, and want the derivation to be a file next to the model rather than a program somewhere else.
+
+*Tool builders* who want a textual surface for their metamodel without a grammar, a parser or a code generator.
+
+=== A book that stands on its own
+
+This book is one of the Nasdanika Zephyr Books: in-depth manuals, one per module of the Nasdanika SDK Runtime, in the manner of IBM Redbooks.
+The runtime has a book of its own, _Nasdanika SDK Runtime: More Structure with Less Effort_, whose chapter on the Groovy DSL introduces what this book covers in depth.
+You do not need it to read this one: where the books touch, this one repeats what you need.
+
+The series is named after the Bootswatch theme it is styled with, Zephyr, and has nothing to do with the Zephyr real-time operating system or with SmartBear's Zephyr test management.
+
+=== What you need
+
+* *A JDK for Java 25* and *Maven 3.9.16 or later*.
+* The module is `org.nasdanika.sdk.runtime.groovy`, Maven coordinates `{group-id}:{artifact-id}:{runtime-version}`. It brings Apache Groovy 5.
+* Some familiarity with EMF helps: a model is a tree of `EObject`s contained in a resource, typed by the `EClass`es of a metamodel.
+
+=== Conventions
+
+* *Every listing is included from the module's sources, tests or test scripts*, and compiled and run when the book is built. Callouts, such as <1>, explain the lines they mark.
+* *Status labels* mark what this edition does not have yet: [.planned]#PLANNED# for designed but not built.
+* *Voice.* I write in the first person.
+
+ifdef::editor-notes[]
+[IMPORTANT,caption="Editor's note"]
+====
+Editor's notes record inconsistencies between the module and its documentation found while writing. They are shown in builds for the author and left out of published editions.
+
+This book was written from the module's readme, and replaces it: the readme was deleted when the book was complete.
+====
+endif::[]

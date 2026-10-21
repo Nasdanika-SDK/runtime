@@ -4,6 +4,7 @@ import java.lang.invoke.MethodHandles;
 import java.util.List;
 import java.util.concurrent.Flow.Publisher;
 
+import org.nasdanika.sdk.runtime.common.Adapters;
 import org.nasdanika.sdk.runtime.common.Util;
 import org.nasdanika.sdk.runtime.common.capability.ReflectiveCapabilityFactory;
 import org.nasdanika.sdk.runtime.common.flow.Flows;
@@ -40,9 +41,10 @@ public abstract class MixInCapabilityFactory<T> extends ReflectiveCapabilityFact
 	protected abstract Class<T> getMixInType();
 	
 	/**
-	 * Matches the mix-in to the command it would be mixed into, by declarations: the command's
-	 * {@link MixIns} annotation lists a supertype of the mix-in, or the mix-in takes the command
-	 * through a {@link Parent} member. See {@link CommandWiring}.
+	 * Matches the mix-in to the command it would be mixed into, by declarations: the command accepts
+	 * it through a {@link MixIns} member, by generic type, or its class's {@link MixIns} annotation
+	 * lists a type the mix-in is adaptable to, or the mix-in takes the command through a
+	 * {@link Parent} member. See {@link CommandWiring}.
 	 */
 	protected boolean match(List<CommandLine> commandPath) {
 		if (commandPath == null || commandPath.isEmpty()) {
@@ -53,20 +55,17 @@ public abstract class MixInCapabilityFactory<T> extends ReflectiveCapabilityFact
 		if (command == null || mixInType == null) {
 			return false;
 		}
-		List<Class<?>> mixInLineage = Util.lineage(mixInType);
 		for (Class<?> commandClass: Util.lineage(command.getClass())) {
 			MixIns mixIns = commandClass.getAnnotation(MixIns.class);
 			if (mixIns != null) {
 				for (Class<?> accepted: mixIns.value()) {
-					for (Class<?> mixInClass: mixInLineage) {
-						if (accepted.isAssignableFrom(mixInClass)) {
-							return true;
-						}
+					if (Adapters.isAdaptable(mixInType, accepted)) {
+						return true;
 					}
 				}
 			}
 		}
-		return CommandWiring.acceptsParent(mixInType, command.getClass());
+		return CommandWiring.acceptsMixIn(command.getClass(), mixInType) || CommandWiring.acceptsParent(mixInType, command.getClass());
 	}
 	
 	protected Publisher<T> createMixIn(

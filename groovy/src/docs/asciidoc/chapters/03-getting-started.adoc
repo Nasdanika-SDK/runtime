@@ -1,0 +1,65 @@
+// Defaults for previewing this file on its own; index.adoc and the Maven build set these
+ifndef::mainjava[:mainjava: ../../../main/java]
+ifndef::booktests[:booktests: ../../../test/java/org/nasdanika/sdk/runtime/groovy/tests/book]
+ifndef::dslscripts[:dslscripts: ../../../test/resources/book]
+
+[#getting-started]
+== Getting started
+
+=== Adding the module
+
+The runtime has a bill of materials, `{group-id}:bom`, which manages the versions of its modules and their dependencies.
+Import it in `dependencyManagement` with the scope `import` and the type `pom`, and depend on `{group-id}:{artifact-id}` without a version.
+The module brings Apache Groovy and its JSR-223 script engine.
+
+.The module descriptor (`module-info.java`)
+[source,java]
+----
+include::{mainjava}/module-info.java[tag=module,indent=0]
+----
+
+The module provides two services: a resource set contributor that registers a resource factory for the `groovy` extension, and a capability factory with the contents handlers that compile and evaluate scripts.
+Any resource set the runtime configures from the module path loads `.groovy` files.
+
+=== File names
+
+[cols="1,2,3",options="header"]
+|===
+| File | Qualifiers, from the right | Loaded as
+| `model.groovy` | `groovy` | The generic DSL: no entry points, any registered class through `eObject('<nsURI>#<Class>')`
+| `library.ecore.groovy` | `groovy`, `ecore` | Ecore: `ePackage`, `eClass`, `eAttribute` and every other concrete Ecore class are entry points
+| `orders.rules.groovy` | `groovy`, `rules` | A metamodel of your own, bound by a capability you contribute (<<binding>>)
+|===
+
+=== Loading a script
+
+A script is loaded like any other resource:
+
+.Loading a metamodel written in Groovy (`LanguageTests.java`)
+[source,java]
+----
+include::{booktests}/LanguageTests.java[tag=load,indent=0]
+----
+<1> A resource set configured from the module path, with the `groovy` resource factory.
+<2> Loading the file evaluates the script; the model it builds is the resource's contents.
+
+Files load from anywhere a URI handler reaches: `file:` URIs, `classpath://` and `module://` resources, HTTP, or the runtime's volumes.
+
+=== The generic DSL
+
+A plain `.groovy` file has no metamodel bound to it, so it has no entry points.
+`eObject('<nsURI>#<Class>') { }` creates an instance of any class of any package registered with the resource set:
+
+.A plain `.groovy` file (`plain.groovy`)
+[source,groovy]
+----
+include::{dslscripts}/plain.groovy[tag=plain,indent=0]
+----
+
+.Loaded like any other
+[source,java]
+----
+include::{booktests}/LanguageTests.java[tag=plain,indent=0]
+----
+
+The bound DSLs are the comfortable way; the generic one is there for packages nobody has bound yet.

@@ -23,7 +23,7 @@ import org.nasdanika.sdk.runtime.common.NasdanikaException;
 import org.nasdanika.sdk.runtime.common.Types;
 
 /**
- * Matching and injection of {@link Parent} and {@link SubCommand} members: the factories match
+ * Matching and injection of {@link Parent}, {@link SubCommand} and {@link MixIns} members: the factories match
  * classes before commands exist, {@link WiringExecutionStrategy} injects before a command executes.
  *
  * <p>
@@ -82,6 +82,8 @@ public final class CommandWiring {
 
 	private static final Members SUB_COMMANDS = new Members(SubCommand.class);
 
+	private static final Members MIX_INS = new Members(MixIns.class);
+
 	/**
 	 * Whether a command or mix-in class takes a parent of a class: whether the parent class is
 	 * adaptable to the type of any of its {@link Parent} members.
@@ -102,6 +104,19 @@ public final class CommandWiring {
 	public static boolean acceptsSubCommand(Class<?> type, Class<?> subCommandType) {
 		for (Member member: SUB_COMMANDS.get(type)) {
 			if (Adapters.isAdaptable(subCommandType, member.accepts())) {
+				return true;
+			}
+		}
+		return false;
+	}
+
+	/**
+	 * Whether a command class takes a mix-in of a class: whether the mix-in class is adaptable to
+	 * what any of its {@link MixIns} members accepts.
+	 */
+	public static boolean acceptsMixIn(Class<?> type, Class<?> mixInType) {
+		for (Member member: MIX_INS.get(type)) {
+			if (Adapters.isAdaptable(mixInType, member.accepts())) {
 				return true;
 			}
 		}
@@ -139,13 +154,25 @@ public final class CommandWiring {
 	 * it accepts, all of them into a many-valued member, the first into a single-valued one.
 	 */
 	public static void injectSubCommands(Object target, Collection<?> subCommands) {
+		inject(SUB_COMMANDS, target, subCommands);
+	}
+
+	/**
+	 * Injects mix-ins, adapted, into every {@link MixIns} member: those adaptable to what it
+	 * accepts, all of them into a many-valued member, the first into a single-valued one.
+	 */
+	public static void injectMixIns(Object target, Collection<?> mixIns) {
+		inject(MIX_INS, target, mixIns);
+	}
+
+	private static void inject(Members members, Object target, Collection<?> candidates) {
 		if (target == null) {
 			return;
 		}
-		for (Member member: SUB_COMMANDS.get(target.getClass())) {
+		for (Member member: members.get(target.getClass())) {
 			List<Object> values = new ArrayList<>();
-			for (Object subCommand: subCommands) {
-				Object value = Adapters.adapt(subCommand, member.accepts());
+			for (Object candidate: candidates) {
+				Object value = Adapters.adapt(candidate, member.accepts());
 				if (value != null) {
 					values.add(value);
 				}

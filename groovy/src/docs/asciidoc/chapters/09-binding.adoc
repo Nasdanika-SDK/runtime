@@ -1,0 +1,114 @@
+// Defaults for previewing this file on its own; index.adoc and the Maven build set these
+ifndef::booktests[:booktests: ../../../test/java/org/nasdanika/sdk/runtime/groovy/tests/book]
+ifndef::dslscripts[:dslscripts: ../../../test/resources/book]
+
+[#binding]
+== A DSL for your metamodel
+
+The Ecore DSL is one binding of the generic machinery to one metamodel.
+This chapter makes another: a DSL for rule sets, with its own qualifier, `orders.rules.groovy`, and a short form for its evaluators.
+It takes a metamodel, a handler and a capability factory.
+
+=== The metamodel
+
+The metamodel is itself written in the Ecore DSL:
+
+.A rules metamodel (`rules.ecore.groovy`)
+[source,groovy]
+----
+include::{dslscripts}/rules.ecore.groovy[tag=rules,indent=0]
+----
+<1> A rule's evaluator is typed by an abstract class.
+<2> Two concrete evaluators: an expression, and a Groovy script.
+
+It is a dynamic metamodel: loaded at run time, with no generated Java code.
+The DSL works the same way over a generated one.
+
+=== A rule set
+
+.Rules, in four forms (`orders.rules.groovy`)
+[source,groovy]
+----
+include::{dslscripts}/orders.rules.groovy[tag=orders,indent=0]
+----
+<1> `ruleSet` is an entry point, because `RuleSet` is a concrete class of the bound metamodel.
+<2> The *short form*: a value for a containment reference, which the binding turns into an element, an expression evaluator.
+<3> The short form, then configured by a closure.
+<4> A closure without a value: the binding's default type, configured by the closure.
+<5> An explicitly named type, configured by the closure.
+
+=== The handler
+
+A handler supplies the metamodel to the generic machinery, and may adapt the language:
+
+.The handler (`RulesResourceContentsHandler.java`)
+[source,java]
+----
+include::{booktests}/RulesResourceContentsHandler.java[tag=handler,indent=0]
+----
+<1> The metamodel: its concrete classes become entry points, and its classifiers are found by name.
+<2> The hook for the short form: an element for a reference, from an authored value, or from no value.
+<3> The default type for a reference typed by the abstract `Evaluator`.
+<4> The value goes into the default type's main feature.
+<5> Declining: everything else keeps its usual meaning.
+
+The order matters, and it is what makes the four forms work together.
+A value is tried as a *type name* first, which is why `evaluator('GroovyEvaluator')` names a type; then it is offered to `create`; and only if `create` declines is it read as a *selector*, a path or a URI.
+So a reference whose handler creates elements from strings no longer takes path selectors: it has become a reference to values, which is the point.
+
+Two more hooks can be overridden: `bindings()`, names added to the script's bindings, which override everything else, for example a client for the system a script loads its data from; and `mark(element, feature, line, column)`, called with where each element and feature value was authored, for hyperlinked diagnostics or navigation back to the source.
+
+=== The capability factory
+
+A capability factory decides which files the handler serves, and builds it:
+
+.The factory (`RulesCapabilityFactory.java`)
+[source,java]
+----
+include::{booktests}/RulesCapabilityFactory.java[tag=factory,indent=0]
+----
+<1> The requirement for a contents handler: the resource, the contents type and the qualifiers of its name.
+<2> Only the `rules` qualifier, with a source qualifier to its right; anything else is declined with null.
+<3> The chaining step: a compiled script, asked of the qualifier to the right, `groovy`, which the module's own capability provides.
+<4> The handler, around each source handler. The loader does not block: the method returns a publisher of the handlers, built when the source handlers arrive.
+
+=== Putting it together
+
+In an application, the factory is a service: `provides CapabilityFactory with RulesCapabilityFactory;` in the module descriptor, with a constructor that takes no arguments and finds the metamodel itself, usually its generated `EPackage`.
+The test wires it by hand, because its metamodel is loaded at run time:
+
+.Loading a rule set (`BindingTests.java`)
+[source,java]
+----
+include::{booktests}/BindingTests.java[tag=setup,indent=0]
+----
+<1> The metamodel, loaded from its script and registered with the resource set.
+<2> The rules factory, in a source in front of
+<3> the factories of the module path, which compile Groovy.
+<4> The `groovy` resource factory, over that loader.
+
+.Four rules, four evaluators
+[source,java]
+----
+include::{booktests}/BindingTests.java[tag=evaluators,indent=0]
+----
+<1> Three expression evaluators, from the short form, the short form with a closure, and the default type, and the Groovy evaluator that was named.
+
+=== Resolvers
+
+A list of packages covers most metamodels.
+When it does not, when types come from a registry or follow naming conventions, or global objects live somewhere else, a handler can be given a `DslContext.Resolver` instead:
+
+[cols="2,4",options="header"]
+|===
+| Method | Responsibility
+| `classByName`, `classifierByName` | A class, or any classifier, for a simple, qualified or URI name
+| `classByInstanceClass` | A class for a Java class
+| `candidates` | Concrete types that can wrap a target in a reference feature
+| `names` | The entry points: decapitalized names of unambiguous classes
+| `global`, `get` | Registering and finding global objects
+| `selectClass`, `selectClassifier` | The selected class and the classes it superseded, for telemetry
+| `create`, `mark`, `bindings` | The hooks of the handler above
+|===
+
+`EPackageResolver`, which the handler's package constructor uses, is the reference implementation: subclass it rather than start from scratch.

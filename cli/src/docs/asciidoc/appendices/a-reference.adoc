@@ -1,0 +1,53 @@
+[appendix]
+[#reference]
+== Reference
+
+=== Writing commands
+
+[cols="2,5",options="header"]
+|===
+| Type | Purpose
+| `CommandBase` | Base of commands: runs `execute(span, logger, meter)` in a span named after the command, and closes its `Closeable` sub-commands and mix-ins; `CommandBase.close(commandLine)` closes a whole command line
+| `CommandGroup` | A command that does nothing itself and fails with "Missing required subcommand" when run alone
+| `@Parent` | On a field or a one-parameter method: what the command, or the mix-in, needs from its parent, by generic type
+| `@SubCommand` | On a field or a one-parameter method: what the command accepts as sub-commands, by generic type; collections, sets and arrays take all, other types the first
+| `ExecutionSupplier<T>` | A value produced in the executing command's span: `T get(span, logger, meter)`
+| `@MixIns` | On a field or a one-parameter method: what mix-ins the command accepts, by generic type, injected like sub-commands; on a command class: raw types of mix-ins to add to it
+| `@Overrides`, `Overrider` | Declaring or deciding which commands and mix-ins of the same name this one overrides
+|===
+
+=== Contributing
+
+[cols="2,5",options="header"]
+|===
+| Type | Purpose
+| `SubCommandCapabilityFactory<T>` | Base of command factories: `getCommandType()`, `doCreateCommand(...)`, and `match(...)` or `createCommand(...)` to decide in code
+| `MixInCapabilityFactory<T>` | Base of mix-in factories: `getName()`, `getMixInType()`, `doCreateMixIn(...)`, and `match(...)`
+| `SubCommandRequirement` | The requirement for commands: a parent path, empty for root commands, and a command counter
+| `MixInRequirement`, `MixInRecord` | The requirement for mix-ins of a command, and a named mix-in
+| `CommandWiring` | Matching, `acceptsParent` and `acceptsSubCommand`, and injection of `@Parent` and `@SubCommand` members
+| `WiringExecutionStrategy` | Injects after parsing, from the root to the executed command, then runs picocli's `RunLast`
+|===
+
+=== Running
+
+[cols="2,5",options="header"]
+|===
+| Type | Purpose
+| `Application` | A main class: builds the tree from a module layer, adds the shell, and executes the arguments
+| `RootCommand`, `RootCommandFactory` | The root, `nsdk`, created for the empty parent path
+| `ShellCommand`, `ExitCommand` | The interactive shell, and its `exit`
+| `LauncherCommand`, `AbstractLauncherCommand`, `AbstractModuleResolverCommand` | Java command lines and options files from directories of modules
+| `ModuleVersionProvider` | Version help from the module descriptor and `META-INF/git.properties`
+| `SaveModelCommand`, `EcoreCommand` | The runtime's `save` and `ecore`, with their factories
+| `ResourceSetMixIn`, `PropertiesMixIn` | Options for resource factories, and for properties
+|===
+
+=== System properties
+
+[cols="3,1,3",options="header"]
+|===
+| Property | Default | Meaning
+| `org.nasdanika.sdk.runtime.cli.maxCommandPath` | 15 | The longest parent path a command is created for
+| `org.nasdanika.sdk.runtime.cli.maxCommands` | 2000 | The most commands in one tree
+|===

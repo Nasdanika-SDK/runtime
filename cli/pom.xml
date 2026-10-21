@@ -11,6 +11,10 @@
 	<packaging>jar</packaging>
 	<name>CLI</name>
 	<description>Extensible Command Line Interface</description>
+	<properties>
+		<zephyr.book.name>cli-${project.version}-book</zephyr.book.name>
+		<zephyr.epub.skip>false</zephyr.epub.skip>
+	</properties>
 	
 	<build>
 		<plugins>

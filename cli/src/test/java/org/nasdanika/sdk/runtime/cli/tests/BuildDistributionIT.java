@@ -7,6 +7,8 @@ import java.io.Writer;
 import java.nio.file.Files;
 import java.nio.file.StandardCopyOption;
 
+import static org.junit.jupiter.api.Assertions.assertEquals;
+
 import org.junit.jupiter.api.Test;
 import org.nasdanika.sdk.runtime.cli.Application;
 import org.nasdanika.sdk.runtime.cli.LauncherCommand;
@@ -35,23 +37,23 @@ public class BuildDistributionIT {
 		}
 				
 		CommandLine launcherCommandLine = new CommandLine(new LauncherCommand());
-		launcherCommandLine.execute(
+		assertEquals(0, launcherCommandLine.execute(
 				"-b", "target/dist",
 				"-M", "target/dist/modules", 
 				"-f", "options",
 				"-j", "@java",
 //				"-r", "org.nasdanika.**",
-				"-o", "nsdk.bat");
+				"-o", "nsdk.bat"));
 		
-		launcherCommandLine.execute(
+		assertEquals(0, launcherCommandLine.execute(
 				"-b", "target/dist",
 				"-M", "target/dist/modules", 
 				"-f", "options",
 				"-j", "@java -Xdebug -Xrunjdwp:transport=dt_socket,address=8998,server=y",
 //				"-r", "org.nasdanika.**",
-				"-o", "nsdk-debug.bat");		
+				"-o", "nsdk-debug.bat"));		
 		
-		launcherCommandLine.execute(
+		assertEquals(0, launcherCommandLine.execute(
 				"-b", "target/dist", 
 				"-M", "target/dist/modules", 
 				"-j", "#!/bin/bash\n\njava",
@@ -59,9 +61,9 @@ public class BuildDistributionIT {
 				"-o", "nsdk",
 //				"-r", "org.nasdanika.**",
 				"-p", ":",
-				"-a", "$@");		
+				"-a", "$@"));		
 		
-		launcherCommandLine.execute(
+		assertEquals(0, launcherCommandLine.execute(
 				"-b", "target/dist", 
 				"-M", "target/dist/modules", 
 				"-o", "nsdk-debug",
@@ -69,7 +71,7 @@ public class BuildDistributionIT {
 				"--add-modules", "ALL-SYSTEM",
 //				"-r", "org.nasdanika.**",
 				"-p", ":",
-				"-a", "$@");		
+				"-a", "$@"));		
 		
 	}
 

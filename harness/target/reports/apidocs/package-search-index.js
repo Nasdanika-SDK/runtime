@@ -1,1 +1,0 @@
-packageSearchIndex = [{"l":"All Packages","u":"allpackages-index.html","k":"18"},{"m":"org.nasdanika.sdk.runtime.harness","l":"org.nasdanika.sdk.runtime.harness"}];updateSearchResults();

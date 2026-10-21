@@ -1,14 +1,17 @@
 Catalog
   Browser
     Open the catalog
+      narration The catalog lists the library's books.
       screenshot 001-open-the-catalog-after.png
       console Catalog ready
       GET /data: Searching for ''
     Search for Dune
       screenshot 002-search-for-dune-before.png
+      narration Type a title to narrow the list.
       screenshot 003-search-for-dune-after.png
       GET /data: Searching for 'dune'
     Open Dune
       screenshot 004-open-dune-before.png
+      narration Click a title to see its author.
       screenshot 005-open-dune-after.png
       GET /data: Showing dune

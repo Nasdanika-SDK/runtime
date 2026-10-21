@@ -1,0 +1,87 @@
+// Defaults for previewing this file on its own; index.adoc and the Maven build set these
+ifndef::booktests[:booktests: ../../../test/java/org/nasdanika/sdk/runtime/cli]
+
+[#runtime-commands]
+== The runtime's commands
+
+=== Commands
+
+[cols="1,4",options="header"]
+|===
+| Command | What it does
+| `nsdk` | The root command, with version information from the module descriptors and Git properties, when a module has them
+| `launcher` | Generates a Java command line, or its options, from directories of modules and jars (<<distributions>>)
+| `save` | Saves its parent's model objects to a file, in any format the runtime writes, chosen by the extension
+| `ecore` | A group that narrows its parent's model objects to Ecore model elements, and supplies them to its own sub-commands
+| `shell` | An interactive shell over the root command, with `exit`; added by the application and the launcher
+|===
+
+`save` goes under any command that supplies model objects, through an `ExecutionSupplier` of a collection of them or an `EObjectSupplier` (<<wiring>>), and `ecore` under any `EObjectSupplier` that is not itself a filter.
+So under a command that supplies a model, `save` saves all of it and `ecore save` saves its Ecore elements, with no command knowing the others.
+
+=== The shell
+
+`shell` reads lines with JLine, splits them into arguments with quotes, and executes each line against the root command, in the same JVM, so that models loaded once stay loaded and the start-up cost is paid once:
+
+.How a shell line is split (`WiringTests.java`)
+[source,java]
+----
+include::{booktests}/WiringTests.java[tag=shell,indent=0]
+----
+
+=== Mix-ins
+
+[cols="1,3",options="header"]
+|===
+| Mix-in | Options
+| `ResourceSetMixIn` | `--extension-resource-factory`, `--protocol-resource-factory` and `--content-type-resource-factory`, which map an extension, a protocol or a content type to a resource factory class; `createResourceSet()` returns a resource set configured from the module path and the options, and `createResourceSet(configurator)` lets the caller configure it last
+| `PropertiesMixIn` | `-p name=value` for one property, `-P` for a properties resource, in YAML, JSON or properties format by extension or content type, loaded in order, later ones replacing earlier ones
+|===
+
+ifdef::editor-notes[]
+[IMPORTANT,caption="Editor's note"]
+====
+`TelemetryMixIn` is an empty placeholder with TODOs for saving and serving telemetry; describe it when it has options.
+====
+endif::[]
+
+=== Telemetry
+
+Every executed command is a span named after it, a child of the span current when it ran: the launcher's root span in a distribution.
+The work a command does, resource loads and saves, capability resolution, content transfers, a parent's work done through an `ExecutionSupplier`, is in child spans, and log records it emits are in its span.
+Building the tree is traced too: each command line created is a log record, with its parent path and the running total of commands.
+
+[#distributions]
+=== Distributions and the launcher
+
+A distribution is a directory of jars, in the Maven repository layout, and a way to start the JVM with the right module path.
+The runtime's `cli-launcher` module builds the distribution of `nsdk`, and the same machinery builds a distribution of a command line of your own:
+
+* the Maven dependency plugin copies the runtime dependencies into `target/dist/lib`;
+* the `launcher` command scans directories of jars, resolves the modules, and writes the Java command line, or just its options, with the named modules on the module path and the rest on the class path;
+* wrapper scripts start the JVM with those options from any directory.
+
+[cols="1,3",options="header"]
+|===
+| Option | Meaning
+| `[DIRECTORIES]` | Directories to scan for modules, `lib` by default
+| `-b`, `--base` | The base directory of the repositories and of the output
+| `-o`, `--output` | The file to write the command line to; standard output if absent
+| `-t`, `--options` | Write only the Java options, not the command
+| `-f`, `--options-file` | A file to write the options to
+| `-r`, `--root-modules` | Root modules, with `.*` for the modules in a package and `.**` for those below it
+| `--add-modules` | Modules for the Java `--add-modules` option, computed if absent
+| `-M`, `--modules` | A file listing modules to add to the module path
+| `-C` | Modules to put on the class path
+| `-j`, `--java` | The Java command, `java` by default, with any extra options such as system properties
+| `-a`, `--args` | The arguments placeholder, `%*` by default
+| `-m`, `--module`, `-c`, `--class` | The application's module and main class, the `cli` module's `Application` by default
+| `-p`, `--path-separator`, `-s`, `--absolute`, `-P`, `--prefix` | Path separator, absolute paths, and a prefix for module and class path entries
+|===
+
+ifdef::editor-notes[]
+[IMPORTANT,caption="Editor's note"]
+====
+The long name of `-C` is spelled `--claspath-modules`, with one "s". Correct it to `--classpath-modules`, keeping the misspelling as an alias for a release.
+====
+endif::[]

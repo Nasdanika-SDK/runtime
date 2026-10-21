@@ -4,7 +4,7 @@
 === Browsers
 
 The runtime's Playwright module drives a browser against a harness server, in the server's trace.
-`Browsing.inBrowser(server, session -> ...)` runs a browser session in a span; each step of the session is a child span; the browser's requests to the server carry the step's span, so the server's spans are children of the step that caused them; and screenshots taken before and after each step are log records in the step, with the file's path as an attribute.
+`Browsing.inBrowser(server, session -> ...)` runs a browser session in a span; each step of the session is a child span; the browser's requests to the server carry the step's span, so the server's spans are children of the step that caused them; and screenshots taken before and after each step are log records in the step, with the file's path as an attribute, and so is narration: what a person would say about the step, the script of a video.
 It is [.available]#AVAILABLE#, and its Zephyr Book is _Walk-throughs with Playwright_.
 
 === Documents from traces
@@ -12,7 +12,8 @@ It is [.available]#AVAILABLE#, and its Zephyr Book is _Walk-throughs with Playwr
 A recorded trace with screenshots is a walk-through: steps, what each step looked like, and what the server did for it.
 [.planned]#PLANNED#:
 
-* *Walk-throughs in AsciiDoc*, a section per step with its screenshots and the requests it made, generated from the trace after the test.
+* *Narrated videos*, rendered from the screenshots and the narration records of a walk-through in their order: each screenshot a frame held for as long as its narration takes to speak, the narration spoken by a text-to-speech service, subtitles from the same text.
+* *Walk-throughs in AsciiDoc and Markdown*, a section per step with its narration, its screenshots and the requests it made, generated from the trace after the test.
 * *Slide decks*, a slide per step, through the runtime's presentation and PowerPoint models.
 * *Sequence diagrams* of a step, from the tree of client and server spans, through the runtime's diagram model and its layout.
 * *Comparisons* of the traces of two runs: a request that appeared, a request that got slower, a step whose screenshot changed.

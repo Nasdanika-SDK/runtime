@@ -32,6 +32,7 @@ public class SaveModelCommand extends CommandBase {
 		description = "Output file")
 	private File output;
 
+	// tag::parents[]
 	/**
 	 * A parent that produces the objects when asked, inside this command's span: preferred, and
 	 * the right shape for contents that are expensive to obtain.
@@ -40,11 +41,12 @@ public class SaveModelCommand extends CommandBase {
 	private ExecutionSupplier<? extends Collection<? extends EObject>> contentsSupplier;
 
 	/**
-	 * A parent that is an {@link EObjectSupplier}. One parent, two ways to take it: only one of these
-	 * fields is injected.
+	 * A parent that is an {@link EObjectSupplier}. One parent, two ways to take it: only one of
+	 * these fields is injected.
 	 */
 	@Parent
 	private EObjectSupplier<? extends EObject> eObjectSupplier;
+	// end::parents[]
 
 	@Mixin
 	private ResourceSetMixIn resourceSetMixIn;

@@ -1,0 +1,53 @@
+[#design]
+== Decisions
+
+=== Prior art
+
+*Groovy builders for EMF.* Jörn Dinkla described an `EMFBuilder` in 2007: nested closures over an EMF factory, braces for containment, Groovy variables for references.
+Groovy's own `BuilderSupport` and `FactoryBuilderSupport` are the general machinery, and this DSL is in that tradition.
+
+*Textual Ecore languages.* Emfatic, Xcore and OCLinEcore are textual syntaxes for metamodels, and Xtext builds textual languages for any metamodel.
+They are generative: a grammar, a parser and an editor per language, built before the first model is written.
+This DSL is interpretive: no grammar to own and no generation step, and the host language's tooling, its editor support, its debugger, its libraries, comes with it.
+
+*Kotlin type-safe builders.* Kotlin's builders, lambdas with receivers, check a DSL at compile time, and Gradle's Kotlin DSL shows them at scale.
+They are a candidate for a second surface (<<looking-ahead>>); Groovy came first because it is light, starts fast, and is dynamic enough to derive a language from a metamodel at run time.
+
+=== A trained eye
+
+Gradle's build files have taught a generation of Java developers to read Groovy builder syntax: a name, a block in braces, settings inside it.
+`ePackage { name 'library'; eClass { ... } }` looks like a build file, and is read the same way.
+The DSL asks for no new reading skill, only for the metamodel's names in the places Gradle has its own.
+
+=== Reflective, not generated
+
+Everything the language accepts is read from the metamodel when a script is loaded:
+
+* every concrete class whose decapitalized name is unambiguous is an *entry point*, `ePackage { }`;
+* inside a builder, a call named after a *feature* of the current element sets it, `name 'library'`;
+* a call named after a *class* creates a child and routes it into the one containment feature that accepts it, `eClass { }`;
+* a handful of *keywords*, `global`, `loadResource`, `copy`, `eObject` and others, are methods of the builder and win over both.
+
+Nothing is generated, so nothing goes stale, and a dynamic metamodel, built or loaded at run time, works exactly as a generated one.
+
+=== References later
+
+A reference may point at an element written further down the file, or in another file.
+So references given as paths or closures are not resolved while the script runs: they are recorded with the line they were written on, and resolved after the whole script has built the model.
+A reference that cannot be resolved fails with that line.
+
+=== Files that say what they are
+
+A file name is a chain of qualifiers, read from the right: `library.ecore.groovy` is Groovy source, and the `ecore` qualifier binds it to Ecore.
+Each qualifier is served by a capability, found through the runtime's capability framework: the `groovy` qualifier by a handler that compiles the script, the `ecore` qualifier by a handler that evaluates it against the Ecore metamodel.
+A module that adds a metamodel adds a qualifier, `orders.rules.groovy`, by contributing a capability, and no other module changes (<<binding>>).
+
+=== Read-only by default
+
+A script is the source of truth, and there is no general way to turn an edited model back into the script that built it.
+So saving a script resource fails, unless the script registers what saving means for it (<<saving>>).
+
+=== Locations, not values
+
+Loading is traced with OpenTelemetry, a span per element and per feature, with the script line.
+The spans carry where something was written and what type it is, never the values: a model may hold data that a trace must not (<<diagnostics>>).

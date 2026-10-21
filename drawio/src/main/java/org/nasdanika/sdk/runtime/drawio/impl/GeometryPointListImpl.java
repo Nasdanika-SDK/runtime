@@ -21,15 +21,23 @@ class GeometryPointListImpl extends AbstractList<Point> implements PointList {
 		this.geometry = geometry;
 	}
 
+	/**
+	 * Points of the geometry, none if the element has no geometry yet.
+	 */
+	private List<Element> points() {
+		Element geometryElement = geometry.getElement();
+		return geometryElement == null ? List.of() : DocumentImpl.getChildrenElements(geometryElement, MX_POINT_ELEMENT);
+	}
+
 	@Override
 	public int size() {
-		return DocumentImpl.getChildrenElements(geometry.getElement(), MX_POINT_ELEMENT).size();		
+		return points().size();		
 	}
 
 	@Override
 	public Point get(int index) {
-		List<Element> points = DocumentImpl.getChildrenElements(geometry.getElement(), MX_POINT_ELEMENT);
-		if (index <= points.size()) {
+		List<Element> points = points();
+		if (index < 0 || index >= points.size()) {
 			throw new ArrayIndexOutOfBoundsException(index);			
 		}
 		return new PointImpl(create -> points.get(index));
@@ -37,7 +45,7 @@ class GeometryPointListImpl extends AbstractList<Point> implements PointList {
 	
 	@Override
 	public Point remove(int index) {
-		List<Element> points = DocumentImpl.getChildrenElements(geometry.getElement(), MX_POINT_ELEMENT);
+		List<Element> points = points();
 		if (index >= points.size()) {
 			throw new ArrayIndexOutOfBoundsException(index);			
 		}
@@ -50,7 +58,7 @@ class GeometryPointListImpl extends AbstractList<Point> implements PointList {
 	
 	@Override
 	public Point set(int index, Point element) {
-		List<Element> points = DocumentImpl.getChildrenElements(geometry.getElement(), MX_POINT_ELEMENT);
+		List<Element> points = points();
 		if (index >= points.size()) {
 			throw new ArrayIndexOutOfBoundsException(index);			
 		}
@@ -65,17 +73,18 @@ class GeometryPointListImpl extends AbstractList<Point> implements PointList {
 	
 	@Override
 	public Point add(int index) {
-		List<Element> points = DocumentImpl.getChildrenElements(geometry.getElement(), MX_POINT_ELEMENT);
+		List<Element> points = points();
 		if (index > points.size()) {
 			throw new ArrayIndexOutOfBoundsException(index);			
 		}
 		
-		Element pointElement = geometry.getElement().getOwnerDocument().createElement(MX_POINT_ELEMENT);
+		Element geometryElement = geometry.elementProvider.apply(true); // Creates the geometry if there is none
+		Element pointElement = geometryElement.getOwnerDocument().createElement(MX_POINT_ELEMENT);
 		if (index == points.size()) {
-			geometry.getElement().appendChild(pointElement);
+			geometryElement.appendChild(pointElement);
 		} else {
 			Element refPointElement = points.get(index);
-			geometry.getElement().insertBefore(pointElement, refPointElement);
+			geometryElement.insertBefore(pointElement, refPointElement);
 		}
 		
 		return new PointImpl(create -> pointElement);

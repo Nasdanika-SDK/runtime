@@ -1,0 +1,6 @@
+nsdk
+  launcher
+  model
+    describe
+  text
+    print

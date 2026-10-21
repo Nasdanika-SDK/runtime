@@ -1,0 +1,94 @@
+// Defaults for previewing this file on its own; index.adoc and the Maven build set these
+ifndef::booktests[:booktests: ../../../test/java/org/nasdanika/sdk/runtime/groovy/tests/book]
+ifndef::dslscripts[:dslscripts: ../../../test/resources/book]
+
+[#language]
+== The language
+
+The examples of this chapter and the next are a small metamodel of a library, written in the Ecore DSL: a library holds books and authors, and books and authors refer to each other.
+
+=== Entry points and dispatch
+
+.The beginning of the library metamodel (`library.ecore.groovy`)
+[source,groovy]
+----
+include::{dslscripts}/library.ecore.groovy[tag=package,indent=0]
+}
+----
+<1> An entry point: every concrete Ecore class with an unambiguous decapitalized name is one, and creates a root of the resource.
+<2> Feature dispatch: `name` is a feature of `EPackage`, so the call sets it.
+<3> A keyword: registers the package as a global object, reachable by that URI from any resource of the resource set (<<references>>).
+<4> Type dispatch: `eClass` is a class, so the call creates an `EClass` and routes it into `eClassifiers`, the one containment feature of `EPackage` that accepts it. The call returns the element, so a variable can hold it.
+<5> `abstract` is a Java keyword, so it cannot be called by its bare name; Groovy calls a method named by a string.
+
+Inside a builder, a call is tried in this order:
+
+. a *keyword* of the builder: `global`, `proxy`, `loadResource`, `copy`, `eObject`;
+. a *feature* of the current element: the call sets it;
+. a *class*: the call creates an element of it and routes it into the containment feature that accepts it.
+
+A class that fits more than one containment feature, or a feature typed by an abstract class, needs the feature named and the type given: `eClassifiers('EClass') { }`.
+
+=== Three ways to set a feature
+
+[cols="1,2,2",options="header"]
+|===
+| Form | Example | Groovy sees
+| Command call | `lowerBound 1` | A method call: `lowerBound(1)`
+| Parentheses | `lowerBound(1)` | A method call
+| Assignment | `lowerBound = 1` | A property assignment
+|===
+
+All three set the feature, with the value converted to the feature's type: a string names a classifier for `eType`, a number becomes an `int`, a string names an enum literal.
+
+=== Negative numbers
+
+One form fails silently, and only for negative numbers:
+
+.Three ways to say "unbounded" (`forms.ecore.groovy`)
+[source,groovy]
+----
+include::{dslscripts}/forms.ecore.groovy[tag=forms,indent=0]
+----
+
+.Only two of them work
+[source,java]
+----
+include::{booktests}/LanguageTests.java[tag=forms,indent=0]
+----
+<1> `upperBound -1` is the expression `upperBound - 1`: Groovy reads the feature, subtracts one, and discards the result. The feature keeps its default.
+
+Whenever a value starts with a minus or a plus sign, use the assignment or the parentheses.
+EMF's "many", an upper bound of -1, is the case that comes up every day.
+
+=== Variables
+
+A call that creates an element returns it, so a variable can hold it, and the variable can be used wherever the element is needed: as a supertype, as the type of a reference, as the target of one.
+A variable is the most direct reference there is: no path and no name to resolve, and the compiler catches a misspelled one.
+
+=== What a script produces
+
+The resource's contents come from what the script produces:
+
+. If the script's *last expression* is an `EObject`, an array or a collection of them, those.
+. Otherwise, the *roots* created by entry points, in order.
+
+A script with one root needs no return; a script with several returns a list, `[ ePackage { }, ePackage { } ]`, or creates them with entry points and ends with something that is not a model element.
+
+=== Keywords
+
+[cols="1,1,3",options="header"]
+|===
+| Keyword | Where | Does
+| `eObject('<name>') { }` | Anywhere | Creates an instance of a class named in simple, qualified or URI form (<<references>>)
+| `global '<uri>'` | Builder | Registers the current element as a global object
+| `proxy '<uri>'` | Builder | Makes the current element an EMF proxy for the URI, resolved by EMF when it is used
+| `ref '<selector>'` | Top level | Resolves a selector now, and returns the element
+| `loadResource '<uri>'` | Anywhere | Loads another resource through the resource set (<<deriving>>)
+| `copy('<selector>') { }` | Anywhere | A deep copy of a prototype, configured by the closure (<<deriving>>)
+| `onSave { }` | Top level | What saving the resource means (<<saving>>)
+| `dsl` | Top level | The DSL context: its `roots`, and `dsl.copy` for a copy placed by hand
+|===
+
+Keywords win over metamodel names.
+A feature with a keyword's name is still settable with the assignment form, `copy = 'value'`, and a class with a keyword's name is still creatable with `eObject('Copy') { }`.

@@ -64,7 +64,7 @@ include::chapters/06-recording.adoc[]
 = Looking Ahead
 
 [partintro]
-Browsers, walk-throughs and documents generated from traces.
+Browsers, walk-throughs, and the videos and documents generated from traces.
 
 include::chapters/07-looking-ahead.adoc[]
 

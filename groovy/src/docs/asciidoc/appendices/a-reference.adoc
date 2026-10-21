@@ -1,0 +1,26 @@
+[appendix]
+[#reference]
+== Reference
+
+=== Types
+
+[cols="2,5",options="header"]
+|===
+| Type | Purpose
+| `GroovyResourceFactoryContributor` | Registers the resource factory for the `groovy` extension, over the shared capability loader
+| `GroovyCapabilityFactory` | The `compiledScript`, `dsl` and `ecore` contents handlers
+| `CompiledScriptResourceContentsHandler` | Compiles a `.groovy` source to a JSR-223 `CompiledScript`
+| `DslResourceContentsHandler` | Evaluates a compiled script against a metamodel; hooks `create`, `mark`, `bindings`; `Factory` and `Marker` capabilities for the generic DSL
+| `EcoreResourceContentsHandler` | The DSL bound to Ecore
+| `EPackageResolver`, `AbstractResolver` | Name resolution over a list of packages, with supersession; global objects in the resource set
+| `DslContext`, `ReflectiveBuilder` | The language: entry points, dispatch, keywords, deferred references
+| `DslException` | A failure with the script URI and line
+| `DslTelemetry` | The attribute keys and span names of loading
+|===
+
+=== Precedence
+
+* In a builder: keywords, then features, then classes.
+* At the top level: bindings contributed by the handler, then keywords, then entry points.
+* For a reference value: an element as it is; then a type name; then the handler's `create`; then a selector, a path, a closure or a URI.
+* For a name: the current element's package first, then all packages; a more specific class supersedes the less specific ones.

@@ -676,6 +676,7 @@ class ModelElementImpl<M extends ModelElement<M>> extends ElementImpl<M> impleme
 				cellElement.appendChild(ret);
 				return ret;
 			}
+			return null; // No geometry, and not asked to create one
 		} 
 		
 		if (geometryElements.size() == 1) {

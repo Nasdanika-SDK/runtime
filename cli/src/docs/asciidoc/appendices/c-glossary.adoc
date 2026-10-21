@@ -1,0 +1,17 @@
+[appendix]
+[#glossary]
+== Glossary
+
+Adapter:: A field or method annotated `@Adapter`, whose generic type is what its object offers; for a command, what it offers its sub-commands.
+Capability factory:: An object contributed as a service that creates capabilities for requirements it handles; here, commands and mix-ins for places in the tree.
+Command line:: Picocli's `CommandLine`: a command, its options, its sub-commands and its mix-ins.
+Command tree:: The commands of a command line from the root down, assembled from what the module path contributes.
+Execution supplier:: A supplier called in the executing command's span, for what is expensive to produce.
+Group:: A command that does nothing itself, and organizes and supplies its sub-commands.
+Internal DSL:: A language for a domain made of a host language's own constructs: picocli's annotations for command lines in Java.
+Mix-in:: A reusable set of options, mixed into commands; here also contributed by factories.
+Overriding:: Keeping one of several commands or mix-ins with the same name, the one that overrides the others.
+Parent path:: The commands from the root to the place where a command is being created.
+Pipeline:: A sequence of commands, each consuming what the previous one supplies, written as one command line.
+Sensory bias:: In evolutionary biology, a preference evolved for one purpose and exploited for another; here, Java developers' fluency with annotations and generic types, used to write command lines.
+Wiring:: Placing commands by their declared needs, and injecting what their parents supply.

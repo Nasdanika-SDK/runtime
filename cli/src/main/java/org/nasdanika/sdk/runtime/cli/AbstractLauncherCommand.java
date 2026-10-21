@@ -186,7 +186,7 @@ public abstract class AbstractLauncherCommand extends AbstractModuleResolverComm
 		builder.append(javaCommand).append(" ");
 		
 		String optionsStr = generateOptions();
-		if (optionsFile == null && optionsFile.isBlank()) {
+		if (optionsFile == null || optionsFile.isBlank()) {
 			builder.append(optionsStr);			
 		} else {
 			File oFile = new File(base, optionsFile).getCanonicalFile();

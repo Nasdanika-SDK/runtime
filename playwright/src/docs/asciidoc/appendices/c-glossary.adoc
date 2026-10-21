@@ -4,6 +4,7 @@
 
 Channel:: A browser installed on the machine that Playwright can drive, such as `chrome` or `msedge`.
 Harness server:: An HTTP server that is up while code runs against it, with every request a span in the code's trace.
+Narration:: A line of what a person would say about a walk-through, recorded as a log record in order with the screenshots: the script of a video, the text of a guide.
 Origin:: The scheme, host and port of a URL. The trace context is sent to the harness server's origin only.
 Propagation:: Carrying a trace context to another component in request headers, `traceparent` and `baggage`.
 Recording:: An OpenTelemetry SDK that exports to the runtime's telemetry model and saves it when closed.

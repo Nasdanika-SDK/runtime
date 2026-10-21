@@ -69,7 +69,7 @@ include::chapters/07-react.adoc[]
 = Looking Ahead
 
 [partintro]
-From recorded walk-throughs to documents, decks and diagrams.
+From recorded walk-throughs to narrated videos, documents, decks and diagrams.
 
 include::chapters/08-looking-ahead.adoc[]
 

@@ -1,0 +1,41 @@
+// Defaults for previewing this file on its own; index.adoc and the Maven build set these
+ifndef::booktests[:booktests: ../../../test/java/org/nasdanika/sdk/runtime/groovy/tests/book]
+ifndef::dslscripts[:dslscripts: ../../../test/resources/book]
+
+[#saving]
+== Saving
+
+A script resource is read-only by default: `save` throws `UnsupportedOperationException`.
+The script is the source of truth, and there is no general way to turn an edited model back into the script that built it.
+
+A script that knows what saving should mean says so with `onSave`.
+It can write itself back, changed or not; push the model to the system its data came from; or both.
+
+.A script that writes itself back (`journal.ecore.groovy`)
+[source,groovy]
+----
+include::{dslscripts}/journal.ecore.groovy[tag=journal,indent=0]
+----
+<1> The callback receives the original source of the script, the output stream, and the save options. The last `onSave` registered wins.
+<2> The source, written back.
+<3> And a line about the model, computed from it: `dsl.roots` are the roots the script created.
+
+.Saving to a stream
+[source,java]
+----
+include::{booktests}/DerivationTests.java[tag=save,indent=0]
+----
+<1> A stream of the caller's: the file is not touched.
+<2> The source, and the line the callback added.
+
+=== The truncation trap
+
+Saved to its own URI, `resource.save(null)`, the resource opens the file for writing *before* the callback runs, which truncates it.
+A callback that writes nothing leaves the script empty.
+A callback that saves somewhere else, to an issue tracker or a database, still writes the source back to keep the file.
+
+=== Patterns
+
+* *Write-back with side effects*: push the model to the system it describes, then write the source back unchanged.
+* *Self-extending*: append fragments for elements discovered since the last run, so the next load has them.
+* *Read-only*: no callback, and `save` fails; the default, and right for most scripts.

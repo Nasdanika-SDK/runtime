@@ -9,8 +9,9 @@
 | Type | Purpose
 | `Browsing` | `inBrowser(server, body)` with the default options, `inBrowser(server, options, body)`; the attribute keys and event names below
 | `Browsing.BrowserBody<T, E>` | The body: `T run(Session session) throws E`
-| `Session` | The Playwright objects, `step(name, body)` and `screenshot(name)` (<<sessions>>)
+| `Session` | The Playwright objects, `step(name, body)`, `step(name, narration, body)`, `narrate(...)` and `screenshot(name)` (<<sessions>>)
 | `Session.StepBody<E>` | A step's body: `void run() throws E`
+| `Narration` | A line of narration: text, language, voice and pause (<<narration>>)
 | `Options` | The browser channel, headless mode, viewport, screenshots directory, step screenshots and full-page screenshots
 | `Options.StepScreenshots` | `NONE`, `AFTER`, `BEFORE_AND_AFTER`
 |===
@@ -32,6 +33,7 @@ The server's spans for the browser's requests are children of the span current w
 |===
 | Event name | Severity | Body and attributes
 | `nasdanika.screenshot` | Info | The name; `nasdanika.screenshot.name`, `.path`, `.phase`, `.index`, `url.full`
+| `nasdanika.narration` | Info | The text; `nasdanika.narration.index`, `.language`, `.voice`, `.pause_ms`, `url.full`
 | `nasdanika.browser.console` | By the message's type | The message; `url.full`
 | `nasdanika.browser.page_error` | Error | The error; `url.full`
 |===

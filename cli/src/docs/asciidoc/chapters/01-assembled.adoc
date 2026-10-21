@@ -1,0 +1,47 @@
+[#assembled]
+== Command lines that assemble themselves
+
+A command line tool usually knows all of its commands.
+The main class lists them, or an annotation does, and adding a command means changing the tool.
+That is right for a tool with one purpose and one team.
+
+A platform is different.
+Its capabilities come from modules: a model, a format, a diagram editor's documents, a cloud provider's API, a site generator, each in its own module, written by different people, released at different times.
+Its command line should be the sum of the modules it runs with, and a distribution for one audience should have the commands of its modules and no others.
+The command line of such a platform cannot be listed in one place, because no one place knows all of it.
+
+=== Contributed, not listed
+
+In the Nasdanika SDK Runtime a module contributes commands the way it contributes anything else: by declaring a provider of a service in its module descriptor.
+The runtime collects the contributions with its capability framework and builds the command tree from them.
+Add a module to a distribution and its commands appear; remove it and they are gone, with no other change.
+
+=== Where a command goes
+
+Contribution answers which commands exist.
+The harder question is where each one goes.
+
+A command that saves a model to a file needs a model to save.
+It does not care where the model comes from: a file in any format, a Draw.io diagram converted to a model, a model generated from a database, the result of a filter.
+In a fixed tool, the save command is written as a sub-command of each of those, by whoever wrote them.
+In a contributed command line, the save command says what it needs, "a parent that can give me model objects", and goes under every command that can.
+
+That is the idea of this module.
+A command declares what it needs from its parent and what it accepts as sub-commands; the runtime places it under every parent that provides what it needs, before anything runs; and when it runs, the runtime hands it what its parent provides.
+
+[#pipelines-as-sentences]
+=== Pipelines
+
+Commands placed by what they need form pipelines.
+In the previous generation of Nasdanika, `nsd drawio diagram.drawio html-app site` read as a sentence: load a Draw.io document, turn it into an application model, generate a site from it.
+Each word was a command from a different module, and none of them knew the others; each knew only the kind of thing it consumed and the kind of thing it offered to whatever followed.
+
+New sentences come from new words.
+A module contributing a command that consumes application models, a PDF generator for example, would add `drawio diagram.drawio html-app pdf` without touching the Draw.io, application model or site modules.
+The vocabulary of the command line grows by federation, as modules are added, and the grammar, which word may follow which, is checked by the types they declare.
+
+=== For people, pipelines and agents
+
+The command line is the runtime's first user interface.
+People run it in a terminal; build pipelines run it in scripts; and AI agents, which can run a command and read a file, use everything it offers with no protocol to implement.
+For all three, a command line that lists exactly the commands that will work where they are listed, and records every run as telemetry, is the difference between a tool and a platform.

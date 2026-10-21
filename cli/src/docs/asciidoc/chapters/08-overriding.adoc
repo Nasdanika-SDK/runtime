@@ -1,0 +1,54 @@
+// Defaults for previewing this file on its own; index.adoc and the Maven build set these
+ifndef::booktests[:booktests: ../../../test/java/org/nasdanika/sdk/runtime/cli]
+
+[#overriding]
+== Overriding
+
+Two modules may contribute a command with the same name under the same parent: a better `print`, a `save` that knows a corporate repository.
+Picocli refuses two sub-commands with one name, so the runtime keeps one when it can tell which overrides the other, the way a subclass overrides a method.
+
+=== By subclassing
+
+.A command that overrides another by extending it (`ContributionTests.java`)
+[source,java]
+----
+include::{booktests}/ContributionTests.java[tag=override,indent=0]
+----
+<1> The same name, `print`, and a subclass of the command it replaces.
+
+=== By declaration
+
+.A command that declares what it overrides
+[source,java]
+----
+include::{booktests}/ContributionTests.java[tag=declared-override,indent=0]
+----
+<1> Overrides any `PrintCommand`, without extending it.
+
+.The overriding command is kept
+[source,java]
+----
+include::{booktests}/ContributionTests.java[tag=overriding,indent=0]
+----
+<1> With both factories contributing, `print` is the framed one.
+<2> And with the silent one, the silent one.
+
+=== The rules
+
+Of commands with the same name under the same parent, a command overrides another when:
+
+* its class is annotated with `@Overrides`, and the other is an instance of one of the listed types;
+* it implements `Overrider`, and `overrides(other)` returns true;
+* its class is a subclass of the other's class.
+
+Commands that do not override each other are all kept, and picocli reports the duplicate name.
+The same rules apply to mix-ins with the same name.
+
+Overriding is what makes a command line polymorphic: a distribution for one audience adds a module whose commands replace the defaults, and nothing else changes.
+
+ifdef::editor-notes[]
+[IMPORTANT,caption="Editor's note"]
+====
+`SubCommandSelector`, for a command to choose among sub-commands with the same name, and `SubCommandPredicate`, for a command to accept or refuse a sub-command, are public interfaces of the module that nothing calls. Either wire them into `SubCommandCapabilityFactory`, or remove them.
+====
+endif::[]

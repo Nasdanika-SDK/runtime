@@ -52,7 +52,7 @@ class ConnectionPointListImpl extends AbstractList<Point> implements PointList {
 			throw new ArrayIndexOutOfBoundsException(index);
 		}
 		List<Element> points = DocumentImpl.getChildrenElements(arrayElements.get(0), MX_POINT_ELEMENT);
-		if (index <= points.size()) {
+		if (index < 0 || index >= points.size()) {
 			throw new ArrayIndexOutOfBoundsException(index);			
 		}
 		return new PointImpl(create -> points.get(index));

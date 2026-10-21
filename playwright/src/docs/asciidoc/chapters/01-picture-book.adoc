@@ -38,6 +38,8 @@ Recorded with the runtime's telemetry model, the trace is a model of the walk-th
 
 *Reviewers* compare the walk-through of a change with the walk-through before it: a step that now makes three requests instead of one, a screenshot that changed.
 
-*Writers* generate user guides, slide decks and sequence diagrams from the model, a section or a slide per step, with screenshots retaken on every build, so the guide shows the application as it is, not as it was when the guide was written.
+*Writers* generate user guides in AsciiDoc or Markdown, slide decks and sequence diagrams from the model, a section or a slide per step, with screenshots retaken on every build, so the guide shows the application as it is, not as it was when the guide was written.
+
+*Presenters* get narrated videos: with narration recorded as log records in the steps, beside the screenshots, the trace is a storyboard, and a demo video can be rendered from it by the same build (<<narration>>; the rendering is [.planned]#PLANNED#, <<looking-ahead>>).
 
 *Assistants* read the same model: a typed record of a scenario, with pictures, that an AI assistant can be given instead of a description, and that tells it what the server did, which no screenshot can.

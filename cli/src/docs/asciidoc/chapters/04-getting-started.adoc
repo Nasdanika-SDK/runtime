@@ -1,0 +1,33 @@
+// Defaults for previewing this file on its own; index.adoc and the Maven build set these
+ifndef::mainjava[:mainjava: ../../../main/java]
+
+[#getting-started]
+== Getting started
+
+=== Adding the module
+
+The runtime has a bill of materials, `{group-id}:bom`, which manages the versions of its modules and their dependencies.
+Import it in `dependencyManagement` with the scope `import` and the type `pom`, and depend on `{group-id}:{artifact-id}` without a version.
+The module brings the runtime's `common` module, its bundled picocli, and JLine for the interactive shell.
+
+=== The module descriptor
+
+.The module's own descriptor (`module-info.java`)
+[source,java]
+----
+include::{mainjava}/module-info.java[tag=module,indent=0]
+----
+
+Three lines of it are the pattern for every module that contributes commands:
+
+* `requires org.nasdanika.sdk.runtime.cli`, transitively if the module's own API mentions commands.
+* `opens` the package of the commands. Picocli and the wiring set private fields of commands and mix-ins, options and injected parents alike, so the package must be open to them; an unqualified `opens` is the simple way, and `opens ... to org.nasdanika.sdk.runtime.picocli, org.nasdanika.sdk.runtime.cli, org.nasdanika.sdk.runtime.common` the strict one.
+* `provides CapabilityFactory with` the factories of the commands and mix-ins. Declaring a provider is all the registration there is.
+
+The `cli` module provides three factories: the root command, `nsdk`, and the `save` and `ecore` commands (<<runtime-commands>>).
+
+=== Running
+
+`org.nasdanika.sdk.runtime.cli.Application` is a main class: it builds the tree from the factories of the module layer it runs in, adds the interactive shell, and executes the arguments.
+The runtime's distribution starts through a launcher that also records every run as telemetry; distributions are the subject of <<distributions>>.
+In a test, the tree is built with a capability loader and run with picocli's `execute`, as the next chapter shows.

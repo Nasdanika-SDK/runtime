@@ -15,9 +15,9 @@ import java.util.concurrent.atomic.AtomicInteger;
 
 import org.eclipse.emf.ecore.EPackage;
 import org.eclipse.emf.ecore.EcoreFactory;
+import org.nasdanika.sdk.runtime.cli.CommandBase;
 import org.nasdanika.sdk.runtime.cli.ShellCommand;
 import org.nasdanika.sdk.runtime.cli.SubCommandRequirement;
-import org.nasdanika.sdk.runtime.common.Closeable;
 import org.nasdanika.sdk.runtime.common.capability.CapabilityFactorySource;
 import org.nasdanika.sdk.runtime.common.capability.CapabilityLoader;
 import org.nasdanika.sdk.runtime.common.capability.Requirement;
@@ -146,10 +146,8 @@ public class Launcher {
 						Telemetry.log(logger, Severity.INFO, null, "Executing the root command", null);
 						return rootCommand.execute(args);
 					} finally {
-						if (rootCommand instanceof Closeable closeable) {
-							Telemetry.log(logger, Severity.INFO, null, "Closing the root command", null);
-							closeable.close();
-						}
+						Telemetry.log(logger, Severity.INFO, null, "Closing the root command", null);
+						CommandBase.close(rootCommand);
 					}
 				}
 			}

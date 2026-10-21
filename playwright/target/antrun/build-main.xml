@@ -1,8 +1,0 @@
-<?xml version="1.0" encoding="UTF-8"?>
-<project name="maven-antrun-" default="main">
-  <target name="main">
-    <concat destfile="C:\Users\pavel\nasdanika\sdk\runtime\playwright\target/zephyr/zephyr.css" encoding="UTF-8" outputencoding="UTF-8" fixlastline="yes">
-      <filelist files="bootstrap.min.css,zephyr-bridge.css" dir="C:/Users/pavel/nasdanika/sdk/runtime/doc/zephyr/css" />
-    </concat>
-  </target>
-</project>

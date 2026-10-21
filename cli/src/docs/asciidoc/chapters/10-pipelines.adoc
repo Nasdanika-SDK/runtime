@@ -1,0 +1,26 @@
+[#pipelines]
+== Pipelines
+
+=== What the previous generation built
+
+In 2024, Nasdanika's command line used declarative assembly, by classes then, to build pipelines of commands from different modules.
+The one in daily use generated sites from Draw.io diagrams: `drawio` loaded a document and was a `Document.Supplier`; `html-app` went under any `Document.Supplier` and produced an application model, a `LabelSupplier`; `site` went under any `LabelSupplier` and generated the site; and `save` went under all of them, as an `EObjectSupplier` consumer, to save any intermediate model.
+None of the commands knew the others.
+The capability framework was used in two dimensions: horizontally, to link commands into pipelines, and vertically, to give each command what it needed, such as a resource set with the packages and resource factories of the modules on the path, so that a model command did not need to know that a spreadsheet was a model.
+
+=== Being rebuilt on types
+
+The runtime rebuilds those pipelines on generic types, without the marker interfaces.
+[.sketch]#SKETCH#: the `save` and `ecore` commands are in place, and so are the modules the pipelines work on, the runtime's Draw.io API, diagram model and telemetry model; the commands that load Draw.io documents and diagrams, convert them and generate sites from them are not migrated yet.
+
+=== Planned
+
+[.planned]#PLANNED#:
+
+* *Scripts and a Groovy shell* under any command that supplies objects, to interrogate a model of millions of objects, Git projects, commits and files, or classes, methods and fields, interactively and incrementally, in the manner of Naked Objects, instead of writing a command for each question.
+* *Chats* with a project, a set of diagrams, a model or a generated site: a chat command supplying a conversation, and command line and REST sub-commands going under any command that supplies one.
+* *HTTP serving* separated from routing: commands that build routes, a web interface or a REST API, and an `http` command going under any of them, on the runtime's HTTP handlers and with a harness server in tests.
+* *Command lines as models*: a Groovy DSL for long pipelines, and forms generated from command definitions, sub-commands as wizards and mix-ins as sections.
+* *Telemetry options* for every command, saving a run's telemetry to a file or serving it live, from `TelemetryMixIn`.
+
+Each is a command or two in a module of its own, placed by what it consumes, and each makes the others more useful: a chat about a model generated from a diagram, saved after it was filtered.
