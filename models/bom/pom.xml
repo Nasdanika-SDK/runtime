@@ -129,6 +129,67 @@
 			</dependency>
 
 			<dependency>
+				<groupId>org.nasdanika.sdk.runtime.models.diagram</groupId>
+				<version>${revision}</version>
+				<artifactId>model</artifactId>				
+			</dependency>
+			<dependency>
+				<groupId>org.nasdanika.sdk.runtime.models.diagram</groupId>
+				<version>${revision}</version>
+				<artifactId>elk</artifactId>				
+			</dependency>
+
+			<dependency>
+				<groupId>org.nasdanika.sdk.runtime.models.presentation</groupId>
+				<version>${revision}</version>
+				<artifactId>model</artifactId>				
+			</dependency>
+
+			<dependency>
+				<groupId>org.nasdanika.sdk.runtime.models.drawio</groupId>
+				<version>${revision}</version>
+				<artifactId>model</artifactId>				
+			</dependency>
+
+			<dependency>
+				<groupId>org.nasdanika.sdk.runtime.models.powerpoint</groupId>
+				<version>${revision}</version>
+				<artifactId>model</artifactId>				
+			</dependency>
+			<dependency>
+				<groupId>org.nasdanika.sdk.runtime.models.powerpoint</groupId>
+				<version>${revision}</version>
+				<artifactId>resource</artifactId>				
+			</dependency>
+
+			<dependency>
+				<groupId>org.nasdanika.sdk.runtime.models.visio</groupId>
+				<version>${revision}</version>
+				<artifactId>model</artifactId>				
+			</dependency>
+			<dependency>
+				<groupId>org.nasdanika.sdk.runtime.models.visio</groupId>
+				<version>${revision}</version>
+				<artifactId>resource</artifactId>				
+			</dependency>
+
+			<dependency>
+				<groupId>org.nasdanika.sdk.runtime.models.excel</groupId>
+				<version>${revision}</version>
+				<artifactId>model</artifactId>				
+			</dependency>
+			<dependency>
+				<groupId>org.nasdanika.sdk.runtime.models.excel</groupId>
+				<version>${revision}</version>
+				<artifactId>workbook</artifactId>				
+			</dependency>
+			<dependency>
+				<groupId>org.nasdanika.sdk.runtime.models.excel</groupId>
+				<version>${revision}</version>
+				<artifactId>csv</artifactId>				
+			</dependency>
+
+			<dependency>
 				<groupId>org.nasdanika.sdk.runtime.models</groupId>
 				<version>${revision}</version>
 				<artifactId>all</artifactId>
