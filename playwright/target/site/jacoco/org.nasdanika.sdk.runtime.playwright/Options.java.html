@@ -1,0 +1,79 @@
+<?xml version="1.0" encoding="UTF-8"?><!DOCTYPE html PUBLIC "-//W3C//DTD XHTML 1.0 Strict//EN" "http://www.w3.org/TR/xhtml1/DTD/xhtml1-strict.dtd"><html xmlns="http://www.w3.org/1999/xhtml" lang="en"><head><meta http-equiv="Content-Type" content="text/html;charset=UTF-8"/><link rel="stylesheet" href="../jacoco-resources/report.css" type="text/css"/><link rel="shortcut icon" href="../jacoco-resources/report.gif" type="image/gif"/><title>Options.java</title><link rel="stylesheet" href="../jacoco-resources/prettify.css" type="text/css"/><script type="text/javascript" src="../jacoco-resources/prettify.js"></script></head><body onload="window['PR_TAB_WIDTH']=4;prettyPrint()"><div class="breadcrumb" id="breadcrumb"><span class="info"><a href="../jacoco-sessions.html" class="el_session">Sessions</a></span><a href="../index.html" class="el_report">Nasdanika SDK Runtime Playwright</a> &gt; <a href="index.source.html" class="el_package">org.nasdanika.sdk.runtime.playwright</a> &gt; <span class="el_source">Options.java</span></div><h1>Options.java</h1><pre class="source lang-java linenums">package org.nasdanika.sdk.runtime.playwright;
+
+import java.nio.file.Path;
+import java.util.Objects;
+
+/**
+ * How {@link Browsing} runs a browser and takes screenshots.
+ *
+ * @param channel A browser installed on the machine, such as {@code chrome} or {@code msedge}.
+ * Null for the Chromium that Playwright downloads on first use
+ * @param headless Without a window
+ * @param width Viewport width in CSS pixels
+ * @param height Viewport height in CSS pixels
+ * @param screenshots Directory screenshots are written to, created if it does not exist
+ * @param stepScreenshots Screenshots a step takes by itself
+ * @param fullPage Screenshots of the full scrollable page rather than the viewport
+ */
+public record Options(
+		String channel,
+		boolean headless,
+		int width,
+		int height,
+		Path screenshots,
+		StepScreenshots stepScreenshots,
+		boolean fullPage) {
+
+	/**
+	 * Screenshots a {@link Session#step(String, Session.StepBody) step} takes by itself. A failing
+	 * step takes a screenshot of the failure in any case.
+	 */
+<span class="fc" id="L31">	public enum StepScreenshots {</span>
+
+<span class="fc" id="L33">		NONE,</span>
+
+<span class="fc" id="L35">		AFTER,</span>
+
+		/**
+		 * Before and after, as the Nasdanika WebTest did. No &quot;before&quot; of a blank page.
+		 */
+<span class="fc" id="L40">		BEFORE_AND_AFTER</span>
+
+	}
+
+<span class="fc" id="L44">	public static final Options DEFAULT = new Options(null, true, 1280, 800, Path.of(&quot;target&quot;, &quot;screenshots&quot;), StepScreenshots.BEFORE_AND_AFTER, false);</span>
+
+<span class="fc" id="L46">	public Options {</span>
+<span class="fc" id="L47">		Objects.requireNonNull(screenshots, &quot;screenshots&quot;);</span>
+<span class="fc" id="L48">		Objects.requireNonNull(stepScreenshots, &quot;stepScreenshots&quot;);</span>
+<span class="pc bpc" id="L49" title="2 of 4 branches missed.">		if (width &lt;= 0 || height &lt;= 0) {</span>
+<span class="nc" id="L50">			throw new IllegalArgumentException(&quot;Viewport must not be empty: &quot; + width + &quot;x&quot; + height);</span>
+		}
+<span class="fc" id="L52">	}</span>
+
+	public Options withChannel(String channel) {
+<span class="fc" id="L55">		return new Options(channel, headless, width, height, screenshots, stepScreenshots, fullPage);</span>
+	}
+
+	public Options withHeadless(boolean headless) {
+<span class="nc" id="L59">		return new Options(channel, headless, width, height, screenshots, stepScreenshots, fullPage);</span>
+	}
+
+	public Options withViewport(int width, int height) {
+<span class="fc" id="L63">		return new Options(channel, headless, width, height, screenshots, stepScreenshots, fullPage);</span>
+	}
+
+	public Options withScreenshots(Path screenshots) {
+<span class="fc" id="L67">		return new Options(channel, headless, width, height, screenshots, stepScreenshots, fullPage);</span>
+	}
+
+	public Options withStepScreenshots(StepScreenshots stepScreenshots) {
+<span class="nc" id="L71">		return new Options(channel, headless, width, height, screenshots, stepScreenshots, fullPage);</span>
+	}
+
+	public Options withFullPage(boolean fullPage) {
+<span class="nc" id="L75">		return new Options(channel, headless, width, height, screenshots, stepScreenshots, fullPage);</span>
+	}
+
+}
+</pre><div class="footer"><span class="right">Created with <a href="http://www.jacoco.org/jacoco">JaCoCo</a> 0.8.15.202606040825</span></div></body></html>

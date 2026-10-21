@@ -1,0 +1,70 @@
+<?xml version="1.0" encoding="UTF-8"?><!DOCTYPE html PUBLIC "-//W3C//DTD XHTML 1.0 Strict//EN" "http://www.w3.org/TR/xhtml1/DTD/xhtml1-strict.dtd"><html xmlns="http://www.w3.org/1999/xhtml" lang="en"><head><meta http-equiv="Content-Type" content="text/html;charset=UTF-8"/><link rel="stylesheet" href="../jacoco-resources/report.css" type="text/css"/><link rel="shortcut icon" href="../jacoco-resources/report.gif" type="image/gif"/><title>Server.java</title><link rel="stylesheet" href="../jacoco-resources/prettify.css" type="text/css"/><script type="text/javascript" src="../jacoco-resources/prettify.js"></script></head><body onload="window['PR_TAB_WIDTH']=4;prettyPrint()"><div class="breadcrumb" id="breadcrumb"><span class="info"><a href="../jacoco-sessions.html" class="el_session">Sessions</a></span><a href="../index.html" class="el_report">Nasdanika SDK Runtime Harness</a> &gt; <a href="index.source.html" class="el_package">org.nasdanika.sdk.runtime.harness</a> &gt; <span class="el_source">Server.java</span></div><h1>Server.java</h1><pre class="source lang-java linenums">package org.nasdanika.sdk.runtime.harness;
+
+import java.io.IOException;
+import java.net.URI;
+import java.net.http.HttpClient;
+import java.net.http.HttpRequest;
+import java.net.http.HttpResponse;
+import java.util.Map;
+
+import com.sun.net.httpserver.HttpServer;
+
+import io.opentelemetry.api.OpenTelemetry;
+import io.opentelemetry.api.trace.Span;
+import io.opentelemetry.context.Context;
+
+/**
+ * A server that is up while a {@link Harness} body runs, and a client for it whose requests carry
+ * the trace.
+ */
+public interface Server {
+
+	/**
+	 * The server's base URI, {@code http://127.0.0.1:&lt;port&gt;/}.
+	 */
+	URI base();
+
+	int port();
+
+	/**
+	 * The base URI resolved against a path, such as {@code &quot;books/1&quot;} or {@code &quot;/books/1&quot;}.
+	 */
+	URI uri(String path);
+
+	HttpServer httpServer();
+
+	OpenTelemetry openTelemetry();
+
+	/**
+	 * The span the body runs in.
+	 */
+	Span span();
+
+	/**
+	 * A client for the server, open while the body runs.
+	 */
+	HttpClient client();
+
+	/**
+	 * Sends a request in a client span, a child of the current span, with the trace context
+	 * propagated in the request headers. The server's span for the request is a child of it.
+	 *
+	 * @throws java.io.InterruptedIOException if interrupted, with the interrupt status set
+	 */
+	&lt;B&gt; HttpResponse&lt;B&gt; send(HttpRequest request, HttpResponse.BodyHandler&lt;B&gt; bodyHandler) throws IOException;
+
+	/**
+	 * {@code GET} of a path, with the body as a string.
+	 */
+	default HttpResponse&lt;String&gt; get(String path) throws IOException {
+<span class="fc" id="L60">		return send(HttpRequest.newBuilder(uri(path)).GET().build(), HttpResponse.BodyHandlers.ofString());</span>
+	}
+
+	/**
+	 * The headers that propagate a context, {@code traceparent} and {@code baggage} for W3C
+	 * propagators, for clients that send requests themselves, such as a browser.
+	 */
+	Map&lt;String, String&gt; propagationHeaders(Context context);
+
+}
+</pre><div class="footer"><span class="right">Created with <a href="http://www.jacoco.org/jacoco">JaCoCo</a> 0.8.15.202606040825</span></div></body></html>

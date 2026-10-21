@@ -1,0 +1,100 @@
+// Defaults for previewing this file on its own; index.adoc and the Maven build set these
+ifndef::booktests[:booktests: ../../../test/java/org/nasdanika/sdk/runtime/playwright/tests]
+ifndef::testresourcesdir[:testresourcesdir: ../../../test/resources]
+ifndef::imagesdir[:imagesdir: ../../../test/resources/figures]
+
+[#sessions]
+== Sessions and steps
+
+=== The application
+
+The examples walk through a catalog of books: a page with a search box, a list of titles, and the details of the title clicked.
+
+.The page (`catalog/index.html`)
+[source,html]
+----
+include::{testresourcesdir}/catalog/index.html[tag=body,indent=0]
+----
+
+.Its script (`catalog/catalog.js`)
+[source,javascript]
+----
+include::{testresourcesdir}/catalog/catalog.js[tag=script,indent=0]
+----
+
+The server is a harness server with two routes:
+
+.The routes (`Catalog.java`)
+[source,java]
+----
+include::{booktests}/Catalog.java[tag=routes,indent=0]
+----
+<1> The page, its script and its stylesheet, served from a directory by the runtime's volume handler.
+<2> The data, computed per request.
+
+.The data
+[source,java]
+----
+include::{booktests}/Catalog.java[tag=data,indent=0]
+----
+
+The log records are written in the handler, so they go into the server span of the request.
+
+=== A walk-through
+
+`Browsing.inBrowser` runs a browser session against a harness server:
+
+.Three steps through the catalog (`WalkthroughTests.java`)
+[source,java]
+----
+include::{booktests}/WalkthroughTests.java[tag=walkthrough,indent=0]
+----
+<1> The recording: the trace, and the screenshots next to it, in `target/walkthrough`.
+<2> A session against the server: a browser, a context whose relative URLs resolve against the server's base, and a page, in a `Browser` span.
+<3> A relative URL: the server's page.
+<4> Playwright's assertions wait for the page: the list has one item once the server has answered the search.
+
+Each step is a span named after it.
+With the default options, a step takes a screenshot before its body runs and another after, except before the first page is loaded, when there is nothing to see.
+
+.After the second step (`003-search-for-dune-after.png`)
+image::catalog-search.png[The catalog with "dune" in the search box and one title listed,pdfwidth=70%,width=640]
+
+.After the third step (`005-open-dune-after.png`)
+image::catalog-details.png[The catalog with the details of Dune shown,pdfwidth=70%,width=640]
+
+A step's body ends when its last Playwright call returns.
+Waiting for what the step does, with an assertion or `waitFor`, inside the step, keeps the step's requests in the step: a request the page sends after the step ended belongs to whatever is current then.
+
+=== Options
+
+`Options` is a record with a `with` method per component, and `Options.DEFAULT`:
+
+[cols="2,2,4",options="header"]
+|===
+| Component | Default | Meaning
+| `channel` | none | An installed browser, such as `chrome` or `msedge`; none for Playwright's Chromium
+| `headless` | `true` | Without a window
+| `width`, `height` | 1280, 800 | The viewport, in CSS pixels
+| `screenshots` | `target/screenshots` | The directory screenshots are written to, created if missing
+| `stepScreenshots` | `BEFORE_AND_AFTER` | What a step takes by itself: `NONE`, `AFTER`, or `BEFORE_AND_AFTER`
+| `fullPage` | `false` | The full scrollable page rather than the viewport
+|===
+
+Screenshots are named by their position in the session, the name of the step or screenshot, and the phase: `003-search-for-dune-after.png`.
+Writing them to the recording's directory keeps the trace and its pictures together, and their paths, relative to the directory, valid wherever the directory is copied.
+
+=== The session
+
+The body receives a `Session`:
+
+[cols="2,5",options="header"]
+|===
+| Method | Returns or does
+| `page()` | The page, Playwright's `Page`
+| `context()`, `browser()`, `playwright()` | The rest of Playwright
+| `server()` | The harness server
+| `options()` | The options
+| `step(name, body)` | Runs the body in a span, with screenshots
+| `screenshot(name)` | Takes a screenshot now, in the current span, and returns the file
+|===

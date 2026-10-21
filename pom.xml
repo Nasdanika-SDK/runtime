@@ -665,6 +665,8 @@
 		<module>common</module>
 		<module>drawio</module>
 		<module>volume</module>
+		<module>harness</module>
+		<module>playwright</module>
 		<module>emf-json</module>
 		<module>picocli</module>
 		<module>models</module>

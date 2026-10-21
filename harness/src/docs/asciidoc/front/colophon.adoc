@@ -1,0 +1,26 @@
+[colophon]
+== Colophon
+
+*Harness: A Nasdanika Zephyr Book*
+
+Edition {revnumber}, built on {revdate}.
+
+This edition describes the harness module of the Nasdanika SDK Runtime {runtime-version}, Maven coordinates `{group-id}:{artifact-id}:{runtime-version}`, Java module `org.nasdanika.sdk.runtime.harness`, and the `Recording` class of the runtime's telemetry model exporters.
+Every listing in it is included from the module's sources and tests, which are compiled and run when the book is built.
+
+Copyright (C) 2026 Pavel Vlasov.
+
+The text of this book is licensed under the https://creativecommons.org/licenses/by/4.0/[Creative Commons Attribution 4.0 International License] (CC BY 4.0).
+You may share and adapt it for any purpose, commercial purposes included, provided you give appropriate credit, provide a link to the license, and indicate if you made changes.
+A suggested credit: "Pavel Vlasov, _Harness: A Nasdanika Zephyr Book_, licensed under CC BY 4.0", with a link to {runtime-repo}.
+
+The code is licensed under the Eclipse Public License 2.0, the license of the runtime.
+In addition, you may use the code of this book's listings in your own programs and documentation without asking for permission and without attribution.
+
+Neither license covers the Nasdanika name or logo: CC BY 4.0 grants no trademark rights.
+
+Java is a trademark of Oracle and its affiliates. OpenTelemetry is a trademark of the Linux Foundation. Eclipse and EMF are trademarks of the Eclipse Foundation. Playwright is a trademark of Microsoft Corporation. Spring is a trademark of Broadcom. Other names may be trademarks of their owners. Their use here identifies the technologies discussed and implies no endorsement.
+
+The source of this book, its tests and the module it describes are at {runtime-repo}, in `harness`.
+
+Typeset with Asciidoctor PDF in Noto Sans and M+ 1mn, in the look of the Nasdanika Zephyr Books.

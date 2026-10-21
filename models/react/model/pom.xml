@@ -42,7 +42,8 @@
                 <groupId>org.apache.maven.plugins</groupId>
                 <artifactId>maven-surefire-plugin</artifactId>
                 <configuration>
-                    <argLine>--add-modules jdk.httpserver,java.net.http,java.xml --add-reads org.nasdanika.sdk.runtime.models.react=jdk.httpserver,java.net.http,java.xml</argLine>
+                    <!-- The walk-through reads its recording: surefire puts the telemetry model on the module path -->
+                    <argLine>--add-modules jdk.httpserver,java.net.http,java.xml --add-reads org.nasdanika.sdk.runtime.models.react=jdk.httpserver,java.net.http,java.xml,org.nasdanika.sdk.runtime.models.telemetry</argLine>
                 </configuration>
             </plugin>
             <!--
@@ -91,6 +92,31 @@
         <dependency>
             <groupId>org.nasdanika.sdk.runtime.models.html</groupId>
             <artifactId>model</artifactId>
+        </dependency>
+        <!-- The web tests serve pages with the harness and walk through them with Playwright, recording one trace -->
+        <dependency>
+            <groupId>org.nasdanika.sdk.runtime</groupId>
+            <artifactId>harness</artifactId>
+            <version>${project.version}</version>
+            <scope>test</scope>
+        </dependency>
+        <dependency>
+            <groupId>org.nasdanika.sdk.runtime</groupId>
+            <artifactId>playwright</artifactId>
+            <version>${project.version}</version>
+            <scope>test</scope>
+        </dependency>
+        <dependency>
+            <groupId>org.nasdanika.sdk.runtime.models.telemetry</groupId>
+            <artifactId>exporters</artifactId>
+            <version>${project.version}</version>
+            <scope>test</scope>
+        </dependency>
+        <dependency>
+            <groupId>org.nasdanika.sdk.runtime</groupId>
+            <artifactId>emf-json</artifactId>
+            <version>${project.version}</version>
+            <scope>test</scope>
         </dependency>
     </dependencies>
 </project>

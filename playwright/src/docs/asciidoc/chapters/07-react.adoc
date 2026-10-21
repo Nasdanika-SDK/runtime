@@ -1,0 +1,32 @@
+// Defaults for previewing this file on its own; index.adoc and the Maven build set these
+ifndef::runtime-root[:runtime-root: ../../../../..]
+ifndef::imagesdir[:imagesdir: ../../../test/resources/figures]
+
+[#react]
+== A React application
+
+The runtime generates React applications from Java models: a component is an object of the React model, its markup objects of the HTML model, and the generator writes an ES module that a browser runs as it is, with React loaded from a content delivery network through an import map.
+No npm, no Node.js, no build step.
+The runtime's React model tests generate a table of the properties of the running JVM, and serve the page, the module and the data, computed per request, from a harness server.
+
+This walk-through is in those tests:
+
+.Walking through a generated React application (`JvmPropertiesWalkthroughTests.java`, React model)
+[source,java]
+----
+include::{runtime-root}/models/react/model/src/test/java/org/nasdanika/sdk/runtime/models/react/tests/JvmPropertiesWalkthroughTests.java[tag=walkthrough,indent=0]
+----
+<1> The routes of the React tests: the page, the generated module and the JSON data.
+<2> The table is rendered once React has loaded and the data has arrived.
+
+.The generated application, after the first step
+image::jvm-properties.png[A table of JVM properties rendered by React with Bootstrap styles,pdfwidth=80%,width=720]
+
+In the recorded trace, the first step has the server's spans for the page, `GET /`, the module, `GET /modules/`, and the data, `GET /data/`, as its children.
+React, React Bootstrap and Bootstrap's stylesheet came from content delivery networks, without the trace context.
+The second step reloads the page, and its data span shows the JVM's memory a moment later.
+
+The test needs internet access for the content delivery networks, and checks for it before it starts, as it checks for a browser.
+
+So a JVM generates the application, serves it, drives it in a browser and records it, and the record joins the browser's steps to the server's work.
+JavaScript is what the browser runs; everything around it is Java and models.

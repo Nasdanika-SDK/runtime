@@ -1,0 +1,43 @@
+[#picture-book]
+== A picture book and a trace
+
+A browser test does what a user does: it opens a page, types, clicks, and checks what appears.
+When it fails, the question is always the same: what did the page look like, and what happened behind it?
+The first half of the answer is a screenshot; the second half is on the server.
+
+=== Screenshots
+
+Screenshots of every step turn a test into a picture book of the application.
+In an earlier generation of Nasdanika, WebTest did that: it reported each action of a browser test with a screenshot before it and one after, and its reports were read by people who never read the tests.
+Testers saw where a test went wrong; analysts saw that a feature looked as specified; writers took the pictures for user guides.
+
+What a screenshot cannot show is the server's side: the requests a step sent, what the server did for each, how long it took, what it logged.
+
+ifdef::editor-notes[]
+[IMPORTANT,caption="Editor's note"]
+====
+Describe Nasdanika WebTest from its repository, https://github.com/Nasdanika/webtest, before publishing: what it was built on and what its reports contained. The text follows the author's recollection.
+====
+endif::[]
+
+=== A trace
+
+The runtime's harness starts a server for the length of a test, with every request a span in the test's OpenTelemetry trace.
+This module puts the browser in the same trace.
+The session runs in a span; each step is a child span; every request the browser sends to the server carries the step's span, so the server's spans are children of the step that caused them; and each screenshot is a log record in the step, with the image file's path as an attribute.
+
+Recorded with the runtime's telemetry model, the trace is a model of the walk-through:
+
+* *steps*, in order, with what each looked like before and after;
+* *requests*, under the step that made them, with what the server did, logged and threw;
+* *the browser's console* and the page's uncaught errors, in the step they happened in.
+
+=== Readers
+
+*Developers* debugging a failure read the failing step: its screenshot of the failure, the requests it made, and the server's exception in the same tree.
+
+*Reviewers* compare the walk-through of a change with the walk-through before it: a step that now makes three requests instead of one, a screenshot that changed.
+
+*Writers* generate user guides, slide decks and sequence diagrams from the model, a section or a slide per step, with screenshots retaken on every build, so the guide shows the application as it is, not as it was when the guide was written.
+
+*Assistants* read the same model: a typed record of a scenario, with pictures, that an AI assistant can be given instead of a description, and that tells it what the server did, which no screenshot can.

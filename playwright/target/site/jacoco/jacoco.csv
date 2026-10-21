@@ -1,0 +1,5 @@
+GROUP,PACKAGE,CLASS,INSTRUCTION_MISSED,INSTRUCTION_COVERED,BRANCH_MISSED,BRANCH_COVERED,LINE_MISSED,LINE_COVERED,COMPLEXITY_MISSED,COMPLEXITY_COVERED,METHOD_MISSED,METHOD_COVERED
+Nasdanika SDK Runtime Playwright,org.nasdanika.sdk.runtime.playwright,Options,58,105,2,2,4,9,5,5,3,5
+Nasdanika SDK Runtime Playwright,org.nasdanika.sdk.runtime.playwright,Session,39,221,7,7,10,45,14,8,7,7
+Nasdanika SDK Runtime Playwright,org.nasdanika.sdk.runtime.playwright,Options.StepScreenshots,0,21,0,0,0,4,0,1,0,1
+Nasdanika SDK Runtime Playwright,org.nasdanika.sdk.runtime.playwright,Browsing,11,169,2,2,3,35,3,5,1,5

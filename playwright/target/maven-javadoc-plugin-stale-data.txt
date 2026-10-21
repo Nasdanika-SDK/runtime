@@ -1,0 +1,52 @@
+-J-Duser.language=
+-J-Duser.country=
+@options
+@packages
+@argfile
+--no-fonts
+--class-path
+'C:/Users/pavel/.m2/repository/com/google/code/gson/gson/2.14.0/gson-2.14.0.jar;C:/Users/pavel/.m2/repository/com/google/errorprone/error_prone_annotations/2.48.0/error_prone_annotations-2.48.0.jar;C:/Users/pavel/.m2/repository/org/jspecify/jspecify/1.0.1/jspecify-1.0.1.jar;C:/Users/pavel/.m2/repository/org/opentest4j/opentest4j/1.3.0/opentest4j-1.3.0.jar;C:/Users/pavel/.m2/repository/com/microsoft/playwright/driver/1.63.0/driver-1.63.0.jar;C:/Users/pavel/.m2/repository/com/microsoft/playwright/driver-bundle/1.63.0/driver-bundle-1.63.0.jar;C:/Users/pavel/.m2/repository/io/opentelemetry/opentelemetry-common/1.67.0/opentelemetry-common-1.67.0.jar;C:/Users/pavel/.m2/repository/org/eclipse/platform/org.eclipse.osgi/3.23.100/org.eclipse.osgi-3.23.100.jar;C:/Users/pavel/.m2/repository/io/opentelemetry/opentelemetry-sdk/1.67.0/opentelemetry-sdk-1.67.0.jar;C:/Users/pavel/.m2/repository/io/opentelemetry/opentelemetry-sdk-common/1.67.0/opentelemetry-sdk-common-1.67.0.jar;C:/Users/pavel/.m2/repository/io/opentelemetry/opentelemetry-sdk-trace/1.67.0/opentelemetry-sdk-trace-1.67.0.jar;C:/Users/pavel/.m2/repository/io/opentelemetry/opentelemetry-sdk-metrics/1.67.0/opentelemetry-sdk-metrics-1.67.0.jar;C:/Users/pavel/.m2/repository/io/opentelemetry/opentelemetry-sdk-logs/1.67.0/opentelemetry-sdk-logs-1.67.0.jar;C:/Users/pavel/.m2/repository/org/eclipse/emfcloud/emfjson-jackson/2.3.0/emfjson-jackson-2.3.0.jar;C:/Users/pavel/.m2/repository/com/fasterxml/jackson/core/jackson-databind/2.22.3/jackson-databind-2.22.3.jar;C:/Users/pavel/.m2/repository/com/fasterxml/jackson/core/jackson-annotations/2.22/jackson-annotations-2.22.jar;C:/Users/pavel/.m2/repository/com/fasterxml/jackson/core/jackson-core/2.22.3/jackson-core-2.22.3.jar'
+--module-path
+'C:/Users/pavel/.m2/repository/org/eclipse/emf/org.eclipse.emf.ecore.xmi/2.41.0/org.eclipse.emf.ecore.xmi-2.41.0.jar;C:/Users/pavel/nasdanika/sdk/runtime/common/target/common-2026.10.0.jar;C:/Users/pavel/.m2/repository/org/eclipse/emf/org.eclipse.emf.common/2.46.0/org.eclipse.emf.common-2.46.0.jar;C:/Users/pavel/.m2/repository/io/leangen/geantyref/geantyref/2.0.1/geantyref-2.0.1.jar;C:/Users/pavel/.m2/repository/io/opentelemetry/opentelemetry-context/1.67.0/opentelemetry-context-1.67.0.jar;C:/Users/pavel/nasdanika/sdk/runtime/volume/target/volume-2026.10.0.jar;C:/Users/pavel/nasdanika/sdk/runtime/harness/target/harness-2026.10.0.jar;C:/Users/pavel/nasdanika/sdk/runtime/playwright/target/playwright-2026.10.0.jar;C:/Users/pavel/.m2/repository/com/microsoft/playwright/playwright/1.63.0/playwright-1.63.0.jar;C:/Users/pavel/.m2/repository/org/eclipse/emf/org.eclipse.emf.ecore/2.43.0/org.eclipse.emf.ecore-2.43.0.jar;C:/Users/pavel/.m2/repository/io/opentelemetry/opentelemetry-api/1.67.0/opentelemetry-api-1.67.0.jar'
+--patch-module
+org.nasdanika.sdk.runtime.playwright='C:/Users/pavel/nasdanika/sdk/runtime/playwright/src/main/java;C:/Users/pavel/nasdanika/sdk/runtime/playwright/target/generated-sources/annotations'
+-encoding
+'UTF-8'
+-protected
+--module-source-path
+'C:/Users/pavel/nasdanika/sdk/runtime/playwright/target/reports/apidocs/src'
+--allow-script-in-comments
+-author
+-bottom
+'Copyright &#169; 2026 <a href="https://nasdanika.com">Nasdanika</a>. All rights reserved.'
+-charset
+'UTF-8'
+-d
+'C:/Users/pavel/nasdanika/sdk/runtime/playwright/target/reports/apidocs'
+-docencoding
+'UTF-8'
+-doctitle
+'Nasdanika SDK Runtime Playwright 2026.10.0 API'
+-header
+'<script async src="https://www.googletagmanager.com/gtag/js?id=G-9BRJVLK8CC"></script><script>window.dataLayer = window.dataLayer || [];function gtag(){dataLayer.push(arguments);}gtag(\'js\', new Date());gtag(\'config\', \'G-9BRJVLK8CC\');</script>'
+-linksource
+-use
+-version
+-windowtitle
+'Nasdanika SDK Runtime Playwright 2026.10.0 API'
+org.nasdanika.sdk.runtime.playwright
+'C:/Users/pavel/nasdanika/sdk/runtime/playwright/src/main/java/module-info.java'
+C:\Users\pavel\nasdanika\sdk\runtime\playwright\target\reports\apidocs\allclasses-index.html = 1792601095240
+C:\Users\pavel\nasdanika\sdk\runtime\playwright\target\reports\apidocs\allpackages-index.html = 1792601095241
+C:\Users\pavel\nasdanika\sdk\runtime\playwright\target\reports\apidocs\constant-values.html = 1792601095186
+C:\Users\pavel\nasdanika\sdk\runtime\playwright\target\reports\apidocs\element-list = 1792601095168
+C:\Users\pavel\nasdanika\sdk\runtime\playwright\target\reports\apidocs\help-doc.html = 1792601095257
+C:\Users\pavel\nasdanika\sdk\runtime\playwright\target\reports\apidocs\index-all.html = 1792601095253
+C:\Users\pavel\nasdanika\sdk\runtime\playwright\target\reports\apidocs\index.html = 1792601095255
+C:\Users\pavel\nasdanika\sdk\runtime\playwright\target\reports\apidocs\member-search-index.js = 1792601095243
+C:\Users\pavel\nasdanika\sdk\runtime\playwright\target\reports\apidocs\module-search-index.js = 1792601095242
+C:\Users\pavel\nasdanika\sdk\runtime\playwright\target\reports\apidocs\overview-tree.html = 1792601095232
+C:\Users\pavel\nasdanika\sdk\runtime\playwright\target\reports\apidocs\package-search-index.js = 1792601095242
+C:\Users\pavel\nasdanika\sdk\runtime\playwright\target\reports\apidocs\search.html = 1792601095254
+C:\Users\pavel\nasdanika\sdk\runtime\playwright\target\reports\apidocs\tag-search-index.js = 1792601095243
+C:\Users\pavel\nasdanika\sdk\runtime\playwright\target\reports\apidocs\type-search-index.js = 1792601095242

@@ -1,0 +1,47 @@
+[preface]
+== Preface
+
+This book is about walking through a web application in a browser, from Java, and keeping everything the walk-through shows: what each step looked like, and what the server did for it.
+It describes the Playwright module of the Nasdanika SDK Runtime.
+The module drives a browser with Playwright against a server started by the runtime's harness, and records the session in the server's OpenTelemetry trace: each step is a span, the server's spans for the step's requests are its children, and the screenshots taken before and after it are log records in it, with the paths of the image files.
+
+The first part is the why: why a browser test should leave a picture book and a trace, and the decisions behind the module.
+The second part is the how, with a small catalog application and a React application generated from Java models.
+The third says what comes next.
+
+=== Who this book is for
+
+*Java developers who test web applications end to end*, and want a failed browser test to show the page and the server's side of the failure together.
+
+*People who document web applications*: a recorded walk-through is a user guide whose screenshots are retaken on every build.
+
+*Architects* who want traceability from a user's step in a browser to the code that served it. Part one is for you, and needs no code.
+
+=== A book that stands on its own
+
+This book is one of the Nasdanika Zephyr Books: in-depth manuals, one per module of the Nasdanika SDK Runtime, in the manner of IBM Redbooks.
+The server side has a Zephyr Book of its own, _Harness_, and the runtime has a book, _Nasdanika SDK Runtime: More Structure with Less Effort_.
+You do not need either to read this one: where the books touch, this one repeats what you need.
+
+The series is named after the Bootswatch theme it is styled with, Zephyr, and has nothing to do with the Zephyr real-time operating system or with SmartBear's Zephyr test management.
+
+=== What you need
+
+* *A JDK for Java 25* and *Maven 3.9.16 or later*.
+* *A browser*: Google Chrome or Microsoft Edge installed on the machine, or the Chromium that Playwright downloads on first use.
+* The module is `org.nasdanika.sdk.runtime.playwright`, Maven coordinates `{group-id}:{artifact-id}:{runtime-version}`.
+* To record walk-throughs as models, the runtime's telemetry model exporters, `org.nasdanika.sdk.runtime.models.telemetry:exporters`, and for YAML files the runtime's `emf-json` module.
+
+=== Conventions
+
+* *Every listing is included from the module's sources or tests*, or from a test resource the tests serve, and compiled and run when the book is built. Callouts, such as <1>, explain the lines they mark.
+* *The figures are screenshots the tests took.*
+* *Status labels* mark what this edition does not have yet: [.planned]#PLANNED# for designed but not built.
+* *Voice.* I write in the first person.
+
+ifdef::editor-notes[]
+[IMPORTANT,caption="Editor's note"]
+====
+Editor's notes record inconsistencies and claims to verify found while writing. They are shown in builds for the author and left out of published editions.
+====
+endif::[]

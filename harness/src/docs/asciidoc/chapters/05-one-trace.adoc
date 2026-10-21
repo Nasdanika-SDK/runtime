@@ -1,0 +1,66 @@
+// Defaults for previewing this file on its own; index.adoc and the Maven build set these
+ifndef::booktests[:booktests: ../../../test/java/org/nasdanika/sdk/runtime/harness/tests]
+
+[#one-trace]
+== One trace
+
+The examples so far ran with the current OpenTelemetry instance, which in a plain test is the no-op one: spans are not recorded and no trace context is sent.
+With an SDK, the same code leaves a trace.
+
+=== Recording a test
+
+A `Recording` is an OpenTelemetry SDK that exports to the runtime's telemetry model and saves the model when it is closed (<<recording>>):
+
+.A recorded test (`TraceTests.java`)
+[source,java]
+----
+include::{booktests}/TraceTests.java[tag=recording,indent=0]
+----
+<1> The model is saved as `traces.yml`, `logs.yml` and `metrics.yml` in the directory.
+<2> The instance the server and the client report to.
+<3> In a handler, the current instance is the server's, and the request's span is current, so the log record goes into the request's span.
+<4> Closing the recording exports what is pending and saves the files.
+
+=== The tree
+
+The recording holds one trace, a tree:
+
+.The trace of the test
+[source,java]
+----
+include::{booktests}/TraceTests.java[tag=trace,indent=0]
+----
+<1> The body's span, `Library`, has the client span of the request as a child.
+<2> The client span has the server's span as a child: the server read the trace context from the request headers.
+<3> The handler's log record is in the server span.
+
+The same tree is in `target/telemetry/one-trace/traces.yml`, with timestamps, attributes and identifiers: the body span with the server's address and port, the client span with the method, the URL and the response status, and the server span with the route, the path, the client's address, the user agent and the response size.
+
+=== Failures
+
+A client and a server judge a response differently, and so do their spans:
+
+.A missing page
+[source,java]
+----
+include::{booktests}/TraceTests.java[tag=failures,indent=0]
+----
+<1> For the client, any status of 400 or more is an error.
+<2> For the server, a 4xx is the client's error, not the server's, and leaves the status unset; a 5xx, or an exception in the handler, is the server's error.
+
+An exception thrown by the body is recorded on the body's span, which then has the error status, and rethrown.
+
+=== Other clients
+
+The harness's client sends the trace context itself.
+Other clients, a browser, a command started in another process, a script, need the headers handed to them:
+
+.The headers that carry the trace
+[source,java]
+----
+include::{booktests}/TraceTests.java[tag=headers,indent=0]
+----
+
+With W3C propagators the headers are `traceparent`, and `baggage` when there is baggage.
+Without an SDK there is no valid span to propagate, and the map is empty.
+The Playwright module adds the headers to the browser's requests to the server, and only to those.

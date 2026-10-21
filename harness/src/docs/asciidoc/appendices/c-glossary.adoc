@@ -1,0 +1,14 @@
+[appendix]
+[#glossary]
+== Glossary
+
+Body:: The code `Harness.inServer` runs while the server is up, in a span.
+Client span:: A span of kind `CLIENT`: a request sent, from the sender's side.
+Propagation:: Carrying a trace context from one process or component to another, in request headers such as `traceparent`.
+Recording:: An OpenTelemetry SDK that exports to the runtime's telemetry model and saves the model when closed (<<recording>>).
+Routes:: The code that creates a server's contexts, the handlers for its paths.
+Server span:: A span of kind `SERVER`: a request handled, from the receiver's side. A child of the client span that sent the request when the context was propagated.
+Span:: One operation in a trace, with a name, a kind, a start and an end, attributes, a status, log records and child spans.
+Trace:: The tree of spans of one unit of work, identified by a trace id.
+Unit of work:: A test, a command or a request, with its own OpenTelemetry instance current.
+Walk-through:: A recorded browser session: steps, their screenshots, and the server's work for each.

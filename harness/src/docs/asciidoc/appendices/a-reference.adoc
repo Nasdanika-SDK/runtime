@@ -1,0 +1,26 @@
+[appendix]
+[#reference]
+== Reference
+
+=== Types
+
+[cols="2,5",options="header"]
+|===
+| Type | Purpose
+| `Harness` | `inServer(name, routes, body)` with the current OpenTelemetry, and `inServer(openTelemetry, name, routes, body)`
+| `Harness.ServerBody<T, E>` | The body: `T run(Server server) throws E`
+| `Server` | The server of a body, and a client for it; see <<server>>
+| `Recording` | In `org.nasdanika.sdk.runtime.models.telemetry.exporters`: an OpenTelemetry SDK that records to the telemetry model (<<recording>>)
+|===
+
+=== Spans
+
+[cols="2,1,4",options="header"]
+|===
+| Span | Kind | Attributes
+| The body, named by the caller | `INTERNAL` | `url.full` (the base), `server.address`, `server.port`
+| `<method> <path>`, a request sent through the `Server` | `CLIENT` | `http.request.method`, `url.full`, `server.address`, `server.port`, `http.response.status_code`
+| `<method> <context path>`, a request handled by the server | `SERVER` | `http.request.method`, `http.route`, `url.path`, `url.scheme`, `server.address`, `server.port`, `client.address`, `network.protocol.version`, `user_agent.original`, `http.response.status_code`, `http.response.body.size`
+|===
+
+Status: a client span has the error status for a response of 400 or more, or a failure; a server span for a 5xx, or a failure of the handler; the body's span for an exception thrown by the body.

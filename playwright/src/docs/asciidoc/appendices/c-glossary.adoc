@@ -1,0 +1,13 @@
+[appendix]
+[#glossary]
+== Glossary
+
+Channel:: A browser installed on the machine that Playwright can drive, such as `chrome` or `msedge`.
+Harness server:: An HTTP server that is up while code runs against it, with every request a span in the code's trace.
+Origin:: The scheme, host and port of a URL. The trace context is sent to the harness server's origin only.
+Propagation:: Carrying a trace context to another component in request headers, `traceparent` and `baggage`.
+Recording:: An OpenTelemetry SDK that exports to the runtime's telemetry model and saves it when closed.
+Route:: A Playwright handler for the requests a page sends to matching URLs, which can change them before they go on.
+Session:: A browser, a context and a page, used by a body in a `Browser` span.
+Step:: A named part of a session, run in a span, with screenshots before, after, or at a failure.
+Walk-through:: A recorded session: its steps, what each looked like, and the server's work for each.

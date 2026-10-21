@@ -1,0 +1,30 @@
+// Defaults for previewing this file on its own; index.adoc and the Maven build set these
+ifndef::mainjava[:mainjava: ../../../main/java]
+
+[#getting-started]
+== Getting started
+
+=== Adding the module
+
+The runtime has a bill of materials, `{group-id}:bom`, which manages the versions of its modules and their dependencies.
+Import it in `dependencyManagement` with the scope `import` and the type `pom`, and depend on `{group-id}:{artifact-id}` without a version, usually in the `test` scope.
+
+To record telemetry as models, add the runtime's telemetry model exporters, `org.nasdanika.sdk.runtime.models.telemetry:exporters`, which bring the OpenTelemetry SDK, and, for YAML or JSON files, the runtime's `emf-json` module.
+
+=== The module
+
+.The module declaration (`module-info.java`)
+[source,java]
+----
+include::{mainjava}/module-info.java[tag=module,indent=0]
+----
+
+The harness requires the runtime's `volume` module transitively, for its telemetry handler and its HTTP handler for volumes, and with it the JDK's HTTP server and client and the runtime's `common` module.
+A module that requires the harness reads all of them.
+
+=== Tests on the module path
+
+Tests patched into a module on the module path read what the module reads.
+Maven's Surefire plugin puts the modules a test needs but the main module does not on the module path when it can, and on the class path otherwise: the telemetry model, for example, goes on the module path, and its exporters, which need the OpenTelemetry SDK, on the class path.
+A test that reads a recording then needs one more read edge, added in the Surefire configuration with `--add-reads <your module>=org.nasdanika.sdk.runtime.models.telemetry`.
+The module's own tests do exactly that.

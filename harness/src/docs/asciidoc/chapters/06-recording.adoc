@@ -1,0 +1,31 @@
+[#recording]
+== Recording
+
+`Recording` is in the runtime's telemetry model exporters, `org.nasdanika.sdk.runtime.models.telemetry.exporters`, not in the harness, because it is not about servers: the runtime's command line launcher records every command it runs with it.
+
+=== What it is
+
+An OpenTelemetry SDK with three model exporters:
+
+* spans go to a traces resource, nested in their parents;
+* log records go to the spans they were emitted in, and the rest to a logs resource;
+* metrics go to a metrics resource.
+
+W3C trace context and baggage propagators are set, so a recording can continue a trace passed in from another process and pass its own on.
+Closing the recording shuts the SDK down, which exports what is pending and saves the resources.
+
+=== Building one
+
+`Recording.builder()` takes resource attributes, `serviceName`, `serviceVersion` and any `attribute`, and where to record:
+
+* `directory(dir)` records to `traces.xml`, `logs.xml` and `metrics.xml` in the directory, as XMI, which needs no other module.
+* `directory(dir, extension)` chooses the format by extension: `yml` or `json` with the runtime's `emf-json` module, `ebin` or `egz` for EMF's binary format, plain or compressed.
+* `resources(traces, logs, metrics)` records to any three EMF resources.
+
+=== Using one
+
+`getOpenTelemetry()` is the instance to pass to the harness, or to make current with `makeCurrent()` for a unit of work.
+After the recording is closed, `getTraces()`, `getLogs()` and `getMetrics()` return the models, so a test can assert on them without loading the files.
+
+The files are models of the runtime's telemetry model, the OpenTelemetry protocol's data model in EMF.
+They can be loaded into any resource set configured by the runtime, queried, compared with the files of an earlier run, and transformed into other models, which is how documents are generated from them (<<looking-ahead>>).

@@ -1,0 +1,37 @@
+[appendix]
+[#reference]
+== Reference
+
+=== Types
+
+[cols="2,5",options="header"]
+|===
+| Type | Purpose
+| `Browsing` | `inBrowser(server, body)` with the default options, `inBrowser(server, options, body)`; the attribute keys and event names below
+| `Browsing.BrowserBody<T, E>` | The body: `T run(Session session) throws E`
+| `Session` | The Playwright objects, `step(name, body)` and `screenshot(name)` (<<sessions>>)
+| `Session.StepBody<E>` | A step's body: `void run() throws E`
+| `Options` | The browser channel, headless mode, viewport, screenshots directory, step screenshots and full-page screenshots
+| `Options.StepScreenshots` | `NONE`, `AFTER`, `BEFORE_AND_AFTER`
+|===
+
+=== Spans
+
+[cols="2,1,4",options="header"]
+|===
+| Span | Kind | Attributes
+| `Browser`, the session | `INTERNAL` | `browser.name`, `browser.version`, `nasdanika.browser.channel` when a channel is used
+| A step, named by the caller | `INTERNAL` | `nasdanika.step.index`
+|===
+
+The server's spans for the browser's requests are children of the span current when the browser sent them: a step, or the `Browser` span between steps.
+
+=== Log records
+
+[cols="2,1,4",options="header"]
+|===
+| Event name | Severity | Body and attributes
+| `nasdanika.screenshot` | Info | The name; `nasdanika.screenshot.name`, `.path`, `.phase`, `.index`, `url.full`
+| `nasdanika.browser.console` | By the message's type | The message; `url.full`
+| `nasdanika.browser.page_error` | Error | The error; `url.full`
+|===

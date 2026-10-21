@@ -1,0 +1,85 @@
+= Walk-throughs with Playwright: A Nasdanika Zephyr Book
+Pavel Vlasov
+:doctype: book
+:description: Browser sessions driven by Playwright from Java, in one OpenTelemetry trace with the server they run against: steps as spans, the server's work as their children, and screenshots recorded in the steps they were taken in, saved as a model that documents generate from.
+:keywords: Playwright, browser automation, end-to-end testing, screenshots, OpenTelemetry, tracing, walk-through, React, Java, Nasdanika
+:lang: en
+:sectnums:
+:sectnumlevels: 2
+:partnums:
+:chapter-signifier: Chapter
+:part-signifier: Part
+:appendix-caption: Appendix
+:toc:
+:toclevels: 2
+:title-page:
+:listing-caption: Listing
+:figure-caption: Figure
+:table-caption: Table
+:source-language: java
+:tabsize: 4
+:hide-uri-scheme:
+:runtime-repo: https://github.com/Nasdanika-SDK/runtime
+:runtime-site: https://runtime.sdk.nasdanika.org
+:medium: https://medium.com/nasdanika
+// Defaults for previews in an editor; the Maven build sets these
+ifndef::testdir[:testdir: ../../test/java]
+ifndef::testresourcesdir[:testresourcesdir: ../../test/resources]
+ifndef::runtime-root[:runtime-root: ../../../..]
+ifndef::runtime-version[:runtime-version: 2026.10.0]
+ifndef::group-id[:group-id: org.nasdanika.sdk.runtime]
+ifndef::artifact-id[:artifact-id: playwright]
+:booktests: {testdir}/org/nasdanika/sdk/runtime/playwright/tests
+:mainjava: {testdir}/../../main/java
+:imagesdir: {testresourcesdir}/figures
+// The EPUB converter resolves images relative to this directory and packs them by that path
+ifdef::zephyr-epub[:imagesdir: ../../test/resources/figures]
+
+include::front/colophon.adoc[]
+
+include::front/preface.adoc[]
+
+[#why]
+= The Why
+
+[partintro]
+Why a browser test should leave a picture book and a trace, and the decisions behind the module. No code is needed to read this part.
+
+include::chapters/01-picture-book.adoc[]
+
+include::chapters/02-design.adoc[]
+
+[#how]
+= The How
+
+[partintro]
+Adding the module and a browser, walking through an application in steps, reading what the walk-through recorded, and walking through a React application generated from Java models.
+
+include::chapters/03-getting-started.adoc[]
+
+include::chapters/04-sessions.adoc[]
+
+include::chapters/05-record.adoc[]
+
+include::chapters/06-origins.adoc[]
+
+include::chapters/07-react.adoc[]
+
+[#ahead]
+= Looking Ahead
+
+[partintro]
+From recorded walk-throughs to documents, decks and diagrams.
+
+include::chapters/08-looking-ahead.adoc[]
+
+include::appendices/a-reference.adoc[]
+
+include::appendices/b-building.adoc[]
+
+include::appendices/c-glossary.adoc[]
+
+ifdef::backend-pdf[]
+[index]
+== Index
+endif::[]

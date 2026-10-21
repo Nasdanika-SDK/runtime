@@ -1,0 +1,14 @@
+[#looking-ahead]
+== From walk-throughs to documents
+
+A recorded walk-through holds what a document about a scenario needs: the steps in order, named; what each looked like; what each asked of the server; what went wrong, where.
+[.planned]#PLANNED#:
+
+* *User guides in AsciiDoc*: a section per step with its "after" screenshot, generated from the trace, and rebuilt with the application, so the pictures are never out of date.
+* *Slide decks*: a slide per step, through the runtime's presentation and PowerPoint models, for demos and reviews.
+* *Sequence diagrams* of a step: the browser, the server and what the server called, from the tree of spans, laid out with the runtime's diagram model and ELK.
+* *Process flows* of a scenario: steps as activities, generated as a diagram.
+* *Comparisons of runs*: steps added or removed, requests added, slower or failing, screenshots that changed.
+* *Narrated video*: the screenshots of a walk-through as frames of the runtime's planned video model, with narration from the steps' names and documentation.
+
+The trace is the source of all of them, so each is a transformation of one model into another, and none needs the test to know about it.

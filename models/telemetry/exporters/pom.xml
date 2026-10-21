@@ -19,6 +19,10 @@
 			<version>${project.version}</version>
 		</dependency>
 		<dependency>
+			<groupId>org.nasdanika.sdk.runtime</groupId>
+			<artifactId>common</artifactId>
+		</dependency>
+		<dependency>
 			<groupId>io.opentelemetry</groupId>
 			<artifactId>opentelemetry-sdk</artifactId>
 			<scope>compile</scope>

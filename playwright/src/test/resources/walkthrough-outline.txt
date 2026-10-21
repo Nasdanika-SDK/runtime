@@ -1,0 +1,14 @@
+Catalog
+  Browser
+    Open the catalog
+      screenshot 001-open-the-catalog-after.png
+      console Catalog ready
+      GET /data: Searching for ''
+    Search for Dune
+      screenshot 002-search-for-dune-before.png
+      screenshot 003-search-for-dune-after.png
+      GET /data: Searching for 'dune'
+    Open Dune
+      screenshot 004-open-dune-before.png
+      screenshot 005-open-dune-after.png
+      GET /data: Showing dune

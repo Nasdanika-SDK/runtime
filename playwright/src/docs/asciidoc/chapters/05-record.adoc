@@ -1,0 +1,69 @@
+// Defaults for previewing this file on its own; index.adoc and the Maven build set these
+ifndef::booktests[:booktests: ../../../test/java/org/nasdanika/sdk/runtime/playwright/tests]
+ifndef::testresourcesdir[:testresourcesdir: ../../../test/resources]
+ifndef::imagesdir[:imagesdir: ../../../test/resources/figures]
+
+[#record]
+== What a walk-through records
+
+=== The model
+
+After the recording is closed, the walk-through is a model, and a test can read it:
+
+.A step, its screenshots and the server's work (`WalkthroughTests.java`)
+[source,java]
+----
+include::{booktests}/WalkthroughTests.java[tag=model,indent=0]
+----
+<1> The step's log records include its screenshots, with the files' paths.
+<2> The step's child is the server's span for the search, with the handler's log record.
+
+The test also reduces the trace to an outline of what does not change from run to run, and compares it with this file:
+
+.The walk-through in outline (`walkthrough-outline.txt`)
+[source,text]
+----
+include::{testresourcesdir}/walkthrough-outline.txt[]
+----
+
+The outline leaves out the requests for the page, its script and its stylesheet, which the browser sends in parallel, and identifiers, timestamps and attributes.
+The full record is in `target/walkthrough/traces.yml`: every span with its timing and attributes, every request the server handled, under the step that sent it.
+
+=== Screenshots in the record
+
+A screenshot is a log record with the event name `nasdanika.screenshot`, in the span that was current when it was taken, with these attributes:
+
+[cols="2,4",options="header"]
+|===
+| Attribute | Value
+| `nasdanika.screenshot.name` | The step's name, or the name given to `screenshot`
+| `nasdanika.screenshot.path` | The file, relative to the screenshots directory
+| `nasdanika.screenshot.phase` | `before`, `after` or `failure` for a step's own, `explicit` for one taken with `screenshot`
+| `nasdanika.screenshot.index` | The position in the session, from 1
+| `url.full` | The page's URL
+|===
+
+The body of the record is the name, so a log viewer that knows nothing of screenshots still shows something readable.
+
+=== The browser's console
+
+Console messages are log records with the event name `nasdanika.browser.console`, the message as the body and the page's URL as an attribute, with a severity by the message's type: `error` is an error, `warning` a warning, `debug` debug, anything else information.
+Uncaught errors in the page are log records with the event name `nasdanika.browser.page_error` and the error severity.
+They are in the span that was current when Playwright delivered them, usually the step that caused them.
+
+=== Failures
+
+A step whose body throws takes a screenshot of the failure, records the exception on its span, and rethrows:
+
+.A step that fails
+[source,java]
+----
+include::{booktests}/WalkthroughTests.java[tag=failure,indent=0]
+----
+<1> The step's span has the error status and the exception.
+<2> Its screenshots: before the step, and at the failure.
+
+.The failure (`003-click-a-missing-button-failure.png`)
+image::catalog-failure.png[The catalog as it was when the click timed out,pdfwidth=70%,width=640]
+
+A failure of the body of the session is recorded on the `Browser` span, and of the harness body on its span, so the error shows at every level of the tree, with the step where it started at the bottom.

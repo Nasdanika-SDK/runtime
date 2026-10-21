@@ -1,0 +1,23 @@
+[#looking-ahead]
+== What comes next
+
+=== Browsers
+
+The runtime's Playwright module drives a browser against a harness server, in the server's trace.
+`Browsing.inBrowser(server, session -> ...)` runs a browser session in a span; each step of the session is a child span; the browser's requests to the server carry the step's span, so the server's spans are children of the step that caused them; and screenshots taken before and after each step are log records in the step, with the file's path as an attribute.
+It is [.available]#AVAILABLE#, and its Zephyr Book is _Walk-throughs with Playwright_.
+
+=== Documents from traces
+
+A recorded trace with screenshots is a walk-through: steps, what each step looked like, and what the server did for it.
+[.planned]#PLANNED#:
+
+* *Walk-throughs in AsciiDoc*, a section per step with its screenshots and the requests it made, generated from the trace after the test.
+* *Slide decks*, a slide per step, through the runtime's presentation and PowerPoint models.
+* *Sequence diagrams* of a step, from the tree of client and server spans, through the runtime's diagram model and its layout.
+* *Comparisons* of the traces of two runs: a request that appeared, a request that got slower, a step whose screenshot changed.
+
+=== Beyond one JVM
+
+A server in another process continues the trace if it reads `traceparent`, and its telemetry can be recorded by its own recording, or exported to a collector.
+The runtime's launcher already continues a trace from the `TRACEPARENT` environment variable, so a command started by a test can join the test's trace.

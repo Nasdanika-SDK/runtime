@@ -1,0 +1,48 @@
+[#design]
+== Decisions
+
+=== Playwright
+
+Playwright drives Chromium, Firefox and WebKit through one API, waits for the page by itself before acting, and has an official Java library.
+Selenium WebDriver, the older standard, does the same over a W3C protocol, with drivers maintained by the browser vendors.
+Either would serve; Playwright's automatic waiting makes steps short, and its request routing is what puts the trace context on the browser's requests (<<origins>>).
+
+The module does not wrap Playwright.
+A session hands out Playwright's own `Page`, `BrowserContext`, `Browser` and `Playwright`, and everything Playwright can do, the test does with them.
+What the module adds is around the calls: the span of the session, the spans of the steps, the screenshots, the trace context on requests, and the browser's console in the record.
+
+=== Steps are spans
+
+A test could be described by a model of its own: a test run of steps of interactions, a navigation, a click, a fill, with screenshots and network requests.
+I designed one, and decided against building it first.
+
+A step is an operation with a name, a start, an end, a status and children, which is what a span is.
+A screenshot is something that happened in a step, with attributes, which is what a log record is.
+A request to the server is a span already, on the server's side.
+The telemetry model holds all of it, and the harness and the runtime's launcher record into it already.
+A model of walk-throughs, or of user guides, can be derived from the trace by a transformation when it is needed, and the trace stays the source.
+
+=== The trace goes to the server only
+
+The browser's requests to the harness server carry the trace context in their headers.
+Requests to other origins, a content delivery network serving React or Bootstrap, an analytics service, do not: they have no use for it, it would tell them the trace identifiers of a test, and a header they did not expect could change how they answer.
+Playwright's request routing makes the distinction exact: the module routes the server's origin and nothing else (<<origins>>).
+
+=== The browser on the machine
+
+Playwright downloads its own builds of the browsers on first use, a few hundred megabytes, which offline builds and locked-down machines cannot do.
+It can also drive a browser installed on the machine, a _channel_: Google Chrome or Microsoft Edge.
+The module's options take a channel, and when one is given, the download is skipped.
+The module's tests use Chrome by default, and are skipped, not failed, when no browser can be launched.
+
+=== Playwright on the module path
+
+Playwright's jars are not modules; their manifests name them, `com.microsoft.playwright` and its driver, so they are automatic modules on the module path.
+The module requires `com.microsoft.playwright` transitively, so a module that requires it can use Playwright's API directly.
+The driver, a Node.js program with Playwright's browser automation, is in a jar of about two hundred megabytes for all platforms, which Playwright extracts on first use.
+
+=== One thread
+
+Playwright for Java is not thread-safe, and it calls event handlers, a route handler or a console listener, on the thread that is waiting in a Playwright call.
+For the module that is a feature: when the browser sends a request during `page.navigate`, the route handler runs on the test's thread, where the current span is the step's, and the request carries the step.
+The same is true of console messages and screenshots, so each lands in the step it happened in.

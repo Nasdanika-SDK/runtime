@@ -230,6 +230,12 @@
 				<artifactId>guava</artifactId>
 				<version>33.7.2-jre</version>
 			</dependency>
+			<!-- The playwright module: browser automation. Brings the Playwright driver, about 200 MB, for every platform -->
+			<dependency>
+				<groupId>com.microsoft.playwright</groupId>
+				<artifactId>playwright</artifactId>
+				<version>1.63.0</version>
+			</dependency>
 
 			<!-- SDK modules -->
 			<dependency>
@@ -263,6 +269,16 @@
 			<dependency>
 				<groupId>${project.groupId}</groupId>
 				<artifactId>volume</artifactId>
+				<version>${revision}</version>
+			</dependency>
+			<dependency>
+				<groupId>${project.groupId}</groupId>
+				<artifactId>harness</artifactId>
+				<version>${revision}</version>
+			</dependency>
+			<dependency>
+				<groupId>${project.groupId}</groupId>
+				<artifactId>playwright</artifactId>
 				<version>${revision}</version>
 			</dependency>
 			<dependency>

@@ -1,0 +1,34 @@
+// Defaults for previewing this file on its own; index.adoc and the Maven build set these
+ifndef::booktests[:booktests: ../../../test/java/org/nasdanika/sdk/runtime/playwright/tests]
+
+[#origins]
+== Propagation and origins
+
+=== How the browser joins the trace
+
+The browser does not know about OpenTelemetry; Playwright tells it what to send.
+When the session starts, the module routes every request to the server's origin, `+http://127.0.0.1:<port>/**+`, through a handler that adds the trace context of the current span to the request's headers and lets the request go on.
+Playwright calls the handler on the thread that is waiting in a Playwright call, the test's thread, where the current span is the step that is running, so the server's span for the request is a child of the step.
+
+A route applies to every request from the page: the document, scripts, stylesheets, images, `fetch` calls.
+Routed requests bypass the browser's HTTP cache, which for a test is what you want: every step's requests reach the server and are in the trace.
+
+=== Other origins
+
+Requests to any other origin are not routed and get no trace context:
+
+.A request to another origin (`WalkthroughTests.java`)
+[source,java]
+----
+include::{booktests}/WalkthroughTests.java[tag=origins,indent=0]
+----
+<1> The page fetches a URL of another server, another port, which is another origin.
+<2> That server received no `traceparent`.
+<3> The page itself was served in the session's trace.
+
+The second server here is a harness server too, which shows something else: harness bodies nest, and two servers can run in one test, one trace or several.
+
+=== Without an SDK
+
+With the no-op OpenTelemetry instance there is no span to propagate, the headers are empty, and the routing passes requests through unchanged.
+A walk-through without a recording still takes its screenshots.

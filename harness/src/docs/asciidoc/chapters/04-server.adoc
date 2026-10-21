@@ -1,0 +1,77 @@
+// Defaults for previewing this file on its own; index.adoc and the Maven build set these
+ifndef::booktests[:booktests: ../../../test/java/org/nasdanika/sdk/runtime/harness/tests]
+
+[#server]
+== A server for the length of a body
+
+=== In a server
+
+`Harness.inServer` takes a name, the routes of a server and a body:
+
+.A greeting (`ServerTests.java`)
+[source,java]
+----
+include::{booktests}/ServerTests.java[tag=in-server,indent=0]
+----
+<1> The name of the span the body runs in.
+<2> The routes: code that creates the server's contexts, given the server as an `HttpServer`.
+<3> A request to the server, a client span in the body's span.
+<4> What the body returns, `inServer` returns.
+
+The handler in the routes is ordinary JDK code:
+
+.A plain text response
+[source,java]
+----
+include::{booktests}/ServerTests.java[tag=respond,indent=0]
+----
+
+The server listens on the loopback address, on a port the operating system picks, so tests never collide on a port and nothing outside the machine can reach the server.
+It handles each request on a virtual thread.
+Every context created in the routes is instrumented: each request is a server span named after the method and the context path, `GET /hello`, with the HTTP semantic convention attributes, and the span is current while the handler runs.
+
+The routes receive the server as an `HttpServer` for creating contexts.
+Starting, stopping and the executor belong to the harness, and the server refuses them.
+
+=== The server
+
+The body receives a `Server`:
+
+[cols="2,5",options="header"]
+|===
+| Method | Returns
+| `base()` | `+http://127.0.0.1:<port>/+`
+| `port()` | The port
+| `uri(path)` | The base resolved against a path, with or without a leading slash
+| `get(path)` | A `GET` of the path, with the body as a string
+| `send(request, bodyHandler)` | The response to any request, sent in a client span
+| `client()` | The `HttpClient` behind `get` and `send`
+| `span()` | The span the body runs in
+| `openTelemetry()` | The instance the server and the client report to
+| `propagationHeaders(context)` | The headers that carry a context, for clients the harness does not own
+| `httpServer()` | The JDK server itself
+|===
+
+=== Up while the body runs
+
+The server is stopped when the body returns or throws:
+
+.Nobody listens afterwards
+[source,java]
+----
+include::{booktests}/ServerTests.java[tag=stopped,indent=0]
+----
+
+=== Serving files
+
+Any `HttpHandler` can be routed.
+The runtime's volume handler serves a directory, an in-memory tree, or anything else a volume is implemented over:
+
+.A directory, served
+[source,java]
+----
+include::{booktests}/ServerTests.java[tag=volume,indent=0]
+----
+
+The request path below the context path is the path in the volume.
+Static sites, generated applications and their data are served this way in the runtime's own tests.

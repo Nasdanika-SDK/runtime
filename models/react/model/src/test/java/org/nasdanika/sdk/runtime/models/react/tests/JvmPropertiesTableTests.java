@@ -5,11 +5,6 @@ import static org.junit.jupiter.api.Assertions.assertTrue;
 
 import java.io.IOException;
 import java.io.OutputStream;
-import java.net.InetAddress;
-import java.net.InetSocketAddress;
-import java.net.URI;
-import java.net.http.HttpClient;
-import java.net.http.HttpRequest;
 import java.net.http.HttpResponse;
 import java.nio.charset.StandardCharsets;
 import java.nio.file.Files;
@@ -17,12 +12,11 @@ import java.nio.file.Path;
 import java.time.Duration;
 import java.util.LinkedHashMap;
 import java.util.Map;
-import java.util.concurrent.ExecutorService;
-import java.util.concurrent.Executors;
 
 import org.json.JSONArray;
 import org.json.JSONObject;
 import org.junit.jupiter.api.Test;
+import org.nasdanika.sdk.runtime.harness.Harness;
 import org.nasdanika.sdk.runtime.models.html.Document;
 import org.nasdanika.sdk.runtime.models.html.TableHead;
 import org.nasdanika.sdk.runtime.models.react.ComponentDeclaration;
@@ -45,7 +39,7 @@ import com.sun.net.httpserver.HttpServer;
  * <p>
  * The same three artifacts are delivered two ways. {@link #testStaticSite()} writes
  * them to a directory, which any static host can serve. {@link #testServer()} serves
- * them from the JDK HTTP server through three handlers, with the data computed per
+ * them from a harness server through three handlers, with the data computed per
  * request. The page and the module use relative URLs, so they are byte for byte the
  * same in both modes.
  * <p>
@@ -152,85 +146,84 @@ public class JvmPropertiesTableTests {
 		System.out.println("View it with: jwebserver -d \"" + site + "\" and open http://127.0.0.1:8000/");
 	}
 
-	@Test
-	public void testServer() throws Exception {
+	/**
+	 * The page, the module and the data, each from its own handler. "/" is the catch-all
+	 * context, so anything the other handlers do not claim lands there and is not found
+	 * unless it is the page.
+	 */
+	static void routes(HttpServer server) {
 		String page = page();
 		Map<String, String> modules = Map.of(MODULE_PATH, module());
 
-		HttpServer server = HttpServer.create(new InetSocketAddress(InetAddress.getLoopbackAddress(), 0), 0);
-		try (ExecutorService executor = Executors.newVirtualThreadPerTaskExecutor()) {
-			server.setExecutor(executor);
-
-			// Page handler. "/" is the catch-all context, so anything the other
-			// handlers do not claim lands here and is not found unless it is the page.
-			server.createContext("/", exchange -> {
-				String path = exchange.getRequestURI().getPath();
-				if (!isGet(exchange)) {
-					send(exchange, 405, "text/plain; charset=utf-8", "Method not allowed");
-				} else if ("/".equals(path) || ("/" + PAGE_PATH).equals(path)) {
-					send(exchange, 200, "text/html; charset=utf-8", page);
-				} else {
-					send(exchange, 404, "text/plain; charset=utf-8", "Not found");
-				}
-			});
-
-			// Module handler: generated ES modules by path.
-			server.createContext("/modules/", exchange -> {
-				String source = modules.get(exchange.getRequestURI().getPath().substring(1));
-				if (!isGet(exchange)) {
-					send(exchange, 405, "text/plain; charset=utf-8", "Method not allowed");
-				} else if (source == null) {
-					send(exchange, 404, "text/plain; charset=utf-8", "Not found");
-				} else {
-					send(exchange, 200, "text/javascript; charset=utf-8", source);
-				}
-			});
-
-			// Data handler: computed per request, which is what makes the data dynamic
-			// (free memory changes between requests) and is the place progressive
-			// delivery plugs in later.
-			server.createContext("/data/", exchange -> {
-				if (!isGet(exchange)) {
-					send(exchange, 405, "text/plain; charset=utf-8", "Method not allowed");
-				} else if (("/" + DATA_PATH).equals(exchange.getRequestURI().getPath())) {
-					exchange.getResponseHeaders().set("Cache-Control", "no-store");
-					send(exchange, 200, "application/json", jvmProperties().toString());
-				} else {
-					send(exchange, 404, "text/plain; charset=utf-8", "Not found");
-				}
-			});
-
-			server.start();
-			try (HttpClient client = HttpClient.newHttpClient()) {
-				URI base = URI.create("http://127.0.0.1:" + server.getAddress().getPort() + "/");
-
-				HttpResponse<String> pageResponse = get(client, base.resolve(""));
-				assertEquals(200, pageResponse.statusCode());
-				assertTrue(contentType(pageResponse).startsWith("text/html"));
-				assertEquals(page, pageResponse.body());
-
-				HttpResponse<String> moduleResponse = get(client, base.resolve(MODULE_PATH));
-				assertEquals(200, moduleResponse.statusCode());
-				assertTrue(contentType(moduleResponse).startsWith("text/javascript"));
-				assertTrue(moduleResponse.body().contains("export function JvmPropertiesTable(props)"));
-
-				HttpResponse<String> dataResponse = get(client, base.resolve(DATA_PATH));
-				assertEquals(200, dataResponse.statusCode());
-				assertTrue(contentType(dataResponse).startsWith("application/json"));
-				assertTrue(names(new JSONArray(dataResponse.body())).contains("Process id"));
-
-				assertEquals(404, get(client, base.resolve("favicon.ico")).statusCode());
-				assertEquals(404, get(client, base.resolve("modules/missing.js")).statusCode());
-
-				long seconds = Long.getLong("nasdanika.react.demo.seconds", 0);
-				if (seconds > 0) {
-					System.out.println("Serving " + base + " for " + seconds + " seconds");
-					Thread.sleep(Duration.ofSeconds(seconds));
-				}
-			} finally {
-				server.stop(0);
+		server.createContext("/", exchange -> {
+			String path = exchange.getRequestURI().getPath();
+			if (!isGet(exchange)) {
+				send(exchange, 405, "text/plain; charset=utf-8", "Method not allowed");
+			} else if ("/".equals(path) || ("/" + PAGE_PATH).equals(path)) {
+				send(exchange, 200, "text/html; charset=utf-8", page);
+			} else {
+				send(exchange, 404, "text/plain; charset=utf-8", "Not found");
 			}
-		}
+		});
+
+		// Generated ES modules by path.
+		server.createContext("/modules/", exchange -> {
+			String source = modules.get(exchange.getRequestURI().getPath().substring(1));
+			if (!isGet(exchange)) {
+				send(exchange, 405, "text/plain; charset=utf-8", "Method not allowed");
+			} else if (source == null) {
+				send(exchange, 404, "text/plain; charset=utf-8", "Not found");
+			} else {
+				send(exchange, 200, "text/javascript; charset=utf-8", source);
+			}
+		});
+
+		// Computed per request, which is what makes the data dynamic (free memory changes
+		// between requests) and is the place progressive delivery plugs in later.
+		server.createContext("/data/", exchange -> {
+			if (!isGet(exchange)) {
+				send(exchange, 405, "text/plain; charset=utf-8", "Method not allowed");
+			} else if (("/" + DATA_PATH).equals(exchange.getRequestURI().getPath())) {
+				exchange.getResponseHeaders().set("Cache-Control", "no-store");
+				send(exchange, 200, "application/json", jvmProperties().toString());
+			} else {
+				send(exchange, 404, "text/plain; charset=utf-8", "Not found");
+			}
+		});
+	}
+
+	/**
+	 * The three artifacts served by the harness: a server that is up while the body runs, every
+	 * request a server span, and the body's requests client spans in the same trace.
+	 */
+	@Test
+	public void testServer() throws Exception {
+		Harness.inServer("JVM properties", JvmPropertiesTableTests::routes, server -> {
+			HttpResponse<String> pageResponse = server.get(PAGE_PATH);
+			assertEquals(200, pageResponse.statusCode());
+			assertTrue(contentType(pageResponse).startsWith("text/html"));
+			assertEquals(page(), pageResponse.body());
+
+			HttpResponse<String> moduleResponse = server.get(MODULE_PATH);
+			assertEquals(200, moduleResponse.statusCode());
+			assertTrue(contentType(moduleResponse).startsWith("text/javascript"));
+			assertTrue(moduleResponse.body().contains("export function JvmPropertiesTable(props)"));
+
+			HttpResponse<String> dataResponse = server.get(DATA_PATH);
+			assertEquals(200, dataResponse.statusCode());
+			assertTrue(contentType(dataResponse).startsWith("application/json"));
+			assertTrue(names(new JSONArray(dataResponse.body())).contains("Process id"));
+
+			assertEquals(404, server.get("favicon.ico").statusCode());
+			assertEquals(404, server.get("modules/missing.js").statusCode());
+
+			long seconds = Long.getLong("nasdanika.react.demo.seconds", 0);
+			if (seconds > 0) {
+				System.out.println("Serving " + server.base() + " for " + seconds + " seconds");
+				Thread.sleep(Duration.ofSeconds(seconds));
+			}
+			return null;
+		});
 	}
 
 	// --- Artifacts -----------------------------------------------------------
@@ -399,10 +392,6 @@ public class JvmPropertiesTableTests {
 		try (OutputStream out = exchange.getResponseBody()) {
 			out.write(bytes);
 		}
-	}
-
-	private static HttpResponse<String> get(HttpClient client, URI uri) throws IOException, InterruptedException {
-		return client.send(HttpRequest.newBuilder(uri).GET().build(), HttpResponse.BodyHandlers.ofString());
 	}
 
 	private static String contentType(HttpResponse<?> response) {

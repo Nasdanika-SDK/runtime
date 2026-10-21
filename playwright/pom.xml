@@ -1,0 +1,84 @@
+<project xmlns="http://maven.apache.org/POM/4.0.0" xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
+	xsi:schemaLocation="http://maven.apache.org/POM/4.0.0 http://maven.apache.org/xsd/maven-4.0.0.xsd">
+	<modelVersion>4.0.0</modelVersion>
+	<parent>
+		<artifactId>parent</artifactId>
+		<groupId>org.nasdanika.sdk.runtime</groupId>
+		<version>2026.10.0</version>
+		<relativePath>..</relativePath>
+	</parent>
+	<artifactId>playwright</artifactId>
+	<packaging>jar</packaging>
+	<name>Nasdanika SDK Runtime Playwright</name>
+	<description>
+		Browser sessions with Playwright against a harness server, in the server's trace: steps as
+		spans, requests to the server as their children, and screenshots recorded in the steps they
+		were taken in. The module's Zephyr Book takes its listings from the tests.
+	</description>
+
+	<properties>
+		<zephyr.book.name>playwright-${project.version}-book</zephyr.book.name>
+		<zephyr.epub.skip>false</zephyr.epub.skip>
+		<!--
+			The browser the tests drive: an installed one, such as chrome or msedge, or empty for the
+			Chromium that Playwright downloads on first use. Tests are skipped if it cannot be launched.
+		-->
+		<playwright.channel>chrome</playwright.channel>
+	</properties>
+
+	<dependencyManagement>
+		<dependencies>
+			<dependency>
+				<groupId>${project.groupId}</groupId>
+				<artifactId>bom</artifactId>
+				<version>${project.version}</version>
+				<type>pom</type>
+				<scope>import</scope>
+			</dependency>
+		</dependencies>
+	</dependencyManagement>
+
+	<build>
+		<plugins>
+			<plugin>
+				<groupId>org.apache.maven.plugins</groupId>
+				<artifactId>maven-surefire-plugin</artifactId>
+				<configuration>
+					<!--
+						Tests are patched into this module. Surefire puts the telemetry model on the
+						module path and its exporters, which need the OpenTelemetry SDK, on the class
+						path; the tests read the model.
+					-->
+					<argLine>@{argLine} --add-reads org.nasdanika.sdk.runtime.playwright=org.nasdanika.sdk.runtime.models.telemetry</argLine>
+					<systemPropertyVariables>
+						<nasdanika.playwright.channel>${playwright.channel}</nasdanika.playwright.channel>
+					</systemPropertyVariables>
+				</configuration>
+			</plugin>
+		</plugins>
+	</build>
+
+	<dependencies>
+		<dependency>
+			<groupId>${project.groupId}</groupId>
+			<artifactId>harness</artifactId>
+			<version>${project.version}</version>
+		</dependency>
+		<dependency>
+			<groupId>com.microsoft.playwright</groupId>
+			<artifactId>playwright</artifactId>
+		</dependency>
+		<dependency>
+			<groupId>org.nasdanika.sdk.runtime.models.telemetry</groupId>
+			<artifactId>exporters</artifactId>
+			<version>${project.version}</version>
+			<scope>test</scope>
+		</dependency>
+		<dependency>
+			<groupId>${project.groupId}</groupId>
+			<artifactId>emf-json</artifactId>
+			<version>${project.version}</version>
+			<scope>test</scope>
+		</dependency>
+	</dependencies>
+</project>

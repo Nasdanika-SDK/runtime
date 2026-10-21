@@ -1,0 +1,19 @@
+[appendix]
+[#building-this-book]
+== Building this book
+
+This book is AsciiDoc in `harness/src/docs/asciidoc`, built with the module after its tests have passed:
+
+[source,text]
+----
+mvn -pl harness verify                                # the module, its tests and this book
+mvn -pl harness verify -Dzephyr.editor-notes=false    # without editor's notes
+mvn -pl harness verify -Dasciidoctor.skip=true        # without the book
+----
+
+The PDF, the single-page HTML and the EPUB are written to `target/book`; the PDF and the HTML are attached to the module's artifact with the classifier `book`, and the test sources with the classifier `test-sources`.
+The look comes from the runtime's `doc/zephyr` directory, shared by all the Nasdanika Zephyr Books.
+
+Listings are tagged regions of the tests in `src/test/java/org/nasdanika/sdk/runtime/harness/tests` and of the module's `module-info.java`.
+The tests record their telemetry in `target/telemetry`, one directory per test, where the YAML files can be read after a build.
+A listing line holds at most 96 characters, and a warning fails the build.

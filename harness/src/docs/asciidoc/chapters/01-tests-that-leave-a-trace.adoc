@@ -1,0 +1,55 @@
+[#tests-that-leave-a-trace]
+== Tests that leave a trace
+
+An integration test of a web application sends requests and checks responses.
+When it passes, it leaves nothing behind but a green mark.
+When it fails, it leaves an assertion message on one side and, somewhere else, the server's logs on the other, and someone has to put the two together: which request was this, what did the server do with it, where did it go wrong.
+
+The information was there while the test ran.
+The client knew which request it was sending and why; the server knew what it did to answer.
+What was missing is the thread that ties them together.
+
+=== The thread exists
+
+Distributed tracing is that thread.
+OpenTelemetry, the standard for it, gives every unit of work a trace and every operation in it a span, and carries the trace from process to process in a request header, `traceparent`, in the W3C format.
+A server that reads the header makes its span a child of the client's span, and the two sides become one tree.
+
+Production systems use it to follow a request through dozens of services.
+Tests rarely do, and the reason is mostly setup: a collector, a backend to store traces in, an agent or an SDK configured on both sides, and a way to find the test's trace among everything else.
+
+=== In one JVM it is free
+
+A test that starts the server it tests, in the same JVM, needs none of that.
+There is one OpenTelemetry instance, so there is one SDK, one exporter and one place the telemetry goes.
+If the client sends `traceparent` and the server reads it, every request of the test and everything the server did for it are in the test's trace, automatically, and nothing else is.
+
+The harness makes that the default.
+`Harness.inServer` starts a server whose every handler is instrumented, runs your code in a span, and gives it a client whose requests are spans that carry the trace.
+The runtime's telemetry model saves the trace as a model: spans with their children, attributes and log records, in YAML, JSON or XMI.
+
+=== What a trace is for
+
+A trace recorded by a test is evidence, and evidence has several readers.
+
+*The developer of a failing test* sees the request, the server span it caused, the log records the server emitted and the exception it recorded, in one tree.
+
+*The reviewer* sees what a change did to the work behind a test: a new request, a request that got slower, a resource loaded twice.
+Traces are models, so two runs can be compared like any two models.
+
+*The writer of documentation* gets a description of a scenario that is true by construction: the steps a test took, what each step asked the server for, and what the server did.
+With screenshots from a browser, which the runtime's Playwright module adds, the trace is a walk-through.
+Generated into AsciiDoc, a slide deck or a sequence diagram, it is documentation that cannot drift from the system, because the next build regenerates it.
+
+=== Where this comes from
+
+In an earlier generation of Nasdanika, WebTest ran browser tests and reported every action with screenshots taken before and after it, so a test report was also a picture book of the application.
+What it could not show was the server's side.
+This module and the Playwright module after it are the same idea with the missing half added: the browser's steps, the screenshots and the server's work, in one trace.
+
+ifdef::editor-notes[]
+[IMPORTANT,caption="Editor's note"]
+====
+Describe Nasdanika WebTest from its repository, https://github.com/Nasdanika/webtest, before publishing: what it was built on and what its reports contained. The text assumes browser tests with screenshots before and after each action, as the author recalls it.
+====
+endif::[]

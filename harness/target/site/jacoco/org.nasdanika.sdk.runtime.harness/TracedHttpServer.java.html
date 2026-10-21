@@ -1,0 +1,81 @@
+<?xml version="1.0" encoding="UTF-8"?><!DOCTYPE html PUBLIC "-//W3C//DTD XHTML 1.0 Strict//EN" "http://www.w3.org/TR/xhtml1/DTD/xhtml1-strict.dtd"><html xmlns="http://www.w3.org/1999/xhtml" lang="en"><head><meta http-equiv="Content-Type" content="text/html;charset=UTF-8"/><link rel="stylesheet" href="../jacoco-resources/report.css" type="text/css"/><link rel="shortcut icon" href="../jacoco-resources/report.gif" type="image/gif"/><title>TracedHttpServer.java</title><link rel="stylesheet" href="../jacoco-resources/prettify.css" type="text/css"/><script type="text/javascript" src="../jacoco-resources/prettify.js"></script></head><body onload="window['PR_TAB_WIDTH']=4;prettyPrint()"><div class="breadcrumb" id="breadcrumb"><span class="info"><a href="../jacoco-sessions.html" class="el_session">Sessions</a></span><a href="../index.html" class="el_report">Nasdanika SDK Runtime Harness</a> &gt; <a href="index.source.html" class="el_package">org.nasdanika.sdk.runtime.harness</a> &gt; <span class="el_source">TracedHttpServer.java</span></div><h1>TracedHttpServer.java</h1><pre class="source lang-java linenums">package org.nasdanika.sdk.runtime.harness;
+
+import java.io.IOException;
+import java.net.InetSocketAddress;
+import java.util.concurrent.Executor;
+
+import com.sun.net.httpserver.Filter;
+import com.sun.net.httpserver.HttpContext;
+import com.sun.net.httpserver.HttpHandler;
+import com.sun.net.httpserver.HttpServer;
+
+/**
+ * Delegates to a server, and adds a filter to every context created through it, so that code
+ * configuring the server cannot leave a context uninstrumented.
+ */
+final class TracedHttpServer extends HttpServer {
+
+	private final HttpServer delegate;
+	private final Filter filter;
+
+<span class="fc" id="L21">	TracedHttpServer(HttpServer delegate, Filter filter) {</span>
+<span class="fc" id="L22">		this.delegate = delegate;</span>
+<span class="fc" id="L23">		this.filter = filter;</span>
+<span class="fc" id="L24">	}</span>
+
+	@Override
+	public void bind(InetSocketAddress addr, int backlog) throws IOException {
+<span class="nc" id="L28">		delegate.bind(addr, backlog);</span>
+<span class="nc" id="L29">	}</span>
+
+	@Override
+	public void start() {
+<span class="nc" id="L33">		throw new UnsupportedOperationException(&quot;The harness starts the server&quot;);</span>
+	}
+
+	@Override
+	public void setExecutor(Executor executor) {
+<span class="nc" id="L38">		throw new UnsupportedOperationException(&quot;The harness sets the executor&quot;);</span>
+	}
+
+	@Override
+	public Executor getExecutor() {
+<span class="nc" id="L43">		return delegate.getExecutor();</span>
+	}
+
+	@Override
+	public void stop(int delay) {
+<span class="nc" id="L48">		throw new UnsupportedOperationException(&quot;The harness stops the server&quot;);</span>
+	}
+
+	@Override
+	public HttpContext createContext(String path, HttpHandler handler) {
+<span class="fc" id="L53">		HttpContext context = delegate.createContext(path, handler);</span>
+<span class="fc" id="L54">		context.getFilters().add(filter);</span>
+<span class="fc" id="L55">		return context;</span>
+	}
+
+	@Override
+	public HttpContext createContext(String path) {
+<span class="nc" id="L60">		HttpContext context = delegate.createContext(path);</span>
+<span class="nc" id="L61">		context.getFilters().add(filter);</span>
+<span class="nc" id="L62">		return context;</span>
+	}
+
+	@Override
+	public void removeContext(String path) {
+<span class="nc" id="L67">		delegate.removeContext(path);</span>
+<span class="nc" id="L68">	}</span>
+
+	@Override
+	public void removeContext(HttpContext context) {
+<span class="nc" id="L72">		delegate.removeContext(context);</span>
+<span class="nc" id="L73">	}</span>
+
+	@Override
+	public InetSocketAddress getAddress() {
+<span class="nc" id="L77">		return delegate.getAddress();</span>
+	}
+
+}
+</pre><div class="footer"><span class="right">Created with <a href="http://www.jacoco.org/jacoco">JaCoCo</a> 0.8.15.202606040825</span></div></body></html>

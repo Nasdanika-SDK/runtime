@@ -1,0 +1,4 @@
+--patch-module
+org.nasdanika.sdk.runtime.playwright=_
+--add-reads
+org.nasdanika.sdk.runtime.playwright=ALL-UNNAMED

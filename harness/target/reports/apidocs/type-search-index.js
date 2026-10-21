@@ -1,0 +1,1 @@
+typeSearchIndex = [{"l":"All Classes and Interfaces","u":"allclasses-index.html","k":"18"},{"p":"org.nasdanika.sdk.runtime.harness","l":"Harness"},{"p":"org.nasdanika.sdk.runtime.harness","l":"Server","k":"10"},{"p":"org.nasdanika.sdk.runtime.harness","l":"Harness.ServerBody","k":"10"}];updateSearchResults();

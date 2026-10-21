@@ -1,0 +1,611 @@
+---
+eClass: "https://runtime.sdk.nasdanika.org/models/telemetry/traces#//TracesData"
+resourceSpans:
+- resource:
+    attributes:
+    - key: "service.name"
+      value:
+        stringValue: "unknown_service:java"
+    - key: "telemetry.sdk.language"
+      value:
+        stringValue: "java"
+    - key: "telemetry.sdk.name"
+      value:
+        stringValue: "opentelemetry"
+    - key: "telemetry.sdk.version"
+      value:
+        stringValue: "1.67.0"
+  scopeSpans:
+  - scope:
+      name: "org.nasdanika.sdk.runtime"
+    spans:
+    - traceId: "7ae8bf43e81fb5e5cbaf0a475b72dd95"
+      spanId: "e8dc958644604094"
+      name: "Catalog"
+      kind: "SPAN_KIND_INTERNAL"
+      startTimeUnixNano: 1792601084167133600
+      endTimeUnixNano: 1792601085773799500
+      attributes:
+      - key: "server.address"
+        value:
+          stringValue: "127.0.0.1"
+      - key: "server.port"
+        value:
+          intValue: 60054
+      - key: "url.full"
+        value:
+          stringValue: "http://127.0.0.1:60054/"
+      status: {}
+      flags: 259
+      children:
+      - traceId: "7ae8bf43e81fb5e5cbaf0a475b72dd95"
+        spanId: "8d23f98f6991fd9a"
+        parentSpanId: "e8dc958644604094"
+        name: "Browser"
+        kind: "SPAN_KIND_INTERNAL"
+        startTimeUnixNano: 1792601084700103200
+        endTimeUnixNano: 1792601085644584200
+        attributes:
+        - key: "browser.name"
+          value:
+            stringValue: "chromium"
+        - key: "browser.version"
+          value:
+            stringValue: "155.0.8059.84"
+        - key: "nasdanika.browser.channel"
+          value:
+            stringValue: "chrome"
+        status: {}
+        flags: 259
+        children:
+        - traceId: "7ae8bf43e81fb5e5cbaf0a475b72dd95"
+          spanId: "8d439b30224518e4"
+          parentSpanId: "8d23f98f6991fd9a"
+          name: "Open the catalog"
+          kind: "SPAN_KIND_INTERNAL"
+          startTimeUnixNano: 1792601084801840000
+          endTimeUnixNano: 1792601084961391600
+          attributes:
+          - key: "nasdanika.step.index"
+            value:
+              intValue: 1
+          status: {}
+          flags: 259
+          logRecords:
+          - observedTimeUnixNano: 1792601084883435600
+            severityNumber: "SEVERITY_NUMBER_INFO"
+            body:
+              stringValue: "Catalog ready"
+            attributes:
+            - key: "url.full"
+              value:
+                stringValue: "http://127.0.0.1:60054/index.html"
+            flags: 3
+            traceId: "7ae8bf43e81fb5e5cbaf0a475b72dd95"
+            spanId: "8d439b30224518e4"
+            eventName: "nasdanika.browser.console"
+          - observedTimeUnixNano: 1792601084962001200
+            severityNumber: "SEVERITY_NUMBER_INFO"
+            body:
+              stringValue: "Open the catalog"
+            attributes:
+            - key: "nasdanika.screenshot.index"
+              value:
+                intValue: 1
+            - key: "nasdanika.screenshot.name"
+              value:
+                stringValue: "Open the catalog"
+            - key: "nasdanika.screenshot.path"
+              value:
+                stringValue: "001-open-the-catalog-after.png"
+            - key: "nasdanika.screenshot.phase"
+              value:
+                stringValue: "after"
+            - key: "url.full"
+              value:
+                stringValue: "http://127.0.0.1:60054/index.html"
+            flags: 3
+            traceId: "7ae8bf43e81fb5e5cbaf0a475b72dd95"
+            spanId: "8d439b30224518e4"
+            eventName: "nasdanika.screenshot"
+          children:
+          - traceId: "7ae8bf43e81fb5e5cbaf0a475b72dd95"
+            spanId: "0e894b561c348fe9"
+            parentSpanId: "8d439b30224518e4"
+            name: "GET /"
+            kind: "SPAN_KIND_SERVER"
+            startTimeUnixNano: 1792601084829448600
+            endTimeUnixNano: 1792601084847007800
+            attributes:
+            - key: "http.request.method"
+              value:
+                stringValue: "GET"
+            - key: "http.route"
+              value:
+                stringValue: "/"
+            - key: "url.path"
+              value:
+                stringValue: "/index.html"
+            - key: "url.scheme"
+              value:
+                stringValue: "http"
+            - key: "server.address"
+              value:
+                stringValue: "127.0.0.1"
+            - key: "server.port"
+              value:
+                intValue: 60054
+            - key: "client.address"
+              value:
+                stringValue: "127.0.0.1"
+            - key: "network.protocol.version"
+              value:
+                stringValue: "1.1"
+            - key: "user_agent.original"
+              value:
+                stringValue: "Mozilla/5.0 (Windows NT 10.0; Win64; x64) AppleWebKit/537.36\
+                  \ (KHTML, like Gecko) HeadlessChrome/155.0.0.0 Safari/537.36"
+            - key: "http.response.status_code"
+              value:
+                intValue: 200
+            - key: "http.response.body.size"
+              value:
+                intValue: 451
+            status: {}
+            flags: 771
+            children:
+            - traceId: "7ae8bf43e81fb5e5cbaf0a475b72dd95"
+              spanId: "9092dd3bdc2d5fb9"
+              parentSpanId: "0e894b561c348fe9"
+              name: "Content.writeTo"
+              kind: "SPAN_KIND_INTERNAL"
+              startTimeUnixNano: 1792601084844708300
+              endTimeUnixNano: 1792601084846716100
+              attributes:
+              - key: "nasdanika.content"
+                value:
+                  stringValue: "file:/C:/Users/pavel/nasdanika/sdk/runtime/playwright/src/test/resources/catalog/index.html"
+              - key: "nasdanika.io.bytes"
+                value:
+                  intValue: 451
+              status: {}
+              flags: 259
+              children:
+              - traceId: "7ae8bf43e81fb5e5cbaf0a475b72dd95"
+                spanId: "36f15a25b64976e9"
+                parentSpanId: "9092dd3bdc2d5fb9"
+                name: "Content.read"
+                kind: "SPAN_KIND_INTERNAL"
+                startTimeUnixNano: 1792601084845095100
+                endTimeUnixNano: 1792601084845808000
+                attributes:
+                - key: "url.full"
+                  value:
+                    stringValue: "file:/C:/Users/pavel/nasdanika/sdk/runtime/playwright/src/test/resources/catalog/index.html"
+                - key: "nasdanika.io.bytes"
+                  value:
+                    intValue: 451
+                status:
+                  code: "STATUS_CODE_OK"
+                flags: 259
+          - traceId: "7ae8bf43e81fb5e5cbaf0a475b72dd95"
+            spanId: "c423d752ea4b9d09"
+            parentSpanId: "8d439b30224518e4"
+            name: "GET /"
+            kind: "SPAN_KIND_SERVER"
+            startTimeUnixNano: 1792601084861328800
+            endTimeUnixNano: 1792601084862560000
+            attributes:
+            - key: "http.request.method"
+              value:
+                stringValue: "GET"
+            - key: "http.route"
+              value:
+                stringValue: "/"
+            - key: "url.path"
+              value:
+                stringValue: "/catalog.css"
+            - key: "url.scheme"
+              value:
+                stringValue: "http"
+            - key: "server.address"
+              value:
+                stringValue: "127.0.0.1"
+            - key: "server.port"
+              value:
+                intValue: 60054
+            - key: "client.address"
+              value:
+                stringValue: "127.0.0.1"
+            - key: "network.protocol.version"
+              value:
+                stringValue: "1.1"
+            - key: "user_agent.original"
+              value:
+                stringValue: "Mozilla/5.0 (Windows NT 10.0; Win64; x64) AppleWebKit/537.36\
+                  \ (KHTML, like Gecko) HeadlessChrome/155.0.0.0 Safari/537.36"
+            - key: "http.response.status_code"
+              value:
+                intValue: 200
+            - key: "http.response.body.size"
+              value:
+                intValue: 364
+            status: {}
+            flags: 771
+            children:
+            - traceId: "7ae8bf43e81fb5e5cbaf0a475b72dd95"
+              spanId: "43b7dd348ea786e2"
+              parentSpanId: "c423d752ea4b9d09"
+              name: "Content.writeTo"
+              kind: "SPAN_KIND_INTERNAL"
+              startTimeUnixNano: 1792601084862110200
+              endTimeUnixNano: 1792601084862522200
+              attributes:
+              - key: "nasdanika.content"
+                value:
+                  stringValue: "file:/C:/Users/pavel/nasdanika/sdk/runtime/playwright/src/test/resources/catalog/catalog.css"
+              - key: "nasdanika.io.bytes"
+                value:
+                  intValue: 364
+              status: {}
+              flags: 259
+              children:
+              - traceId: "7ae8bf43e81fb5e5cbaf0a475b72dd95"
+                spanId: "9909e800afc7480a"
+                parentSpanId: "43b7dd348ea786e2"
+                name: "Content.read"
+                kind: "SPAN_KIND_INTERNAL"
+                startTimeUnixNano: 1792601084862178800
+                endTimeUnixNano: 1792601084862418700
+                attributes:
+                - key: "url.full"
+                  value:
+                    stringValue: "file:/C:/Users/pavel/nasdanika/sdk/runtime/playwright/src/test/resources/catalog/catalog.css"
+                - key: "nasdanika.io.bytes"
+                  value:
+                    intValue: 364
+                status:
+                  code: "STATUS_CODE_OK"
+                flags: 259
+          - traceId: "7ae8bf43e81fb5e5cbaf0a475b72dd95"
+            spanId: "a248465eb3b898a2"
+            parentSpanId: "8d439b30224518e4"
+            name: "GET /"
+            kind: "SPAN_KIND_SERVER"
+            startTimeUnixNano: 1792601084861888800
+            endTimeUnixNano: 1792601084862620200
+            attributes:
+            - key: "http.request.method"
+              value:
+                stringValue: "GET"
+            - key: "http.route"
+              value:
+                stringValue: "/"
+            - key: "url.path"
+              value:
+                stringValue: "/catalog.js"
+            - key: "url.scheme"
+              value:
+                stringValue: "http"
+            - key: "server.address"
+              value:
+                stringValue: "127.0.0.1"
+            - key: "server.port"
+              value:
+                intValue: 60054
+            - key: "client.address"
+              value:
+                stringValue: "127.0.0.1"
+            - key: "network.protocol.version"
+              value:
+                stringValue: "1.1"
+            - key: "user_agent.original"
+              value:
+                stringValue: "Mozilla/5.0 (Windows NT 10.0; Win64; x64) AppleWebKit/537.36\
+                  \ (KHTML, like Gecko) HeadlessChrome/155.0.0.0 Safari/537.36"
+            - key: "http.response.status_code"
+              value:
+                intValue: 200
+            - key: "http.response.body.size"
+              value:
+                intValue: 1022
+            status: {}
+            flags: 771
+            children:
+            - traceId: "7ae8bf43e81fb5e5cbaf0a475b72dd95"
+              spanId: "6aa9b853ae33412c"
+              parentSpanId: "a248465eb3b898a2"
+              name: "Content.writeTo"
+              kind: "SPAN_KIND_INTERNAL"
+              startTimeUnixNano: 1792601084862270100
+              endTimeUnixNano: 1792601084862585300
+              attributes:
+              - key: "nasdanika.content"
+                value:
+                  stringValue: "file:/C:/Users/pavel/nasdanika/sdk/runtime/playwright/src/test/resources/catalog/catalog.js"
+              - key: "nasdanika.io.bytes"
+                value:
+                  intValue: 1022
+              status: {}
+              flags: 259
+              children:
+              - traceId: "7ae8bf43e81fb5e5cbaf0a475b72dd95"
+                spanId: "bd5b360611c8befb"
+                parentSpanId: "6aa9b853ae33412c"
+                name: "Content.read"
+                kind: "SPAN_KIND_INTERNAL"
+                startTimeUnixNano: 1792601084862325900
+                endTimeUnixNano: 1792601084862514100
+                attributes:
+                - key: "url.full"
+                  value:
+                    stringValue: "file:/C:/Users/pavel/nasdanika/sdk/runtime/playwright/src/test/resources/catalog/catalog.js"
+                - key: "nasdanika.io.bytes"
+                  value:
+                    intValue: 1022
+                status:
+                  code: "STATUS_CODE_OK"
+                flags: 259
+          - traceId: "7ae8bf43e81fb5e5cbaf0a475b72dd95"
+            spanId: "89cd6e2f49d27b38"
+            parentSpanId: "8d439b30224518e4"
+            name: "GET /data"
+            kind: "SPAN_KIND_SERVER"
+            startTimeUnixNano: 1792601084874437400
+            endTimeUnixNano: 1792601084879056100
+            attributes:
+            - key: "http.request.method"
+              value:
+                stringValue: "GET"
+            - key: "http.route"
+              value:
+                stringValue: "/data"
+            - key: "url.path"
+              value:
+                stringValue: "/data/books"
+            - key: "url.scheme"
+              value:
+                stringValue: "http"
+            - key: "server.address"
+              value:
+                stringValue: "127.0.0.1"
+            - key: "server.port"
+              value:
+                intValue: 60054
+            - key: "client.address"
+              value:
+                stringValue: "127.0.0.1"
+            - key: "network.protocol.version"
+              value:
+                stringValue: "1.1"
+            - key: "user_agent.original"
+              value:
+                stringValue: "Mozilla/5.0 (Windows NT 10.0; Win64; x64) AppleWebKit/537.36\
+                  \ (KHTML, like Gecko) HeadlessChrome/155.0.0.0 Safari/537.36"
+            - key: "http.response.status_code"
+              value:
+                intValue: 200
+            - key: "http.response.body.size"
+              value:
+                intValue: 239
+            status: {}
+            flags: 771
+            logRecords:
+            - observedTimeUnixNano: 1792601084877436500
+              severityNumber: "SEVERITY_NUMBER_INFO"
+              body:
+                stringValue: "Searching for ''"
+              flags: 3
+              traceId: "7ae8bf43e81fb5e5cbaf0a475b72dd95"
+              spanId: "89cd6e2f49d27b38"
+        - traceId: "7ae8bf43e81fb5e5cbaf0a475b72dd95"
+          spanId: "f5b921b059fa1e14"
+          parentSpanId: "8d23f98f6991fd9a"
+          name: "Click a missing button"
+          kind: "SPAN_KIND_INTERNAL"
+          startTimeUnixNano: 1792601085002277000
+          endTimeUnixNano: 1792601085634523600
+          attributes:
+          - key: "nasdanika.step.index"
+            value:
+              intValue: 2
+          events:
+          - timeUnixNano: 1792601085633854300
+            name: "exception"
+            attributes:
+            - key: "exception.type"
+              value:
+                stringValue: "com.microsoft.playwright.TimeoutError"
+            - key: "exception.message"
+              value:
+                stringValue: "Error {\n  message='Timeout 500ms exceeded.\n  name='TimeoutError\n\
+                  \  stack='TimeoutError: Timeout 500ms exceeded.\n    at _ProgressController.run\
+                  \ (C:\\Users\\pavel\\AppData\\Local\\Temp\\playwright-java-17664328800704234916\\\
+                  package\\lib\\coreBundle.js:12360:32)\n    at DispatcherConnection.dispatch\
+                  \ (C:\\Users\\pavel\\AppData\\Local\\Temp\\playwright-java-17664328800704234916\\\
+                  package\\lib\\coreBundle.js:19135:44)\n}\nCall log:\n-   - waiting\
+                  \ for locator(\"#missing\")\n"
+            - key: "exception.stacktrace"
+              value:
+                stringValue: "com.microsoft.playwright.TimeoutError: Error {\n  message='Timeout\
+                  \ 500ms exceeded.\n  name='TimeoutError\n  stack='TimeoutError:\
+                  \ Timeout 500ms exceeded.\n    at _ProgressController.run (C:\\\
+                  Users\\pavel\\AppData\\Local\\Temp\\playwright-java-17664328800704234916\\\
+                  package\\lib\\coreBundle.js:12360:32)\n    at DispatcherConnection.dispatch\
+                  \ (C:\\Users\\pavel\\AppData\\Local\\Temp\\playwright-java-17664328800704234916\\\
+                  package\\lib\\coreBundle.js:19135:44)\n}\nCall log:\n-   - waiting\
+                  \ for locator(\"#missing\")\n\r\n\tat com.microsoft.playwright@1.63.0/com.microsoft.playwright.impl.WaitableResult.get(WaitableResult.java:52)\r\
+                  \n\tat com.microsoft.playwright@1.63.0/com.microsoft.playwright.impl.ChannelOwner.runUntil(ChannelOwner.java:147)\r\
+                  \n\tat com.microsoft.playwright@1.63.0/com.microsoft.playwright.impl.Connection.sendMessage(Connection.java:136)\r\
+                  \n\tat com.microsoft.playwright@1.63.0/com.microsoft.playwright.impl.ChannelOwner.sendMessage(ChannelOwner.java:133)\r\
+                  \n\tat com.microsoft.playwright@1.63.0/com.microsoft.playwright.impl.FrameImpl.clickImpl(FrameImpl.java:244)\r\
+                  \n\tat com.microsoft.playwright@1.63.0/com.microsoft.playwright.impl.LocatorImpl.click(LocatorImpl.java:173)\r\
+                  \n\tat org.nasdanika.sdk.runtime.playwright@2026.10.0/org.nasdanika.sdk.runtime.playwright.tests.WalkthroughTests.lambda$failingStep$4(WalkthroughTests.java:205)\r\
+                  \n\tat org.nasdanika.sdk.runtime.playwright@2026.10.0/org.nasdanika.sdk.runtime.playwright.Session.lambda$step$0(Session.java:102)\r\
+                  \n\tat org.nasdanika.sdk.runtime.common@2026.10.0/org.nasdanika.sdk.runtime.common.telemetry.Telemetry.inSpan(Telemetry.java:301)\r\
+                  \n\tat org.nasdanika.sdk.runtime.playwright@2026.10.0/org.nasdanika.sdk.runtime.playwright.Session.step(Session.java:97)\r\
+                  \n\tat org.nasdanika.sdk.runtime.playwright@2026.10.0/org.nasdanika.sdk.runtime.playwright.tests.WalkthroughTests.lambda$failingStep$3(WalkthroughTests.java:203)\r\
+                  \n\tat org.assertj.core.api.ThrowableAssert.catchThrowable(ThrowableAssert.java:66)\r\
+                  \n\tat org.assertj.core.api.AssertionsForClassTypes.catchThrowable(AssertionsForClassTypes.java:908)\r\
+                  \n\tat org.assertj.core.api.Assertions.catchThrowable(Assertions.java:1476)\r\
+                  \n\tat org.assertj.core.api.Assertions.assertThatThrownBy(Assertions.java:1319)\r\
+                  \n\tat org.nasdanika.sdk.runtime.playwright@2026.10.0/org.nasdanika.sdk.runtime.playwright.tests.WalkthroughTests.lambda$failingStep$1(WalkthroughTests.java:203)\r\
+                  \n\tat org.nasdanika.sdk.runtime.playwright@2026.10.0/org.nasdanika.sdk.runtime.playwright.Browsing.lambda$inBrowser$1(Browsing.java:161)\r\
+                  \n\tat org.nasdanika.sdk.runtime.common@2026.10.0/org.nasdanika.sdk.runtime.common.telemetry.Telemetry.inSpan(Telemetry.java:301)\r\
+                  \n\tat org.nasdanika.sdk.runtime.playwright@2026.10.0/org.nasdanika.sdk.runtime.playwright.Browsing.inBrowser(Browsing.java:158)\r\
+                  \n\tat org.nasdanika.sdk.runtime.playwright@2026.10.0/org.nasdanika.sdk.runtime.playwright.tests.WalkthroughTests.lambda$failingStep$0(WalkthroughTests.java:201)\r\
+                  \n\tat org.nasdanika.sdk.runtime.harness@2026.10.0/org.nasdanika.sdk.runtime.harness.Harness.lambda$inServer$0(Harness.java:111)\r\
+                  \n\tat org.nasdanika.sdk.runtime.common@2026.10.0/org.nasdanika.sdk.runtime.common.telemetry.Telemetry.inSpan(Telemetry.java:301)\r\
+                  \n\tat org.nasdanika.sdk.runtime.harness@2026.10.0/org.nasdanika.sdk.runtime.harness.Harness.inServer(Harness.java:108)\r\
+                  \n\tat org.nasdanika.sdk.runtime.playwright@2026.10.0/org.nasdanika.sdk.runtime.playwright.tests.WalkthroughTests.failingStep(WalkthroughTests.java:200)\r\
+                  \n\tat java.base/jdk.internal.reflect.DirectMethodHandleAccessor.invoke(DirectMethodHandleAccessor.java:104)\r\
+                  \n\tat java.base/java.lang.reflect.Method.invoke(Method.java:565)\r\
+                  \n\tat org.junit.platform.commons.util.ReflectionUtils.invokeMethod(ReflectionUtils.java:700)\r\
+                  \n\tat org.junit.platform.commons.support.ReflectionSupport.invokeMethod(ReflectionSupport.java:528)\r\
+                  \n\tat org.junit.jupiter.engine.support.MethodReflectionUtils.invoke(MethodReflectionUtils.java:53)\r\
+                  \n\tat org.junit.jupiter.engine.execution.MethodInvocation.proceed(MethodInvocation.java:61)\r\
+                  \n\tat org.junit.jupiter.engine.execution.InvocationInterceptorChain$ValidatingInvocation.proceed(InvocationInterceptorChain.java:124)\r\
+                  \n\tat org.junit.jupiter.engine.extension.TimeoutExtension.intercept(TimeoutExtension.java:163)\r\
+                  \n\tat org.junit.jupiter.engine.extension.TimeoutExtension.interceptTestableMethod(TimeoutExtension.java:148)\r\
+                  \n\tat org.junit.jupiter.engine.extension.TimeoutExtension.interceptTestMethod(TimeoutExtension.java:86)\r\
+                  \n\tat org.junit.jupiter.engine.execution.InterceptingExecutableInvoker$ReflectiveInterceptorCall.lambda$ofVoidMethod$0(InterceptingExecutableInvoker.java:124)\r\
+                  \n\tat org.junit.jupiter.engine.execution.InterceptingExecutableInvoker.lambda$invoke$0(InterceptingExecutableInvoker.java:105)\r\
+                  \n\tat org.junit.jupiter.engine.execution.InvocationInterceptorChain$InterceptedInvocation.proceed(InvocationInterceptorChain.java:99)\r\
+                  \n\tat org.junit.jupiter.engine.execution.InvocationInterceptorChain.proceed(InvocationInterceptorChain.java:66)\r\
+                  \n\tat org.junit.jupiter.engine.execution.InvocationInterceptorChain.chainAndInvoke(InvocationInterceptorChain.java:47)\r\
+                  \n\tat org.junit.jupiter.engine.execution.InvocationInterceptorChain.invoke(InvocationInterceptorChain.java:39)\r\
+                  \n\tat org.junit.jupiter.engine.execution.InterceptingExecutableInvoker.invoke(InterceptingExecutableInvoker.java:104)\r\
+                  \n\tat org.junit.jupiter.engine.execution.InterceptingExecutableInvoker.invoke(InterceptingExecutableInvoker.java:98)\r\
+                  \n\tat org.junit.jupiter.engine.execution.InterceptingExecutableInvoker.invokeVoid(InterceptingExecutableInvoker.java:71)\r\
+                  \n\tat org.junit.jupiter.engine.descriptor.TestMethodTestDescriptor.lambda$invokeTestMethod$0(TestMethodTestDescriptor.java:219)\r\
+                  \n\tat org.junit.platform.engine.support.hierarchical.ThrowableCollector.execute(ThrowableCollector.java:74)\r\
+                  \n\tat org.junit.jupiter.engine.descriptor.TestMethodTestDescriptor.invokeTestMethod(TestMethodTestDescriptor.java:215)\r\
+                  \n\tat org.junit.jupiter.engine.descriptor.TestMethodTestDescriptor.execute(TestMethodTestDescriptor.java:157)\r\
+                  \n\tat org.junit.jupiter.engine.descriptor.TestMethodTestDescriptor.execute(TestMethodTestDescriptor.java:70)\r\
+                  \n\tat org.junit.platform.engine.support.hierarchical.NodeTestTask.lambda$executeRecursively$2(NodeTestTask.java:176)\r\
+                  \n\tat org.junit.platform.engine.support.hierarchical.ThrowableCollector.execute(ThrowableCollector.java:74)\r\
+                  \n\tat org.junit.platform.engine.support.hierarchical.NodeTestTask.lambda$executeRecursively$1(NodeTestTask.java:166)\r\
+                  \n\tat org.junit.platform.engine.support.hierarchical.Node.around(Node.java:139)\r\
+                  \n\tat org.junit.platform.engine.support.hierarchical.NodeTestTask.lambda$executeRecursively$0(NodeTestTask.java:164)\r\
+                  \n\tat org.junit.platform.engine.support.hierarchical.ThrowableCollector.execute(ThrowableCollector.java:74)\r\
+                  \n\tat org.junit.platform.engine.support.hierarchical.NodeTestTask.executeRecursively(NodeTestTask.java:163)\r\
+                  \n\tat org.junit.platform.engine.support.hierarchical.NodeTestTask.execute(NodeTestTask.java:116)\r\
+                  \n\tat java.base/java.util.ArrayList.forEach(ArrayList.java:1604)\r\
+                  \n\tat org.junit.platform.engine.support.hierarchical.SameThreadHierarchicalTestExecutorService.invokeAll(SameThreadHierarchicalTestExecutorService.java:42)\r\
+                  \n\tat org.junit.platform.engine.support.hierarchical.NodeTestTask.lambda$executeRecursively$2(NodeTestTask.java:180)\r\
+                  \n\tat org.junit.platform.engine.support.hierarchical.ThrowableCollector.execute(ThrowableCollector.java:74)\r\
+                  \n\tat org.junit.platform.engine.support.hierarchical.NodeTestTask.lambda$executeRecursively$1(NodeTestTask.java:166)\r\
+                  \n\tat org.junit.platform.engine.support.hierarchical.Node.around(Node.java:139)\r\
+                  \n\tat org.junit.platform.engine.support.hierarchical.NodeTestTask.lambda$executeRecursively$0(NodeTestTask.java:164)\r\
+                  \n\tat org.junit.platform.engine.support.hierarchical.ThrowableCollector.execute(ThrowableCollector.java:74)\r\
+                  \n\tat org.junit.platform.engine.support.hierarchical.NodeTestTask.executeRecursively(NodeTestTask.java:163)\r\
+                  \n\tat org.junit.platform.engine.support.hierarchical.NodeTestTask.execute(NodeTestTask.java:116)\r\
+                  \n\tat java.base/java.util.ArrayList.forEach(ArrayList.java:1604)\r\
+                  \n\tat org.junit.platform.engine.support.hierarchical.SameThreadHierarchicalTestExecutorService.invokeAll(SameThreadHierarchicalTestExecutorService.java:42)\r\
+                  \n\tat org.junit.platform.engine.support.hierarchical.NodeTestTask.lambda$executeRecursively$2(NodeTestTask.java:180)\r\
+                  \n\tat org.junit.platform.engine.support.hierarchical.ThrowableCollector.execute(ThrowableCollector.java:74)\r\
+                  \n\tat org.junit.platform.engine.support.hierarchical.NodeTestTask.lambda$executeRecursively$1(NodeTestTask.java:166)\r\
+                  \n\tat org.junit.platform.engine.support.hierarchical.Node.around(Node.java:139)\r\
+                  \n\tat org.junit.platform.engine.support.hierarchical.NodeTestTask.lambda$executeRecursively$0(NodeTestTask.java:164)\r\
+                  \n\tat org.junit.platform.engine.support.hierarchical.ThrowableCollector.execute(ThrowableCollector.java:74)\r\
+                  \n\tat org.junit.platform.engine.support.hierarchical.NodeTestTask.executeRecursively(NodeTestTask.java:163)\r\
+                  \n\tat org.junit.platform.engine.support.hierarchical.NodeTestTask.execute(NodeTestTask.java:116)\r\
+                  \n\tat org.junit.platform.engine.support.hierarchical.SameThreadHierarchicalTestExecutorService.submit(SameThreadHierarchicalTestExecutorService.java:36)\r\
+                  \n\tat org.junit.platform.engine.support.hierarchical.HierarchicalTestExecutor.execute(HierarchicalTestExecutor.java:52)\r\
+                  \n\tat org.junit.platform.engine.support.hierarchical.HierarchicalTestEngine.execute(HierarchicalTestEngine.java:58)\r\
+                  \n\tat org.junit.platform.launcher.core.EngineExecutionOrchestrator.executeEngine(EngineExecutionOrchestrator.java:256)\r\
+                  \n\tat org.junit.platform.launcher.core.EngineExecutionOrchestrator.failOrExecuteEngine(EngineExecutionOrchestrator.java:228)\r\
+                  \n\tat org.junit.platform.launcher.core.EngineExecutionOrchestrator.execute(EngineExecutionOrchestrator.java:189)\r\
+                  \n\tat org.junit.platform.launcher.core.EngineExecutionOrchestrator.execute(EngineExecutionOrchestrator.java:109)\r\
+                  \n\tat org.junit.platform.launcher.core.EngineExecutionOrchestrator.lambda$execute$0(EngineExecutionOrchestrator.java:66)\r\
+                  \n\tat org.junit.platform.launcher.core.EngineExecutionOrchestrator.withInterceptedStreams(EngineExecutionOrchestrator.java:168)\r\
+                  \n\tat org.junit.platform.launcher.core.EngineExecutionOrchestrator.execute(EngineExecutionOrchestrator.java:65)\r\
+                  \n\tat org.junit.platform.launcher.core.DefaultLauncher.execute(DefaultLauncher.java:137)\r\
+                  \n\tat org.junit.platform.launcher.core.DefaultLauncher.execute(DefaultLauncher.java:126)\r\
+                  \n\tat org.junit.platform.launcher.core.DelegatingLauncher.execute(DelegatingLauncher.java:71)\r\
+                  \n\tat org.junit.platform.launcher.core.InterceptingLauncher.lambda$execute$2(InterceptingLauncher.java:66)\r\
+                  \n\tat org.junit.platform.launcher.core.ClasspathAlignmentCheckingLauncherInterceptor.intercept(ClasspathAlignmentCheckingLauncherInterceptor.java:25)\r\
+                  \n\tat org.junit.platform.launcher.core.InterceptingLauncher.execute(InterceptingLauncher.java:65)\r\
+                  \n\tat org.junit.platform.launcher.core.DelegatingLauncher.execute(DelegatingLauncher.java:71)\r\
+                  \n\tat java.base/jdk.internal.reflect.DirectMethodHandleAccessor.invoke(DirectMethodHandleAccessor.java:104)\r\
+                  \n\tat java.base/java.lang.reflect.Method.invoke(Method.java:565)\r\
+                  \n\tat org.apache.maven.surefire.api.util.ReflectionUtils.invokeMethodWithArray(ReflectionUtils.java:125)\r\
+                  \n\tat org.apache.maven.surefire.junitplatform.LauncherAdapter.executeWithCancellationToken(LauncherAdapter.java:68)\r\
+                  \n\tat org.apache.maven.surefire.junitplatform.LauncherAdapter.execute(LauncherAdapter.java:54)\r\
+                  \n\tat org.apache.maven.surefire.junitplatform.JUnitPlatformProvider.execute(JUnitPlatformProvider.java:283)\r\
+                  \n\tat org.apache.maven.surefire.junitplatform.JUnitPlatformProvider.invokeAllTests(JUnitPlatformProvider.java:253)\r\
+                  \n\tat org.apache.maven.surefire.junitplatform.JUnitPlatformProvider.invoke(JUnitPlatformProvider.java:221)\r\
+                  \n\tat org.apache.maven.surefire.booter.ForkedBooter.runSuitesInProcess(ForkedBooter.java:394)\r\
+                  \n\tat org.apache.maven.surefire.booter.ForkedBooter.execute(ForkedBooter.java:181)\r\
+                  \n\tat org.apache.maven.surefire.booter.ForkedBooter.run(ForkedBooter.java:530)\r\
+                  \n\tat org.apache.maven.surefire.booter.ForkedBooter.main(ForkedBooter.java:518)\r\
+                  \nCaused by: com.microsoft.playwright.TimeoutError: Error {\n  message='Timeout\
+                  \ 500ms exceeded.\n  name='TimeoutError\n  stack='TimeoutError:\
+                  \ Timeout 500ms exceeded.\n    at _ProgressController.run (C:\\\
+                  Users\\pavel\\AppData\\Local\\Temp\\playwright-java-17664328800704234916\\\
+                  package\\lib\\coreBundle.js:12360:32)\n    at DispatcherConnection.dispatch\
+                  \ (C:\\Users\\pavel\\AppData\\Local\\Temp\\playwright-java-17664328800704234916\\\
+                  package\\lib\\coreBundle.js:19135:44)\n}\nCall log:\n-   - waiting\
+                  \ for locator(\"#missing\")\n\r\n\tat com.microsoft.playwright@1.63.0/com.microsoft.playwright.impl.Connection.dispatch(Connection.java:274)\r\
+                  \n\tat com.microsoft.playwright@1.63.0/com.microsoft.playwright.impl.Connection.processOneMessage(Connection.java:230)\r\
+                  \n\tat com.microsoft.playwright@1.63.0/com.microsoft.playwright.impl.ChannelOwner.runUntil(ChannelOwner.java:145)\r\
+                  \n\t... 103 more\r\n"
+          status:
+            message: "Error {\n  message='Timeout 500ms exceeded.\n  name='TimeoutError\n\
+              \  stack='TimeoutError: Timeout 500ms exceeded.\n    at _ProgressController.run\
+              \ (C:\\Users\\pavel\\AppData\\Local\\Temp\\playwright-java-17664328800704234916\\\
+              package\\lib\\coreBundle.js:12360:32)\n    at DispatcherConnection.dispatch\
+              \ (C:\\Users\\pavel\\AppData\\Local\\Temp\\playwright-java-17664328800704234916\\\
+              package\\lib\\coreBundle.js:19135:44)\n}\nCall log:\n-   - waiting for\
+              \ locator(\"#missing\")\n"
+            code: "STATUS_CODE_ERROR"
+          flags: 259
+          logRecords:
+          - observedTimeUnixNano: 1792601085068690800
+            severityNumber: "SEVERITY_NUMBER_INFO"
+            body:
+              stringValue: "Click a missing button"
+            attributes:
+            - key: "nasdanika.screenshot.index"
+              value:
+                intValue: 2
+            - key: "nasdanika.screenshot.name"
+              value:
+                stringValue: "Click a missing button"
+            - key: "nasdanika.screenshot.path"
+              value:
+                stringValue: "002-click-a-missing-button-before.png"
+            - key: "nasdanika.screenshot.phase"
+              value:
+                stringValue: "before"
+            - key: "url.full"
+              value:
+                stringValue: "http://127.0.0.1:60054/index.html"
+            flags: 3
+            traceId: "7ae8bf43e81fb5e5cbaf0a475b72dd95"
+            spanId: "f5b921b059fa1e14"
+            eventName: "nasdanika.screenshot"
+          - observedTimeUnixNano: 1792601085632844600
+            severityNumber: "SEVERITY_NUMBER_INFO"
+            body:
+              stringValue: "Click a missing button"
+            attributes:
+            - key: "nasdanika.screenshot.index"
+              value:
+                intValue: 3
+            - key: "nasdanika.screenshot.name"
+              value:
+                stringValue: "Click a missing button"
+            - key: "nasdanika.screenshot.path"
+              value:
+                stringValue: "003-click-a-missing-button-failure.png"
+            - key: "nasdanika.screenshot.phase"
+              value:
+                stringValue: "failure"
+            - key: "url.full"
+              value:
+                stringValue: "http://127.0.0.1:60054/index.html"
+            flags: 3
+            traceId: "7ae8bf43e81fb5e5cbaf0a475b72dd95"
+            spanId: "f5b921b059fa1e14"
+            eventName: "nasdanika.screenshot"

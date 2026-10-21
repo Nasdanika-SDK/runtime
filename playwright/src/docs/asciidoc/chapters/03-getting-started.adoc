@@ -1,0 +1,41 @@
+// Defaults for previewing this file on its own; index.adoc and the Maven build set these
+ifndef::mainjava[:mainjava: ../../../main/java]
+ifndef::booktests[:booktests: ../../../test/java/org/nasdanika/sdk/runtime/playwright/tests]
+
+[#getting-started]
+== Getting started
+
+=== Adding the module
+
+The runtime has a bill of materials, `{group-id}:bom`, which manages the versions of its modules and their dependencies, Playwright's included.
+Import it in `dependencyManagement` with the scope `import` and the type `pom`, and depend on `{group-id}:{artifact-id}` without a version, usually in the `test` scope.
+The module brings the runtime's harness and Playwright for Java, with its driver for every platform, about two hundred megabytes.
+
+To record walk-throughs as models, add the runtime's telemetry model exporters, `org.nasdanika.sdk.runtime.models.telemetry:exporters`, and for YAML files the runtime's `emf-json` module.
+
+.The module declaration (`module-info.java`)
+[source,java]
+----
+include::{mainjava}/module-info.java[tag=module,indent=0]
+----
+
+=== A browser
+
+A session launches Chromium, in one of two ways:
+
+* With a *channel*, a browser installed on the machine: `chrome`, `msedge`, or their beta and dev channels. Nothing is downloaded.
+* Without one, the *Chromium Playwright downloads* on first use into a cache in the user's home directory, a few hundred megabytes, once.
+
+The module's tests take the channel from the `nasdanika.playwright.channel` system property, which the build sets from the `playwright.channel` Maven property, `chrome` by default; an empty value means Playwright's Chromium.
+A test should be skipped, not failed, on a machine without a browser, and the module's tests check that one can be launched before they start:
+
+.Skipping without a browser (`WalkthroughTests.java`)
+[source,java]
+----
+include::{booktests}/WalkthroughTests.java[tag=skip,indent=0]
+----
+
+=== Tests on the module path
+
+Tests patched into a module on the module path read what the module reads.
+Maven's Surefire plugin puts the telemetry model on the module path and its exporters, which need the OpenTelemetry SDK, on the class path, so a test that reads a recording needs one more read edge, `--add-reads <your module>=org.nasdanika.sdk.runtime.models.telemetry`, in the Surefire configuration.

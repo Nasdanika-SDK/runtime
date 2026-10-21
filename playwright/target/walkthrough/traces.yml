@@ -1,0 +1,630 @@
+---
+eClass: "https://runtime.sdk.nasdanika.org/models/telemetry/traces#//TracesData"
+resourceSpans:
+- resource:
+    attributes:
+    - key: "service.name"
+      value:
+        stringValue: "catalog"
+    - key: "telemetry.sdk.language"
+      value:
+        stringValue: "java"
+    - key: "telemetry.sdk.name"
+      value:
+        stringValue: "opentelemetry"
+    - key: "telemetry.sdk.version"
+      value:
+        stringValue: "1.67.0"
+  scopeSpans:
+  - scope:
+      name: "org.nasdanika.sdk.runtime"
+    spans:
+    - traceId: "02fcff6fb3ac823d0f6c3bd9110981f5"
+      spanId: "975b107f196f8cea"
+      name: "Catalog"
+      kind: "SPAN_KIND_INTERNAL"
+      startTimeUnixNano: 1792601086732263900
+      endTimeUnixNano: 1792601088085238200
+      attributes:
+      - key: "server.address"
+        value:
+          stringValue: "127.0.0.1"
+      - key: "server.port"
+        value:
+          intValue: 59968
+      - key: "url.full"
+        value:
+          stringValue: "http://127.0.0.1:59968/"
+      status: {}
+      flags: 259
+      children:
+      - traceId: "02fcff6fb3ac823d0f6c3bd9110981f5"
+        spanId: "2bb3f8e4acad22be"
+        parentSpanId: "975b107f196f8cea"
+        name: "Browser"
+        kind: "SPAN_KIND_INTERNAL"
+        startTimeUnixNano: 1792601087229656800
+        endTimeUnixNano: 1792601087950974200
+        attributes:
+        - key: "browser.name"
+          value:
+            stringValue: "chromium"
+        - key: "browser.version"
+          value:
+            stringValue: "155.0.8059.84"
+        - key: "nasdanika.browser.channel"
+          value:
+            stringValue: "chrome"
+        status: {}
+        flags: 259
+        children:
+        - traceId: "02fcff6fb3ac823d0f6c3bd9110981f5"
+          spanId: "93621aee37f2c9e3"
+          parentSpanId: "2bb3f8e4acad22be"
+          name: "Open the catalog"
+          kind: "SPAN_KIND_INTERNAL"
+          startTimeUnixNano: 1792601087323722700
+          endTimeUnixNano: 1792601087498168900
+          attributes:
+          - key: "nasdanika.step.index"
+            value:
+              intValue: 1
+          status: {}
+          flags: 259
+          logRecords:
+          - observedTimeUnixNano: 1792601087374386500
+            severityNumber: "SEVERITY_NUMBER_INFO"
+            body:
+              stringValue: "Catalog ready"
+            attributes:
+            - key: "url.full"
+              value:
+                stringValue: "http://127.0.0.1:59968/index.html"
+            flags: 3
+            traceId: "02fcff6fb3ac823d0f6c3bd9110981f5"
+            spanId: "93621aee37f2c9e3"
+            eventName: "nasdanika.browser.console"
+          - observedTimeUnixNano: 1792601087497815500
+            severityNumber: "SEVERITY_NUMBER_INFO"
+            body:
+              stringValue: "Open the catalog"
+            attributes:
+            - key: "nasdanika.screenshot.index"
+              value:
+                intValue: 1
+            - key: "nasdanika.screenshot.name"
+              value:
+                stringValue: "Open the catalog"
+            - key: "nasdanika.screenshot.path"
+              value:
+                stringValue: "001-open-the-catalog-after.png"
+            - key: "nasdanika.screenshot.phase"
+              value:
+                stringValue: "after"
+            - key: "url.full"
+              value:
+                stringValue: "http://127.0.0.1:59968/index.html"
+            flags: 3
+            traceId: "02fcff6fb3ac823d0f6c3bd9110981f5"
+            spanId: "93621aee37f2c9e3"
+            eventName: "nasdanika.screenshot"
+          children:
+          - traceId: "02fcff6fb3ac823d0f6c3bd9110981f5"
+            spanId: "d8f73ea22c1c210f"
+            parentSpanId: "93621aee37f2c9e3"
+            name: "GET /"
+            kind: "SPAN_KIND_SERVER"
+            startTimeUnixNano: 1792601087342224600
+            endTimeUnixNano: 1792601087342992800
+            attributes:
+            - key: "http.request.method"
+              value:
+                stringValue: "GET"
+            - key: "http.route"
+              value:
+                stringValue: "/"
+            - key: "url.path"
+              value:
+                stringValue: "/index.html"
+            - key: "url.scheme"
+              value:
+                stringValue: "http"
+            - key: "server.address"
+              value:
+                stringValue: "127.0.0.1"
+            - key: "server.port"
+              value:
+                intValue: 59968
+            - key: "client.address"
+              value:
+                stringValue: "127.0.0.1"
+            - key: "network.protocol.version"
+              value:
+                stringValue: "1.1"
+            - key: "user_agent.original"
+              value:
+                stringValue: "Mozilla/5.0 (Windows NT 10.0; Win64; x64) AppleWebKit/537.36\
+                  \ (KHTML, like Gecko) HeadlessChrome/155.0.0.0 Safari/537.36"
+            - key: "http.response.status_code"
+              value:
+                intValue: 200
+            - key: "http.response.body.size"
+              value:
+                intValue: 451
+            status: {}
+            flags: 771
+            children:
+            - traceId: "02fcff6fb3ac823d0f6c3bd9110981f5"
+              spanId: "f3b617dccbeef0c5"
+              parentSpanId: "d8f73ea22c1c210f"
+              name: "Content.writeTo"
+              kind: "SPAN_KIND_INTERNAL"
+              startTimeUnixNano: 1792601087342673300
+              endTimeUnixNano: 1792601087342957700
+              attributes:
+              - key: "nasdanika.content"
+                value:
+                  stringValue: "file:/C:/Users/pavel/nasdanika/sdk/runtime/playwright/src/test/resources/catalog/index.html"
+              - key: "nasdanika.io.bytes"
+                value:
+                  intValue: 451
+              status: {}
+              flags: 259
+              children:
+              - traceId: "02fcff6fb3ac823d0f6c3bd9110981f5"
+                spanId: "40f34efce9470a61"
+                parentSpanId: "f3b617dccbeef0c5"
+                name: "Content.read"
+                kind: "SPAN_KIND_INTERNAL"
+                startTimeUnixNano: 1792601087342729600
+                endTimeUnixNano: 1792601087342867200
+                attributes:
+                - key: "url.full"
+                  value:
+                    stringValue: "file:/C:/Users/pavel/nasdanika/sdk/runtime/playwright/src/test/resources/catalog/index.html"
+                - key: "nasdanika.io.bytes"
+                  value:
+                    intValue: 451
+                status:
+                  code: "STATUS_CODE_OK"
+                flags: 259
+          - traceId: "02fcff6fb3ac823d0f6c3bd9110981f5"
+            spanId: "f07437663bff577f"
+            parentSpanId: "93621aee37f2c9e3"
+            name: "GET /"
+            kind: "SPAN_KIND_SERVER"
+            startTimeUnixNano: 1792601087355237000
+            endTimeUnixNano: 1792601087355906600
+            attributes:
+            - key: "http.request.method"
+              value:
+                stringValue: "GET"
+            - key: "http.route"
+              value:
+                stringValue: "/"
+            - key: "url.path"
+              value:
+                stringValue: "/catalog.css"
+            - key: "url.scheme"
+              value:
+                stringValue: "http"
+            - key: "server.address"
+              value:
+                stringValue: "127.0.0.1"
+            - key: "server.port"
+              value:
+                intValue: 59968
+            - key: "client.address"
+              value:
+                stringValue: "127.0.0.1"
+            - key: "network.protocol.version"
+              value:
+                stringValue: "1.1"
+            - key: "user_agent.original"
+              value:
+                stringValue: "Mozilla/5.0 (Windows NT 10.0; Win64; x64) AppleWebKit/537.36\
+                  \ (KHTML, like Gecko) HeadlessChrome/155.0.0.0 Safari/537.36"
+            - key: "http.response.status_code"
+              value:
+                intValue: 200
+            - key: "http.response.body.size"
+              value:
+                intValue: 364
+            status: {}
+            flags: 771
+            children:
+            - traceId: "02fcff6fb3ac823d0f6c3bd9110981f5"
+              spanId: "d63ebbe4ebc9bed8"
+              parentSpanId: "f07437663bff577f"
+              name: "Content.writeTo"
+              kind: "SPAN_KIND_INTERNAL"
+              startTimeUnixNano: 1792601087355627700
+              endTimeUnixNano: 1792601087355870700
+              attributes:
+              - key: "nasdanika.content"
+                value:
+                  stringValue: "file:/C:/Users/pavel/nasdanika/sdk/runtime/playwright/src/test/resources/catalog/catalog.css"
+              - key: "nasdanika.io.bytes"
+                value:
+                  intValue: 364
+              status: {}
+              flags: 259
+              children:
+              - traceId: "02fcff6fb3ac823d0f6c3bd9110981f5"
+                spanId: "45ba7375955707ee"
+                parentSpanId: "d63ebbe4ebc9bed8"
+                name: "Content.read"
+                kind: "SPAN_KIND_INTERNAL"
+                startTimeUnixNano: 1792601087355692800
+                endTimeUnixNano: 1792601087355805700
+                attributes:
+                - key: "url.full"
+                  value:
+                    stringValue: "file:/C:/Users/pavel/nasdanika/sdk/runtime/playwright/src/test/resources/catalog/catalog.css"
+                - key: "nasdanika.io.bytes"
+                  value:
+                    intValue: 364
+                status:
+                  code: "STATUS_CODE_OK"
+                flags: 259
+          - traceId: "02fcff6fb3ac823d0f6c3bd9110981f5"
+            spanId: "e89f152e333e86d7"
+            parentSpanId: "93621aee37f2c9e3"
+            name: "GET /"
+            kind: "SPAN_KIND_SERVER"
+            startTimeUnixNano: 1792601087355237000
+            endTimeUnixNano: 1792601087355857700
+            attributes:
+            - key: "http.request.method"
+              value:
+                stringValue: "GET"
+            - key: "http.route"
+              value:
+                stringValue: "/"
+            - key: "url.path"
+              value:
+                stringValue: "/catalog.js"
+            - key: "url.scheme"
+              value:
+                stringValue: "http"
+            - key: "server.address"
+              value:
+                stringValue: "127.0.0.1"
+            - key: "server.port"
+              value:
+                intValue: 59968
+            - key: "client.address"
+              value:
+                stringValue: "127.0.0.1"
+            - key: "network.protocol.version"
+              value:
+                stringValue: "1.1"
+            - key: "user_agent.original"
+              value:
+                stringValue: "Mozilla/5.0 (Windows NT 10.0; Win64; x64) AppleWebKit/537.36\
+                  \ (KHTML, like Gecko) HeadlessChrome/155.0.0.0 Safari/537.36"
+            - key: "http.response.status_code"
+              value:
+                intValue: 200
+            - key: "http.response.body.size"
+              value:
+                intValue: 1022
+            status: {}
+            flags: 771
+            children:
+            - traceId: "02fcff6fb3ac823d0f6c3bd9110981f5"
+              spanId: "7dfaf03788e3b3ac"
+              parentSpanId: "e89f152e333e86d7"
+              name: "Content.writeTo"
+              kind: "SPAN_KIND_INTERNAL"
+              startTimeUnixNano: 1792601087355579200
+              endTimeUnixNano: 1792601087355816700
+              attributes:
+              - key: "nasdanika.content"
+                value:
+                  stringValue: "file:/C:/Users/pavel/nasdanika/sdk/runtime/playwright/src/test/resources/catalog/catalog.js"
+              - key: "nasdanika.io.bytes"
+                value:
+                  intValue: 1022
+              status: {}
+              flags: 259
+              children:
+              - traceId: "02fcff6fb3ac823d0f6c3bd9110981f5"
+                spanId: "fd345b9ca22b29ce"
+                parentSpanId: "7dfaf03788e3b3ac"
+                name: "Content.read"
+                kind: "SPAN_KIND_INTERNAL"
+                startTimeUnixNano: 1792601087355629600
+                endTimeUnixNano: 1792601087355731800
+                attributes:
+                - key: "url.full"
+                  value:
+                    stringValue: "file:/C:/Users/pavel/nasdanika/sdk/runtime/playwright/src/test/resources/catalog/catalog.js"
+                - key: "nasdanika.io.bytes"
+                  value:
+                    intValue: 1022
+                status:
+                  code: "STATUS_CODE_OK"
+                flags: 259
+          - traceId: "02fcff6fb3ac823d0f6c3bd9110981f5"
+            spanId: "74edd1edbf34806e"
+            parentSpanId: "93621aee37f2c9e3"
+            name: "GET /data"
+            kind: "SPAN_KIND_SERVER"
+            startTimeUnixNano: 1792601087369273100
+            endTimeUnixNano: 1792601087369612600
+            attributes:
+            - key: "http.request.method"
+              value:
+                stringValue: "GET"
+            - key: "http.route"
+              value:
+                stringValue: "/data"
+            - key: "url.path"
+              value:
+                stringValue: "/data/books"
+            - key: "url.scheme"
+              value:
+                stringValue: "http"
+            - key: "server.address"
+              value:
+                stringValue: "127.0.0.1"
+            - key: "server.port"
+              value:
+                intValue: 59968
+            - key: "client.address"
+              value:
+                stringValue: "127.0.0.1"
+            - key: "network.protocol.version"
+              value:
+                stringValue: "1.1"
+            - key: "user_agent.original"
+              value:
+                stringValue: "Mozilla/5.0 (Windows NT 10.0; Win64; x64) AppleWebKit/537.36\
+                  \ (KHTML, like Gecko) HeadlessChrome/155.0.0.0 Safari/537.36"
+            - key: "http.response.status_code"
+              value:
+                intValue: 200
+            - key: "http.response.body.size"
+              value:
+                intValue: 239
+            status: {}
+            flags: 771
+            logRecords:
+            - observedTimeUnixNano: 1792601087369273100
+              severityNumber: "SEVERITY_NUMBER_INFO"
+              body:
+                stringValue: "Searching for ''"
+              flags: 3
+              traceId: "02fcff6fb3ac823d0f6c3bd9110981f5"
+              spanId: "74edd1edbf34806e"
+        - traceId: "02fcff6fb3ac823d0f6c3bd9110981f5"
+          spanId: "9b1f2d4a7e5d4253"
+          parentSpanId: "2bb3f8e4acad22be"
+          name: "Search for Dune"
+          kind: "SPAN_KIND_INTERNAL"
+          startTimeUnixNano: 1792601087498477900
+          endTimeUnixNano: 1792601087720385400
+          attributes:
+          - key: "nasdanika.step.index"
+            value:
+              intValue: 2
+          status: {}
+          flags: 259
+          logRecords:
+          - observedTimeUnixNano: 1792601087595514800
+            severityNumber: "SEVERITY_NUMBER_INFO"
+            body:
+              stringValue: "Search for Dune"
+            attributes:
+            - key: "nasdanika.screenshot.index"
+              value:
+                intValue: 2
+            - key: "nasdanika.screenshot.name"
+              value:
+                stringValue: "Search for Dune"
+            - key: "nasdanika.screenshot.path"
+              value:
+                stringValue: "002-search-for-dune-before.png"
+            - key: "nasdanika.screenshot.phase"
+              value:
+                stringValue: "before"
+            - key: "url.full"
+              value:
+                stringValue: "http://127.0.0.1:59968/index.html"
+            flags: 3
+            traceId: "02fcff6fb3ac823d0f6c3bd9110981f5"
+            spanId: "9b1f2d4a7e5d4253"
+            eventName: "nasdanika.screenshot"
+          - observedTimeUnixNano: 1792601087719649500
+            severityNumber: "SEVERITY_NUMBER_INFO"
+            body:
+              stringValue: "Search for Dune"
+            attributes:
+            - key: "nasdanika.screenshot.index"
+              value:
+                intValue: 3
+            - key: "nasdanika.screenshot.name"
+              value:
+                stringValue: "Search for Dune"
+            - key: "nasdanika.screenshot.path"
+              value:
+                stringValue: "003-search-for-dune-after.png"
+            - key: "nasdanika.screenshot.phase"
+              value:
+                stringValue: "after"
+            - key: "url.full"
+              value:
+                stringValue: "http://127.0.0.1:59968/index.html"
+            flags: 3
+            traceId: "02fcff6fb3ac823d0f6c3bd9110981f5"
+            spanId: "9b1f2d4a7e5d4253"
+            eventName: "nasdanika.screenshot"
+          children:
+          - traceId: "02fcff6fb3ac823d0f6c3bd9110981f5"
+            spanId: "37abe71ecc801c04"
+            parentSpanId: "9b1f2d4a7e5d4253"
+            name: "GET /data"
+            kind: "SPAN_KIND_SERVER"
+            startTimeUnixNano: 1792601087606567500
+            endTimeUnixNano: 1792601087606806200
+            attributes:
+            - key: "http.request.method"
+              value:
+                stringValue: "GET"
+            - key: "http.route"
+              value:
+                stringValue: "/data"
+            - key: "url.path"
+              value:
+                stringValue: "/data/books"
+            - key: "url.scheme"
+              value:
+                stringValue: "http"
+            - key: "server.address"
+              value:
+                stringValue: "127.0.0.1"
+            - key: "server.port"
+              value:
+                intValue: 59968
+            - key: "client.address"
+              value:
+                stringValue: "127.0.0.1"
+            - key: "network.protocol.version"
+              value:
+                stringValue: "1.1"
+            - key: "user_agent.original"
+              value:
+                stringValue: "Mozilla/5.0 (Windows NT 10.0; Win64; x64) AppleWebKit/537.36\
+                  \ (KHTML, like Gecko) HeadlessChrome/155.0.0.0 Safari/537.36"
+            - key: "http.response.status_code"
+              value:
+                intValue: 200
+            - key: "http.response.body.size"
+              value:
+                intValue: 55
+            status: {}
+            flags: 771
+            logRecords:
+            - observedTimeUnixNano: 1792601087606567500
+              severityNumber: "SEVERITY_NUMBER_INFO"
+              body:
+                stringValue: "Searching for 'dune'"
+              flags: 3
+              traceId: "02fcff6fb3ac823d0f6c3bd9110981f5"
+              spanId: "37abe71ecc801c04"
+        - traceId: "02fcff6fb3ac823d0f6c3bd9110981f5"
+          spanId: "fcf8399865937583"
+          parentSpanId: "2bb3f8e4acad22be"
+          name: "Open Dune"
+          kind: "SPAN_KIND_INTERNAL"
+          startTimeUnixNano: 1792601087720647800
+          endTimeUnixNano: 1792601087950952100
+          attributes:
+          - key: "nasdanika.step.index"
+            value:
+              intValue: 3
+          status: {}
+          flags: 259
+          logRecords:
+          - observedTimeUnixNano: 1792601087797884600
+            severityNumber: "SEVERITY_NUMBER_INFO"
+            body:
+              stringValue: "Open Dune"
+            attributes:
+            - key: "nasdanika.screenshot.index"
+              value:
+                intValue: 4
+            - key: "nasdanika.screenshot.name"
+              value:
+                stringValue: "Open Dune"
+            - key: "nasdanika.screenshot.path"
+              value:
+                stringValue: "004-open-dune-before.png"
+            - key: "nasdanika.screenshot.phase"
+              value:
+                stringValue: "before"
+            - key: "url.full"
+              value:
+                stringValue: "http://127.0.0.1:59968/index.html"
+            flags: 3
+            traceId: "02fcff6fb3ac823d0f6c3bd9110981f5"
+            spanId: "fcf8399865937583"
+            eventName: "nasdanika.screenshot"
+          - observedTimeUnixNano: 1792601087950667600
+            severityNumber: "SEVERITY_NUMBER_INFO"
+            body:
+              stringValue: "Open Dune"
+            attributes:
+            - key: "nasdanika.screenshot.index"
+              value:
+                intValue: 5
+            - key: "nasdanika.screenshot.name"
+              value:
+                stringValue: "Open Dune"
+            - key: "nasdanika.screenshot.path"
+              value:
+                stringValue: "005-open-dune-after.png"
+            - key: "nasdanika.screenshot.phase"
+              value:
+                stringValue: "after"
+            - key: "url.full"
+              value:
+                stringValue: "http://127.0.0.1:59968/index.html#dune"
+            flags: 3
+            traceId: "02fcff6fb3ac823d0f6c3bd9110981f5"
+            spanId: "fcf8399865937583"
+            eventName: "nasdanika.screenshot"
+          children:
+          - traceId: "02fcff6fb3ac823d0f6c3bd9110981f5"
+            spanId: "8ea336ed67a76f8c"
+            parentSpanId: "fcf8399865937583"
+            name: "GET /data"
+            kind: "SPAN_KIND_SERVER"
+            startTimeUnixNano: 1792601087864489700
+            endTimeUnixNano: 1792601087865182100
+            attributes:
+            - key: "http.request.method"
+              value:
+                stringValue: "GET"
+            - key: "http.route"
+              value:
+                stringValue: "/data"
+            - key: "url.path"
+              value:
+                stringValue: "/data/books/dune"
+            - key: "url.scheme"
+              value:
+                stringValue: "http"
+            - key: "server.address"
+              value:
+                stringValue: "127.0.0.1"
+            - key: "server.port"
+              value:
+                intValue: 59968
+            - key: "client.address"
+              value:
+                stringValue: "127.0.0.1"
+            - key: "network.protocol.version"
+              value:
+                stringValue: "1.1"
+            - key: "user_agent.original"
+              value:
+                stringValue: "Mozilla/5.0 (Windows NT 10.0; Win64; x64) AppleWebKit/537.36\
+                  \ (KHTML, like Gecko) HeadlessChrome/155.0.0.0 Safari/537.36"
+            - key: "http.response.status_code"
+              value:
+                intValue: 200
+            - key: "http.response.body.size"
+              value:
+                intValue: 53
+            status: {}
+            flags: 771
+            logRecords:
+            - observedTimeUnixNano: 1792601087864489700
+              severityNumber: "SEVERITY_NUMBER_INFO"
+              body:
+                stringValue: "Showing dune"
+              flags: 3
+              traceId: "02fcff6fb3ac823d0f6c3bd9110981f5"
+              spanId: "8ea336ed67a76f8c"

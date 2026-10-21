@@ -1,0 +1,49 @@
+[#design]
+== A small module
+
+The harness is four classes, two of them public, in a few hundred lines of Java.
+That is a design decision, and this chapter explains it, starting with what already exists.
+
+=== Prior art
+
+*Framework test support.*
+Spring Boot starts an application on a random port for a test, `@SpringBootTest` with `RANDOM_PORT`, and gives the test a client for it; with Micrometer Tracing configured, both sides can report to the same tracer.
+It is excellent inside a Spring application, and it is a Spring application's harness.
+
+*Testcontainers* runs the real dependencies of a test, databases, brokers and other services, in containers.
+It answers a different question, "what does my code talk to", and works well together with tracing, at the cost of containers.
+
+*Trace-based testing.*
+Tracetest runs a request against a deployed system and asserts on the trace it produced, read back from a tracing backend.
+OpenTelemetry's own `InMemorySpanExporter` lets a unit test assert on the spans of code it calls.
+Both treat the trace as something to check; the harness treats it as something to keep as well.
+
+*Playwright's trace viewer* records what a browser did, with screenshots, DOM snapshots and network calls, in a format of its own for its own viewer.
+It sees the browser's side only.
+
+=== Decisions
+
+*The JDK's server, not a framework.*
+`com.sun.net.httpserver.HttpServer` is part of the JDK, handles requests on virtual threads, and is what the runtime serves volumes and generated applications with.
+A test configures it the way it configures any `HttpServer`, with `createContext`; there is nothing else to learn.
+
+*Shaped like `inSpan`.*
+The runtime runs code in a span with `Telemetry.inSpan(tracer, name, attributes, body)`: the span starts, the body runs, a failure is recorded, the span ends.
+`Harness.inServer(name, routes, body)` has the same shape and the same guarantees, with a server around the body.
+Generic in what the body returns and what it throws, so the body is ordinary code, assertions included.
+
+*Instrumentation that cannot be forgotten.*
+The code that configures the server receives a server whose `createContext` adds the runtime's telemetry filter to every context it creates.
+A handler cannot be left out of the trace by accident.
+
+*One instance, given or current.*
+The harness does not configure OpenTelemetry; it uses the instance it is given, or the current one, the same instance for the client and the server.
+Without an SDK it costs nothing and propagates nothing; with one, the trace goes wherever the SDK sends it.
+
+*Recording is separate.*
+Saving telemetry as models is the job of `Recording`, in the telemetry model's exporters, which the runtime's command line launcher uses for every command it runs.
+The harness does not depend on it, so a test that only needs a server does not bring the OpenTelemetry SDK with it.
+
+*Browsers are separate too.*
+The harness's client is the JDK's `HttpClient`.
+Browsers belong to the Playwright module, which follows the same pattern one level up: a session runs in the server's trace, and its steps are spans.

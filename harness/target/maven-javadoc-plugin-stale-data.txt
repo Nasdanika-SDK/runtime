@@ -1,0 +1,51 @@
+-J-Duser.language=
+-J-Duser.country=
+@options
+@packages
+@argfile
+--no-fonts
+--class-path
+'C:/Users/pavel/.m2/repository/io/opentelemetry/opentelemetry-common/1.67.0/opentelemetry-common-1.67.0.jar;C:/Users/pavel/.m2/repository/org/eclipse/platform/org.eclipse.osgi/3.23.100/org.eclipse.osgi-3.23.100.jar;C:/Users/pavel/.m2/repository/io/opentelemetry/opentelemetry-sdk/1.67.0/opentelemetry-sdk-1.67.0.jar;C:/Users/pavel/.m2/repository/io/opentelemetry/opentelemetry-sdk-common/1.67.0/opentelemetry-sdk-common-1.67.0.jar;C:/Users/pavel/.m2/repository/io/opentelemetry/opentelemetry-sdk-trace/1.67.0/opentelemetry-sdk-trace-1.67.0.jar;C:/Users/pavel/.m2/repository/io/opentelemetry/opentelemetry-sdk-metrics/1.67.0/opentelemetry-sdk-metrics-1.67.0.jar;C:/Users/pavel/.m2/repository/io/opentelemetry/opentelemetry-sdk-logs/1.67.0/opentelemetry-sdk-logs-1.67.0.jar;C:/Users/pavel/.m2/repository/org/eclipse/emfcloud/emfjson-jackson/2.3.0/emfjson-jackson-2.3.0.jar;C:/Users/pavel/.m2/repository/com/fasterxml/jackson/core/jackson-databind/2.22.3/jackson-databind-2.22.3.jar;C:/Users/pavel/.m2/repository/com/fasterxml/jackson/core/jackson-annotations/2.22/jackson-annotations-2.22.jar;C:/Users/pavel/.m2/repository/com/fasterxml/jackson/core/jackson-core/2.22.3/jackson-core-2.22.3.jar'
+--module-path
+'C:/Users/pavel/.m2/repository/org/eclipse/emf/org.eclipse.emf.ecore.xmi/2.41.0/org.eclipse.emf.ecore.xmi-2.41.0.jar;C:/Users/pavel/nasdanika/sdk/runtime/common/target/common-2026.10.0.jar;C:/Users/pavel/.m2/repository/org/eclipse/emf/org.eclipse.emf.common/2.46.0/org.eclipse.emf.common-2.46.0.jar;C:/Users/pavel/.m2/repository/io/leangen/geantyref/geantyref/2.0.1/geantyref-2.0.1.jar;C:/Users/pavel/.m2/repository/io/opentelemetry/opentelemetry-context/1.67.0/opentelemetry-context-1.67.0.jar;C:/Users/pavel/nasdanika/sdk/runtime/volume/target/volume-2026.10.0.jar;C:/Users/pavel/nasdanika/sdk/runtime/harness/target/harness-2026.10.0.jar;C:/Users/pavel/.m2/repository/org/eclipse/emf/org.eclipse.emf.ecore/2.43.0/org.eclipse.emf.ecore-2.43.0.jar;C:/Users/pavel/.m2/repository/io/opentelemetry/opentelemetry-api/1.67.0/opentelemetry-api-1.67.0.jar'
+--patch-module
+org.nasdanika.sdk.runtime.harness='C:/Users/pavel/nasdanika/sdk/runtime/harness/src/main/java;C:/Users/pavel/nasdanika/sdk/runtime/harness/target/generated-sources/annotations'
+-encoding
+'UTF-8'
+-protected
+--module-source-path
+'C:/Users/pavel/nasdanika/sdk/runtime/harness/target/reports/apidocs/src'
+--allow-script-in-comments
+-author
+-bottom
+'Copyright &#169; 2026 <a href="https://nasdanika.com">Nasdanika</a>. All rights reserved.'
+-charset
+'UTF-8'
+-d
+'C:/Users/pavel/nasdanika/sdk/runtime/harness/target/reports/apidocs'
+-docencoding
+'UTF-8'
+-doctitle
+'Nasdanika SDK Runtime Harness 2026.10.0 API'
+-header
+'<script async src="https://www.googletagmanager.com/gtag/js?id=G-9BRJVLK8CC"></script><script>window.dataLayer = window.dataLayer || [];function gtag(){dataLayer.push(arguments);}gtag(\'js\', new Date());gtag(\'config\', \'G-9BRJVLK8CC\');</script>'
+-linksource
+-use
+-version
+-windowtitle
+'Nasdanika SDK Runtime Harness 2026.10.0 API'
+org.nasdanika.sdk.runtime.harness
+'C:/Users/pavel/nasdanika/sdk/runtime/harness/src/main/java/module-info.java'
+C:\Users\pavel\nasdanika\sdk\runtime\harness\target\reports\apidocs\allclasses-index.html = 1792601080708
+C:\Users\pavel\nasdanika\sdk\runtime\harness\target\reports\apidocs\allpackages-index.html = 1792601080709
+C:\Users\pavel\nasdanika\sdk\runtime\harness\target\reports\apidocs\element-list = 1792601080663
+C:\Users\pavel\nasdanika\sdk\runtime\harness\target\reports\apidocs\help-doc.html = 1792601080723
+C:\Users\pavel\nasdanika\sdk\runtime\harness\target\reports\apidocs\index-all.html = 1792601080718
+C:\Users\pavel\nasdanika\sdk\runtime\harness\target\reports\apidocs\index.html = 1792601080720
+C:\Users\pavel\nasdanika\sdk\runtime\harness\target\reports\apidocs\member-search-index.js = 1792601080712
+C:\Users\pavel\nasdanika\sdk\runtime\harness\target\reports\apidocs\module-search-index.js = 1792601080710
+C:\Users\pavel\nasdanika\sdk\runtime\harness\target\reports\apidocs\overview-tree.html = 1792601080702
+C:\Users\pavel\nasdanika\sdk\runtime\harness\target\reports\apidocs\package-search-index.js = 1792601080710
+C:\Users\pavel\nasdanika\sdk\runtime\harness\target\reports\apidocs\search.html = 1792601080719
+C:\Users\pavel\nasdanika\sdk\runtime\harness\target\reports\apidocs\tag-search-index.js = 1792601080713
+C:\Users\pavel\nasdanika\sdk\runtime\harness\target\reports\apidocs\type-search-index.js = 1792601080711
