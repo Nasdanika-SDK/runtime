@@ -1,0 +1,112 @@
+// Defaults for previewing this file on its own; index.adoc and the Maven build set these
+ifndef::booktests[:booktests: ../../../test/java/org/nasdanika/sdk/runtime/models/diagram/elk/tests]
+
+[#rendering]
+== Rendering with React Flow and Draw.io
+
+A laid out diagram is geometry: bounds, routes and label positions.
+The demos render it twice, with React Flow in the browser and with Draw.io, and both show the layout as ELK computed it.
+
+=== React Flow
+
+React Flow draws nodes and edges in the browser.
+By default it routes edges itself, between handles on the nodes; here it should not, because ELK already routed them.
+So the edges are of a custom type that draws ELK's route and labels as they are.
+
+The renderer builds a React Flow model, which the runtime's React generator turns into a JavaScript module, with no build step and no npm:
+
+.The flow (`ReactFlowRenderer.java`)
+[source,java]
+----
+include::{booktests}/ReactFlowRenderer.java[tag=flow,indent=0]
+----
+<1> Nodes cannot be moved: the edges are drawn from fixed routes, which would not follow them.
+
+.Nodes, nested as the diagram nests them
+[source,java]
+----
+include::{booktests}/ReactFlowRenderer.java[tag=node,indent=0]
+----
+<1> React Flow positions child nodes relative to their parent, as the diagram model does, so bounds carry over as they are.
+<2> The parent node, for packages, comes before its children.
+
+.Edges carry their route and labels as data
+[source,java]
+----
+include::{booktests}/ReactFlowRenderer.java[tag=edge,indent=0]
+----
+<1> The custom edge type.
+<2> The route, in absolute coordinates, as a JavaScript array literal.
+
+The edge component is JavaScript in a code block of the model, with the imports it needs declared as references:
+
+.The custom edge, drawing ELK's route
+[source,java]
+----
+include::{booktests}/ReactFlowRenderer.java[tag=elk-edge,indent=0]
+----
+
+The markers, a hollow triangle for generalizations, an open arrow for references and a filled diamond for containment, are SVG markers defined once in the page.
+The nodes have handles, which React Flow needs to attach edges, but hidden, since the edges do not use them.
+
+=== Draw.io
+
+The Draw.io renderer writes a Draw.io document with the runtime's Draw.io API:
+
+.Nodes, with ports as connection points (`DrawioRenderer.java`)
+[source,java]
+----
+include::{booktests}/DrawioRenderer.java[tag=node,indent=0]
+----
+<1> A Draw.io node is a layer, so packages contain classes as the diagram does, with bounds relative to the container.
+<2> Ports become Draw.io connection points at the same relative location.
+
+.Connections, waypoints and end labels
+[source,java]
+----
+include::{booktests}/DrawioRenderer.java[tag=connection,indent=0]
+----
+<1> A connection attached to a node gets a connection point where ELK's route touches the node, so Draw.io starts and ends it exactly there.
+<2> The rest of the route becomes Draw.io's waypoints.
+<3> Draw.io positions an edge label along the edge, from -1 at the source to 1 at the target. A tail label is anchored at the source end, a head label at the target end, a center label at the middle.
+<4> The offset from the anchor puts the label where ELK placed it. Labels stay attached to their edge when someone moves it in Draw.io.
+
+The document opens in Draw.io as laid out, and is a normal Draw.io document from then on: people can move boxes, restyle them, and add what a generator could not know.
+
+=== The site, and serving it
+
+.Writing both renderings of a diagram (`DiagramSite.java`)
+[source,java]
+----
+include::{booktests}/DiagramSite.java[tag=write,indent=0]
+----
+
+The site has a React Flow page, a Draw.io document and a page showing the document in Draw.io's viewer for each diagram, and an index.
+The runtime's volumes serve it over HTTP:
+
+.Serving the site (`ServeDiagrams.java`)
+[source,java]
+----
+include::{booktests}/ServeDiagrams.java[tag=serve,indent=0]
+----
+<1> A volume over the site's directory, served by the runtime's volume HTTP handler, which sends JavaScript modules with the media type browsers require for them.
+
+To see the diagrams, build the module's tests, which write the site into `models/diagram/elk/target/diagrams`, then run `ServeDiagrams` from an IDE or with the test class path, and open the URL it prints, `http://127.0.0.1:8080/diagrams/index.html`.
+The pages load React, React Flow and Draw.io's viewer from content delivery networks.
+
+The tests check both renderings, and that the server serves them:
+
+.Checking the renderings (`EcoreDiagramTests.java`)
+[source,java]
+----
+include::{booktests}/EcoreDiagramTests.java[tag=renderings,indent=0]
+----
+<1> The Draw.io document, read back with the Draw.io API, has the bounds ELK computed.
+
+.Checking the server
+[source,java]
+----
+include::{booktests}/EcoreDiagramTests.java[tag=serve,indent=0]
+----
+<1> Port 0 picks a free port.
+<2> Browsers load modules only with a JavaScript media type.

@@ -1,0 +1,40 @@
+// Defaults for previewing this file on its own; index.adoc and the Maven build set these
+ifndef::booktests[:booktests: ../../../test/java/org/nasdanika/sdk/runtime/models/diagram/tests/book]
+
+[#building]
+== Building a diagram
+
+Diagrams usually come from somewhere: an editor, through a loader, or a model, through a generator.
+Both end up calling the same factory, so building one by hand is the best way to see the model at work.
+
+The running example is the system context of an internet banking system, after the C4 model's well-known example: a customer, the Internet Banking System, and the mainframe it calls, through an API port.
+
+=== The factory
+
+.Building the system context (`BuildingTests.java`)
+[source,java]
+----
+include::{booktests}/BuildingTests.java[tag=build,indent=0]
+----
+<1> The document is a diagram, and so is its page: diagrams nest.
+<2> Properties are an EMF map: `getProperties()` returns an `EMap<String, String>`, with `put`, `get` and `map()` for a `java.util.Map` view.
+<3> Documentation comes from the runtime's core model.
+<4> A port on the bottom edge of the Internet Banking System, from which the connection to the mainframe leaves.
+
+Nodes and connections are children of the page here.
+A page with layers would have the layers as its children and the nodes in the layers; a group would have its members as children.
+
+=== Navigating
+
+Connections are maintained from both ends:
+
+.Connections, from either end
+[source,java]
+----
+include::{booktests}/BuildingTests.java[tag=navigate,indent=0]
+----
+<1> Setting the connection's target added it to the node's incoming connections.
+<2> The connection to the mainframe leaves from the port, so it is the port's outgoing connection, not the node's.
+
+For everything else, the generated API is ordinary EMF: `eContents()` and `eAllContents()` walk containment, `eContainer()` goes up, and the reflective API, `eGet` and `eSet`, works on any feature by name.
+`EcoreUtil` copies, compares and searches.

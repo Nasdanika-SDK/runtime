@@ -1,0 +1,35 @@
+[#elk-and-adapter]
+== The Eclipse Layout Kernel, and an adapter
+
+=== ELK
+
+The Eclipse Layout Kernel ({elk-site}) is a collection of layout algorithms for node-link diagrams, developed at Kiel University and published under the Eclipse Public License 2.0.
+
+* *Algorithms.* Layered, for directed graphs and flows, the Sugiyama approach with ports, labels and orthogonal routing; tree; force-directed and stress; radial; rectangle packing; and more.
+* *One vocabulary of options.* Several hundred layout options, each with an id such as `elk.direction` or `elk.edgeRouting`, a type and a default, set on the graph, on a node, an edge, a port or a label.
+* *Hierarchy.* Nodes contain nodes, and edges between nodes in different containers can be laid out across the hierarchy.
+* *A graph model in EMF.* ELK's graph, `ElkNode`, `ElkPort`, `ElkEdge`, `ElkLabel`, is an EMF model, as the runtime's diagram model is.
+* *The same layouts in the browser.* elkjs is ELK compiled to JavaScript, with the same algorithms and options, and React Flow documents it among its layout options.
+
+Eclipse Sirius, Sprotty and the Graphical Language Server Platform use it, and in my experience it is the most capable open-source layout library on the JVM.
+
+=== An adapter, not an abstraction
+
+The module could have started with a layout service: an interface in the diagram model, implementations found through the runtime's capability framework, and a requirement object that names an engine and its options.
+It does not, on purpose.
+
+* *There is one engine.* An interface designed around a single implementation is that implementation's shape with another name. Its options would be ELK's, renamed.
+* *ELK is already the abstraction.* A dozen algorithms behind one API and one vocabulary of options. A wrapper could only narrow it.
+* *Nothing needs to choose yet.* The capability framework is for choosing among implementations by requirement. The other layout engines a diagram meets, Draw.io's own and elkjs, run in JavaScript, not in the JVM.
+
+So the module is an adapter: from the diagram model to ELK's graph, ELK's options from the diagram's own properties, and the results written back into the diagram.
+Its entry point, `ElkLayout.layout(DiagramElement)`, is already the shape a layout service would have.
+When a second engine has a real consumer, such as a command that lets a user pick one, that signature becomes an interface and ELK one capability providing it; the adapter does not change.
+
+=== What the module is
+
+* `ElkLayout`: configuration, and `layout(DiagramElement)`, which builds the ELK graph, lays it out in a telemetry span, and writes the results back.
+* `DiagramElkGraph`: the ELK graph of a diagram, with the correspondence between the two in both directions, so that code can inspect or adjust the ELK graph before the layout and the results after.
+* `TextMeasurer`: the size of text, for nodes without bounds and for labels.
+
+Everything else in this book, the generators of Ecore diagrams, the React Flow and Draw.io renderers and the site, is in the module's tests: demos, and the listings of the book.

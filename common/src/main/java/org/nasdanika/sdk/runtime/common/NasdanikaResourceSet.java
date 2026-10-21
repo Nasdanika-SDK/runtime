@@ -24,7 +24,9 @@ public class NasdanikaResourceSet extends ResourceSetImpl {
 
 	@Override
 	public EObject getEObject(URI uri, boolean loadOnDemand) {
-		return globals.compute(uri, (k,v) -> v == null ? super.getEObject(k, loadOnDemand) : v);
+		// Only registered objects are global: what resolves through resources stays theirs, and goes when they are unloaded
+		EObject global = globals.get(uri);
+		return global == null ? super.getEObject(uri, loadOnDemand) : global;
 	}
 	
 	public Map<URI, EObject> getGlobals() {

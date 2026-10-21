@@ -1,0 +1,89 @@
+[#matching-and-wiring]
+== Software is matching and wiring
+
+Look at what a program is made of and most of it is connections.
+A method calls another method, a class implements an interface, a field holds a collaborator, a plugin answers a request, a file is opened by a parser, a URL is routed to a handler.
+Writing the parts is half the work.
+The other half is connecting them, and every connection is a *match*: something that needs, something that provides, and a rule that decides whether they fit.
+
+Once the matches are made, they are *wiring*: the structure of references through which the program runs.
+A program is right only if its wiring is right, so every match needs a check, and the earlier and cheaper the check, the better.
+
+=== Matches the compiler makes, and checks
+
+The most familiar match is a method call.
+`library.find("Dune")` is matched to a method by its name, by the number of arguments, and by their types; when several methods fit, the compiler picks the most specific one, by rules that fill a long section of the Java Language Specification, 15.12.
+In the class file the call is a reference to a method by its owner, name and descriptor, and the JVM links it by matching those.
+
+Generics are a check on that match, and a check only.
+After erasure, a call to `get` on a `List<Book>` is a call to `List.get`, which returns `Object`, followed by a cast the compiler inserts.
+The type argument is gone from the instruction.
+What it bought is a proof, made at compile time, that the cast will succeed: the compiler checked that only books were ever put into the list.
+Generics validate matches that the JVM makes without them.
+
+Overriding is matched too, by signature, and it has a famous failure: a method meant to override another, with a typo in its name or a parameter of a slightly different type, silently becomes a new method, and the old one keeps running.
+`@Override` exists for that.
+It changes nothing in the program; it states an intent, "this method matches a method of a supertype", and the compiler checks that there is one.
+A match made by a rule, and validated by a declaration that a tool checks: that is the pattern this book is about.
+
+=== Matches nobody checks
+
+The compiler checks the matches it makes.
+Many matches are made later, at run time, by code that assembles a program from parts:
+
+* `ServiceLoader` matches a request for an interface to the providers that modules declare.
+* Dependency injection containers match injection points to beans by type, name and qualifier.
+* Plugin registries match extensions to extension points, often by string identifiers.
+* EMF matches a URI to a resource factory by its extension or protocol, and to a URI handler by its scheme.
+* Configuration matches keys in files to properties in code by name.
+
+These matches are made with less than the compiler has.
+`ServiceLoader` matches on a `Class`, so a request for a `Supplier` is answered by every supplier, whatever it supplies.
+Registries keyed by strings match on spelling.
+A `Map<String, Object>` matches on nothing at all, and the cast that follows is a hope.
+
+When such a match is wrong, the failure is late and vague: a `ClassCastException` far from the cause, a null where a collaborator should have been, two candidates where one was expected, or a program that waits forever because two parts each wait for the other.
+The question "why was this wired to that?" usually has no answer short of a debugger.
+
+=== What this module does
+
+The common module makes run-time matching work like compile-time matching, in three ways.
+
+*It matches on what the compiler checked.*
+Requests and offers are declared types: the generic return type of a method, the declared type of a field, the generic supertypes of a class.
+The compiler has checked every one of them, so a run-time match on them inherits the compiler's guarantee that the declaration is true.
+
+*It matches by the compiler's rules.*
+`Supplier<Book>` satisfies `Supplier<? extends Publication>` and not `Supplier<Publication>`, at run time as in an assignment, because the same rules decide (<<types>>).
+
+*It explains.*
+A resolution can be traced step by step, which factory handled which requirement and which declined, and a resolution that cannot finish fails at once with the cycle or the wait that stopped it, named (<<capabilities>>, <<flows>>).
+
+The module matches in several places, all of them with the same rules:
+
+[cols="2,3,3",options="header"]
+|===
+| Where | What is matched | Against what
+
+| Adaptation (<<adaptation>>)
+| A requested type, with context values
+| The declared types of an object's `@Adapter` fields and methods, and the object's own generic supertypes
+
+| Capabilities (<<capabilities>>)
+| A requirement: a type and payloads
+| The generic return types and parameter types of `@Capability` methods, or a factory's own `canHandle`
+
+| Transformation (<<flows>>)
+| A source object
+| The parameter types of `@Mapping` methods, most specific first
+
+| Resource sets (<<resource-sets>>)
+| A URI
+| URI handlers by scheme, resource factories by extension and protocol, packages by namespace URI
+
+| Telemetry (<<telemetry>>)
+| A unit of work
+| The OpenTelemetry instance current in its context, which every instrumented match reports to
+|===
+
+The last row is not a match of types, but it belongs in the table: each of the matches above runs in a span, so what was matched, when and how long it took can be watched live or read afterwards.

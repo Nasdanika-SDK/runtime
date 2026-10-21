@@ -1,0 +1,49 @@
+# tag::diagram[]
+eClass: https://runtime.sdk.nasdanika.org/models/diagram#//Diagram
+id: internet-banking
+name: Internet Banking System
+children:
+- eClass: https://runtime.sdk.nasdanika.org/models/diagram#//Diagram
+  id: context
+  name: System Context
+  children:
+  - eClass: https://runtime.sdk.nasdanika.org/models/diagram#//Node
+    id: customer
+    name: Personal Banking Customer
+    properties:
+      type: person
+    bounds: { x: 240, "y": 0, width: 200, height: 80 }
+  - eClass: https://runtime.sdk.nasdanika.org/models/diagram#//Node
+    id: ibs
+    name: Internet Banking System
+    documentation: Lets customers view their accounts and make payments.
+    properties:
+      type: software-system
+      owner: Digital Channels
+    bounds: { x: 240, "y": 200, width: 200, height: 90 }
+    ports:
+    - id: api
+      name: API
+      location: { x: 0.5, "y": 1 }
+  - eClass: https://runtime.sdk.nasdanika.org/models/diagram#//Node
+    id: mainframe
+    name: Mainframe Banking System
+    properties:
+      type: software-system
+      owner: Core Banking
+    bounds: { x: 240, "y": 400, width: 200, height: 90 }
+  - eClass: https://runtime.sdk.nasdanika.org/models/diagram#//Connection
+    id: uses-ibs
+    name: Uses
+    source: { $ref: "//@children[id='context']/@children[id='customer']" }
+    target: { $ref: "//@children[id='context']/@children[id='ibs']" }
+  - eClass: https://runtime.sdk.nasdanika.org/models/diagram#//Connection
+    id: ibs-mainframe
+    name: Gets account information from
+    properties:
+      protocol: XML/HTTPS
+    source:
+      eClass: https://runtime.sdk.nasdanika.org/models/diagram#//Port
+      $ref: "//@children[id='context']/@children[id='ibs']/@ports[id='api']"
+    target: { $ref: "//@children[id='context']/@children[id='mainframe']" }
+# end::diagram[]

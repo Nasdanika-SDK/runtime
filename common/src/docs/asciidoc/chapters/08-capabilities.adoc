@@ -1,0 +1,143 @@
+// Defaults for previewing this file on its own; index.adoc and the Maven build set these
+ifndef::booktests[:booktests: ../../../test/java/org/nasdanika/sdk/runtime/common/book]
+
+[#capabilities]
+== Capabilities
+
+Adaptation asks an object you already have.
+Capabilities answer the question that comes before it: where do the objects come from?
+
+A *requirement* says what is needed.
+A *capability factory* says which requirements it can handle and creates *capability providers* for them, which publish the capabilities.
+A *capability loader* takes a requirement, asks every factory, and collects what they provide.
+Factories can have requirements of their own, which the loader resolves within the same resolution.
+
+With a type and no payload, a requirement is a lookup by type: what `ServiceLoader` does, but generic, lazy, asynchronous, and able to resolve dependencies.
+
+=== A factory by hand
+
+The interface has two methods:
+
+.A capability factory (`CapabilityTests.java`)
+[source,java]
+----
+include::{booktests}/CapabilityTests.java[tag=factory,indent=0]
+----
+<1> A requirement can be any object. This factory handles one: the class `Credentials`.
+<2> Providers are published, so a factory can provide many capabilities, later, or none.
+
+The `Span` is the factory's own span in the resolution, and the `Logger` reports to the same OpenTelemetry instance (<<telemetry>>).
+
+.Loading
+[source,java]
+----
+include::{booktests}/CapabilityTests.java[tag=load,indent=0]
+----
+<1> Every capability for the requirement, from every factory that handles it.
+<2> The first, or null.
+<3> Nobody handles `String.class`: no capability, and no error.
+
+In an application, factories are services: a module declares `provides CapabilityFactory with ...` in its `module-info.java`, and `CapabilityLoader.getInstance()` is the shared loader over every factory on the module path.
+
+=== Factories from methods
+
+Most factories are not written by hand.
+A `ReflectiveCapabilityFactory` is assembled from methods annotated with `@Capability`, so one class, and one `provides` entry, contributes many capabilities:
+
+.A reflective factory
+[source,java]
+----
+include::{booktests}/CapabilityTests.java[tag=reflective,indent=0]
+----
+<1> A lookup from the declaring module, so that the methods need not be in an exported package.
+<2> What a method provides is its generic return type, checked by the compiler and matched by `Types.isAssignable`.
+<3> Parameters of the requirement's payload, here a `String`, in order; and injected parameters, here the `Loader`, by type.
+<4> A dependency, resolved within the same resolution. `CompletionStage` delivers the capability when it is ready.
+
+.Requirements by type and by payload
+[source,java]
+----
+include::{booktests}/CapabilityTests.java[tag=reflective-test,indent=0]
+----
+<1> A requirement can be a bare type. Only `books()` provides a `Supplier<Book>`.
+<2> A wildcard admits both suppliers.
+<3> A requirement with a payload: a `Catalog`, for the branch "Downtown". `catalog` takes a `String`, so it matches; the other methods take no payload, so they do not.
+
+What a method takes:
+
+* *Injected parameters*, by type, in any position: `Loader` for dependencies, `Span` (the method's own span), `Logger`, `Meter`, `OpenTelemetry`, and `Type`, the required type, for a method that serves a range of them.
+* *Payload parameters*, every other parameter, matched to the requirement's payloads in order: as many parameters as payloads, each payload an instance of its parameter's class, or null for one that is not primitive.
+
+What a method returns:
+
+* *The capability*, matched by its declared type.
+* *A way of delivering it*: `CompletionStage<X>`, `Flow.Publisher<X>`, `CapabilityProvider<X>` or `Flow.Publisher<CapabilityProvider<X>>`. These are always unwrapped, and `X` is matched.
+* *A container*: `X[]` or an `Iterable<X>`. The declared type is matched first, so a requirement for `List<X>` gets the list; only if it does not match are the elements, so a requirement for `X` gets them one by one.
+
+Null provides nothing, which is how a method declines.
+A generic method, `<T> Supplier<T> make(Class<T> type)`, and a `void` method are refused when the factory is created, because their declarations say nothing that can be matched.
+
+=== Requirements are values
+
+A resolution remembers what it has resolved, keyed by requirement, so that a dependency shared by many factories is created once.
+That needs requirements with value equality, and `Requirement` is a record:
+
+.The same requirement however it was built
+[source,java]
+----
+include::{booktests}/CapabilityTests.java[tag=values,indent=0]
+----
+
+Payloads should have value equality too; records do.
+A requirement refuses a type that is not ground, such as `List<T>` (<<types>>).
+
+=== Explaining a resolution
+
+A loader with a listener reports what happens during a resolution, and `ResolutionListener.explaining` turns the events into lines of text:
+
+.Asking for an explanation
+[source,java]
+----
+include::{booktests}/CapabilityTests.java[tag=explaining,indent=0]
+----
+
+For the catalog the explanation says, in order: the catalog was requested; the library capabilities handle it and the credentials factory declines; the library capabilities need `Credentials`; `Credentials` was requested, by the catalog; the credentials factory handles it; and how many providers each produced, in how many microseconds.
+That is the answer to "why was this wired to that?", and it costs nothing when nobody listens.
+`ResolutionListener.FactoryNodeCollector` collects the same events as a graph of factories and their dependencies.
+
+=== Cycles
+
+A factory may wait for a dependency.
+If the dependency waits for the factory, nothing can progress, and the resolution fails at once with the cycle named:
+
+.A cycle, reported
+[source,java]
+----
+include::{booktests}/CapabilityTests.java[tag=cycle,indent=0]
+----
+
+There is no timeout and no pass counter.
+Resolution runs on a pump (<<flows>>), which knows when every piece of work is waiting on another, and says what each one waits for.
+
+=== Composition
+
+Loaders compose:
+
+* `CapabilityLoader.concat(loaders...)` lets every loader contribute, in order.
+* `CapabilityLoader.fallback(loaders...)` stops at the first loader that provides anything.
+* `CapabilityLoader.cached(loader)` remembers answers across calls, which a loader does not do by itself. Opt in where the same requirements recur and the answers are stable.
+
+Composed loaders keep their resolutions separate.
+To let factories from several places satisfy each other's dependencies, compose their *sources* instead:
+
+.A local source in front of a global one
+[source,java]
+----
+include::{booktests}/CapabilityTests.java[tag=composition,indent=0]
+----
+
+The library capabilities in the local source find the credentials in the global one.
+`CapabilityFactorySource.serviceLoader()` is the global source in an application, and a local one in front of it overrides or adds capabilities for one task.
+
+A loader is stateless and not closeable: the memory of a resolution lasts as long as the resolution, and disposing of factories is the business of their source.
+That is what makes the shared instance safe to share.

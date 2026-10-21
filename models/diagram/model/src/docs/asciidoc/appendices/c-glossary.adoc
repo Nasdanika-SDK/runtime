@@ -1,0 +1,36 @@
+[appendix]
+[#glossary]
+== Glossary
+
+Connectable::
+What a connection can start and end at: a node or a port.
+
+Depiction::
+The relationship between a diagram element and the objects of other models it stands for, held in `semanticElements`.
+
+Diagram element::
+Anything in a diagram: a diagram, a layer, a node, a port, a connection or a label. A model element in its own right, with an ID, a name and documentation.
+
+Generator::
+Code that writes a diagram of some notation from the model.
+
+Hub::
+The model's position between notations: N loaders and N generators instead of N by N converters.
+
+Loader::
+Code that reads a diagram of some notation into the model.
+
+Marker::
+A record of where an element came from: a file and a position, or a Git repository and commit.
+
+Port::
+A named attachment point on a node, in coordinates relative to the node's size.
+
+Representation model::
+The model of how something is drawn: this model. The counterpart of the semantic model.
+
+Semantic model::
+The model of what is drawn: an architecture, a metamodel, a process. Diagram elements point to it through `semanticElements`.
+
+Waypoint::
+A point a connection is routed through.

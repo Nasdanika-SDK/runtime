@@ -1,0 +1,117 @@
+// Defaults for previewing this file on its own; index.adoc and the Maven build set these
+ifndef::booktests[:booktests: ../../../test/java/org/nasdanika/sdk/runtime/common/book]
+
+[#flows]
+== Flows, the pump and the transformer
+
+Matching finds the parts; wiring connects them.
+When the parts refer to each other, connecting them is a problem of order: an object cannot be given a reference to another that does not exist yet, and with cycles there is no order in which everything exists first.
+This chapter shows the three pieces the module solves it with: operators for `java.util.concurrent.Flow`, a pump that runs work deterministically and reports what is stuck, and a transformer that wires object graphs by subscription.
+
+=== Flows
+
+`Flow` is the JDK's interface for reactive streams: a publisher, a subscriber, and a subscription through which the subscriber requests items.
+The JDK has the interfaces and one publisher; `Flows` has sources, operators and terminals, named like `Collectors` and `Executors`:
+
+.Operators and terminals (`FlowTests.java`)
+[source,java]
+----
+include::{booktests}/FlowTests.java[tag=operators,indent=0]
+----
+<1> `toList` subscribes and completes a future with the items.
+<2> `toStream` bridges to `java.util.stream`, for processing on the pull side.
+
+Every operator is lazy, subscribing upstream once per downstream subscriber; respects demand, so `filter` requests one more item for every item it drops and `take` cancels upstream after the last; and turns an exception in a user function into `onError` downstream.
+
+What is missing is missing on purpose: `flatMap`, `merge`, `zip`, schedulers and time operators.
+They are where reactive libraries get large and difficult, and on virtual threads they are ordinary blocking code.
+`concatMap`, sequential composition, is present because it is deterministic and capability resolution needs it.
+
+=== The pump
+
+A `Pump` is a serial work queue drained by one thread at a time.
+Its terminals block by pumping: a thread that waits for a result runs queued work instead of sleeping, as `ForkJoinTask.join()` and SWT's event loop do.
+
+.Pumping on the calling thread
+[source,java]
+----
+include::{booktests}/FlowTests.java[tag=pump,indent=0]
+----
+<1> Nothing runs until somebody pumps.
+<2> `join` drains the queue on the calling thread until the future is complete. Tasks run in the order they were queued.
+
+Without an executor, a pump is single-threaded and deterministic, which is what tests and resolutions need.
+With one, work queued while nobody pumps is drained there.
+
+Work that cannot proceed yields: with a reason, `when(stage, description, action)`, which parks the work until the stage completes; or blindly, `submit(description, step)` with a step that returns false, which puts it back in the queue at a lower priority.
+Work that leaves the pump, an HTTP call or an answer from an AI model on another thread, is tracked with `track`, so that the pump knows it is still out.
+
+=== Stalls
+
+When everything in the queue is waiting and nothing is in flight, nothing can ever progress.
+The pump fails at once with a `StallException` that lists each waiting piece of work and what it waits for:
+
+.A stall, reported
+[source,java]
+----
+include::{booktests}/FlowTests.java[tag=stall,indent=0]
+----
+
+This is the check that wiring needs and seldom gets.
+A program that hangs says nothing; a pump that stalls says which parts waited for which.
+
+=== Wiring by subscription
+
+A `Transformer` maps sources to targets through a factory, and lets the factory ask for the targets of other sources while it creates its own.
+The example turns nodes that refer to each other by name into vertices that refer to each other by reference:
+
+.Sources and targets
+[source,java]
+----
+include::{booktests}/FlowTests.java[tag=graph-types,indent=0]
+----
+
+.A cyclic graph, wired
+[source,java]
+----
+include::{booktests}/FlowTests.java[tag=wiring,indent=0]
+----
+<1> The vertex subscribes to the targets of each node it refers to, and connects them as they arrive.
+<2> It emits itself at once, without waiting for its references.
+<3> Only `a` is requested; `b` and `c` are resolved because `a` and `b` asked for them.
+
+There is no separate wiring phase.
+Each source is created once per transformation, and its targets are replayed to everyone who asks; because emitting does not wait for references, `a` and `b` wire to each other without deadlock.
+
+A factory that does need another source's targets before it can emit its own can wait for them.
+If two sources wait for each other, the transformation fails with the cycle named, as a capability resolution does, because it runs on a pump too:
+
+.Waiting in a cycle
+[source,java]
+----
+include::{booktests}/FlowTests.java[tag=waiting,indent=0]
+----
+
+=== Factories from methods
+
+A `ReflectiveFactory` builds a transformer factory from methods annotated with `@Mapping`.
+A source is matched to the methods whose parameter accepts it, most specific first:
+
+.Mapping methods
+[source,java]
+----
+include::{booktests}/FlowTests.java[tag=mappings,indent=0]
+----
+<1> An `Integer` is a `Number` too; `integer` is more specific, so it wins.
+<2> A method that takes the context can ask for the targets of other sources: the length of the text, described as a number.
+
+.Polymorphic dispatch
+[source,java]
+----
+include::{booktests}/FlowTests.java[tag=mappings-test,indent=0]
+----
+
+`ReflectiveFactory.first` uses the most specific matching method, and `ReflectiveFactory.all` lets every matching method contribute.
+`@Mapping` also takes a priority, which ranks methods before specificity does.
+
+The transformer is how the runtime converts one model into another, and the same factory can serve as a capability factory, a requirement being a source and its capabilities the targets (`CapabilityFactory.of`).

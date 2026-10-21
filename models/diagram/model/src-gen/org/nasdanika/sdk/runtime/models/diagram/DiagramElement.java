@@ -8,6 +8,7 @@ import org.eclipse.emf.common.util.EMap;
 import org.eclipse.emf.ecore.EObject;
 
 import org.nasdanika.sdk.runtime.models.core.NamedElement;
+import org.nasdanika.sdk.runtime.models.core.StringIdentity;
 
 /**
  * <!-- begin-user-doc -->
@@ -31,7 +32,7 @@ import org.nasdanika.sdk.runtime.models.core.NamedElement;
  * @model abstract="true"
  * @generated
  */
-public interface DiagramElement extends NamedElement {
+public interface DiagramElement extends NamedElement, StringIdentity {
 	/**
 	 * Returns the value of the '<em><b>Properties</b></em>' map.
 	 * The key is of type {@link java.lang.String},

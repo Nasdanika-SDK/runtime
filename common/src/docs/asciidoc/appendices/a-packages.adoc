@@ -1,0 +1,86 @@
+[appendix]
+[#packages]
+== Packages and types
+
+The main types of each package. Every package is exported.
+
+=== `org.nasdanika.sdk.runtime.common`
+
+[cols="2,5",options="header"]
+|===
+| Type | Purpose
+| `Types` | Generic type operations: `isAssignable`, `getTypeArgument`, `getElementType`, `isGround`, `erase`, `getFieldType`, `getReturnType`, `getParameterTypes`, `box`, `specificity`
+| `TypeToken<T>` | Captures a generic type as an anonymous subclass
+| `Adaptable` | An object that can be asked to adapt to a type, with context; a default implementation over `@Adapter` members
+| `@Adapter` | Marks a field or method whose declared type an object adapts to
+| `Adapters` | `adapt` for any object, and `isAdaptable` for a class, from declarations only
+| `NasdanikaResourceSet` | A resource set configured from the module path, with global objects
+| `Component`, `Closeable` | Lifecycle interfaces: a `close` that throws no checked exception
+| `@Description` | Documentation of a command, option or parameter
+| `NasdanikaException` | The runtime's unchecked exception
+| `Util` | Grouping with null keys, and the lineage of a class
+|===
+
+=== `org.nasdanika.sdk.runtime.common.capability`
+
+[cols="2,5",options="header"]
+|===
+| Type | Purpose
+| `Requirement` | A ground type with payloads; a record
+| `CapabilityFactory<R, C>` | Handles requirements and creates providers; `Loader` resolves its dependencies
+| `CapabilityProvider<T>` | Publishes capabilities
+| `CapabilityLoader` | Resolves requirements; `of`, `getInstance`, `concat`, `fallback`, `cached`, `withListener`
+| `CapabilityFactorySource` | Where factories come from: `serviceLoader`, `of`, `concat`, `filtered`
+| `ReflectiveCapabilityFactory` | A factory assembled from `@Capability` methods
+| `ResolutionListener`, `ResolutionEvent` | Events of a resolution; `explaining` and `FactoryNodeCollector`
+| `TransformerCapabilityFactory` | A transformer factory as a capability factory
+|===
+
+=== `org.nasdanika.sdk.runtime.common.capability.emf`
+
+[cols="2,5",options="header"]
+|===
+| Type | Purpose
+| `ContentsHandlingResourceFactory`, `ContentsHandlingResource` | Resources loaded and saved by handlers found as capabilities
+| `ResourceContentsHandler<T>` | Loads and saves contents; `Requirement` and `Order` select handlers
+|===
+
+=== `org.nasdanika.sdk.runtime.common.flow`
+
+[cols="2,5",options="header"]
+|===
+| Type | Purpose
+| `Flows` | Sources, operators and terminals for `java.util.concurrent.Flow`
+| `Pump` | A serial work queue whose terminals block by pumping, with stall detection
+| `PumpedPublisher` | A publisher drained on its own pump, with blocking terminals
+| `StallException`, `PumpException` | What stopped a pump
+| `Transformer<S, T>` | Maps sources to targets, wiring by subscription
+| `Transformation` | One transformation on one pump
+| `ReflectiveFactory` | A transformer factory assembled from `@Mapping` methods
+| `ConfinedSubscriber` | A subscriber whose signals run on a pump
+|===
+
+=== `org.nasdanika.sdk.runtime.common.services`
+
+[cols="2,5",options="header"]
+|===
+| Type | Purpose
+| `ResourceSetContributor` | Configures resource sets; `configure` runs every contribution on the module path
+| `ClassPathURIHandlerFactory`, `ModuleURIHandlerFactory` | Handlers for `classpath://` and `module://`
+| `XMIResourceFactoryContributor` | XMI for any extension, instrumented
+| `BinaryResourceFactoryContributor`, `GzipBinaryResourceFactoryContributor` | EMF binary resources, `.ebin` and `.egz`
+| `EObjectSupplier`, `EModelElementSupplier` | Service interfaces that supply model objects
+|===
+
+=== `org.nasdanika.sdk.runtime.common.telemetry`
+
+[cols="2,5",options="header"]
+|===
+| Type | Purpose
+| `Telemetry` | The current instance, attachment to resource sets, `inSpan`, `log`, propagation, and the runtime's attribute keys and event names
+| `PublishingOpenTelemetry` | An `OpenTelemetry` whose spans and log records can be watched live
+| `PublishingTracerProvider`, `PublishingTracer`, `PublishingSpan`, `PublishingLoggerProvider`, `PublishingLogger` | Its parts
+| `SpanEvent`, `LogRecord` | What is published
+| `TelemetryURIHandler` | Wraps a URI handler so that streams are spans
+| `ResourceTelemetry` | Spans and records for resource load, save and unload
+|===

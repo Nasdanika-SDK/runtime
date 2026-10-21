@@ -1,0 +1,55 @@
+[#diagrams-as-data]
+== Diagrams as data
+
+Organizations draw a great deal.
+Architecture in Draw.io, processes in Visio, strategies in PowerPoint, and sketches on whiteboards photographed with a phone.
+Most of it ends up as files that nothing reads: a PNG pasted into a wiki page, a `.drawio` file in a repository, a deck nobody can search.
+The information in those files is real, and expensive to produce, and most of it is lost to everything but the human eye.
+
+This model is a bet that diagrams should be data.
+
+=== The N by N problem is a metamodel problem
+
+Every diagramming tool has an export format and a handful of converters to the formats its users complain about most.
+Draw.io to PlantUML, Visio to Draw.io, PowerPoint to anything: each pair is written separately, and each loses something different.
+With N notations, that is up to N times N converters, most of which nobody writes.
+
+A shared model in the middle turns them into N loaders and N generators.
+It also makes the thing in the middle useful in itself.
+A parse tree that lives for the duration of a conversion helps nobody; a model can be saved, compared, queried, validated and reviewed.
+When a conversion goes wrong, you look at the model in between and see where.
+
+=== A diagram already carries semantics
+
+When someone draws a box labeled "Payments API", the box *is* an architecture element.
+The rectangle, the fill color and the 240 by 120 pixels are the least interesting facts about it.
+The file format keeps those facts and throws away the meaning, which survives only in the label and in the heads of the people who drew it.
+
+The model keeps the meaning in two ways, and either is enough.
+
+* *The element itself.* A diagram element has an identity, a name, documentation and properties, before it is mapped to anything. A diagram is a tree and a graph of named, documented elements, which is structurally close to what an architecture model is.
+* *The elements it depicts.* `semanticElements` points from a diagram element to any objects of any other model: an application in an architecture model, an asset in a threat model, a work item, a class of a metamodel. The picture and the meaning become one object graph, instead of two artifacts and a naming convention between them.
+
+=== Four uses
+
+The model's position in the middle gives it four uses:
+
+* *Interchange and conversion.* Load a diagram from one notation and generate another, through a model you can inspect.
+* *Diagrams that were never mapped.* A documented, queryable, reviewable model of the diagrams an organization already has, with nothing configured and no domain metamodel at all.
+* *Executable diagrams.* Diagrams whose elements carry behavior, run by one interpreter whatever notation they were drawn in.
+* *Semantic mapping.* Diagram elements turned into, or linked to, the objects of domain models, by one mapping that works for every notation.
+
+One mapper, one executor, many notations.
+An executable PowerPoint deck is not a joke in this arrangement: it is the same interpreter with a different loader.
+
+=== What diagrams as data make possible
+
+* *Documentation sites* generated straight from diagrams: a page per shape, a link per connection, documentation and ownership attached, and markers pointing back to the source file.
+* *Review and diff.* "What changed in this architecture diagram" answered with a list of added nodes and re-pointed connections, instead of two images side by side.
+* *Impact queries.* Retiring a service becomes a query over every diagram that depicts it, rather than a hunt through image files.
+* *Modernization.* Legacy diagram estates, such as Visio libraries, decades of decks and the canvases of integration platforms, mined for what they document and regenerated on a current stack.
+* *Diagrams for and from AI assistants.* A typed, documented structure is a far better contract for a language model than mxGraph XML: an assistant can emit one, and a program can check it before anything is drawn.
+* *Layout as a service.* With topology, bounds, ports and waypoints in one model, a layout engine lays out diagrams from any notation.
+* *Mergeable diagrams.* A diagram generated from a source of truth and then improved by people can be regenerated without losing their work, by a three-way merge on the model (<<looking-ahead>>).
+
+The rest of part one is about how much structure that takes, and how little.

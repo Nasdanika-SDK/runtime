@@ -1,0 +1,3 @@
+org.nasdanika.sdk.runtime.emf.json.JsonResourceFactoryContributor
+org.nasdanika.sdk.runtime.emf.json.YamlResourceFactoryContributor
+org.nasdanika.sdk.runtime.emf.json.YmlResourceFactoryContributor

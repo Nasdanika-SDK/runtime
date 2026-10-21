@@ -1,0 +1,69 @@
+// Defaults for previewing this file on its own; index.adoc and the Maven build set these
+ifndef::booktests[:booktests: ../../../test/java/org/nasdanika/sdk/runtime/models/diagram/tests/book]
+ifndef::bookresources[:bookresources: ../../../test/resources/org/nasdanika/sdk/runtime/models/diagram/tests/book]
+
+[#resources]
+== Diagrams as resources
+
+A diagram in the model is an EMF object tree, so it is saved and loaded like any other model: as XMI, JSON or YAML, and compared, copied and versioned with EMF's tools.
+
+=== Saving and loading
+
+.Saving the system context as YAML and loading it back (`BuildingTests.java`)
+[source,java]
+----
+include::{booktests}/BuildingTests.java[tag=save,indent=0]
+----
+<1> A resource set configured by the runtime: the diagram model registers its package, and `emf-json` the YAML format, because both are on the module path.
+
+`EcoreUtil.equals` compares two object trees feature by feature, references included, which makes it the natural assertion for a round trip, and the basis of a diff.
+
+=== Writing diagrams by hand
+
+YAML is readable enough to write diagrams in.
+This file is the system context of <<building>>, written by hand:
+
+.The system context in YAML (`internet-banking.yaml`)
+[source,yaml]
+----
+include::{bookresources}/internet-banking.yaml[tag=diagram]
+----
+
+Three things to know about the format:
+
+* `eClass` names an object's class by the namespace URI of the model and the class's name. It can be left out where the type of a feature says it, as for `bounds`, `location` and `ports`.
+* References are `$ref` with a URI fragment, relative to the file. A fragment can name elements by ID, `@children[id='ibs']`, rather than by position, which keeps references valid when elements are reordered.
+* `"y"` is quoted because YAML 1.1 reads a bare `y` as `true`.
+
+The incoming and outgoing connections are not written: EMF sets them from the connections' sources and targets as the file loads.
+The test loads the file and compares it with the diagram built in Java:
+
+.Loading the hand-written diagram
+[source,java]
+----
+include::{booktests}/BuildingTests.java[tag=authored,indent=0]
+----
+
+=== Fragments
+
+Every object in a resource has a URI: the resource's URI and a fragment that is a path from the root.
+
+.Finding an element by fragment
+[source,java]
+----
+include::{booktests}/BuildingTests.java[tag=fragments,indent=0]
+----
+<1> A path of IDs finds the element, whatever its position.
+<2> The fragment EMF generates for the element uses positions.
+
+A fragment by position is valid only as long as nothing is inserted before the element.
+For references that should survive edits, write fragments by ID, as in the YAML above, or reference elements by their `uris`.
+
+ifdef::editor-notes[]
+[IMPORTANT,caption="Editor's note"]
+====
+The Xcore declares `children` and `ports` with `keys ^id`, which should make EMF generate fragments by ID, as in the hand-written YAML. The generated `DiagramPackageImpl` registers no keys, so `keys ^id` was dropped without a warning; lookup by ID works only because EMF matches `[id='...']` against the attribute by name. The telemetry model's keys, on attributes declared in its own classes, are generated. The difference is that `id` is declared in the core model's `StringIdentity`, in another package; declaring `StringIdentity` as a direct supertype of `DiagramElement` did not change it. Find out whether Xcore resolves keys inherited from another package, and add the keys in code if it does not, then update this section.
+
+The YAML written by `emf-json` also contains both sides of every connection, `outgoingConnections` and `incomingConnections` as well as `source` and `target`, with references by position. Declaring the `Connectable` side `transient` would leave one side in files, the side people write.
+====
+endif::[]

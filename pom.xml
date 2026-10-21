@@ -29,6 +29,8 @@
 		-->
 		<zephyr.dir>${maven.multiModuleProjectDirectory}/doc/zephyr</zephyr.dir>
 		<zephyr.editor-notes>true</zephyr.editor-notes>
+		<!-- File name of a module's book in target/book; modules whose artifactId is not distinctive, such as model, set their own -->
+		<zephyr.book.name>${project.artifactId}-${project.version}-book</zephyr.book.name>
 		<zephyr.epub.skip>true</zephyr.epub.skip>
 		<asciidoctor.skip>false</asciidoctor.skip>
 		<zephyr.asciidoctor.maven.plugin.version>3.2.0</zephyr.asciidoctor.maven.plugin.version>
@@ -446,7 +448,6 @@
 				</file>
 			</activation>
 			<properties>
-				<zephyr.book.name>${project.artifactId}-${project.version}-book</zephyr.book.name>
 				<maven.build.timestamp.format>yyyy-MM-dd</maven.build.timestamp.format>
 			</properties>
 			<build>

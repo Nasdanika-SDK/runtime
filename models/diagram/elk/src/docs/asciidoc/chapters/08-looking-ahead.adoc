@@ -1,0 +1,35 @@
+[#looking-ahead]
+== What comes next
+
+Everything in this chapter is [.planned]#PLANNED#.
+
+=== Renderers as modules
+
+The React Flow and Draw.io renderers of <<rendering>> are test code, written for the demos.
+Both are general enough to become modules: diagram model to React Flow, with the custom edge that draws a computed route, and diagram model to Draw.io.
+The Draw.io one is the generator half of the Draw.io model's loader and generator, being migrated alongside the diagram model.
+
+=== Laying out what people drew
+
+A diagram loaded from Draw.io has positions already.
+Laying it out from scratch throws away the work of the person who drew it.
+ELK's layered algorithm has interactive strategies that keep the existing order of nodes, and options that respect a node's current position; with them, a layout can make room for new elements and tidy routes while keeping what people decided.
+That is the layout step of merging a regenerated diagram with the edits people made to the previous one.
+
+=== Layout in the browser
+
+elkjs runs the same algorithms in JavaScript.
+The adapter could write ELK's JSON format, so that a diagram is laid out in the browser, where a person can collapse a container or filter a layer and see the diagram laid out again without a server.
+
+=== A layout service, when there is a choice
+
+When a second layout engine has a real consumer, `ElkLayout.layout(DiagramElement)` becomes an interface, and ELK one of its providers, found through the runtime's capability framework with a requirement that names the engine and its options (<<elk-and-adapter>>).
+
+=== Labels measured, not estimated
+
+Label and node sizes are estimated from the number of characters.
+A measurer with real font metrics, from Java 2D, or from the same browser that renders the React Flow page, would make labels fit exactly.
+
+=== Diagrams in narrated videos
+
+Diagrams generated and laid out this way are meant to be scenes of the runtime's narrated videos: a module graph or a class diagram on screen, with elements highlighted as the narration mentions them, regenerated when the code changes.

@@ -1,0 +1,53 @@
+[preface]
+== Preface
+
+This book is about a small model of diagrams.
+It holds what diagram notations have in common: shapes and where they sit, what connects to what, how elements nest and which layer they are on, what each of them is documented as, and, where there are any, which elements of other models each shape depicts.
+A diagram element is a model element in its own right, so a diagram is a model even when it has been mapped to nothing.
+
+The first part of the book is the why: why diagrams should be data, how much meaning they can carry, what has been built before, and what this model leaves out on purpose.
+The second part is the how, for Java developers.
+The third says what the model is for beyond this edition.
+
+=== Who this book is for
+
+*Architects and analysts* who keep diagrams in Draw.io, Visio or PowerPoint and want them to be more than pictures: searchable, reviewable, comparable, and connected to the models of the systems they describe.
+Part one is for you, and needs no code.
+
+*Developers* who convert diagrams between notations, generate them from models, check them, or map them to domain models.
+Read the book in order.
+
+*Tool builders* who need a neutral, typed structure in the middle of a diagram pipeline.
+
+=== A book that stands on its own
+
+This book is one of the Nasdanika Zephyr Books: in-depth manuals, one per module of the Nasdanika SDK Runtime, in the manner of IBM Redbooks.
+The runtime has a book of its own, _Nasdanika SDK Runtime: More Structure with Less Effort_, and the runtime's Draw.io module has a Zephyr Book, _Draw.io_.
+You do not need either to read this one: where the books touch, this one repeats what you need.
+
+The series is named after the Bootswatch theme it is styled with, Zephyr, and has nothing to do with the Zephyr real-time operating system or with SmartBear's Zephyr test management.
+
+The model comes from the diagram model of Nasdanika's model collection, rebuilt on the runtime's core model.
+This book replaces the model's readme, and keeps its argument.
+
+=== What you need
+
+* *A JDK for Java 25* and *Maven 3.9.16 or later*.
+* The model's Java module is `org.nasdanika.sdk.runtime.models.diagram`, its Maven coordinates are `{group-id}:{artifact-id}:{runtime-version}`, and its namespace URI is `{nsuri}`.
+* Some familiarity with EMF helps in part two: an EMF model is a set of Java interfaces generated from a metamodel, with containment, references, reflection and persistence for free.
+
+=== Conventions
+
+* *Every listing is included from a test* of the module, or from a resource that a test loads, and is compiled and run when the book is built. Callouts, such as <1>, explain the lines they mark.
+* *The figure is a diagram.* It is a PNG image with a Draw.io diagram embedded. Open it in Draw.io to edit it; the tests convert it into the diagram model and check it against the model it depicts (<<semantic-elements>>).
+* *Status labels* mark what this edition does not have yet: [.planned]#PLANNED# for designed but not built, [.sketch]#SKETCH# for partly built.
+* *Voice.* I write in the first person.
+
+ifdef::editor-notes[]
+[IMPORTANT,caption="Editor's note"]
+====
+Editor's notes record inconsistencies between the model and its documentation found while writing. They are shown in builds for the author and left out of published editions.
+
+The readme this book replaces described the model as it was in Nasdanika's model collection: `DiagramElement` extending the requirements model's `Satisfier`, a `tags` feature, the nxcore model, the model tower and its floors, and `semanticElementsSelector`. The runtime's model has none of them yet; `DiagramElement` extends the runtime core model's `NamedElement` and `StringIdentity`, and the `Satisfier` supertype is a TODO in the Xcore. This book describes the model as it is, and the rest as planned.
+====
+endif::[]

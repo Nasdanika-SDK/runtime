@@ -1,0 +1,32 @@
+[appendix]
+[#building]
+== Building this book, and its figures
+
+This book is AsciiDoc in `models/diagram/elk/src/docs/asciidoc`, built with the module after its tests have passed:
+
+[source,text]
+----
+mvn -pl models/diagram/elk -am verify                          # the module, its tests, this book
+mvn -pl models/diagram/elk verify -Dzephyr.editor-notes=false    # without editor's notes
+----
+
+The PDF and the single-page HTML are written to `target/book` and attached to the module's artifact with the classifier `book`; the test sources are attached with the classifier `test-sources`.
+
+The tests write the demo site to `target/diagrams`.
+To render the figures again after a change, from the runtime's root:
+
+[source,text]
+----
+tools=doc/zephyr/tools/drawio-figure
+figures=models/diagram/elk/src/test/resources/org/nasdanika/sdk/runtime/models/diagram/elk/tests
+$tools/render.sh models/diagram/elk/target/diagrams/diagram-package.drawio $figures/diagram-package.png
+$tools/render.sh models/diagram/elk/target/diagrams/node-context.drawio $figures/node-context.png
+----
+
+The tool needs Python, a JDK, Chrome or Chromium, and internet access for Draw.io's viewer.
+
+=== The tests run on the module path
+
+The tests are patched into the module on the module path, and use modules the module does not require: the React Flow, React, TypeScript, HTML and Bootstrap models, volumes, the Draw.io API, and the JDK's XML, desktop and HTTP modules.
+The module's POM adds them for test compilation and for the test run with `--add-modules` and `--add-reads`.
+`--add-reads` does not carry the readability that `requires transitive` implies, so the models behind React Flow are listed one by one.

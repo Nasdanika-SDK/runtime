@@ -519,6 +519,7 @@ public class DiagramPackageImpl extends EPackageImpl implements DiagramPackage {
 		// Add supertypes to classes
 		boundsEClass.getESuperTypes().add(this.getPoint());
 		diagramElementEClass.getESuperTypes().add(theCorePackage.getNamedElement());
+		diagramElementEClass.getESuperTypes().add(theCorePackage.getStringIdentity());
 		diagramEClass.getESuperTypes().add(this.getDiagramElement());
 		layerEClass.getESuperTypes().add(this.getDiagramElement());
 		connectableEClass.getESuperTypes().add(this.getDiagramElement());

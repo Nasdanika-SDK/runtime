@@ -1,0 +1,22 @@
+[appendix]
+[#glossary]
+== Glossary
+
+Adaptation:: Asking an object for something of a type, with optional context, and getting it or null (<<adaptation>>).
+Capability:: An object provided for a requirement by a capability factory (<<capabilities>>).
+Capability factory:: Handles some requirements and creates providers of capabilities for them; may require other capabilities.
+Capability loader:: Resolves a requirement against a source of factories, with their dependencies.
+Declaration:: What a program says about a class, field or method, generic types included, as the compiler checked it and the class file keeps it. What the module matches on.
+Erasure:: The removal of type arguments from types at compile time. Instances carry no type arguments; declarations keep them.
+Ground type:: A type with no type variables in it, which can therefore be required or provided.
+Matching:: Deciding whether something that is offered fits something that is needed, by a rule.
+Payload:: A value of a requirement other than its type, matched to the parameters of a capability method in order.
+Pump:: A serial work queue whose waiting threads run queued work, and which reports a stall when nothing can progress (<<flows>>).
+Requirement:: What is needed: a ground type and payloads, or any object a factory understands.
+Resource set:: EMF's container of resources, which matches URIs to handlers and factories, and namespaces to packages (<<resource-sets>>).
+Sensory bias:: In evolutionary biology, a preference that evolved in one context and is exploited in another; here, Java developers' fluency with generics, used for wiring (<<type-not-class>>).
+Signature attribute:: The part of a class file that keeps generic declarations.
+Stall:: The state in which every piece of work on a pump waits for another and nothing is in flight; reported by a `StallException` with the waits named.
+Type token:: An anonymous subclass of `TypeToken` that captures a generic type for reflection.
+Unit of work:: A command, a request or a test, with its own OpenTelemetry instance current (<<telemetry>>).
+Wiring:: The references between parts of a program that matching produced.

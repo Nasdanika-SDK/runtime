@@ -1,0 +1,68 @@
+[appendix]
+[#layout-options]
+== Layout options used most
+
+ELK's options are documented in full at {elk-site}, under _Reference_.
+These are the ones a diagram is most likely to set, as property keys and values.
+Enumeration values are written in capitals, numbers as numbers, and vectors as `(x, y)`.
+
+[cols="3,3,4",options="header"]
+|===
+| Key | Values | Effect
+
+| `elk.algorithm`
+| `layered`, `mrtree`, `force`, `radial`
+| The algorithm. Layered is the default, for flows and directed graphs.
+
+| `elk.direction`
+| `UP`, `DOWN`, `LEFT`, `RIGHT`
+| The direction edges flow in, for layered and tree layouts.
+
+| `elk.edgeRouting`
+| `ORTHOGONAL`, `POLYLINE`, `SPLINES`
+| How edges are drawn: rectilinear, straight segments, or curves.
+
+| `elk.hierarchyHandling`
+| `INCLUDE_CHILDREN`, `SEPARATE_CHILDREN`
+| Whether nested nodes are laid out together with their containers. The adapter sets `INCLUDE_CHILDREN` when nodes are nested.
+
+| `elk.spacing.nodeNode`
+| A number
+| Space between nodes in the same layer.
+
+| `elk.layered.spacing.nodeNodeBetweenLayers`
+| A number
+| Space between layers.
+
+| `elk.spacing.edgeLabel`
+| A number
+| Space between an edge and its labels.
+
+| `elk.layered.mergeEdges`
+| `true`, `false`
+| Edges into the same port share segments.
+
+| `elk.edgeLabels.placement`
+| `HEAD`, `TAIL`, `CENTER`
+| On a label: which part of the edge it goes with.
+
+| `elk.portConstraints`
+| `FREE`, `FIXED_SIDE`, `FIXED_ORDER`, `FIXED_POS`
+| On a node: how much ELK may move its ports. The adapter sets `FIXED_POS` on nodes with ports.
+
+| `elk.port.side`
+| `NORTH`, `SOUTH`, `EAST`, `WEST`
+| On a port: its side. The adapter sets it from the port's location.
+
+| `elk.nodeSize.minimum`
+| `(width, height)`
+| On a node: its minimum size.
+
+| `elk.padding`
+| `[top=10, left=10, bottom=10, right=10]`
+| On a container: room around its children.
+
+| `elk.randomSeed`
+| A number
+| The seed of algorithms that use randomness.
+|===

@@ -1,0 +1,83 @@
+[#the-jvm]
+== The JVM, not Java
+
+What the module matches on is in the class file, not in Java source.
+The `Signature` attribute is part of the JVM specification, and every compiler that targets the JVM can write it.
+Kotlin, Scala and Groovy do, for the types their programs declare, so a Kotlin class that implements `Supplier<Book>` is matched exactly like a Java one, and a capability method written in Groovy with a declared generic return type answers the same requirements as its Java twin.
+
+There are differences at the edges.
+Kotlin writes its declaration-site variance as wildcards in some positions and not in others, and Groovy declares `Object` wherever a dynamic program leaves a type out, so such a member matches only requirements for `Object`.
+The rule is the same in every language: what is matched is what was declared, and a member that declares nothing answers nothing in particular.
+
+So this is a book about the JVM.
+Java is the language its examples are written in.
+
+=== Other platforms, with respect
+
+The two platforms most often weighed against the JVM for new systems are Node.js, programmed in TypeScript or JavaScript, and Python.
+Both are excellent at what they are designed for, and both have type systems worth admiring.
+Neither has what this module is built on: declarations that a compiler has checked and that the running program can read.
+
+*TypeScript* has a type system richer than Java's in many ways: structural types, unions, conditional and mapped types.
+It is checked at compile time and then erased completely; the JavaScript that runs carries no types at all.
+With the `emitDecoratorMetadata` option the compiler records some types for decorated members, and dependency injection frameworks such as Angular and NestJS use them, but what it records is constructors: a `Book[]` is recorded as `Array`, and an interface as `Object`.
+Matching on a declared `Supplier<Book>` at run time is not possible without a second declaration, a schema in a library such as Zod, that a developer keeps in step with the first.
+
+*Python* keeps annotations at run time, generic arguments included: `typing.get_type_hints` returns `list[Book]` for a parameter declared that way, and FastAPI and Pydantic build very useful matching on it.
+What Python does not do is check them.
+The interpreter neither verifies that a function returns what its annotation says nor complains when it does not; checkers such as mypy and Pyright do, when somebody runs them, and they are not part of the program.
+Matching on an annotation nobody has checked is matching on a claim.
+
+*.NET*, to be fair, goes further than the JVM: its generics are reified, so even instances know their type arguments.
+This book is about the JVM because the runtime is, not because the JVM is the only platform with checked generic declarations.
+
+=== JavaScript as another bytecode
+
+The browser runs JavaScript, and that will not change.
+It does not follow that JavaScript has to be what people write.
+Scott Hanselman called JavaScript the assembly language of the web in 2011, and compilers from other languages to JavaScript are older than that: Google Web Toolkit compiled Java to JavaScript in 2006, and J2CL, TeaVM, Kotlin/JS and Scala.js do it today.
+
+The runtime takes a different route to the same place.
+It has models of TypeScript, React and HTML, and generators that write readable modules and pages from them, with imports computed from references.
+A web application is built in Java, from models, and what reaches the browser is JavaScript that the generator wrote.
+In that arrangement JavaScript is a generation target, another bytecode: the format a machine executes, written by a tool from a source people work in.
+
+That raises a question of direction, and it deserves a careful answer.
+On the JVM, with these generators, a team can do most of what it would do with Node.js to build and serve a browser application: generate the modules and pages, serve them, test them, deploy them as static files.
+Not all of it.
+Bundlers, server-side rendering of React, and the npm tool chain of linters and component test runners run on Node.js; some of them run on the JVM through GraalJS, and the rest stay where they are.
+The other direction is possible as text: a Node.js program can write Java source as easily as Java writes JavaScript.
+What it cannot do is be the JVM: it has no checked generic declarations to match at run time, and it cannot load the JVM's libraries, EMF, JDBC drivers and the rest of the enterprise ecosystem, into its own process.
+So the asymmetry is real, but it is narrower than "the JVM can do everything Node.js can": the JVM can generate and host most of a browser application, while Node.js can generate Java but cannot host what Java runs on.
+
+=== Fall back to the keep
+
+In _The Two Towers_, when the outer wall of Helm's Deep is breached, the defenders fall back to the keep of the Hornburg, the innermost and strongest part of the fortress; in the film the order is shouted along the wall: "Fall back to the keep!"
+
+The analogy is not literal.
+AI assistants are not the enemy; they are allies, and very capable ones.
+But the shape of the situation is similar.
+Assistants now hold most of the outer wall: they write code, tests and documentation faster than people can read them.
+What people keep is the place from which they can still check what was built, and the stronger that place, the more of the work can be given to the assistants safely.
+
+I think the JVM is a better keep than Node.js for that purpose, and the reasons are the ones in this book.
+Its declarations are checked by a compiler and kept in the class files, so a person or a program can read what a part claims to provide and rely on the claim.
+Its run-time matches can use the same declarations and the same rules, and explain themselves.
+And with JavaScript as a generation target, retreating to the keep gives up nothing in the browser.
+
+=== Where enterprise systems are
+
+My own experience, which is not a study: in the enterprises I have worked in and with, Java has been at least twice as common as Node.js for systems in production, and about ten times as common as Python.
+
+I know of no public research that measures this across enterprises, and the surveys that are published measure something else.
+Developer surveys count developers and the languages they use, not systems and what they run on, and by that measure JavaScript and Python are used by more professional developers than Java.
+Both pictures can be true at once: many developers write some JavaScript and some Python, while, in my experience, the systems of record of large organizations, the ones that run payments, policies and supply chains, run disproportionately on the JVM.
+
+ifdef::editor-notes[]
+[IMPORTANT,caption="Editor's note"]
+====
+Verify or remove before publishing. The ratios are the author's experience. Survey data found while writing: the Stack Overflow Developer Survey 2025 (https://survey.stackoverflow.co/2025/technology/), as summarized in secondary write-ups, has about 69 percent of professional developers using JavaScript, about 55 percent Python and about 30 percent Java, and Node.js used by about 49 percent of all respondents; check the figures on the survey's own page. JetBrains' State of Java 2025 (https://lp.jetbrains.com/the-state-of-java-2025/) was reported to show Java ahead of Python for microservices, 51 percent to 26 percent; not verified. The frequently repeated "90 percent of the Fortune 500 use Java" has no traceable primary source and should not be cited. Look for analyst research (Gartner, Forrester, IDC) on languages of production systems in large enterprises.
+
+Also verify the film line ("Fall back to the keep!" in Peter Jackson's _The Two Towers_, 2002) and Hanselman's 2011 post ("JavaScript is Assembly Language for the Web").
+====
+endif::[]

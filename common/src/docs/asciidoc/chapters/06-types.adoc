@@ -1,0 +1,94 @@
+// Defaults for previewing this file on its own; index.adoc and the Maven build set these
+ifndef::booktests[:booktests: ../../../test/java/org/nasdanika/sdk/runtime/common/book]
+
+[#types]
+== Types
+
+`Types` is the module's small library of generic type operations, and every match in the runtime goes through it.
+This chapter shows its operations on three types:
+
+.The types of the examples (`TypesTests.java`)
+[source,java]
+----
+include::{booktests}/TypesTests.java[tag=types,indent=0]
+----
+
+=== Type tokens
+
+A class literal cannot name a parameterized type: there is no `Supplier<Book>.class`.
+A type token can.
+`new TypeToken<Supplier<Book>>() {}` creates an anonymous subclass of `TypeToken`, whose generic superclass, `TypeToken<Supplier<Book>>`, is a declaration, and so survives erasure; `getType()` reads its type argument back.
+
+Types built by the JDK, by reflection or from tokens, are equal when they describe the same type, so a type from a token can be compared with the generic type of a field, as in <<type-not-class>>, and either can be a map key.
+
+=== Assignability
+
+`Types.isAssignable(target, source)` answers the question the compiler answers for an assignment: may a value declared as `source` be used where `target` is required?
+The compiler's answer first:
+
+.What the compiler accepts
+[source,java]
+----
+include::{booktests}/TypesTests.java[tag=compiler,indent=0]
+----
+
+and the same questions asked at run time:
+
+.Assignability by the compiler's rules
+[source,java]
+----
+include::{booktests}/TypesTests.java[tag=assignability,indent=0]
+----
+<1> A supplier of books is a supplier of _some_ publication: the wildcard admits subtypes.
+<2> It is not a supplier of publications. Generics are invariant: a `Supplier<Publication>` could be expected to supply an almanac.
+<3> Anything parameterized can be used where the raw type is required.
+<4> The other way round is where the module is deliberately stricter than Java.
+<5> The exception: a target whose type arguments are all unbounded wildcards.
+
+The first three are Java's rules.
+The fourth is not.
+Java lets a raw `Supplier` be used where `Supplier<Book>` is required, with an unchecked warning.
+For matching, that would let something declared as a raw supplier answer a requirement for books, about which it has said nothing, so `Types` refuses.
+`Supplier<?>`, which Java accepts from a raw type without a warning, is the exception.
+
+The lesson for requirements is the one the JDK's own signatures teach, as in `Collection.addAll(Collection<? extends E>)`: the side that provides declares the exact type it has, and the side that asks uses `? extends` wherever it only reads.
+Each wildcard admits more providers; each exact type argument insists on that type, at that level.
+
+=== Type arguments of declarations
+
+A class fixes the type arguments of its generic supertypes, and `getTypeArgument` finds them, however many classes lie in between:
+
+.A class that fixes a type argument two levels up
+[source,java]
+----
+include::{booktests}/TypesTests.java[tag=shelves,indent=0]
+----
+
+.Reading type arguments
+[source,java]
+----
+include::{booktests}/TypesTests.java[tag=type-argument,indent=0]
+----
+<1> `NovelShelf` supplies a `List<Novel>`: `Shelf<Novel>` fixes `T`, and `Shelf<T>` fixes `Supplier`'s argument as `List<T>`.
+<2> `getElementType` is the same for containers, with a wildcard replaced by its bound: an element of `List<? extends Book>` is a `Book`.
+<3> `Shelf` itself is generic in `T`, so it fixes nothing, and the answer is null rather than a type variable.
+
+Three more operations see members through a subtype: `getFieldType`, `getReturnType` and `getParameterTypes` resolve the type variables of a member's declaring class as a subclass fixes them, so a field declared as `T content` in `Box<T>` is a `Novel` in `NovelBox extends Box<Novel>`.
+Adaptation relies on them (<<adaptation>>).
+
+=== Ground types
+
+A type variable means something only inside the scope that declares it, so `T`, or `List<T>`, cannot be required or provided.
+`isGround` tells the two apart.
+This is the trap of type tokens created inside generic methods:
+
+.A token that captures a variable
+[source,java]
+----
+include::{booktests}/TypesTests.java[tag=ground-method,indent=0]
+
+include::{booktests}/TypesTests.java[tag=ground,indent=0]
+----
+
+`new TypeToken<List<T>>() {}` captures `List<T>`, whatever `T` stands for at the call site, because erasure leaves nothing else to capture.
+Requirements refuse such types with an error, rather than match them wrongly (<<capabilities>>).

@@ -1,0 +1,33 @@
+[#not-here]
+== What is not here, on purpose
+
+The model is small: ten classes.
+What it leaves out matters as much as what it has.
+
+*No styling.*
+No fill, no stroke, no font, no theme, no z-order, no animation, no slide transition.
+Those differ from notation to notation and rarely survive a conversion, so they belong to the models of each notation, which extend this one, and to properties.
+
+*No editor.*
+The model is not the persistence format of a diagram editor.
+People draw in the editors they already have, and loaders bring their diagrams into the model.
+
+*No notation.*
+UML, BPMN, C4 and an enterprise's own conventions are all diagrams to this model.
+What a shape means is either documented on the element, or depicted through `semanticElements`, or both.
+
+*Properties instead of metamodel changes.*
+Every diagram element has `properties`, a map from strings to strings.
+They absorb what a source notation carries and the model does not: a Draw.io style, a PowerPoint placeholder index, the URI of a processor, a mapping rule.
+Supporting a new notation or a new interpreter is then a matter of a loader and some conventions, not a new release of the metamodel.
+
+The core defines the vocabulary that survives conversion, not the pixels that do not.
+
+=== What is here
+
+* *Geometry:* `Point`, and `Bounds`, a point with a width and a height.
+* *Structure:* `DiagramElement`, the base of everything, with `children` for nesting; `Diagram`, which is a document, a page, a slide or a group; and `Layer`, visible or not, locked or not.
+* *Notation:* `Node`, a shape with bounds and ports; `Port`, an attachment point on a node in relative coordinates; `Connection`, from a source to a target through waypoints; and `Label`, a node whose content is text. Nodes and ports are `Connectable`.
+* *Meaning:* `semanticElements` on every element, and everything a diagram element inherits from the runtime's core model: an ID, a name, documentation, markers that record where an element came from, an icon and URIs.
+
+<<the-model>> takes them one at a time.

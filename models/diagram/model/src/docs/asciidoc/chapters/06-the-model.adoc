@@ -1,0 +1,57 @@
+// Defaults for previewing this file on its own; index.adoc and the Maven build set these
+ifndef::imagesdir[:imagesdir: ../../../test/resources/org/nasdanika/sdk/runtime/models/diagram/tests/book]
+
+[#the-model]
+== The model
+
+.The diagram model. Blue classes are the model's; gray ones come from the runtime's core model and from EMF. Italic names are abstract. Open arrows are references; closed arrows are generalizations.
+image::diagram-model.png[The diagram model,pdfwidth=100%,width=900]
+
+The figure is drawn in Draw.io, and it is data: <<semantic-elements>> converts it into the diagram model and checks every box and arrow against the model it depicts.
+
+=== DiagramElement
+
+The base of everything in a diagram, and abstract.
+It extends `NamedElement` and `StringIdentity` of the runtime's core model, so every diagram element has:
+
+* `id` and `name`;
+* documentation: `documentation` text with a `docFormat`, a `docRef` to a document elsewhere, or structured `docContents` and `docSections`;
+* `markers`, which record where an element came from: a file and a position, or a Git repository, branch and commit;
+* an `icon`, and `uris` that identify the element across models and versions.
+
+It adds three features:
+
+`properties`:: A map from strings to strings, for whatever a source notation carries and the model does not, and for conventions of your own (<<not-here>>).
+`semanticElements`:: The objects of other models that the element depicts. Any `EObject`, as many as it takes (<<semantic-elements>>).
+`children`:: The elements it contains. Containment is how documents contain pages, pages contain layers, and shapes contain shapes.
+
+=== Diagram and Layer
+
+A `Diagram` is a diagram element whose meaning is "a picture, or a set of pictures".
+Because diagrams nest, the same class is a document of pages, a page, a deck of slides, a slide, or a group of shapes.
+
+A `Layer` is a set of elements shown, hidden and locked together, with `visible`, which defaults to `true`, and `locked`.
+Layers are the one piece of editor state worth keeping in a neutral model, because they carry meaning: the future-state layer, the out-of-scope layer, the locked background, the layer of conflicts that a merge left for a person to settle.
+
+=== Node, Port and Label
+
+A `Node` is a shape: `bounds` for its position and size, and `ports`.
+Bounds are relative to the node's parent, as in the editors the model is loaded from.
+
+A `Port` is a named attachment point on a node, with a `location` in coordinates relative to the node's size, from 0 to 1 in each dimension: (0.5, 1) is the middle of the bottom edge.
+A connection attached to a port stays attached to that point of the node after a conversion, instead of snapping to the center.
+
+A `Label` is a node whose content is text, in `text`.
+
+=== Connectable and Connection
+
+A `Connection` runs from a `source` to a `target` through `waypoints`, which preserve its route.
+Either end can be missing, for a connection that is drawn but not attached.
+
+Nodes and ports are `Connectable`: they have `outgoingConnections` and `incomingConnections`, the opposites of `source` and `target`.
+EMF keeps both sides in step, so setting a connection's source adds the connection to the source's outgoing connections, and topology can be navigated from either end without scanning the diagram.
+
+=== Point and Bounds
+
+`Point` has `x` and `y`; `Bounds` is a point with a `width` and a `height`.
+They are the geometry of the OMG Diagram Commons, and all the geometry the model has.

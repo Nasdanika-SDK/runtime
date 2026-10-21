@@ -26,6 +26,7 @@ module org.nasdanika.sdk.runtime.common {
 	exports org.nasdanika.sdk.runtime.common.capability.emf;
 	exports org.nasdanika.sdk.runtime.common.telemetry;
 
+	// tag::services[]
 	uses ResourceSetContributor;
 	uses URIHandler;
 	uses AdapterFactory;
@@ -40,5 +41,6 @@ module org.nasdanika.sdk.runtime.common {
 		BinaryResourceFactoryContributor,
 		GzipBinaryResourceFactoryContributor,
 		XMIResourceFactoryContributor;
+	// end::services[]
 	
 }

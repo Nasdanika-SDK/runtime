@@ -1,0 +1,39 @@
+// Defaults for previewing this file on its own; index.adoc and the Maven build set these
+ifndef::runtime-root[:runtime-root: ../../../../../../..]
+
+[#getting-started]
+== Getting started
+
+The model is an EMF model, defined in Xcore and generated into Java when the runtime is built.
+Using it takes a Maven dependency, a line in `module-info.java`, and a resource set.
+
+=== Adding the model
+
+The runtime's models have a bill of materials of their own, `org.nasdanika.sdk.runtime.models:bom`, which manages their versions.
+Import it in `dependencyManagement`, as the runtime's own BOM is imported, and depend on `{group-id}:{artifact-id}` without a version.
+For YAML and JSON files, add the runtime's `org.nasdanika.sdk.runtime:emf-json` as well.
+
+The model is a named Java module:
+
+.The module declaration of the diagram model
+[source,java]
+----
+include::{runtime-root}/models/diagram/model/src/main/java/module-info.java[tag=module,indent=0]
+----
+
+It requires the runtime's core model transitively, which brings EMF and the runtime's `common` module with it.
+It provides its `EPackage` as a service, so a resource set configured by the runtime knows the model without registration code.
+
+=== A resource set
+
+`NasdanikaResourceSet.createAndConfigure()` creates a resource set and lets every module on the module path contribute to it: models register their packages, and `emf-json` registers resource factories for `.json`, `.yaml` and `.yml` files.
+A diagram is then saved and loaded like any EMF model (<<resources>>).
+
+You need no resource set to build a diagram in memory, convert it or query it.
+The factory, `DiagramFactory.eINSTANCE`, creates elements, and the generated interfaces do the rest (<<building>>).
+
+=== What the build does
+
+The Xcore definition is in `src/main/resources/org/nasdanika/sdk/runtime/models/diagram/diagram.xcore`.
+Maven generates the Java sources into `src-gen` with the Xtext Maven plugin, so the model builds from the command line and in any editor; Eclipse is not required.
+The generated API is in three packages: the interfaces in `org.nasdanika.sdk.runtime.models.diagram`, their implementations in `impl`, and the switch and adapter factory in `util`.

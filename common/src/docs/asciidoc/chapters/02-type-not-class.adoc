@@ -1,0 +1,80 @@
+// Defaults for previewing this file on its own; index.adoc and the Maven build set these
+ifndef::booktests[:booktests: ../../../test/java/org/nasdanika/sdk/runtime/common/book]
+
+[#type-not-class]
+== Type, not class
+
+Run-time wiring in Java has mostly matched on `Class`.
+`ServiceLoader.load(Supplier.class)` returns every supplier in the assembly.
+A registry keyed by class has one entry for `Supplier`, not one for a supplier of books and another for a supplier of authors.
+A class is the erased type: what is left of `Supplier<Book>` when the type argument is gone.
+
+`java.lang.reflect.Type` is the rest.
+Its implementations describe what a Java program can declare: a class, a parameterized type such as `Supplier<Book>`, a wildcard such as `? extends Publication`, a type variable, a generic array.
+Matching on `Type` instead of `Class` takes run-time matching to the level the compiler works at, and the difference is the difference between "a supplier" and "a supplier of books".
+
+=== What survives erasure
+
+Objects carry no type arguments.
+An `ArrayList<String>` and an `ArrayList<Integer>` are the same class at run time, and nothing can recover the difference from the objects.
+
+Declarations are different.
+The compiler writes the generic signature of every class, field and method into the class file, in an attribute named `Signature`, and reflection reads it back:
+
+.Instances forget, declarations remember (`TypesTests.java`)
+[source,java]
+----
+include::{booktests}/TypesTests.java[tag=library,indent=0]
+
+include::{booktests}/TypesTests.java[tag=erasure,indent=0]
+----
+<1> The two lists are instances of the same class.
+<2> The field's class is the erased type.
+<3> The field's generic type is `Supplier<Book>`, as declared, read from the class file.
+
+That gives the module its one rule: *what is matched is always a declaration, never an instance*.
+A capability method is matched by its declared generic return type, an adapter field by its declared type, an object by the generic supertypes its class declares.
+The compiler has checked each declaration against the code that implements it, so the run-time match inherits the compiler's guarantee.
+
+=== Prior art
+
+Matching on generic types at run time is not new, and I did not invent it.
+
+* Neal Gafter described _super type tokens_ in 2006: an anonymous subclass of a generic class records its type argument in its own generic superclass, where reflection can read it. `TypeToken` in this module is that idea, as are Guice's `TypeLiteral` and Guava's `TypeToken`.
+* Guice binds and injects by `Key`, which is a `TypeLiteral` and an optional annotation, so `Supplier<Book>` and `Supplier<Author>` are different keys.
+* Spring has resolved generic types with `ResolvableType` since version 4.0, and uses type arguments as implicit qualifiers when it injects.
+* gentyref, and its maintained fork geantyref, implement Java's subtyping rules for reflected types. This module uses geantyref and hides it behind its own `Types` class.
+
+What the module adds is consistency: one set of rules, used by every match in the runtime, with no string names and no annotations beyond the ones that mark what takes part.
+
+=== A trained eye
+
+There is a hypothesis in evolutionary biology that describes how this design works on the people who use it.
+The *sensory bias hypothesis*, also called sensory exploitation, holds that a receiver's preferences can evolve first in a context that has nothing to do with mating, such as finding food, and be exploited later by senders signaling to mates.
+The usual illustration is a butterfly whose eyes were tuned by natural selection to the colors of the flowers it feeds on, and a mate that later evolves wings of those colors: the preference came first, and the display took advantage of it.
+One of the documented cases is the guppy: females are attracted to orange objects, a preference that helps them find fruit, and males carry orange spots.
+
+Java developers have a trained eye for generic types.
+It was trained by collections, from Java 5 on: twenty years of `List<Book>` and `Map<String, Author>` have taught every Java developer to read a type argument, to know why a `List<Novel>` is not a `List<Book>`, and to reach for `? extends` when only reading.
+That skill evolved for type-safe collections, not for wiring.
+Nasdanika piggybacks on it.
+A requirement for `Supplier<? extends Publication>` asks for exactly what a Java developer reads in it, and is answered by exactly what the compiler would accept, so there is no new notation to learn: no qualifiers, no string identifiers, no wiring files.
+
+Like any analogy, this one has limits.
+Evolution has no intent, and the runtime's design does; and nobody is being deceived, since the display delivers what it promises.
+What carries over is the order of events: the preference already exists, and the design takes advantage of it rather than asking for a new one.
+
+ifdef::editor-notes[]
+[IMPORTANT,caption="Editor's note"]
+====
+Verify the biology before publishing. The sensory bias hypothesis is usually credited to Basolo (1990, platyfish and swordtails) and Ryan (1990); the guppy case is Rodd, Hughes, Grether and Baril, "A possible non-sexual origin of mate preference: are male guppies mimicking fruit?", _Proceedings of the Royal Society B_, 2002. The butterfly is used here as an illustration, not as a documented case; find a study of butterflies, or keep the wording that says it is an illustration.
+====
+endif::[]
+
+=== Where the check happens
+
+The trained eye is half of it; the other half is the compiler.
+A declaration such as `Supplier<Book> books()` is checked twice, at two different times.
+At compile time the compiler checks that the method returns what it says, which is what lets the runtime trust the declaration.
+At run time the module checks that the declaration fits what is asked for, with the same rules the compiler uses for an assignment.
+Neither check is new; what is new is that the second one uses the first.

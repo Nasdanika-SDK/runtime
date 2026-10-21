@@ -1,0 +1,39 @@
+// Defaults for previewing this file on its own; index.adoc and the Maven build set these
+ifndef::mainjava[:mainjava: ../../../main/java]
+
+[#getting-started]
+== Getting started
+
+Using the module takes a Maven dependency and a line in `module-info.java`.
+
+=== Adding the module
+
+The runtime has a bill of materials, `{group-id}:bom`, which manages the versions of its modules and of their dependencies.
+Import it in `dependencyManagement` with the scope `import` and the type `pom`, and depend on `{group-id}:{artifact-id}` without a version.
+
+The module is a named Java module, `org.nasdanika.sdk.runtime.common`.
+Require it in your `module-info.java`.
+It requires EMF core and the OpenTelemetry API transitively, so your module reads them too, and it exports all of its packages.
+
+=== Access
+
+The module finds `@Adapter` and `@Capability` members reflectively, so the module system has to let it.
+Public members of exported packages are accessible to everyone.
+For the rest there are two ways:
+
+* *Open the package* to the runtime, which lets it read private members such as adapter fields: `opens org.example.library to org.nasdanika.sdk.runtime.common`. A qualified `opens ... to` keeps the package closed to everybody else.
+* *Pass a lookup.* Reflective capability factories and transformer factories take a `MethodHandles.Lookup` created in the module that declares the methods, which grants the runtime that module's access, so the package needs to be neither exported nor open (<<capabilities>>).
+
+=== Services
+
+The module discovers its extensions with `ServiceLoader`, and declares what it uses and provides:
+
+.What the module uses and provides (`module-info.java`)
+[source,java]
+----
+include::{mainjava}/module-info.java[tag=services,indent=0]
+----
+
+A module extends the runtime by providing the same services: a `CapabilityFactory` for capabilities (<<capabilities>>), a `ResourceSetContributor` to configure resource sets, a `URIHandler` for a URI scheme, an `EPackage` for a model (<<resource-sets>>).
+Declaring a provider is all the registration there is.
+The module's own providers are in the listing: two URI handlers, for the `classpath` and `module` schemes, and resource factories for XMI and for EMF's binary format, plain and compressed.

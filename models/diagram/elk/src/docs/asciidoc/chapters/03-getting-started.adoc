@@ -1,0 +1,33 @@
+// Defaults for previewing this file on its own; index.adoc and the Maven build set these
+ifndef::bookmain[:bookmain: ../../../main/java]
+
+[#getting-started]
+== Getting started
+
+=== Adding the module
+
+Depend on `{group-id}:{artifact-id}` with the version managed by the runtime's bill of materials, `org.nasdanika.sdk.runtime:bom`.
+The module brings the diagram model, ELK's core and graph, and four algorithms: layered, tree (mrtree), force and radial.
+The BOM pins them all to ELK 0.12.0, and pins Guava, which ELK asks for with an open version range that would otherwise resolve to whatever is newest.
+
+.The module declaration
+[source,java]
+----
+include::{bookmain}/module-info.java[tag=module,indent=0]
+----
+
+ELK's jars are not Java modules; they are automatic modules, named in their manifests.
+Each algorithm registers itself with ELK's meta data service through `META-INF/services`, which works for automatic modules on the module path, as long as they are resolved: hence the `requires` of the algorithms, which the module's code never calls.
+To add another algorithm, rectangle packing for example, depend on it and require it in your own module.
+
+=== The diagram model in brief
+
+Layout works on the runtime's diagram model, an EMF model of diagrams independent of any editor:
+
+* a *diagram* contains diagram elements, and diagrams nest, as documents contain pages;
+* a *node* has *bounds*, a position and a size, relative to the node that contains it, and *ports*, attachment points at a location relative to the node's size, from 0 to 1;
+* a *connection* runs from a *source* to a *target*, either a node or a port, through *waypoints*;
+* a *label* is a node whose content is text; labels of a connection are its children;
+* every element has an id, a name and *properties*, a map from strings to strings.
+
+Properties are where layout options go (<<laying-out>>).

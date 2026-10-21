@@ -1,0 +1,64 @@
+[#picture-to-model]
+== From picture to model
+
+Between a picture and a domain model there is a gradient.
+The model is designed so that a team can stop anywhere on it, and move on later without redrawing.
+
+=== Three rungs
+
+*Pixel-deep.*
+Boxes, arrows and labels.
+What most diagrams are, and a perfectly reasonable place to be.
+Loaded into the model, a pixel-deep diagram is already a tree of elements with names, bounds and connections, which a program can walk.
+
+*Diagram as model.*
+The same boxes, now with stable IDs, documentation, properties such as owners and stages, and layers that mean something.
+You can generate a site from it, search it, compare two versions of it in a pull request, or run it as an executable diagram.
+Its elements stay untyped: the diagram *is* the model.
+
+*Semantically mapped.*
+`semanticElements` points into a domain model, and the diagram becomes a view of an estate that other tools read and write as well.
+The links may be drawn by hand, produced by a mapping run, or, in a later edition, computed: a shape declares a query instead of a list.
+
+Each rung is optional and incremental, and none invalidates the work done on the one before.
+Deciding to map a diagram later does not mean redrawing it: the identity and documentation added on the middle rung are exactly what a mapping keys on.
+
+=== Meaning without a target model
+
+The narrow reading of `semanticElements` is that a shape is merely a pointer: the shape is notation, the meaning lives elsewhere, look over there.
+That reading is too narrow, because plenty of diagrams are never mapped to a formal model, and should not have to be.
+
+Give the elements of a diagram stable identity, documentation and a few properties, and you have something worth generating from, searching and reviewing, with no mapping and no domain metamodel at all.
+Nasdanika's Draw.io site template makes exactly this bet: a `.drawio` file whose elements carry a little documentation and a handful of properties becomes a navigable, searchable documentation site.
+Nothing was typed, and a great deal became useful.
+
+And the top rung stays available throughout.
+A shape can depict an architecture element *and* carry documentation of its own.
+`semanticElements` adds a dimension rather than replacing one.
+
+=== Depiction is many-to-many
+
+A shape is not always one thing.
+A box labeled "Forest" depicts a collection of trees.
+A container stands for a group of people or a pool of resources.
+A shape represents an iteration over something.
+
+So `semanticElements` is multi-valued.
+Single-valued depiction, OMG DI's `modelElement` or GMF's `View.element`, forces such cases either into a fake aggregate object in the domain model or into a naming convention in a property.
+Here the box points at the members, and the other direction is a query: "which shapes depict this tree" and "what does this box cover" are both answerable (<<semantic-elements>>).
+
+=== Depiction can be computed
+
+Enumerating a collection by hand does not scale.
+A "Forest" box with four hundred hand-maintained references is worse than no model at all, because it is wrong within a week.
+
+The answer is a shape that declares *what* it depicts rather than *which objects*: every tree in this package, every service tagged `payments`, the contents of a directory, the results of a SQL or JQL query.
+The shape stops being a snapshot and becomes a standing question.
+The explicit list stays primary; a selector would be another source of links, not a replacement for drawing them.
+In this edition, computed depiction is [.planned]#PLANNED# (<<looking-ahead>>).
+
+=== Why the reference has this name
+
+OMG's Diagram Interchange calls the reference `modelElement`, which works only if the diagram is *not* a model.
+Here it is one: a diagram element is a model element of the runtime's core model, with an ID, documentation and markers.
+So the reference is named for the distinction that matters, the one that Eclipse Sirius draws between the *semantic* model and the *representation* model.

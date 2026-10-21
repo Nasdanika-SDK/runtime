@@ -1,0 +1,92 @@
+= Diagram Model: A Nasdanika Zephyr Book
+Pavel Vlasov
+:doctype: book
+:description: Diagrams as data: a small EMF model of what every diagram notation has in common, the semantic elements its shapes depict, and how to build, store, convert and map diagrams with it.
+:keywords: diagrams, EMF, Ecore, Xcore, model, Draw.io, interchange, semantic mapping, Nasdanika
+:lang: en
+:sectnums:
+:sectnumlevels: 2
+:partnums:
+:chapter-signifier: Chapter
+:part-signifier: Part
+:appendix-caption: Appendix
+:toc:
+:toclevels: 2
+:title-page:
+:listing-caption: Listing
+:figure-caption: Figure
+:table-caption: Table
+:source-language: java
+:tabsize: 4
+:hide-uri-scheme:
+:runtime-repo: https://github.com/Nasdanika-SDK/runtime
+:runtime-site: https://runtime.sdk.nasdanika.org
+:medium: https://medium.com/nasdanika
+:nsuri: https://runtime.sdk.nasdanika.org/models/diagram
+// Defaults for previews in an editor; the Maven build sets these
+ifndef::testdir[:testdir: ../../test/java]
+ifndef::testresourcesdir[:testresourcesdir: ../../test/resources]
+ifndef::runtime-root[:runtime-root: ../../../../../..]
+ifndef::runtime-version[:runtime-version: 2026.10.0]
+ifndef::group-id[:group-id: org.nasdanika.sdk.runtime.models.diagram]
+ifndef::artifact-id[:artifact-id: model]
+:booktests: {testdir}/org/nasdanika/sdk/runtime/models/diagram/tests/book
+:bookresources: {testresourcesdir}/org/nasdanika/sdk/runtime/models/diagram/tests/book
+:imagesdir: {bookresources}
+// The EPUB converter resolves images relative to this directory and packs them by that path
+ifdef::zephyr-epub[:imagesdir: ../../test/resources/org/nasdanika/sdk/runtime/models/diagram/tests/book]
+
+include::front/colophon.adoc[]
+
+include::front/preface.adoc[]
+
+[#why]
+= The Why
+
+[partintro]
+Why diagrams should be data, how much meaning a diagram can carry, what others have built, and what this model leaves out on purpose. No code is needed to read this part.
+
+include::chapters/01-diagrams-as-data.adoc[]
+
+include::chapters/02-picture-to-model.adoc[]
+
+include::chapters/03-prior-art.adoc[]
+
+include::chapters/04-not-here.adoc[]
+
+[#how]
+= The How
+
+[partintro]
+The model in Java and in files: adding it to a project, its classes, building diagrams, storing them as YAML, converting them from Draw.io, and mapping their elements to the models they depict.
+
+include::chapters/05-getting-started.adoc[]
+
+include::chapters/06-the-model.adoc[]
+
+include::chapters/07-building.adoc[]
+
+include::chapters/08-resources.adoc[]
+
+include::chapters/09-from-drawio.adoc[]
+
+include::chapters/10-semantic-elements.adoc[]
+
+[#ahead]
+= Looking Ahead
+
+[partintro]
+What the model is for beyond this edition: notation models, layout, computed depiction, and merging diagrams that people and programs both edit.
+
+include::chapters/11-looking-ahead.adoc[]
+
+include::appendices/a-reference.adoc[]
+
+include::appendices/b-building.adoc[]
+
+include::appendices/c-glossary.adoc[]
+
+ifdef::backend-pdf[]
+[index]
+== Index
+endif::[]

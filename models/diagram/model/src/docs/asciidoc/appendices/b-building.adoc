@@ -1,0 +1,26 @@
+[appendix]
+[#building-this-book]
+== Building this book, and editing its figure
+
+This book is AsciiDoc in `models/diagram/model/src/docs/asciidoc`, built with the model after its tests have passed:
+
+[source,text]
+----
+mvn -pl models/diagram/model -am verify                         # the model, its tests and this book
+mvn -pl models/diagram/model verify -Dzephyr.editor-notes=false   # without editor's notes
+mvn -pl models/diagram/model verify -Dasciidoctor.skip=true       # without the book
+----
+
+The PDF and the single-page HTML are written to `target/book` and attached to the model's artifact with the classifier `book`; the test sources are attached with the classifier `test-sources`.
+The look comes from the runtime's `doc/zephyr` directory, shared by all the Nasdanika Zephyr Books.
+
+Listings are tagged regions of the tests in `src/test/java/org/nasdanika/sdk/runtime/models/diagram/tests/book` and of the YAML file next to the figure in `src/test/resources`.
+A listing line holds at most 96 characters, and a warning fails the build.
+
+=== The figure
+
+The figure, `diagram-model.png` in `src/test/resources/org/nasdanika/sdk/runtime/models/diagram/tests/book`, is a PNG image with the Draw.io diagram embedded.
+Open it in Draw.io, edit it, and save it as PNG with _Include a copy of my diagram_ checked and a zoom of 200 percent.
+
+The figure follows conventions that its test relies on: a box's label is a class name and its `package` property is `diagram`, `core` or `ecore`; an arrow's label is a reference name, its `relationship` property is `reference` or `extends`, and an `opposite` property names the opposite reference.
+After changing the model, run the tests: the figure test fails until the figure depicts the model again.

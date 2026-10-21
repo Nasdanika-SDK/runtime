@@ -1,0 +1,133 @@
+// Defaults for previewing this file on its own; index.adoc and the Maven build set these
+ifndef::booktests[:booktests: ../../../test/java/org/nasdanika/sdk/runtime/models/diagram/elk/tests]
+ifndef::imagesdir[:imagesdir: ../../../test/resources/org/nasdanika/sdk/runtime/models/diagram/elk/tests]
+
+[#ecore-diagrams]
+== Diagrams of Ecore models
+
+The demos generate two kinds of class diagram from Ecore models, in the diagram model, and lay them out:
+
+* a *package diagram*: the classes of a package, and the classes of other packages that they extend or refer to;
+* a *class context diagram*: a class, all its supertypes, its direct subtypes, the classes its references lead to, and the classes whose references lead to it.
+
+The model they are drawn from is the diagram model itself.
+
+=== The conventions
+
+The generator, `EcoreDiagrams`, follows a few conventions, which the layout and the renderers rely on:
+
+* *Classes are nodes inside nodes of their packages*, so the classes of other packages appear in their own containers.
+* *Generalizations are rectilinear, from a port at the top of the subclass to a port at the bottom of the superclass.* Every generalization into the same superclass arrives at the same port, so they merge into one line, as UML draws them.
+* *References connect nodes, not ports*, and ELK decides where they leave and arrive.
+* *A reference and its opposite are one connection*, with a label at each end naming the reference that end leads to. Any other reference has one label, at its center.
+* *Each element depicts what it stands for*: a class node depicts its `EClass`, a connection its `EReference` or the pair, through `semanticElements`.
+
+=== Options for class diagrams
+
+The generator sets the layout options of its diagrams as properties:
+
+.Layout options of the generated diagrams (`EcoreDiagrams.java`)
+[source,java]
+----
+include::{booktests}/EcoreDiagrams.java[tag=options,indent=0]
+----
+<1> Edges flow up: from subclasses to superclasses, from the class that has a reference to the class it refers to.
+<2> Rectilinear routes, with horizontal and vertical segments only.
+<3> Classes in packages, laid out together, so that connections between packages are routed across them.
+<4> Edges into the same port share their last segments, which merges generalizations into one superclass.
+
+=== Ports for generalizations
+
+.A port at the middle of the top or bottom side
+[source,java]
+----
+include::{booktests}/EcoreDiagrams.java[tag=port,indent=0]
+----
+<1> 0 for the top, 1 for the bottom; the x coordinate is always the middle.
+
+.Generalizations, from port to port
+[source,java]
+----
+include::{booktests}/EcoreDiagrams.java[tag=generalization,indent=0]
+----
+<1> The source is the port at the top of the subclass.
+<2> The target is the port at the bottom of the superclass, shared by all its subclasses.
+
+=== References, and their opposites
+
+.References: one connection per reference, or per pair of opposites
+[source,java]
+----
+include::{booktests}/EcoreDiagrams.java[tag=references,indent=0]
+----
+<1> References connect the class nodes themselves.
+<2> A reference without an opposite is labeled at its center.
+<3> A reference with an opposite is labeled at the end it leads to, its head, and the opposite at the other end, its tail. ELK's option `elk.edgeLabels.placement` on each label says which.
+
+Containment is a property of the connection, which the renderers draw as a diamond at the containing end.
+
+=== The package diagram
+
+.The package diagram
+[source,java]
+----
+include::{booktests}/EcoreDiagrams.java[tag=package,indent=0]
+----
+
+.The diagram package, generated, laid out by ELK, and rendered by Draw.io's viewer
+image::diagram-package.png[The diagram package,pdfwidth=100%,width=860]
+
+The ten classes of the package are in the _diagram_ container; the three classes of the runtime's core model it uses, in _core_; and `EObject`, the type of `semanticElements`, in _ecore_.
+Generalizations rise from the subclasses into shared ports, and the two pairs of opposites, `source` and `outgoingConnections`, `target` and `incomingConnections`, are one connection each, labeled at both ends.
+
+=== The class context diagram
+
+.The class context diagram
+[source,java]
+----
+include::{booktests}/EcoreDiagrams.java[tag=context,indent=0]
+----
+
+.The context of the class Node
+image::node-context.png[The context of Node,pdfwidth=100%,width=860]
+
+The context of `Node` follows its supertypes up through `Connectable` and `DiagramElement` into the core model, where `ModelElement` merges three supertypes into one line.
+Its own references lead to `Bounds` and `Port`; references it inherits are drawn from the class that declares them, so `children` loops on `DiagramElement`, and `Connectable`'s connections lead to `Connection`.
+
+=== Checking the layout
+
+The tests check the conventions on the laid out diagrams, not only their structure:
+
+.Generating and laying out the diagrams (`EcoreDiagramTests.java`)
+[source,java]
+----
+include::{booktests}/EcoreDiagramTests.java[tag=generate,indent=0]
+----
+<1> Writes the React Flow page and the Draw.io document of each diagram (<<rendering>>).
+
+.Generalizations: from port to port, rectilinear, upward
+[source,java]
+----
+include::{booktests}/EcoreDiagramTests.java[tag=generalizations,indent=0]
+----
+<1> From the top of the subclass to the bottom of the superclass.
+<2> The route starts and ends exactly at the ports.
+<3> Every segment is horizontal or vertical.
+<4> The superclass is above.
+
+.References: between nodes, opposites grouped, labels at the right ends
+[source,java]
+----
+include::{booktests}/EcoreDiagramTests.java[tag=references,indent=0]
+----
+<1> References attach to nodes.
+<2> The connection depicts both references of the pair.
+<3> The head label is closer to the end of the route, the tail label to its start.
+<4> Every pair of opposites in the package is one connection.
+
+.What the context of Node contains
+[source,java]
+----
+include::{booktests}/EcoreDiagramTests.java[tag=context,indent=0]
+----
+<1> Siblings that the context does not need, `Diagram` and `Layer`, are left out.

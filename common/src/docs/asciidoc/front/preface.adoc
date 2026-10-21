@@ -1,0 +1,48 @@
+[preface]
+== Preface
+
+This book is about connecting parts of a program and knowing that the connections are right.
+It describes `common`, the module at the bottom of the Nasdanika SDK Runtime, which every other module depends on.
+Its job, in one sentence, is to match things at run time the way the Java compiler matches them at compile time: by declared generic types, with the compiler's rules, and with an explanation when a match fails.
+
+The first part is the why: why so much of software development is matching and wiring, why types rather than classes, why the JVM, and why the foundation is small.
+The second part is the how, a chapter per package of the module.
+The third says what is built on it and what comes next.
+
+=== Who this book is for
+
+*Java developers* who assemble applications from parts: plugins, services, handlers, factories.
+If you have registered a service with `ServiceLoader`, written a Spring configuration, or looked up something in a `Map<String, Object>` and cast it, the book is about the same problem.
+Read it in order.
+
+*Developers on other JVM languages*, Kotlin, Scala and Groovy, whose compilers write the same generic declarations into class files that this module reads (<<the-jvm>>).
+
+*Architects and technical leads* choosing a platform for systems that people and AI assistants build together.
+Part one is for you, and needs no code.
+
+=== A book that stands on its own
+
+This book is one of the Nasdanika Zephyr Books: in-depth manuals, one per module of the Nasdanika SDK Runtime, in the manner of IBM Redbooks.
+The runtime has a book of its own, _Nasdanika SDK Runtime: More Structure with Less Effort_, whose chapters on generic types, flows, capabilities and telemetry cover parts of this module from the runtime's side.
+You do not need it to read this one: where the books touch, this one repeats what you need, and goes deeper into the module.
+
+The series is named after the Bootswatch theme it is styled with, Zephyr, and has nothing to do with the Zephyr real-time operating system or with SmartBear's Zephyr test management.
+
+=== What you need
+
+* *A JDK for Java 25* and *Maven 3.9.16 or later*.
+* The module is `org.nasdanika.sdk.runtime.common`, Maven coordinates `{group-id}:{artifact-id}:{runtime-version}`.
+* Familiarity with Java generics: the book builds on what you already know about them, which is the point of <<type-not-class>>.
+
+=== Conventions
+
+* *Every listing is included from the module's sources or tests* and compiled and run when the book is built. Callouts, such as <1>, explain the lines they mark.
+* *Status labels* mark what this edition does not have yet: [.planned]#PLANNED# for designed but not built, [.sketch]#SKETCH# for partly built.
+* *Voice.* I write in the first person. Where a claim rests on my experience rather than on published research, I say so.
+
+ifdef::editor-notes[]
+[IMPORTANT,caption="Editor's note"]
+====
+Editor's notes record inconsistencies between the module and its documentation found while writing, and claims to verify before publishing. They are shown in builds for the author and left out of published editions.
+====
+endif::[]

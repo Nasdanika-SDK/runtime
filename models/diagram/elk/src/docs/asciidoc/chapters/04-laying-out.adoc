@@ -1,0 +1,137 @@
+// Defaults for previewing this file on its own; index.adoc and the Maven build set these
+ifndef::booktests[:booktests: ../../../test/java/org/nasdanika/sdk/runtime/models/diagram/elk/tests]
+ifndef::bookmain[:bookmain: ../../../main/java]
+
+[#laying-out]
+== Laying out a diagram
+
+=== A pipeline
+
+Three nodes and two connections, laid out left to right:
+
+.Laying out a pipeline (`LayoutTests.java`)
+[source,java]
+----
+include::{booktests}/LayoutTests.java[tag=pipeline,indent=0]
+----
+<1> A layout option, as a property of the diagram. Keys that start with `elk.` or `org.eclipse.elk.` are ELK options; the value is parsed by the option's type.
+<2> Builds the ELK graph, lays it out, and writes the results back into the diagram.
+<3> The nodes now have bounds, in the order of the flow.
+<4> A node without bounds is sized to fit its name, here the minimum width.
+<5> The waypoints are the whole route, from the right side of _Test_ to the left side of _Deploy_.
+<6> A connection without labels gets a label for its name, so that ELK can place it and its position has somewhere to go.
+
+=== What maps to what
+
+[cols="2,3,3",options="header"]
+|===
+| Diagram model | ELK | Written back
+
+| The element laid out, usually a diagram
+| The root `ElkNode`
+| Its size, if it is a node
+
+| Node, and label standing alone
+| `ElkNode`, nested as the diagram nests them
+| Bounds, relative to the nearest enclosing node
+
+| Diagram and layer inside the root
+| Transparent: their nodes join the enclosing ELK node
+| Nothing
+
+| Port
+| `ElkPort` at its location, on the side the location is on
+| Location, relative to the node's size
+
+| Connection
+| `ElkEdge` between the ELK nodes and ports of its ends
+| Waypoints: the whole route
+
+| Label child of a connection, or the connection's name
+| `ElkLabel` of the edge
+| Bounds, in the coordinates of the waypoints
+
+| Properties with `elk.` keys
+| Layout options of the element
+| Nothing
+|===
+
+Connections with a missing end are not laid out; `DiagramElkGraph.getSkipped()` lists them.
+
+=== Coordinates
+
+Bounds of a node are relative to the nearest node that contains it, or to the diagram: the convention of Draw.io and of ELK.
+Waypoints and the bounds of connection labels are relative to the nearest node that contains the *connection*, or to the diagram.
+ELK may route an edge in a different container than the diagram puts the connection in, at the lowest node that contains both of its ends; the adapter converts ELK's coordinates into the connection's.
+
+After a layout, the waypoints are the complete route, including the points where it leaves the source and reaches the target.
+A renderer can draw them as they are, which is what the renderers of <<rendering>> do.
+A renderer that computes ends itself, as Draw.io does, can use the first and last points as attachment points and the rest as waypoints.
+
+=== Ports
+
+A port's location decides its side: 0 on y is the top, 1 the bottom, 0 on x the left, 1 the right.
+Nodes with ports get ELK's `FIXED_POS` port constraint, so the ports stay where the diagram put them, and connections start and end exactly there:
+
+.Connections between ports
+[source,java]
+----
+include::{booktests}/LayoutTests.java[tag=ports,indent=0]
+----
+<1> A port at the middle of the top side of _Special_, and another at the middle of the bottom side of _General_.
+<2> With the direction up, the target of the connection is above its source.
+<3> The route starts exactly at the port.
+<4> A connection without a name gets no label.
+
+=== Nesting
+
+Nodes contain nodes.
+The adapter lays out the whole hierarchy at once, so that connections between nodes in different containers are routed across it:
+
+.Nodes inside nodes, and a connection into a container
+[source,java]
+----
+include::{booktests}/LayoutTests.java[tag=nested,indent=0]
+----
+<1> The API and the database are inside the system.
+<2> The client, outside, calls the API, inside.
+<3> Bounds of nested nodes are relative to their container, with room for its name at the top.
+<4> ELK routes the edge in the root, the lowest node containing both ends.
+<5> The route ends on the API, in the coordinates of the diagram, where the connection is.
+
+When any node has children, the adapter sets ELK's `elk.hierarchyHandling` to `INCLUDE_CHILDREN` on the root, unless the root's properties say otherwise.
+Containers get padding at the top for their name, and a minimum size to fit it.
+
+=== Options
+
+Options come from three places, later ones winning: ELK's defaults, options set on `ElkLayout` in code, which apply to the root, and the properties of diagram elements.
+
+.Options in code and in properties
+[source,java]
+----
+include::{booktests}/LayoutTests.java[tag=options,indent=0]
+----
+<1> An option of the root, typed: an ELK `IProperty` and its value.
+<2> `build` makes the ELK graph without laying it out, to inspect it or to change it before `layout()` and `apply()`.
+<3> An unknown option, or a value the option cannot parse, fails before anything is laid out.
+
+Options in properties are data: they travel with the diagram, in a file, in a model, from a generator, and an editor that keeps unknown properties keeps them.
+Options in code suit what a program decides for every diagram it lays out.
+<<layout-options>> lists the ones used most.
+
+=== Sizes of text
+
+ELK reserves room for labels by their size, and the adapter sizes nodes without bounds by their name.
+Both use a `TextMeasurer`, which by default estimates 7 pixels per character and 16 per line, close to 12-pixel sans serif text in a browser.
+A renderer that uses another font should use another measurer, in the configuration: `new ElkLayout().textMeasurer(...)`.
+Padding around names and the minimum node size are configured the same way.
+
+=== Layout as a unit of work
+
+.The entry point (`ElkLayout.java`)
+[source,java]
+----
+include::{bookmain}/org/nasdanika/sdk/runtime/models/diagram/elk/ElkLayout.java[tag=layout,indent=0]
+----
+
+A layout runs in a span of the current OpenTelemetry instance, with the root's id and the numbers of nodes and edges as attributes, so a slow layout shows up in the runtime's telemetry like any other unit of work.

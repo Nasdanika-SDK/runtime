@@ -1,0 +1,56 @@
+[#foundation]
+== A small foundation
+
+Every module of the runtime depends on `common`, so whatever `common` depends on, everything does.
+That makes its dependencies a decision for the whole runtime, and the decision is to keep them to three:
+
+* *The JDK*, currently Java 25.
+* *EMF core*: `org.eclipse.emf.common`, `org.eclipse.emf.ecore` and `org.eclipse.emf.ecore.xmi`.
+* *The OpenTelemetry API*: `io.opentelemetry.api` and `io.opentelemetry.context`, not the SDK.
+
+All three are small, stable and standard in their space.
+A platform team can approve "Java, EMF and the OpenTelemetry API" in a meeting, while a longer list is a review.
+
+The one exception is geantyref, a small library with no dependencies of its own, which implements Java's subtyping rules for reflected types.
+The module requires it without `transitive`, and no public signature mentions it: `Types` wraps it, so it could be replaced without changing any code that uses the module.
+
+=== Why these three
+
+*The JDK first.*
+Where the JDK has a feature, the module uses it: `java.util.concurrent.Flow` for streams of values, virtual threads for concurrency, `ServiceLoader` for discovery, `MethodHandles` for reflective calls, and the module system for encapsulation.
+A library earns its place by doing something the JDK does not.
+
+*EMF, because the runtime is about models.*
+Its resource sets are how models are loaded, saved and cross-referenced, and they are matching machines too: a URI is matched to a handler, a resource to a factory, a namespace to a package.
+The module configures resource sets from whatever is on the module path (<<resource-sets>>).
+
+*The OpenTelemetry API, because matches should be observable.*
+A resolution that wires a hundred capabilities, a transformation of a model with thousands of elements, a resource loaded over the network: each is an operation someone will want to see while it runs, or read about afterwards.
+The API costs nothing when no SDK is installed, and the module reports through it everywhere (<<telemetry>>).
+
+=== What is in the module
+
+[cols="2,5",options="header"]
+|===
+| Package | What it provides
+
+| `org.nasdanika.sdk.runtime.common`
+| Generic type matching (`Types`, `TypeToken`), adaptation (`Adaptable`, `@Adapter`, `Adapters`), and a configured EMF resource set (`NasdanikaResourceSet`)
+
+| `...common.capability`
+| The capability framework: requirements, factories, loaders, and reflective factories assembled from `@Capability` methods
+
+| `...common.capability.emf`
+| Resources whose contents are loaded and saved by handlers found as capabilities
+
+| `...common.flow`
+| Operators for `java.util.concurrent.Flow`, the pump that runs them deterministically, and the transformer that wires object graphs
+
+| `...common.services`
+| Service interfaces for configuring resource sets, and the URI handlers and resource factories the module contributes
+
+| `...common.telemetry`
+| One OpenTelemetry instance per unit of work, instrumentation helpers, and an OpenTelemetry wrapper whose spans can be watched live
+|===
+
+<<packages>> lists the main types of each package.

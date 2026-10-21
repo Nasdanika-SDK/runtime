@@ -1,0 +1,80 @@
+// Defaults for previewing this file on its own; index.adoc and the Maven build set these
+ifndef::booktests[:booktests: ../../../test/java/org/nasdanika/sdk/runtime/common/book]
+
+[#telemetry]
+== Telemetry
+
+A wiring that cannot be observed can be checked only by its results.
+Every match in this module runs in an OpenTelemetry span: configuring a resource set, contributing to it, loading and saving a resource, reading and writing its bytes, resolving a capability, creating a capability, transforming a source.
+This chapter shows where the spans go, and how to watch them.
+
+=== One instance per unit of work
+
+The module does not use `GlobalOpenTelemetry`.
+A unit of work, a command, an HTTP request or a test, builds an `OpenTelemetry` instance or is handed one, and makes it current, the way it makes a span current.
+The instance travels in the OpenTelemetry `Context`, next to the current span, so it crosses threads wherever the context does, and the pump propagates the context to its tasks (<<flows>>).
+Without one, `Telemetry.current()` returns the no-op instance, and instrumentation costs next to nothing.
+
+A resource set can also be given an instance, `Telemetry.attach(resourceSet, otel)` or `NasdanikaResourceSet.createAndConfigure(otel)`, for work that runs outside any context, such as resolving a proxy long after the resource set was configured.
+The context, when it has an instance, wins.
+
+=== Watching spans live
+
+An OpenTelemetry SDK exports a span when it ends, which is too late to report the progress of a long operation.
+`PublishingOpenTelemetry` wraps another instance, an SDK or the no-op one, and publishes what happens to its spans as it happens, as `SpanEvent` records: started, attribute set, status set, exception recorded, ended, and the log records emitted in a span.
+
+.A subscriber to span events (`TelemetryTests.java`)
+[source,java]
+----
+include::{booktests}/TelemetryTests.java[tag=watcher,indent=0]
+----
+<1> `SpanEvent` is a sealed interface of records, so a subscriber matches the events it cares about.
+
+.A unit of work, watched
+[source,java]
+----
+include::{booktests}/TelemetryTests.java[tag=unit-of-work,indent=0]
+----
+<1> Subscribing to the instance, to watch every span of the unit of work. `within(span)` publishes the events of one span and its descendants.
+<2> The instance current for this unit of work.
+<3> `inSpan` starts a span, makes it current, runs the body, records a failure, and ends the span.
+
+Instrumented code must never block or fail because somebody is watching it, so events are offered to subscribers, not forced on them: a subscriber whose buffer is full loses events, and the loss is counted.
+With no subscribers, events are not even created.
+The tests in this book deliver events on the calling thread, so that they can assert on them at once; by default they are delivered on virtual threads.
+
+Log records go to the OpenTelemetry Logs API directly, correlated with the current span; the runtime uses no logging framework, and where a record goes is decided by whoever runs the unit of work.
+Span events, `Span.addEvent`, are not used, because OpenTelemetry is moving events onto the Logs API.
+
+=== Resources
+
+A resource set configured with an instance reports what it does:
+
+.Saving a resource, watched
+[source,java]
+----
+include::{booktests}/TelemetryTests.java[tag=resources,indent=0]
+----
+<1> The instance is attached to the resource set.
+<2> The URI handlers are wrapped, so every stream opened through them is a span from opening to closing, with the URI, the handler and the byte count as attributes, and progress reported while bytes are read or written.
+
+Resources created by the module's factories report `Resource.load`, `Resource.save` and `Resource.unload` spans, with the byte count and the number of root objects.
+
+=== Propagation
+
+A unit of work that continues another one, a pipeline step started by another, an HTTP request from a page, takes its parent from a carrier: a map of `traceparent` and `baggage` values in the W3C format.
+`Telemetry.extract` reads one from any map, with keys in upper case, as in environment variables, or in lower case, as in request headers and parameters:
+
+.A parent from the environment
+[source,java]
+----
+include::{booktests}/TelemetryTests.java[tag=propagation,indent=0]
+----
+<1> The context now has a remote parent span; spans started in it join the caller's trace.
+
+`Telemetry.extractFromEnvironment` does the same with the process's environment variables, so a command started by a pipeline joins the pipeline's trace.
+
+=== Keys and names
+
+`Telemetry` defines the attribute keys and event names the runtime uses, all in the `nasdanika.` namespace: the URI and type of a resource, the number of bytes read or written, the requirement and factory of a capability, the source of a transformation, the kind of a contribution to a resource set, and the progress of an operation, among others.
+Use them in your own instrumentation where they fit, so that tools reading the telemetry need to know one vocabulary.

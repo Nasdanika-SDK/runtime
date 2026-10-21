@@ -1,0 +1,34 @@
+// Defaults for previewing this file on its own; index.adoc and the Maven build set these
+ifndef::booktests[:booktests: ../../../test/java/org/nasdanika/sdk/runtime/models/diagram/elk/tests]
+
+[#figures]
+== Figures of generated diagrams
+
+The figures of this book are the diagrams the tests generate, which raises a question every generated diagram in documentation raises: who renders the picture?
+A diagram drawn in Draw.io is rendered by Draw.io when someone saves it.
+A diagram written by a program has no picture until something renders it.
+
+The figures here were rendered with the runtime's figure tool, `doc/zephyr/tools/drawio-figure`: it opens a Draw.io document in Draw.io's own viewer in a headless browser, takes a screenshot at twice the size, crops it to the diagram, and writes a PNG image with the document embedded, as Draw.io does when it exports a diagram with "Include a copy of my diagram".
+So each figure is also a Draw.io document, which Draw.io opens for editing and the Draw.io API loads.
+
+A test compares the documents in the figures with a fresh layout, so a change to the generator or to the adapter fails the build until the figures are rendered again:
+
+.Checking a figure against a fresh layout (`FigureTests.java`)
+[source,java]
+----
+include::{booktests}/FigureTests.java[tag=figure,indent=0]
+----
+<1> The Draw.io document embedded in the figure.
+<2> Classes are sized by their names, so their sizes must match exactly.
+<3> Every connection of the fresh layout is in the figure.
+
+Positions are not compared.
+
+ifdef::editor-notes[]
+[IMPORTANT,caption="Editor's note"]
+====
+ELK's layout of the generated diagrams is the same within a JVM, but has differed slightly between runs: the height of the _diagram_ container was 560 in some runs and 570 in others, and its x coordinate in the context diagram 48 and 48.5. Repeated layouts in one run were always identical. This is consistent with iteration over hash-based collections inside ELK, which `elk.randomSeed` does not control. That is why the figure test compares structure and sizes, not positions. Find the cause, and if a deterministic layout is possible, compare positions too: a figure that matches the build to the pixel is the point of generated figures.
+
+The figure tool is a script with Python, Chrome and a JDK, run by hand. When the runtime can render diagrams in its build, with Playwright as planned for narrated videos, the figures should be rendered by the build and this test can go.
+====
+endif::[]

@@ -1,0 +1,72 @@
+[appendix]
+[#reference]
+== Model reference
+
+Namespace URI `{nsuri}`, package `org.nasdanika.sdk.runtime.models.diagram`.
+
+[cols="2,2,5",options="header"]
+|===
+| Class | Extends | Features
+
+| `DiagramElement`, abstract
+| `NamedElement` and `StringIdentity` of the core model
+| `properties`: map of strings to strings. `semanticElements`: any `EObject`, many. `children`: `DiagramElement`, many, contained.
+
+| `Diagram`
+| `DiagramElement`
+| None of its own. A document, a page, a slide or a group.
+
+| `Layer`
+| `DiagramElement`
+| `visible`: boolean, `true` by default. `locked`: boolean.
+
+| `Connectable`, abstract
+| `DiagramElement`
+| `incomingConnections`: `Connection`, many, opposite of `target`. `outgoingConnections`: `Connection`, many, opposite of `source`.
+
+| `Node`
+| `Connectable`
+| `bounds`: `Bounds`, contained. `ports`: `Port`, many, contained.
+
+| `Port`
+| `Connectable`
+| `location`: `Point`, contained, relative to the node, 0 to 1.
+
+| `Connection`
+| `DiagramElement`
+| `source`, `target`: `Connectable`. `waypoints`: `Point`, many, contained.
+
+| `Label`
+| `Node`
+| `text`: string.
+
+| `Point`
+|
+| `x`, `y`: double.
+
+| `Bounds`
+| `Point`
+| `width`, `height`: double.
+|===
+
+=== Inherited from the runtime's core model
+
+[cols="2,5",options="header"]
+|===
+| From | Features
+
+| `StringIdentity`
+| `id`, and `getReferrers(reference)`, from `Referrable`, which finds the objects that refer to this one through a reference, across the resource set.
+
+| `Documented`
+| `documentation`, `docFormat`, `docRef`, `docContents`, `docSections`.
+
+| `Marked`
+| `markers`: where the element came from, such as a file and a position or a Git commit.
+
+| `ModelElement`
+| `icon`, `uris`.
+
+| `NamedElement`
+| `name`.
+|===

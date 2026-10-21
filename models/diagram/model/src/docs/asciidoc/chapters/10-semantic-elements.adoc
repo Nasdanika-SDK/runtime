@@ -1,0 +1,61 @@
+// Defaults for previewing this file on its own; index.adoc and the Maven build set these
+ifndef::booktests[:booktests: ../../../test/java/org/nasdanika/sdk/runtime/models/diagram/tests/book]
+
+[#semantic-elements]
+== Semantic elements
+
+The figure of <<the-model>> depicts a metamodel: each box is a class, each open arrow a reference, each closed arrow a generalization.
+The converted diagram knows none of that.
+This chapter maps it, then uses the mapping to check the figure against the model it depicts.
+
+=== Mapping
+
+A mapping decides, for each diagram element, what it depicts.
+In the figure, a box's label is the name of a class, and its `package` property says which package to find it in; an arrow's label is the name of a reference of its source's class.
+
+.Mapping the figure to the classes and references it depicts (`SemanticTests.java`)
+[source,java]
+----
+include::{booktests}/SemanticTests.java[tag=map,indent=0]
+----
+<1> The node now depicts an `EClass`: of the diagram model, of the runtime's core model, or of EMF itself.
+<2> A connection depicts an `EReference`. Generalization arrows depict no object of their own; the generalization is a fact about their ends.
+
+A mapping can be this small because the diagram was drawn with it in mind: labels are names, and a property disambiguates.
+That is the middle rung of <<picture-to-model>> doing its job: the identity and properties added for people are what the mapping keys on.
+
+=== Checking a diagram against its model
+
+With every element mapped, the figure can be checked:
+
+.Checking the figure against the model it depicts
+[source,java]
+----
+include::{booktests}/SemanticTests.java[tag=check,indent=0]
+----
+<1> Every class of the diagram model is depicted by some element of the figure.
+
+Each generalization arrow is a supertype, each reference arrow is a reference to the class at its target, with the opposite the arrow claims, and no class of the model is missing from the figure.
+Rename a class, add one or move a reference, and this test fails until the figure is redrawn.
+The same pattern checks any diagram that depicts something checkable: an architecture diagram against the inventory of systems, a deployment diagram against the cluster, a process diagram against the workflow engine.
+
+=== From the depicted object back to the diagram
+
+`semanticElements` points from the diagram to the model.
+The other direction is a query:
+
+.Which elements depict the class Node?
+[source,java]
+----
+include::{booktests}/SemanticTests.java[tag=inbound,indent=0]
+----
+<1> `UsageCrossReferencer` finds every reference to an object within a tree, a resource or a resource set.
+
+For objects of the runtime's core model, `getReferrers(reference)` answers the same question from the object itself, across its resource set.
+With diagrams loaded into the same resource set as the models they depict, "which diagrams show this service" is one call.
+
+=== Many to many
+
+A diagram element can depict several objects, and an object can be depicted by several elements, on several diagrams.
+A box labeled "Payments" may depict three services and a team; the same service may appear on a context diagram, a deployment diagram and a slide.
+Both are ordinary in the model: `semanticElements` is a list, and the inbound query returns every element that depicts an object.

@@ -1,0 +1,168 @@
+// Defaults for previewing this file on its own; index.adoc and the Maven build set these
+ifndef::booktests[:booktests: ../../../test/java/org/nasdanika/sdk/runtime/common/book]
+
+[#adaptation]
+== Adaptation
+
+Matching types answers "does this declaration fit that one".
+Adaptation answers a question objects are asked all the time in a program assembled from parts: "can you give me what I need?"
+The asker has an object and a type; the object answers with something of that type, or with null.
+
+The idea is old.
+Eclipse's `IAdaptable` and EMF's adapter factories ask it with a class.
+This module asks it with a type, and lets objects answer through declarations instead of code.
+
+=== Declaring adapters
+
+An object declares what it can be adapted to with `@Adapter` on fields and methods.
+The declared generic type of the member is what it provides:
+
+.Adapter fields (`AdaptationTests.java`)
+[source,java]
+----
+include::{booktests}/AdaptationTests.java[tag=branch,indent=0]
+----
+<1> The branch can be adapted to `Supplier<Book>`.
+<2> And to `Supplier<Publication>`: another field of the same class, `Supplier`, told apart by its type argument.
+
+Asking is `adaptTo(type, context...)`:
+
+.Adapting
+[source,java]
+----
+include::{booktests}/AdaptationTests.java[tag=fields,indent=0]
+----
+<1> Nothing declared fits a `Supplier<String>`, so the answer is null.
+
+`Adaptable` is an interface with one default method, so implementing it costs nothing.
+
+=== The object itself
+
+An object adapts to its own declared types, generic supertypes included, without any annotation:
+
+.Adapting to a generic supertype
+[source,java]
+----
+include::{booktests}/AdaptationTests.java[tag=self,indent=0]
+
+include::{booktests}/AdaptationTests.java[tag=self-test,indent=0]
+----
+
+=== Methods and context
+
+A method provides by its generic return type.
+Parameters take context: values passed after the type, matched to the parameters in order.
+
+.Adapter methods (`AdaptationTests.java`)
+[source,java]
+----
+include::{booktests}/AdaptationTests.java[tag=methods,indent=0]
+----
+<1> One parameter: answers a request for a `Chapter` with one value of context, an `int`.
+<2> Returning null declines: "not this time".
+<3> No parameters: answers a request without context.
+
+.Adapting with context
+[source,java]
+----
+include::{booktests}/AdaptationTests.java[tag=methods-test,indent=0]
+----
+
+A method matches when it has as many parameters as there are context values, and each value is an instance of its parameter's class, boxed for primitives, or null for a parameter that is not primitive.
+
+=== The rules
+
+In order:
+
+* With no context, the object itself is returned if its own declared type matches.
+* Otherwise, adapter fields and adapter methods without parameters are tried; with context, adapter methods whose parameters accept the context.
+* Of the candidates whose declared type is assignable to the requested one, the more specific are tried first, then fields before methods, then by name. The first non-null value wins.
+
+Members are found once per class and remembered, so the cost of reflection is paid once.
+
+ifdef::editor-notes[]
+[IMPORTANT,caption="Editor's note"]
+====
+"More specific first" is computed by `Types.specificity`, which counts the supertypes of the *erased* type. `Supplier<Book>` and `Supplier<Publication>` both erase to `Supplier`, so they tie, and the member name decides. A request for `Supplier<? extends Publication>` gets `books` because "books" sorts before "publications", not because it is more specific; the test `AdaptationTests.specificity` passes for that reason. The same ordering is used by `ReflectiveCapabilityFactory` and by command wiring. A fix: break ties between members whose erased types are equal by comparing their declared types with `Types.isAssignable`, so that a member assignable to the other comes first.
+====
+endif::[]
+
+=== Plain objects
+
+An object that does not implement `Adaptable` can be adapted through its annotations with `Adapters.adapt`:
+
+.A plain object
+[source,java]
+----
+include::{booktests}/AdaptationTests.java[tag=plain,indent=0]
+
+include::{booktests}/AdaptationTests.java[tag=plain-test,indent=0]
+----
+
+`Adapters.adapt` asks an `Adaptable` object itself, so its overrides apply, and reads the annotations of any other object.
+
+=== Adaptation in code
+
+Implementing `Adaptable` is needed only to adapt in ways an annotation cannot express: computed, delegated or cached.
+An override can fall back to the declarations:
+
+.An override with a fallback
+[source,java]
+----
+include::{booktests}/AdaptationTests.java[tag=override,indent=0]
+
+include::{booktests}/AdaptationTests.java[tag=override-test,indent=0]
+----
+<1> Everything the override does not handle goes to the declared adapters.
+
+=== Generic classes
+
+A member declared with a type variable provides what the variable stands for in the object's class:
+
+.A type variable resolved by a subclass
+[source,java]
+----
+include::{booktests}/AdaptationTests.java[tag=generic-class,indent=0]
+
+include::{booktests}/AdaptationTests.java[tag=generic-class-test,indent=0]
+----
+<1> In `NovelBox`, `T` is `Novel`, so `content` provides a `Book`.
+<2> A `Box` created with a diamond carries no type arguments, because instances do not; for it, `T` is only its bound, `Object`, and an `Object` is not a `Book`.
+
+The second line is the rule of <<type-not-class>> at work: declarations, never instances.
+To adapt by a type argument, fix it in a class.
+
+Overrides of adapter methods stay adapters, without repeating the annotation, and the override is what is called.
+
+=== Before there is an instance
+
+Sometimes the question comes before the object exists.
+A command line builds its tree of commands before any command runs, and needs to know whether a command could work under a parent without creating either.
+`Adapters.isAdaptable(class, type, contextTypes...)` answers from declarations only:
+
+.Asking a class
+[source,java]
+----
+include::{booktests}/AdaptationTests.java[tag=declarations,indent=0]
+----
+<1> `chapter(int)` needs context; without it, nothing declared answers a `Chapter`.
+<2> An override is code, not a declaration, so the check cannot see it. An `@Adapter` method that delegates to the override makes it visible.
+
+True means an instance can be asked and has a declared way to answer, not that it will: an adapter can still decline.
+
+=== Choosing what to ask for
+
+The requested type decides who can answer.
+Exact type arguments insist; wildcards admit:
+
+.A method that provides a list of novels
+[source,java]
+----
+include::{booktests}/AdaptationTests.java[tag=wildcards,indent=0]
+
+include::{booktests}/AdaptationTests.java[tag=wildcards-test,indent=0]
+----
+<1> A `List<Novel>` is not a `List<Book>`: someone holding a `List<Book>` could add any book to it, not only a novel.
+<2> Anything that can be iterated for books is answered by it.
+
+Ask for the least you need: if you only read, say `? extends`.

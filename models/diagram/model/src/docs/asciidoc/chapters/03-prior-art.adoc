@@ -1,0 +1,41 @@
+[#prior-art]
+== Prior art
+
+Diagram interchange is an old problem, and several good attempts have been made at it.
+This chapter says what the model takes from each, and what it leaves.
+
+*The OMG stack: Diagram Definition (DD), Diagram Commons (DC), Diagram Interchange (DI), and the interchange specifications of UML, BPMN and SysML.*
+The nearest prior art and the direct inspiration.
+DD got the central abstraction right, a notation element that *depicts* a model element, and then wrapped it in a split between abstract and concrete syntax, a style hierarchy, and per-notation DI packages that in practice exist only inside modeling tools.
+BPMN DI is the success case, and even there interchange between tools is famously partial.
+Taken here: the depiction reference, renamed and made multi-valued; bounds; waypoints; layers.
+Left: everything that made DD a specification to implement rather than a model to use.
+
+*Native formats of tools: mxGraph XML (Draw.io), VSDX (Visio), OOXML and DrawingML (PowerPoint), Lucidchart, Miro, Figma, Excalidraw.*
+These are the sources, not the rivals.
+Each is expressive, each is an island, and each has a conversion story that is pairwise and lossy.
+None has a notion of "the domain element this shape stands for", so the semantics live in the text of shapes and in the reader's head.
+
+*Diagrams as code: Mermaid, PlantUML, Graphviz DOT, D2, the Structurizr DSL.*
+Text first, version-controlled, and genuinely good.
+Their limit is that the source *is* the artifact: there is no object graph to query, no stable identity to reference from a risk register, and cross-references between diagrams are string matching.
+They make excellent input and output formats for a model, and a poor substitute for one.
+
+*Graph interchange: GraphML, GEXF, DOT, Cytoscape JSON, JSON Canvas.*
+They solve the topology half, nodes, edges and attribute bags, and stop there.
+No layers, no ports, no depiction, no documentation, no provenance, and an untyped property bag where a metamodel should be.
+Fine for handing a graph to a layout or analysis library; not a place to keep diagrams.
+
+*Eclipse modeling: GMF's notation model, Sirius, Graphiti, GLSP.*
+The closest technical relatives.
+GMF's notation model is the same idea, a `View` with an `element` reference into the semantic model.
+Two differences.
+Purpose: those are the persistence formats of diagram editors, bound to one editing tool, while this model is an interchange layer with no editor of its own; the editor is Draw.io, or Visio, or PowerPoint, or whatever the team already uses.
+Direction: a GMF `View` without its semantic element is an orphan, because the notation model exists to render something else; here an unmapped element is a first-class documented element, and mapping is an upgrade rather than a precondition.
+
+*Canvas and presentation services: Miro, Mural, FigJam, Lucid, Canva, Google Slides.*
+Superb at real-time collaboration, and their export is a picture.
+They are where diagrams are made, and where diagrams go to stop being data.
+They too can be sources.
+
+*The actual competitor* is the same as everywhere else: a PNG pasted into a wiki page, a diagram file in a repository that nothing parses, and a deck whose contents nobody can query.

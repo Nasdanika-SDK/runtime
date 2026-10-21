@@ -91,6 +91,12 @@
 				<artifactId>org.eclipse.emf.ecore</artifactId>
 				<version>2.43.0</version>
 			</dependency>
+			<!-- The version ecore 2.43.0 depends on; pinned because ELK asks for 2.12.0 and is nearer in some trees -->
+			<dependency>
+				<groupId>org.eclipse.emf</groupId>
+				<artifactId>org.eclipse.emf.common</artifactId>
+				<version>2.46.0</version>
+			</dependency>
 			<dependency>
 				<groupId>org.eclipse.emf</groupId>
 				<artifactId>org.eclipse.emf.ecore.xmi</artifactId>
@@ -187,7 +193,43 @@
 				<version>0.12.0</version>
 				<scope>compile</scope>
 			</dependency>
-			<!-- TODO - ELK Algorithms -->
+			<dependency>
+				<groupId>org.eclipse.elk</groupId>
+				<artifactId>org.eclipse.elk.graph</artifactId>
+				<version>0.12.0</version>
+			</dependency>
+			<!-- ELK algorithms used by the diagram model's ELK module; each registers itself through META-INF/services -->
+			<dependency>
+				<groupId>org.eclipse.elk</groupId>
+				<artifactId>org.eclipse.elk.alg.common</artifactId>
+				<version>0.12.0</version>
+			</dependency>
+			<dependency>
+				<groupId>org.eclipse.elk</groupId>
+				<artifactId>org.eclipse.elk.alg.layered</artifactId>
+				<version>0.12.0</version>
+			</dependency>
+			<dependency>
+				<groupId>org.eclipse.elk</groupId>
+				<artifactId>org.eclipse.elk.alg.mrtree</artifactId>
+				<version>0.12.0</version>
+			</dependency>
+			<dependency>
+				<groupId>org.eclipse.elk</groupId>
+				<artifactId>org.eclipse.elk.alg.force</artifactId>
+				<version>0.12.0</version>
+			</dependency>
+			<dependency>
+				<groupId>org.eclipse.elk</groupId>
+				<artifactId>org.eclipse.elk.alg.radial</artifactId>
+				<version>0.12.0</version>
+			</dependency>
+			<!-- ELK asks for guava [15.0,), an open range that would resolve to whatever is newest, -android variants included -->
+			<dependency>
+				<groupId>com.google.guava</groupId>
+				<artifactId>guava</artifactId>
+				<version>33.7.2-jre</version>
+			</dependency>
 
 			<!-- SDK modules -->
 			<dependency>

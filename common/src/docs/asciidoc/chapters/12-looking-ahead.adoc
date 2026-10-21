@@ -1,0 +1,26 @@
+[#looking-ahead]
+== What is built on it, and what comes next
+
+=== Built on it
+
+Every module of the runtime depends on `common`, and most of them match through it.
+
+*Command wiring.*
+The runtime's command line, in the `cli` module, assembles a tree of commands from modules that know nothing of each other.
+A command declares what it needs from its parent with `@Parent` members and what it offers its sub-commands with `@SubCommand` members, by declared generic types; the tree is matched first by declarations, with `Adapters.isAdaptable`, before any command exists, and then by instances, with `Adapters.adapt`.
+The command that saves models declares a `@Parent` field of type `ExecutionSupplier<? extends Collection<? extends EObject>>`, so any command that can be adapted to a supplier of a collection of model objects, whatever loads them, can be its parent.
+
+*Models.*
+The runtime's models register their packages as services, and are loaded and saved through resource sets configured by this module, with formats such as JSON and YAML contributed by other modules.
+
+*Capabilities.*
+The command line and the Groovy DSL provide capability factories, and modules built on the runtime provide their own, all matched by type and loaded by the same loader.
+
+=== Planned
+
+[.planned]#PLANNED#:
+
+* *Specificity by assignability.* Ordering candidates by the declared types they provide, not only by their erased classes, so that `Supplier<Book>` comes before `Supplier<Publication>` because it is assignable to it (<<adaptation>>).
+* *Generic contents handlers.* Resource contents handlers required by their generic type (<<resource-sets>>).
+* *A diagram of a resolution.* `ResolutionListener.FactoryNodeCollector` already collects the graph of factories and their dependencies; rendered with the runtime's diagram model and layout, it would show the wiring of an application as a picture.
+* *Wiring as a model.* The explanation of a resolution and the spans of a transformation, saved as models like the rest of the runtime's telemetry, so that the wiring of one run can be compared with the wiring of the next.

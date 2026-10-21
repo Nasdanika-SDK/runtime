@@ -1,0 +1,19 @@
+[appendix]
+[#building-this-book]
+== Building this book
+
+This book is AsciiDoc in `common/src/docs/asciidoc`, built with the module after its tests have passed:
+
+[source,text]
+----
+mvn -pl common verify                                # the module, its tests and this book
+mvn -pl common verify -Dzephyr.editor-notes=false    # without editor's notes
+mvn -pl common verify -Dasciidoctor.skip=true        # without the book
+----
+
+The PDF and the single-page HTML are written to `target/book` and attached to the module's artifact with the classifier `book`; the test sources are attached with the classifier `test-sources`.
+The look comes from the runtime's `doc/zephyr` directory, shared by all the Nasdanika Zephyr Books.
+
+Listings are tagged regions of the tests in `src/test/java/org/nasdanika/sdk/runtime/common/book`, and of the module's `module-info.java`.
+The tests use resources in `src/test/resources/book-data`, a directory that is not a package, so that the module system does not encapsulate them.
+A listing line holds at most 96 characters, and a warning fails the build.

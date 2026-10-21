@@ -1,0 +1,38 @@
+[preface]
+== Preface
+
+This book is about placing boxes and routing lines so that a person can read a diagram that nobody drew.
+It describes a small module of the Nasdanika SDK Runtime that lays out diagrams of the runtime's diagram model with the Eclipse Layout Kernel, ELK, and a set of demos that generate diagrams of Ecore models, lay them out, and render them with React Flow in a browser and with Draw.io.
+
+The first part is the why: why generated diagrams need automatic layout, why ELK, and why the module is an adapter rather than an abstraction.
+The second part is the how.
+The third says what comes next.
+
+=== Who this book is for
+
+*Developers who generate diagrams*, from models, code, infrastructure or data, and need them to be readable without anyone moving a box.
+
+*People who build diagram tools* and want ELK's layouts in a Java pipeline, over a neutral diagram model rather than the format of one editor.
+
+*Architects* who want to know what automatic layout can and cannot do for a diagram estate. Part one is for you, and needs no code.
+
+=== A book that stands on its own
+
+This book is one of the Nasdanika Zephyr Books: in-depth manuals, one per module of the Nasdanika SDK Runtime, in the manner of IBM Redbooks.
+The diagram model has a Zephyr Book of its own, _Diagram Model_, and so does the runtime's Draw.io module, _Draw.io_.
+You do not need either to read this one: the few facts about the diagram model that layout depends on are repeated here.
+
+The series is named after the Bootswatch theme it is styled with, Zephyr, and has nothing to do with the Zephyr real-time operating system or with SmartBear's Zephyr test management.
+
+=== What you need
+
+* *A JDK for Java 25* and *Maven 3.9.16 or later*.
+* The module is `org.nasdanika.sdk.runtime.models.diagram.elk`, Maven coordinates `{group-id}:{artifact-id}:{runtime-version}`.
+* For the demos, a browser with internet access: the pages load React, React Flow and Draw.io's viewer from content delivery networks.
+
+=== Conventions
+
+* *Every listing is included from the module's sources or tests* and compiled and run when the book is built. Callouts, such as <1>, explain the lines they mark.
+* *The figures are generated.* The tests generate the diagrams, lay them out and write them as Draw.io documents; the figures are those documents rendered with Draw.io's viewer, with the document embedded in the image (<<figures>>).
+* *Status labels* mark what this edition does not have yet: [.planned]#PLANNED# and [.sketch]#SKETCH#.
+* *Voice.* I write in the first person.

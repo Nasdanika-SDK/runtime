@@ -1,0 +1,59 @@
+// Defaults for previewing this file on its own; index.adoc and the Maven build set these
+ifndef::booktests[:booktests: ../../../test/java/org/nasdanika/sdk/runtime/models/diagram/tests/book]
+
+[#from-drawio]
+== From Draw.io
+
+Most diagrams start in an editor.
+This chapter loads one from Draw.io: the figure of <<the-model>>, which is a PNG image with the diagram embedded.
+
+The runtime's Draw.io module reads and writes Draw.io documents in Java, and its Zephyr Book, _Draw.io_, describes it.
+Here it is only a source: a document of pages, layers, nodes and connections, with labels, tooltips and properties.
+
+=== Loading the figure
+
+.Loading the figure and converting it (`SemanticTests.java`)
+[source,java]
+----
+include::{booktests}/SemanticTests.java[tag=load,indent=0]
+----
+<1> A PNG image can embed several diagrams; the figure embeds one.
+
+=== A converter
+
+A loader for a notation maps its structure to the model's.
+For Draw.io the mapping is close to one to one, and a minimal converter fits on two pages:
+
+.A minimal converter from Draw.io to the diagram model (`DrawioToDiagram.java`)
+[source,java]
+----
+include::{booktests}/DrawioToDiagram.java[tag=converter,indent=0]
+----
+<1> Every Draw.io page becomes a diagram inside the document's diagram, and every layer a layer.
+<2> Connections are connected in a second pass, when every node has been converted, so a connection can point to a node that comes after it in the file.
+<3> Draw.io lets connections leave from connection points on a node; `Util.getConnectableNode` returns the node either way.
+<4> Draw.io nodes contain nodes and connections, and so do the model's.
+<5> Labels in Draw.io are often HTML. The name keeps their text.
+
+What the minimal converter leaves out, a complete one adds: Draw.io's connection points as ports, labels on connections as `Label` children, tags and styles as properties, links between pages, and markers that record the file and page each element came from.
+None of it needs a change to the model.
+
+=== The result
+
+.The converted figure
+[source,java]
+----
+include::{booktests}/SemanticTests.java[tag=convert,indent=0]
+----
+<1> The Draw.io properties of the box, here the package of the class it shows, are the element's properties.
+<2> The figure's arrows are connections of the model, navigable from the node.
+
+The converted diagram is a model with thirteen documented nodes and eighteen connections, and no idea yet what any of them means.
+The next chapter tells it.
+
+ifdef::editor-notes[]
+[IMPORTANT,caption="Editor's note"]
+====
+The converter is test code, written for this book. A Draw.io model module, migrated with this model, is meant to provide the loader for real; when it does, replace this chapter's converter with it and keep the listing short. Writing this chapter found a defect in the Draw.io module: `Connection.getPoints().get(index)` threw for every valid index. It is fixed, with a test, in `ConnectionPointListImpl`.
+====
+endif::[]

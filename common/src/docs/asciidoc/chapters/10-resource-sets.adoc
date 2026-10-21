@@ -1,0 +1,87 @@
+// Defaults for previewing this file on its own; index.adoc and the Maven build set these
+ifndef::booktests[:booktests: ../../../test/java/org/nasdanika/sdk/runtime/common/book]
+
+[#resource-sets]
+== Resource sets
+
+An EMF resource set loads, saves and cross-references models, and it is a matching machine of its own.
+A URI is matched to a URI handler by its scheme, and to a resource factory by its extension or protocol; a namespace URI in a file is matched to a registered package.
+All of it has to be configured, and in a modular application the configuration belongs to the modules that bring the models, formats and schemes.
+
+=== A configured resource set
+
+`NasdanikaResourceSet.createAndConfigure()` creates a resource set and lets every module on the module path contribute to it:
+
+* URI handlers provided as `URIHandler` services are added;
+* adapter factories provided as `AdapterFactory` services are added;
+* packages provided as `EPackage` services are registered by their namespace URIs;
+* every `ResourceSetContributor` service is called.
+
+The module itself contributes handlers for two URI schemes, and resource factories for XMI, the default for any extension, and for EMF's binary format, `.ebin`, and its compressed form, `.egz`:
+
+.Loading from the class path and from a module (`ResourceSetTests.java`)
+[source,java]
+----
+include::{booktests}/ResourceSetTests.java[tag=uris,indent=0]
+----
+<1> The resource set, configured from the module path.
+<2> `classpath://` loads a resource with the thread's context class loader.
+<3> `module://` names a module in the authority and a resource in the path, and loads it from that module of the current module layer.
+
+The module system encapsulates resources in a module's packages.
+A resource in a directory that is not a package, such as `book-data` here, can be read by anyone; a resource in a package, through `classpath://`, only if the package is opened to everyone.
+
+ifdef::editor-notes[]
+[IMPORTANT,caption="Editor's note"]
+====
+`ModuleURIHandlerFactory` reads `module://` resources with `Module.getResourceAsStream`, called from `common`, so a resource in a package of another module is found only if that package is opened to `common`; this should be stated in its Javadoc. It also finds the module through the handler's own module layer, `getClass().getModule().getLayer()`, which is null when `common` is on the class path, so `module://` URIs fail there with a `NullPointerException` rather than an `IOException`.
+====
+endif::[]
+
+=== Contributors
+
+A `ResourceSetContributor` configures a resource set: registers a resource factory, a package, a URI mapping, a URI handler.
+
+.A contributor
+[source,java]
+----
+include::{booktests}/ResourceSetTests.java[tag=contributor,indent=0]
+----
+<1> Files with the extension `xml` become XML resources.
+
+Declared as `provides ResourceSetContributor with ...` in a module's `module-info.java`, it is called for every resource set the runtime configures.
+It can also be called directly:
+
+.Contributing to a resource set
+[source,java]
+----
+include::{booktests}/ResourceSetTests.java[tag=contributor-test,indent=0]
+----
+<1> `contribute(resourceSet)` runs the contribution in a span named after it, with the contributor's class and module as attributes.
+
+=== Globals
+
+A `NasdanikaResourceSet` can hold objects registered by URI, outside any resource.
+`getEObject` returns a registered object before it looks in resources:
+
+.A global object
+[source,java]
+----
+include::{booktests}/ResourceSetTests.java[tag=globals,indent=0]
+----
+<1> References to `urn:example:library#Book` resolve to this object, in any resource of the resource set.
+
+Only registered objects are global: an object resolved through a resource stays in its resource, and goes when the resource is unloaded.
+
+=== Resources from capabilities
+
+`ContentsHandlingResourceFactory`, in the `capability.emf` package, creates resources whose contents are loaded and saved by handlers found as capabilities.
+The last segment of the URI is read as qualifiers, right to left: `family.ecore.groovy` has the qualifiers `groovy` and `ecore`, and handlers are requested for the most specific first.
+A resource format is then a capability that any module can provide, matched by the resource's name.
+
+ifdef::editor-notes[]
+[IMPORTANT,caption="Editor's note"]
+====
+`ContentsHandlingResource` requires handlers with `Requirement.of(ResourceContentsHandler.class, handlerRequirement)`: the raw type, with the contents type, `EObject[].class`, carried in the payload. With the module's own matching it could require `ResourceContentsHandler<EObject[]>`, and handlers would be matched by their declared type arguments, as this book recommends everywhere else.
+====
+endif::[]

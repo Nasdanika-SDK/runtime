@@ -36,6 +36,14 @@
 		<module>jvm</module>
 		<module>html</module>
 		<module>react</module>
+		<module>diagram</module>
+		<!--
+		<module>presentation</module>
+		<module>drawio</module>
+		<module>powerpoint</module>
+		<module>visio</module>
+		<module>excel</module>
 		<module>all</module>
+		-->
 	</modules>
 </project>

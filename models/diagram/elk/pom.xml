@@ -11,16 +11,114 @@
     <artifactId>elk</artifactId>
     <packaging>jar</packaging>
     <name>Nasdanika SDK Runtime Diagram Model ELK (Eclipse Layout Kernel)</name>
+    <description>
+        Layout of the diagram model with the Eclipse Layout Kernel: diagrams to ELK graphs, layout
+        options from element properties, and the results written back into bounds, ports, waypoints
+        and labels.
+
+        Its Nasdanika Zephyr Book, "Diagram Layout with ELK", is built from src/docs/asciidoc with
+        listings from the tests, which generate diagrams of Ecore packages and render them with
+        React Flow and Draw.io.
+    </description>
+
+    <properties>
+        <zephyr.book.name>diagram-elk-${project.version}-book</zephyr.book.name>
+        <!--
+            Tests are patched into this module on the module path. The demos use the React Flow and
+            Bootstrap models, the Draw.io API and volumes, which this module does not require, and
+            the Draw.io API needs java.xml and java.desktop.
+        -->
+        <test.modules>org.nasdanika.sdk.runtime.models.react.flow,org.nasdanika.sdk.runtime.models.react,org.nasdanika.sdk.runtime.models.typescript,org.nasdanika.sdk.runtime.models.html,org.nasdanika.sdk.runtime.models.html.bootstrap,org.nasdanika.sdk.runtime.volume,java.xml,java.desktop,java.net.http,jdk.httpserver</test.modules>
+    </properties>
+
+    <build>
+        <plugins>
+            <plugin>
+                <groupId>org.apache.maven.plugins</groupId>
+                <artifactId>maven-compiler-plugin</artifactId>
+                <executions>
+                    <execution>
+                        <id>default-testCompile</id>
+                        <configuration>
+                            <compilerArgs>
+                                <arg>--add-modules</arg>
+                                <arg>java.xml,java.desktop,java.net.http,jdk.httpserver</arg>
+                                <arg>--add-reads</arg>
+                                <arg>org.nasdanika.sdk.runtime.models.diagram.elk=java.xml,java.desktop,java.net.http,jdk.httpserver</arg>
+                            </compilerArgs>
+                        </configuration>
+                    </execution>
+                </executions>
+            </plugin>
+            <plugin>
+                <groupId>org.apache.maven.plugins</groupId>
+                <artifactId>maven-surefire-plugin</artifactId>
+                <configuration>
+                    <argLine>@{argLine} --add-modules ${test.modules} --add-reads org.nasdanika.sdk.runtime.models.diagram.elk=${test.modules}</argLine>
+                </configuration>
+            </plugin>
+        </plugins>
+    </build>
 
     <dependencies>
-		<dependency>
-		    <groupId>${project.groupId}</groupId>
-		    <artifactId>model</artifactId>
-		</dependency> 		
+        <dependency>
+            <groupId>${project.groupId}</groupId>
+            <artifactId>model</artifactId>
+            <version>${project.version}</version>
+        </dependency>
+        <dependency>
+            <groupId>org.nasdanika.sdk.runtime</groupId>
+            <artifactId>common</artifactId>
+        </dependency>
         <dependency>
             <groupId>org.eclipse.elk</groupId>
             <artifactId>org.eclipse.elk.core</artifactId>
-            <scope>compile</scope>
+        </dependency>
+        <dependency>
+            <groupId>org.eclipse.elk</groupId>
+            <artifactId>org.eclipse.elk.graph</artifactId>
+        </dependency>
+        <dependency>
+            <groupId>org.eclipse.elk</groupId>
+            <artifactId>org.eclipse.elk.alg.layered</artifactId>
+        </dependency>
+        <dependency>
+            <groupId>org.eclipse.elk</groupId>
+            <artifactId>org.eclipse.elk.alg.mrtree</artifactId>
+        </dependency>
+        <dependency>
+            <groupId>org.eclipse.elk</groupId>
+            <artifactId>org.eclipse.elk.alg.force</artifactId>
+        </dependency>
+        <dependency>
+            <groupId>org.eclipse.elk</groupId>
+            <artifactId>org.eclipse.elk.alg.radial</artifactId>
+        </dependency>
+        <dependency>
+            <groupId>com.google.guava</groupId>
+            <artifactId>guava</artifactId>
+        </dependency>
+
+        <!-- Demos: rendering laid out diagrams with React Flow and Draw.io, and serving them -->
+        <dependency>
+            <groupId>org.nasdanika.sdk.runtime.models.react</groupId>
+            <artifactId>flow</artifactId>
+            <scope>test</scope>
+        </dependency>
+        <dependency>
+            <groupId>org.nasdanika.sdk.runtime.models.html</groupId>
+            <artifactId>bootstrap</artifactId>
+            <scope>test</scope>
+        </dependency>
+        <dependency>
+            <groupId>org.nasdanika.sdk.runtime</groupId>
+            <artifactId>drawio</artifactId>
+            <scope>test</scope>
+        </dependency>
+        <dependency>
+            <groupId>org.nasdanika.sdk.runtime</groupId>
+            <artifactId>volume</artifactId>
+            <scope>test</scope>
         </dependency>
     </dependencies>
 </project>

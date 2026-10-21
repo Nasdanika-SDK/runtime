@@ -51,7 +51,9 @@ public interface ResourceSetContributor {
 		AttributesBuilder attrBuidler = Attributes.builder();
 		attrBuidler.put("contributorClass", getClass().getName());
 		attrBuidler.put("contributorModule", getClass().getModule().getName());
-		getClass().getModule().getDescriptor().version().ifPresent(v ->	attrBuidler.put("contributorModuleVersion", v.toString()));
+		if (getClass().getModule().isNamed()) { // Unnamed modules, such as the class path, have no descriptor
+			getClass().getModule().getDescriptor().version().ifPresent(v ->	attrBuidler.put("contributorModuleVersion", v.toString()));
+		}
 		
 		Telemetry.inSpan(
 				tracer, 

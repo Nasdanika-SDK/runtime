@@ -1,0 +1,45 @@
+[#looking-ahead]
+== What comes next
+
+The model in this edition is the hub without most of its spokes.
+This chapter says what is planned around it.
+Everything in it is [.planned]#PLANNED# unless it says otherwise.
+
+=== Notation models, loaders and generators
+
+Models of each notation extend this one with what makes the notation itself: Draw.io with its styles and magic properties, Presentation with what slide decks share, PowerPoint with layouts and placeholders, Visio with masters and stencils.
+They are being migrated into the runtime alongside this model.
+Each brings a loader into the diagram model, and where it makes sense a generator out of it, so that a conversion from any notation to any other passes through one model.
+
+=== Layout
+
+A diagram generated from a model, or merged from two, has no good positions.
+The runtime's `diagram/elk` module lays out the diagram model with the Eclipse Layout Kernel: layered, tree, force-directed and radial algorithms, configured through the elements' properties, with the results written back into bounds, port locations, waypoints and labels.
+Because layout works on this model, it applies to every notation that loads into it.
+It is [.available]#AVAILABLE#, and its Zephyr Book, _Diagram Layout with ELK_, generates class diagrams of this model, lays them out and renders them with React Flow and Draw.io.
+
+=== Computed depiction
+
+`semanticElementsSelector`, a selector that computes what an element depicts instead of listing it: every class in a package, every service with a tag, the results of a query.
+The runtime's core model already has evaluators for Groovy, SpEL, XPath and JSR-223 scripts, documented and marked like any model element, so a selector is an evaluator stored on the element.
+A derived feature would then join the listed and the selected elements.
+
+=== Diagrams that people and programs both edit
+
+The failure of every generated diagram is the second run.
+A diagram is generated from a source of truth, people improve it, by grouping boxes, annotating a connection, moving a cluster where it reads better, and the next generation flattens all of it.
+So the diagram is generated once and frozen, and living documentation becomes documentation again.
+
+The fix is a three-way merge on the model: the previous generation as the base, the new generation as one side, and the edited diagram as the other.
+It needs what a model has and a picture does not: stable identity, so that an element is recognized as the same element in all three versions, with IDs, URIs and markers as anchors.
+What the source still says is refreshed, what people added is kept, and what has disappeared from the source is retired rather than dropped.
+
+Packaged as a command, the merge is also a Git merge driver, registered in `.gitattributes`, which receives the same three versions.
+Two people editing one diagram on two branches is then the same merge.
+Conflicts become data: elements on a conflicts layer, which can be hidden, queried across a repository and deleted when settled; or, page by page, four pages, the base, ours, theirs and the merged page with its conflicts, settled in the editor by looking at the diagram rather than at XML.
+Layout, re-run over the result, keeps the merged diagram readable.
+
+=== Sites, executable diagrams and assistants
+
+Documentation sites generated from diagrams in any notation, executable diagrams whose processors are wired along the model's connections, and diagrams given to AI assistants as a typed structure rather than an image, are all planned on top of the model.
+The runtime's Draw.io Zephyr Book describes the same continuum from the Draw.io side.

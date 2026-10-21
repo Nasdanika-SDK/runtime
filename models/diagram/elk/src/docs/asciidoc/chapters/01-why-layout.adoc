@@ -1,0 +1,39 @@
+[#why-layout]
+== Why diagrams need automatic layout
+
+A well laid out diagram compresses hours of reading into seconds of comprehension.
+A badly laid out one, with lines crossing for no reason, boxes overlapping, and related things far apart, costs more to read than the text it replaces.
+People who draw diagrams by hand spend much of their time on layout, and they are right to.
+
+Programs do not have that time.
+And more and more diagrams are drawn by programs.
+
+=== Diagrams nobody drew
+
+* *Diagrams generated from models*: the classes of a metamodel, the modules of a running JVM, the services of a deployment, the tables of a database. The model is the truth; the diagram is a view of it, generated again whenever the model changes.
+* *Diagrams converted between notations*: a Visio drawing loaded into a neutral model and written as a Draw.io document keeps its positions, but a diagram assembled from several sources has none.
+* *Diagrams merged from versions*: a diagram regenerated from its source, merged with the edits people made to the previous generation, has new elements with no place yet.
+* *Diagrams written by assistants*: a language model can say what is connected to what far more reliably than where each box should go.
+
+In each case the structure is known and the geometry is not.
+That is exactly the problem automatic layout solves: given nodes, their sizes, their nesting and their connections, find positions and routes that a person can read.
+
+=== Layout belongs to the model, not to the editor
+
+Editors have layouts of their own.
+Draw.io arranges selections in trees, circles and grids; Visio and yEd have more.
+But a layout in an editor runs when a person asks for it, in that editor, on that editor's format.
+A diagram generated in a build has no editor and no person.
+
+The runtime's diagram model is the hub between notations: Draw.io, PowerPoint and generated diagrams all pass through it.
+Laying out the model lays out every notation that loads into it and every notation it is written to, once.
+This module does that.
+
+=== What a layout can and cannot do
+
+Automatic layout is good at what is mechanical: no overlaps, consistent spacing, edges that flow in one direction, few crossings, orthogonal routes that read like circuit diagrams, nested elements kept inside their containers.
+
+It knows nothing about meaning.
+It does not know that the customer should be at the top, that two systems belong side by side because the same team owns them, or that one connection matters more than the rest.
+Those decisions are what people add to a generated diagram, and why a generated diagram that people improve should be merged rather than regenerated from scratch.
+Layout options and the order of elements let a generator express some of that intent; the rest stays with people.
