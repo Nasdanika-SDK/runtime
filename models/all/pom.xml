@@ -92,46 +92,20 @@
 			<groupId>org.nasdanika.sdk.runtime.models.diagram</groupId>
 			<artifactId>elk</artifactId>				
 		</dependency>
-		<!--
 		<dependency>
 			<groupId>org.nasdanika.sdk.runtime.models.presentation</groupId>
 			<artifactId>model</artifactId>				
 		</dependency>
 
+		<!--
 		<dependency>
 			<groupId>org.nasdanika.sdk.runtime.models.drawio</groupId>
 			<artifactId>model</artifactId>				
 		</dependency>
 
 		<dependency>
-			<groupId>org.nasdanika.sdk.runtime.models.powerpoint</groupId>
+			<groupId>org.nasdanika.sdk.runtime.models.plantuml</groupId>
 			<artifactId>model</artifactId>				
-		</dependency>
-		<dependency>
-			<groupId>org.nasdanika.sdk.runtime.models.powerpoint</groupId>
-			<artifactId>resource</artifactId>				
-		</dependency>
-
-		<dependency>
-			<groupId>org.nasdanika.sdk.runtime.models.visio</groupId>
-			<artifactId>model</artifactId>				
-		</dependency>
-		<dependency>
-			<groupId>org.nasdanika.sdk.runtime.models.visio</groupId>
-			<artifactId>resource</artifactId>				
-		</dependency>
-
-		<dependency>
-			<groupId>org.nasdanika.sdk.runtime.models.excel</groupId>
-			<artifactId>model</artifactId>				
-		</dependency>
-		<dependency>
-			<groupId>org.nasdanika.sdk.runtime.models.excel</groupId>
-			<artifactId>workbook</artifactId>				
-		</dependency>
-		<dependency>
-			<groupId>org.nasdanika.sdk.runtime.models.excel</groupId>
-			<artifactId>csv</artifactId>				
 		</dependency>
 		-->
 	</dependencies>
