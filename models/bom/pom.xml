@@ -152,7 +152,7 @@
 			</dependency>
 
 			<dependency>
-				<groupId>org.nasdanika.sdk.runtime.models.plantuml</groupId>
+				<groupId>org.nasdanika.sdk.runtime.models.svg</groupId>
 				<version>${revision}</version>
 				<artifactId>model</artifactId>				
 			</dependency>

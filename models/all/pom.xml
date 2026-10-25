@@ -97,14 +97,14 @@
 			<artifactId>model</artifactId>				
 		</dependency>
 
-		<!--
 		<dependency>
 			<groupId>org.nasdanika.sdk.runtime.models.drawio</groupId>
 			<artifactId>model</artifactId>				
 		</dependency>
 
+		<!--
 		<dependency>
-			<groupId>org.nasdanika.sdk.runtime.models.plantuml</groupId>
+			<groupId>org.nasdanika.sdk.runtime.models.svg</groupId>
 			<artifactId>model</artifactId>				
 		</dependency>
 		-->
