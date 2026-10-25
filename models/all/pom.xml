@@ -102,12 +102,10 @@
 			<artifactId>model</artifactId>				
 		</dependency>
 
-		<!--
 		<dependency>
 			<groupId>org.nasdanika.sdk.runtime.models.svg</groupId>
 			<artifactId>model</artifactId>				
 		</dependency>
-		-->
 	</dependencies>
 	
 </project>

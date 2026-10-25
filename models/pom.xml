@@ -38,9 +38,8 @@
 		<module>react</module>
 		<module>diagram</module>
 		<module>presentation</module>
-		<!--
 		<module>drawio</module>
-		-->
+		<module>svg</module>
 		<module>all</module>
 	</modules>
 </project>

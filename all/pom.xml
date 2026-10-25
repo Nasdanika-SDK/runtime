@@ -35,6 +35,10 @@
 		</dependency>
 		<dependency>
 			<groupId>org.nasdanika.sdk.runtime</groupId>
+			<artifactId>drawio-playwright</artifactId>
+		</dependency>
+		<dependency>
+			<groupId>org.nasdanika.sdk.runtime</groupId>
 			<artifactId>emf-json</artifactId>
 		</dependency>
 		<dependency>

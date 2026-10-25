@@ -258,6 +258,11 @@
 			</dependency>
 			<dependency>
 				<groupId>${project.groupId}</groupId>
+				<artifactId>drawio-playwright</artifactId>
+				<version>${revision}</version>
+			</dependency>
+			<dependency>
+				<groupId>${project.groupId}</groupId>
 				<artifactId>emf-json</artifactId>
 				<version>${revision}</version>
 			</dependency>
