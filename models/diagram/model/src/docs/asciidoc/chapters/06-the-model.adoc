@@ -12,16 +12,16 @@ The figure is drawn in Draw.io, and it is data: <<semantic-elements>> converts i
 === DiagramElement
 
 The base of everything in a diagram, and abstract.
-It extends `NamedElement` and `StringIdentity` of the runtime's core model, so every diagram element has:
+It extends `NamedElement`, `StringIdentity` and `Attributed` of the runtime's core model, so every diagram element has:
 
 * `id` and `name`;
 * documentation: `documentation` text with a `docFormat`, a `docRef` to a document elsewhere, or structured `docContents` and `docSections`;
 * `markers`, which record where an element came from: a file and a position, or a Git repository, branch and commit;
-* an `icon`, and `uris` that identify the element across models and versions.
+* an `icon`, and `uris` that identify the element across models and versions;
+* `attributes`, a map from strings to strings, for whatever a source notation carries and the model does not, and for conventions of your own (<<not-here>>). The same mixin carries the attributes of the runtime's other models, so a convention looks the same on a diagram and on a document.
 
-It adds three features:
+It adds two features:
 
-`properties`:: A map from strings to strings, for whatever a source notation carries and the model does not, and for conventions of your own (<<not-here>>).
 `semanticElements`:: The objects of other models that the element depicts. Any `EObject`, as many as it takes (<<semantic-elements>>).
 `children`:: The elements it contains. Containment is how documents contain pages, pages contain layers, and shapes contain shapes.
 

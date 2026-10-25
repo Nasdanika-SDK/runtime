@@ -1,0 +1,30 @@
+[#looking-ahead]
+== Looking ahead
+
+Everything in this chapter is [.planned]#PLANNED#.
+
+=== A diagram to SVG module
+
+The converter of <<from-diagrams>> as a module, `models/diagram/svg`, with what a converter for real diagrams needs: shapes by a plug-in point rather than a hard-coded rectangle, labels of several lines, ports, nested nodes drawn as frames, and styles from attributes.
+Layout stays in the ELK module, so ELK's dependencies stay out of the path from a laid-out diagram to SVG.
+
+=== Measured text
+
+A table of glyph widths for the font the books use, Noto Sans, shipped as a resource of the diagram model, and a text measurer that reads it: accurate for that font, the same on every machine, and with no dependency on installed fonts.
+The SVG converter then names the font it measured.
+
+=== Class context diagrams
+
+The classes of an Ecore or Meta model, one diagram per class: the class, the classes it extends and that extend it, and the classes it refers to and that refer to it, generated for every class of every model in the runtime's documentation, each box a link to the class's page with its documentation as a tooltip.
+
+=== Dark mode
+
+Presentation attributes for the PDF, which prawn-svg reads reliably, and, for the HTML, CSS classes with a block for dark color schemes.
+
+=== PNG
+
+For platforms that do not take SVG, such as Medium and LinkedIn, the SVG rendered as PNG in a browser, through the runtime's Playwright module.
+
+=== Reading other tools' SVG losslessly
+
+Elements and attributes outside the subset kept when SVG is read, and written back, so that SVG from PlantUML or Draw.io can be post-processed: links added to a PlantUML diagram, or colors changed in a Draw.io export.

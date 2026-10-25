@@ -1,0 +1,30 @@
+[appendix]
+[#building-this-book]
+== Building this book, and its figure
+
+This book is AsciiDoc in `models/drawio/model/src/docs/asciidoc`, built with the model after its tests have passed:
+
+[source,text]
+----
+mvn -pl models/drawio/model -am verify                         # the model, its tests and this book
+mvn -pl models/drawio/model verify -Dzephyr.editor-notes=false   # without editor's notes
+mvn -pl models/drawio/model verify -Dasciidoctor.skip=true       # without the book
+----
+
+The PDF and the single-page HTML are written to `target/book` and attached to the model's artifact with the classifier `book`; the test sources are attached with the classifier `test-sources`.
+The look comes from the runtime's `doc/zephyr` directory, shared by all the Nasdanika Zephyr Books.
+
+Listings are tagged regions of the tests in `src/test/java/org/nasdanika/sdk/runtime/models/drawio/tests`.
+A listing line holds at most 96 characters, and a warning fails the build.
+
+=== The tests that render
+
+`GeneratedDiagramTests` renders with Draw.io's viewer in a browser.
+It takes the browser from the `playwright.channel` Maven property, `chrome` by default, or Playwright's Chromium if the property is empty, and it is skipped if no browser can be launched.
+The viewer is downloaded from jsDelivr, so the test needs the network.
+
+=== The figure
+
+The figure, `modules.drawio.png` in `src/test/resources/org/nasdanika/sdk/runtime/models/drawio/tests`, is the image that `GeneratedDiagramTests` writes to `target/generated`, copied.
+To change it, change the test, run it, and copy the image again.
+It is a PNG image with the Draw.io document embedded, so it also opens in Draw.io.

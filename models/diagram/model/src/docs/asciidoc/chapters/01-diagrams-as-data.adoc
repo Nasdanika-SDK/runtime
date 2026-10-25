@@ -27,7 +27,7 @@ The file format keeps those facts and throws away the meaning, which survives on
 
 The model keeps the meaning in two ways, and either is enough.
 
-* *The element itself.* A diagram element has an identity, a name, documentation and properties, before it is mapped to anything. A diagram is a tree and a graph of named, documented elements, which is structurally close to what an architecture model is.
+* *The element itself.* A diagram element has an identity, a name, documentation and attributes, before it is mapped to anything. A diagram is a tree and a graph of named, documented elements, which is structurally close to what an architecture model is.
 * *The elements it depicts.* `semanticElements` points from a diagram element to any objects of any other model: an application in an architecture model, an asset in a threat model, a work item, a class of a metamodel. The picture and the meaning become one object graph, instead of two artifacts and a naming convention between them.
 
 === Four uses

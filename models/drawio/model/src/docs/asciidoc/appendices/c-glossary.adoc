@@ -1,0 +1,36 @@
+[appendix]
+[#glossary]
+== Glossary
+
+Attribute::
+A string key and value on a model element, from the core model's `Attributed` mixin. A Draw.io property is an attribute.
+
+Cell::
+Draw.io's word for an element of a page: the root, a layer, a shape or an edge. The model calls the last three model elements.
+
+Contents handler::
+A capability that loads and saves the contents of a resource, chosen by the qualifiers of its file name.
+
+Custom action::
+A step that Draw.io's viewer runs when a shape with a `data:action/json` link is clicked.
+
+Custom link::
+A link to a page or an element in the Nasdanika notation, `data:page/...` or `data:element/...`.
+
+Editable image::
+A PNG or SVG image that carries the Draw.io document it shows, so that Draw.io opens it for editing and a resource set loads it.
+
+Layout::
+Positions and sizes of nodes and routes of connections, computed here by the Eclipse Layout Kernel.
+
+Property::
+A named value of a Draw.io element, set in Draw.io's _Edit Data_ dialog. In the model, an attribute.
+
+Qualifier::
+A part of a file name between dots. In `system.drawio.png`, the qualifiers are `png`, `drawio` and `system`, read right to left.
+
+Style::
+How Draw.io draws an element: a list of keys and values, such as `fillColor=#dae8fc`. In the model, an ordered map.
+
+Tag::
+A name that elements of a page share, so that they can be shown, hidden and selected together.

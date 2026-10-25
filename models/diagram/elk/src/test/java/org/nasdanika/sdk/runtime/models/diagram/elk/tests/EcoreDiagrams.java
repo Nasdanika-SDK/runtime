@@ -48,7 +48,7 @@ public class EcoreDiagrams {
 	/** Property of a class node: abstract or interface */
 	public static final String ABSTRACT = "abstract";
 
-	/** Properties of a reference connection: containment at the source or at the target */
+	/** Attributes of a reference connection: containment at the source or at the target */
 	public static final String CONTAINMENT = "containment";
 	public static final String CONTAINER = "container";
 
@@ -68,7 +68,7 @@ public class EcoreDiagrams {
 		diagram.setId(id);
 		diagram.setName(name);
 		// tag::options[]
-		var options = diagram.getProperties();
+		var options = diagram.getAttributes();
 		options.put("elk.algorithm", "layered");
 		options.put("elk.direction", "UP"); // <1>
 		options.put("elk.edgeRouting", "ORTHOGONAL"); // <2>
@@ -155,9 +155,9 @@ public class EcoreDiagrams {
 			node.setId(eClass.getName());
 			node.setName(eClass.getName());
 			node.getSemanticElements().add(eClass);
-			node.getProperties().put(KIND, CLASS);
+			node.getAttributes().put(KIND, CLASS);
 			if (eClass.isAbstract() || eClass.isInterface()) {
-				node.getProperties().put(ABSTRACT, "true");
+				node.getAttributes().put(ABSTRACT, "true");
 			}
 			packageNode.getChildren().add(node);
 			classes.put(eClass, node);
@@ -169,7 +169,7 @@ public class EcoreDiagrams {
 		node.setId(ePackage.getName());
 		node.setName(ePackage.getName());
 		node.getSemanticElements().add(ePackage);
-		node.getProperties().put(KIND, PACKAGE);
+		node.getAttributes().put(KIND, PACKAGE);
 		diagram.getChildren().add(node);
 		return node;
 	}
@@ -204,7 +204,7 @@ public class EcoreDiagrams {
 					connection.setId(entry.getKey().getName() + "-extends-" + superType.getName());
 					connection.setSource(port(entry.getValue(), TOP, 0)); // <1>
 					connection.setTarget(port(superNode, BOTTOM, 1)); // <2>
-					connection.getProperties().put(KIND, GENERALIZATION);
+					connection.getAttributes().put(KIND, GENERALIZATION);
 					diagram.getChildren().add(connection);
 				}
 			}
@@ -231,9 +231,9 @@ public class EcoreDiagrams {
 				connection.setSource(classes.get(source)); // <1>
 				connection.setTarget(target);
 				connection.getSemanticElements().add(reference);
-				connection.getProperties().put(KIND, REFERENCE);
+				connection.getAttributes().put(KIND, REFERENCE);
 				if (reference.isContainment()) {
-					connection.getProperties().put(CONTAINMENT, "true");
+					connection.getAttributes().put(CONTAINMENT, "true");
 				}
 				done.add(reference);
 				if (opposite == null) {
@@ -241,7 +241,7 @@ public class EcoreDiagrams {
 				} else {
 					connection.getSemanticElements().add(opposite);
 					if (opposite.isContainment()) {
-						connection.getProperties().put(CONTAINER, "true");
+						connection.getAttributes().put(CONTAINER, "true");
 					}
 					connection.getChildren().add(label(reference, "HEAD")); // <3>
 					connection.getChildren().add(label(opposite, "TAIL"));
@@ -257,7 +257,7 @@ public class EcoreDiagrams {
 		label.setId(reference.getName());
 		label.setText(reference.getName() + (reference.isMany() ? " *" : ""));
 		label.getSemanticElements().add(reference);
-		label.getProperties().put(PLACEMENT, placement);
+		label.getAttributes().put(PLACEMENT, placement);
 		return label;
 	}
 	// end::references[]

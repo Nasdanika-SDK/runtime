@@ -71,7 +71,7 @@ public class EcoreDiagramTests {
 		Node diagram = packages.getFirst();
 		assertThat(diagram.getChildren()).filteredOn(Node.class::isInstance).hasSize(10); // <1>
 		assertThat(packages.get(1).getChildren()).extracting(e -> e.getName())
-			.containsExactlyInAnyOrder("NamedElement", "StringIdentity", "StringToStringMapEntry");
+			.containsExactlyInAnyOrder("NamedElement", "StringIdentity", "Attributed");
 		// end::package[]
 		assertNoOverlaps(packageDiagram);
 	}
@@ -81,7 +81,7 @@ public class EcoreDiagramTests {
 		// tag::generalizations[]
 		for (Diagram diagram: List.of(packageDiagram, nodeContext)) {
 			for (Connection connection: EcoreDiagrams.connections(diagram)) {
-				if (GENERALIZATION.equals(connection.getProperties().get(KIND))) {
+				if (GENERALIZATION.equals(connection.getAttributes().get(KIND))) {
 					Port top = (Port) connection.getSource();
 					Port bottom = (Port) connection.getTarget();
 					assertThat(top.getLocation().getY()).isZero(); // <1>
@@ -102,7 +102,7 @@ public class EcoreDiagramTests {
 		// tag::references[]
 		List<Connection> references = new ArrayList<>();
 		for (Connection connection: EcoreDiagrams.connections(packageDiagram)) {
-			if (REFERENCE.equals(connection.getProperties().get(KIND))) {
+			if (REFERENCE.equals(connection.getAttributes().get(KIND))) {
 				assertThat(connection.getSource()).isInstanceOf(Node.class); // <1>
 				assertThat(connection.getTarget()).isInstanceOf(Node.class);
 				references.add(connection);
@@ -143,7 +143,7 @@ public class EcoreDiagramTests {
 	public void testNodeContext() {
 		// tag::context[]
 		List<String> classes = EcoreDiagrams.nodes(nodeContext).stream()
-			.filter(n -> CLASS.equals(n.getProperties().get(KIND)))
+			.filter(n -> CLASS.equals(n.getAttributes().get(KIND)))
 			.map(Node::getName)
 			.toList();
 		assertThat(classes).contains(

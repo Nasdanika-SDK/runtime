@@ -3,7 +3,7 @@
 == Layout options used most
 
 ELK's options are documented in full at {elk-site}, under _Reference_.
-These are the ones a diagram is most likely to set, as property keys and values.
+These are the ones a diagram is most likely to set, as attribute keys and values.
 Enumeration values are written in capitals, numbers as numbers, and vectors as `(x, y)`.
 
 [cols="3,3,4",options="header"]

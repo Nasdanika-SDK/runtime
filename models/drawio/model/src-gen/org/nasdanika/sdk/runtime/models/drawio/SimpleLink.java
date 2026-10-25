@@ -10,9 +10,9 @@ package org.nasdanika.sdk.runtime.models.drawio;
  *
  * <!-- begin-model-doc -->
  * A link that is stored and used verbatim: an http(s) URL, a mailto:, a relative
- * path, or a data: URI this model does not interpret.
- * 
- * Anything not recognised as a CustomLink, SpelLink, or Actions lands here, which
+ * path, a data: URI this model does not interpret, custom actions (data:action/json,...)
+ * until Actions are loaded, and a page or element link whose target is not in the document.
+ *  * Anything not recognised as a CustomLink or a SpelLink lands here, which
  * is what keeps the round trip lossless.
  * <!-- end-model-doc -->
  *

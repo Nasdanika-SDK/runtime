@@ -28,6 +28,6 @@ Layout works on the runtime's diagram model, an EMF model of diagrams independen
 * a *node* has *bounds*, a position and a size, relative to the node that contains it, and *ports*, attachment points at a location relative to the node's size, from 0 to 1;
 * a *connection* runs from a *source* to a *target*, either a node or a port, through *waypoints*;
 * a *label* is a node whose content is text; labels of a connection are its children;
-* every element has an id, a name and *properties*, a map from strings to strings.
+* every element has an id, a name and *attributes*, a map from strings to strings.
 
-Properties are where layout options go (<<laying-out>>).
+Attributes are where layout options go (<<laying-out>>).

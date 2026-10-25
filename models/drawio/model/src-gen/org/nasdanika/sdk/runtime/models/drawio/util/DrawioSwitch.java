@@ -7,6 +7,7 @@ import org.eclipse.emf.ecore.EPackage;
 
 import org.eclipse.emf.ecore.util.Switch;
 
+import org.nasdanika.sdk.runtime.models.core.Attributed;
 import org.nasdanika.sdk.runtime.models.core.Documented;
 import org.nasdanika.sdk.runtime.models.core.Marked;
 import org.nasdanika.sdk.runtime.models.core.NamedElement;
@@ -86,6 +87,7 @@ public class DrawioSwitch<T> extends Switch<T> {
 				if (result == null) result = caseDiagram(document);
 				if (result == null) result = caseDiagramElement(document);
 				if (result == null) result = caseNamedElement(document);
+				if (result == null) result = caseAttributed(document);
 				if (result == null) result = caseCore_ModelElement(document);
 				if (result == null) result = caseStringIdentity(document);
 				if (result == null) result = caseDocumented(document);
@@ -108,6 +110,7 @@ public class DrawioSwitch<T> extends Switch<T> {
 				if (result == null) result = caseDiagram(page);
 				if (result == null) result = caseDiagramElement(page);
 				if (result == null) result = caseNamedElement(page);
+				if (result == null) result = caseAttributed(page);
 				if (result == null) result = caseCore_ModelElement(page);
 				if (result == null) result = caseStringIdentity(page);
 				if (result == null) result = caseDocumented(page);
@@ -116,24 +119,27 @@ public class DrawioSwitch<T> extends Switch<T> {
 				if (result == null) result = defaultCase(theEObject);
 				return result;
 			}
+			case DrawioPackage.MODEL_ELEMENT: {
+				ModelElement modelElement = (ModelElement)theEObject;
+				T result = caseModelElement(modelElement);
+				if (result == null) result = caseLinkTarget(modelElement);
+				if (result == null) result = defaultCase(theEObject);
+				return result;
+			}
 			case DrawioPackage.LAYER: {
 				Layer layer = (Layer)theEObject;
 				T result = caseLayer(layer);
 				if (result == null) result = caseDiagram_Layer(layer);
+				if (result == null) result = caseModelElement(layer);
 				if (result == null) result = caseDiagramElement(layer);
+				if (result == null) result = caseLinkTarget(layer);
 				if (result == null) result = caseNamedElement(layer);
+				if (result == null) result = caseAttributed(layer);
 				if (result == null) result = caseCore_ModelElement(layer);
 				if (result == null) result = caseStringIdentity(layer);
 				if (result == null) result = caseDocumented(layer);
 				if (result == null) result = caseMarked(layer);
 				if (result == null) result = caseReferrable(layer);
-				if (result == null) result = defaultCase(theEObject);
-				return result;
-			}
-			case DrawioPackage.MODEL_ELEMENT: {
-				ModelElement modelElement = (ModelElement)theEObject;
-				T result = caseModelElement(modelElement);
-				if (result == null) result = caseLinkTarget(modelElement);
 				if (result == null) result = defaultCase(theEObject);
 				return result;
 			}
@@ -146,6 +152,7 @@ public class DrawioSwitch<T> extends Switch<T> {
 				if (result == null) result = caseLinkTarget(node);
 				if (result == null) result = caseDiagramElement(node);
 				if (result == null) result = caseNamedElement(node);
+				if (result == null) result = caseAttributed(node);
 				if (result == null) result = caseCore_ModelElement(node);
 				if (result == null) result = caseStringIdentity(node);
 				if (result == null) result = caseDocumented(node);
@@ -162,6 +169,7 @@ public class DrawioSwitch<T> extends Switch<T> {
 				if (result == null) result = caseDiagramElement(connection);
 				if (result == null) result = caseLinkTarget(connection);
 				if (result == null) result = caseNamedElement(connection);
+				if (result == null) result = caseAttributed(connection);
 				if (result == null) result = caseCore_ModelElement(connection);
 				if (result == null) result = caseStringIdentity(connection);
 				if (result == null) result = caseDocumented(connection);
@@ -473,21 +481,6 @@ public class DrawioSwitch<T> extends Switch<T> {
 	}
 
 	/**
-	 * Returns the result of interpreting the object as an instance of '<em>Layer</em>'.
-	 * <!-- begin-user-doc -->
-	 * This implementation returns null;
-	 * returning a non-null result will terminate the switch.
-	 * <!-- end-user-doc -->
-	 * @param object the target of the switch.
-	 * @return the result of interpreting the object as an instance of '<em>Layer</em>'.
-	 * @see #doSwitch(org.eclipse.emf.ecore.EObject) doSwitch(EObject)
-	 * @generated
-	 */
-	public T caseLayer(Layer object) {
-		return null;
-	}
-
-	/**
 	 * Returns the result of interpreting the object as an instance of '<em>Model Element</em>'.
 	 * <!-- begin-user-doc -->
 	 * This implementation returns null;
@@ -499,6 +492,21 @@ public class DrawioSwitch<T> extends Switch<T> {
 	 * @generated
 	 */
 	public T caseModelElement(ModelElement object) {
+		return null;
+	}
+
+	/**
+	 * Returns the result of interpreting the object as an instance of '<em>Layer</em>'.
+	 * <!-- begin-user-doc -->
+	 * This implementation returns null;
+	 * returning a non-null result will terminate the switch.
+	 * <!-- end-user-doc -->
+	 * @param object the target of the switch.
+	 * @return the result of interpreting the object as an instance of '<em>Layer</em>'.
+	 * @see #doSwitch(org.eclipse.emf.ecore.EObject) doSwitch(EObject)
+	 * @generated
+	 */
+	public T caseLayer(Layer object) {
 		return null;
 	}
 
@@ -1099,6 +1107,21 @@ public class DrawioSwitch<T> extends Switch<T> {
 	 * @generated
 	 */
 	public T caseNamedElement(NamedElement object) {
+		return null;
+	}
+
+	/**
+	 * Returns the result of interpreting the object as an instance of '<em>Attributed</em>'.
+	 * <!-- begin-user-doc -->
+	 * This implementation returns null;
+	 * returning a non-null result will terminate the switch.
+	 * <!-- end-user-doc -->
+	 * @param object the target of the switch.
+	 * @return the result of interpreting the object as an instance of '<em>Attributed</em>'.
+	 * @see #doSwitch(org.eclipse.emf.ecore.EObject) doSwitch(EObject)
+	 * @generated
+	 */
+	public T caseAttributed(Attributed object) {
 		return null;
 	}
 

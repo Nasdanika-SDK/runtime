@@ -1,0 +1,36 @@
+[#family]
+== One family of diagram models
+
+The model does not start from nothing.
+It extends two of the runtime's models, and that is where most of its value comes from.
+
+=== A page is a slide is a diagram
+
+* *The diagram model* has what every diagram notation has: elements with ids, names, documentation and attributes; nodes with bounds and ports; connections with waypoints; layers; nesting; and the semantic elements a shape depicts, from any other model.
+* *The presentation model* extends it with decks and slides: a presentation is a diagram of slides, and a slide is a diagram.
+* *The Draw.io model* extends both: a document is a presentation, a page is a slide, and layers, nodes and connections are their diagram namesakes.
+
+So a program written against the diagram model reads a Draw.io page without knowing it is one.
+The runtime's ELK adapter lays out a Draw.io page because it lays out diagrams (<<generating>>).
+A converter that turns a diagram into SVG draws a Draw.io page too.
+
+=== Why Draw.io is the default surface
+
+The other notations are formats.
+Draw.io is a format and a tool that everybody can already open:
+
+* *Free and open source*, on the web and on the desktop, as a Visual Studio Code extension and a Confluence plug-in, and self-hostable, which matters in organizations that will not approve a new modeling tool.
+* *Thousands of shapes*, including the icon sets of the cloud providers, so a diagram that means something specific can look like it.
+* *An in-browser viewer* that turns pages, shows and hides layers, filters by tags and runs custom actions, so a generated site gets interactive diagrams for free.
+* *Properties, tooltips, libraries and templates*, editable by someone who has never heard of EMF.
+
+The last point is the on-ramp.
+A diagram can be drawn by one person and connected to a domain model by another, later, without redrawing anything.
+
+=== Give and take
+
+*Draw.io gives the family* the ideas that were proven on it in Nasdanika over years: executable diagrams, semantic mapping by properties, documentation sites generated from diagrams, the cross-document link vocabulary, and geometric ordering of elements.
+None of them was really about mxGraph.
+On shared supertypes, each becomes a family feature.
+
+*The family gives Draw.io* what it never had: layout with ELK, written once for all notations; generation from any model; and, [.planned]#PLANNED#, three-way merge of diagrams that people and programs both edit, and routes in from other notations.

@@ -3,6 +3,7 @@
 package org.nasdanika.sdk.runtime.models.drawio;
 
 import org.eclipse.emf.common.util.EList;
+import org.eclipse.emf.common.util.EMap;
 
 /**
  * <!-- begin-user-doc -->
@@ -10,29 +11,18 @@ import org.eclipse.emf.common.util.EList;
  * <!-- end-user-doc -->
  *
  * <!-- begin-model-doc -->
- * Common supertype of the Draw.io layer elements - what the format calls a cell
- * and the Java API calls ModelElement: the things that carry a style, a link,
- * tags, and custom properties.
- * 
- * NAMING - the Java API calls this ModelElement and reserves Element for the
- * wider base (Document, Page, Model, Root, ModelElement). This file follows the
- * shorter name; if the API name is preferred, rename here and in doc/readme.md
- * together.
- * 
- * To be merged into drawio.xcore as a second supertype:
- * 
- *     class DrawioLayer      extends Layer,      Element { ... }
- *     class DrawioNode       extends Node,       Element { ... }
- *     class DrawioConnection extends Connection, Element { ... }
- * 
- * Ecore supports the resulting diamond (Node and Element both reach
- * DiagramElement) without special handling.
+ * Common supertype of the Draw.io layers, nodes and connections: the cells, which the Java API
+ * calls ModelElement. They carry a label, a style, a link and tags. Their properties are the
+ * attributes, and their tooltip the documentation, of DiagramElement.
  * <!-- end-model-doc -->
  *
  * <p>
  * The following features are supported:
  * </p>
  * <ul>
+ *   <li>{@link org.nasdanika.sdk.runtime.models.drawio.ModelElement#getLabel <em>Label</em>}</li>
+ *   <li>{@link org.nasdanika.sdk.runtime.models.drawio.ModelElement#getStyle <em>Style</em>}</li>
+ *   <li>{@link org.nasdanika.sdk.runtime.models.drawio.ModelElement#getStyleString <em>Style String</em>}</li>
  *   <li>{@link org.nasdanika.sdk.runtime.models.drawio.ModelElement#getLink <em>Link</em>}</li>
  *   <li>{@link org.nasdanika.sdk.runtime.models.drawio.ModelElement#getTags <em>Tags</em>}</li>
  * </ul>
@@ -43,13 +33,70 @@ import org.eclipse.emf.common.util.EList;
  */
 public interface ModelElement extends LinkTarget {
 	/**
+	 * Returns the value of the '<em><b>Label</b></em>' attribute.
+	 * <!-- begin-user-doc -->
+	 * <!-- end-user-doc -->
+	 * <!-- begin-model-doc -->
+	 * The label as Draw.io stores it: HTML when the style has html=1. DiagramElement.name is its
+	 * text. When the label is not set, saving writes the name.
+	 * <!-- end-model-doc -->
+	 * @return the value of the '<em>Label</em>' attribute.
+	 * @see #setLabel(String)
+	 * @see org.nasdanika.sdk.runtime.models.drawio.DrawioPackage#getModelElement_Label()
+	 * @model unique="false"
+	 * @generated
+	 */
+	String getLabel();
+
+	/**
+	 * Sets the value of the '{@link org.nasdanika.sdk.runtime.models.drawio.ModelElement#getLabel <em>Label</em>}' attribute.
+	 * <!-- begin-user-doc -->
+	 * <!-- end-user-doc -->
+	 * @param value the new value of the '<em>Label</em>' attribute.
+	 * @see #getLabel()
+	 * @generated
+	 */
+	void setLabel(String value);
+
+	/**
+	 * Returns the value of the '<em><b>Style</b></em>' map.
+	 * The key is of type {@link java.lang.String},
+	 * and the value is of type {@link java.lang.String},
+	 * <!-- begin-user-doc -->
+	 * <!-- end-user-doc -->
+	 * <!-- begin-model-doc -->
+	 * The style as an ordered map of keys and values, such as rounded -> 1 and fillColor -> #dae8fc.
+	 * A key without a value, such as ellipse or text at the start of a style, has a null value.
+	 * Unknown keys are kept, so a document round-trips.
+	 * <!-- end-model-doc -->
+	 * @return the value of the '<em>Style</em>' map.
+	 * @see org.nasdanika.sdk.runtime.models.drawio.DrawioPackage#getModelElement_Style()
+	 * @model mapType="org.nasdanika.sdk.runtime.models.core.StringToStringMapEntry&lt;org.eclipse.emf.ecore.EString, org.eclipse.emf.ecore.EString&gt;"
+	 * @generated
+	 */
+	EMap<String, String> getStyle();
+
+	/**
+	 * Returns the value of the '<em><b>Style String</b></em>' attribute.
+	 * <!-- begin-user-doc -->
+	 * <!-- end-user-doc -->
+	 * <!-- begin-model-doc -->
+	 * The style as Draw.io writes it: key=value pairs, and keys without values, joined with ';'.
+	 * <!-- end-model-doc -->
+	 * @return the value of the '<em>Style String</em>' attribute.
+	 * @see org.nasdanika.sdk.runtime.models.drawio.DrawioPackage#getModelElement_StyleString()
+	 * @model unique="false" transient="true" changeable="false" volatile="true" derived="true"
+	 * @generated
+	 */
+	String getStyleString();
+
+	/**
 	 * Returns the value of the '<em><b>Link</b></em>' containment reference.
 	 * <!-- begin-user-doc -->
 	 * <!-- end-user-doc -->
 	 * <!-- begin-model-doc -->
 	 * The 'link' attribute, parsed. Null when the element has no link.
-	 * 
-	 * Containment rather than an attribute because a link is either a target or a
+	 *      * Containment rather than an attribute because a link is either a target or a
 	 * script - see AbstractLink.
 	 * <!-- end-model-doc -->
 	 * @return the value of the '<em>Link</em>' containment reference.
@@ -77,12 +124,7 @@ public interface ModelElement extends LinkTarget {
 	 * <!-- begin-user-doc -->
 	 * <!-- end-user-doc -->
 	 * <!-- begin-model-doc -->
-	 * Tag objects for the raw tag names inherited from DiagramElement.tags,
-	 * resolved against the containing Page.
-	 * 
-	 * Derived because DiagramElement.tags is the state - Draw.io tags are not
-	 * declared anywhere, they are just strings on cells. This reference is what
-	 * makes actions able to point at a tag rather than repeat its name.
+	 * The tags of the element, contained by its page.
 	 * <!-- end-model-doc -->
 	 * @return the value of the '<em>Tags</em>' reference list.
 	 * @see org.nasdanika.sdk.runtime.models.drawio.DrawioPackage#getModelElement_Tags()

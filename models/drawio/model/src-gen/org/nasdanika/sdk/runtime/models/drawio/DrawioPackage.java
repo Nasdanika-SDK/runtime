@@ -166,13 +166,13 @@ public interface DrawioPackage extends EPackage {
 	int DOCUMENT__NAME = PresentationPackage.PRESENTATION__NAME;
 
 	/**
-	 * The feature id for the '<em><b>Properties</b></em>' map.
+	 * The feature id for the '<em><b>Attributes</b></em>' map.
 	 * <!-- begin-user-doc -->
 	 * <!-- end-user-doc -->
 	 * @generated
 	 * @ordered
 	 */
-	int DOCUMENT__PROPERTIES = PresentationPackage.PRESENTATION__PROPERTIES;
+	int DOCUMENT__ATTRIBUTES = PresentationPackage.PRESENTATION__ATTRIBUTES;
 
 	/**
 	 * The feature id for the '<em><b>Semantic Elements</b></em>' reference list.
@@ -265,13 +265,22 @@ public interface DrawioPackage extends EPackage {
 	int DOCUMENT__COMPRESSED = PresentationPackage.PRESENTATION_FEATURE_COUNT + 3;
 
 	/**
+	 * The feature id for the '<em><b>Pages</b></em>' reference list.
+	 * <!-- begin-user-doc -->
+	 * <!-- end-user-doc -->
+	 * @generated
+	 * @ordered
+	 */
+	int DOCUMENT__PAGES = PresentationPackage.PRESENTATION_FEATURE_COUNT + 4;
+
+	/**
 	 * The number of structural features of the '<em>Document</em>' class.
 	 * <!-- begin-user-doc -->
 	 * <!-- end-user-doc -->
 	 * @generated
 	 * @ordered
 	 */
-	int DOCUMENT_FEATURE_COUNT = PresentationPackage.PRESENTATION_FEATURE_COUNT + 4;
+	int DOCUMENT_FEATURE_COUNT = PresentationPackage.PRESENTATION_FEATURE_COUNT + 5;
 
 	/**
 	 * The operation id for the '<em>Collect</em>' operation.
@@ -429,13 +438,13 @@ public interface DrawioPackage extends EPackage {
 	int PAGE__NAME = PresentationPackage.SLIDE__NAME;
 
 	/**
-	 * The feature id for the '<em><b>Properties</b></em>' map.
+	 * The feature id for the '<em><b>Attributes</b></em>' map.
 	 * <!-- begin-user-doc -->
 	 * <!-- end-user-doc -->
 	 * @generated
 	 * @ordered
 	 */
-	int PAGE__PROPERTIES = PresentationPackage.SLIDE__PROPERTIES;
+	int PAGE__ATTRIBUTES = PresentationPackage.SLIDE__ATTRIBUTES;
 
 	/**
 	 * The feature id for the '<em><b>Semantic Elements</b></em>' reference list.
@@ -537,13 +546,31 @@ public interface DrawioPackage extends EPackage {
 	int PAGE__TAGS = PresentationPackage.SLIDE_FEATURE_COUNT + 5;
 
 	/**
+	 * The feature id for the '<em><b>Animation</b></em>' containment reference.
+	 * <!-- begin-user-doc -->
+	 * <!-- end-user-doc -->
+	 * @generated
+	 * @ordered
+	 */
+	int PAGE__ANIMATION = PresentationPackage.SLIDE_FEATURE_COUNT + 6;
+
+	/**
+	 * The feature id for the '<em><b>Layers</b></em>' reference list.
+	 * <!-- begin-user-doc -->
+	 * <!-- end-user-doc -->
+	 * @generated
+	 * @ordered
+	 */
+	int PAGE__LAYERS = PresentationPackage.SLIDE_FEATURE_COUNT + 7;
+
+	/**
 	 * The number of structural features of the '<em>Page</em>' class.
 	 * <!-- begin-user-doc -->
 	 * <!-- end-user-doc -->
 	 * @generated
 	 * @ordered
 	 */
-	int PAGE_FEATURE_COUNT = PresentationPackage.SLIDE_FEATURE_COUNT + 6;
+	int PAGE_FEATURE_COUNT = PresentationPackage.SLIDE_FEATURE_COUNT + 8;
 
 	/**
 	 * The operation id for the '<em>Collect</em>' operation.
@@ -573,6 +600,79 @@ public interface DrawioPackage extends EPackage {
 	int PAGE_OPERATION_COUNT = PresentationPackage.SLIDE_OPERATION_COUNT + 0;
 
 	/**
+	 * The meta object id for the '{@link org.nasdanika.sdk.runtime.models.drawio.ModelElement <em>Model Element</em>}' class.
+	 * <!-- begin-user-doc -->
+	 * <!-- end-user-doc -->
+	 * @see org.nasdanika.sdk.runtime.models.drawio.ModelElement
+	 * @see org.nasdanika.sdk.runtime.models.drawio.impl.DrawioPackageImpl#getModelElement()
+	 * @generated
+	 */
+	int MODEL_ELEMENT = 3;
+
+	/**
+	 * The feature id for the '<em><b>Label</b></em>' attribute.
+	 * <!-- begin-user-doc -->
+	 * <!-- end-user-doc -->
+	 * @generated
+	 * @ordered
+	 */
+	int MODEL_ELEMENT__LABEL = LINK_TARGET_FEATURE_COUNT + 0;
+
+	/**
+	 * The feature id for the '<em><b>Style</b></em>' map.
+	 * <!-- begin-user-doc -->
+	 * <!-- end-user-doc -->
+	 * @generated
+	 * @ordered
+	 */
+	int MODEL_ELEMENT__STYLE = LINK_TARGET_FEATURE_COUNT + 1;
+
+	/**
+	 * The feature id for the '<em><b>Style String</b></em>' attribute.
+	 * <!-- begin-user-doc -->
+	 * <!-- end-user-doc -->
+	 * @generated
+	 * @ordered
+	 */
+	int MODEL_ELEMENT__STYLE_STRING = LINK_TARGET_FEATURE_COUNT + 2;
+
+	/**
+	 * The feature id for the '<em><b>Link</b></em>' containment reference.
+	 * <!-- begin-user-doc -->
+	 * <!-- end-user-doc -->
+	 * @generated
+	 * @ordered
+	 */
+	int MODEL_ELEMENT__LINK = LINK_TARGET_FEATURE_COUNT + 3;
+
+	/**
+	 * The feature id for the '<em><b>Tags</b></em>' reference list.
+	 * <!-- begin-user-doc -->
+	 * <!-- end-user-doc -->
+	 * @generated
+	 * @ordered
+	 */
+	int MODEL_ELEMENT__TAGS = LINK_TARGET_FEATURE_COUNT + 4;
+
+	/**
+	 * The number of structural features of the '<em>Model Element</em>' class.
+	 * <!-- begin-user-doc -->
+	 * <!-- end-user-doc -->
+	 * @generated
+	 * @ordered
+	 */
+	int MODEL_ELEMENT_FEATURE_COUNT = LINK_TARGET_FEATURE_COUNT + 5;
+
+	/**
+	 * The number of operations of the '<em>Model Element</em>' class.
+	 * <!-- begin-user-doc -->
+	 * <!-- end-user-doc -->
+	 * @generated
+	 * @ordered
+	 */
+	int MODEL_ELEMENT_OPERATION_COUNT = LINK_TARGET_OPERATION_COUNT + 0;
+
+	/**
 	 * The meta object id for the '{@link org.nasdanika.sdk.runtime.models.drawio.impl.LayerImpl <em>Layer</em>}' class.
 	 * <!-- begin-user-doc -->
 	 * <!-- end-user-doc -->
@@ -580,7 +680,7 @@ public interface DrawioPackage extends EPackage {
 	 * @see org.nasdanika.sdk.runtime.models.drawio.impl.DrawioPackageImpl#getLayer()
 	 * @generated
 	 */
-	int LAYER = 3;
+	int LAYER = 4;
 
 	/**
 	 * The feature id for the '<em><b>Id</b></em>' attribute.
@@ -673,13 +773,13 @@ public interface DrawioPackage extends EPackage {
 	int LAYER__NAME = DiagramPackage.LAYER__NAME;
 
 	/**
-	 * The feature id for the '<em><b>Properties</b></em>' map.
+	 * The feature id for the '<em><b>Attributes</b></em>' map.
 	 * <!-- begin-user-doc -->
 	 * <!-- end-user-doc -->
 	 * @generated
 	 * @ordered
 	 */
-	int LAYER__PROPERTIES = DiagramPackage.LAYER__PROPERTIES;
+	int LAYER__ATTRIBUTES = DiagramPackage.LAYER__ATTRIBUTES;
 
 	/**
 	 * The feature id for the '<em><b>Semantic Elements</b></em>' reference list.
@@ -718,13 +818,49 @@ public interface DrawioPackage extends EPackage {
 	int LAYER__LOCKED = DiagramPackage.LAYER__LOCKED;
 
 	/**
-	 * The feature id for the '<em><b>Style</b></em>' attribute.
+	 * The feature id for the '<em><b>Label</b></em>' attribute.
 	 * <!-- begin-user-doc -->
 	 * <!-- end-user-doc -->
 	 * @generated
 	 * @ordered
 	 */
-	int LAYER__STYLE = DiagramPackage.LAYER_FEATURE_COUNT + 0;
+	int LAYER__LABEL = DiagramPackage.LAYER_FEATURE_COUNT + 0;
+
+	/**
+	 * The feature id for the '<em><b>Style</b></em>' map.
+	 * <!-- begin-user-doc -->
+	 * <!-- end-user-doc -->
+	 * @generated
+	 * @ordered
+	 */
+	int LAYER__STYLE = DiagramPackage.LAYER_FEATURE_COUNT + 1;
+
+	/**
+	 * The feature id for the '<em><b>Style String</b></em>' attribute.
+	 * <!-- begin-user-doc -->
+	 * <!-- end-user-doc -->
+	 * @generated
+	 * @ordered
+	 */
+	int LAYER__STYLE_STRING = DiagramPackage.LAYER_FEATURE_COUNT + 2;
+
+	/**
+	 * The feature id for the '<em><b>Link</b></em>' containment reference.
+	 * <!-- begin-user-doc -->
+	 * <!-- end-user-doc -->
+	 * @generated
+	 * @ordered
+	 */
+	int LAYER__LINK = DiagramPackage.LAYER_FEATURE_COUNT + 3;
+
+	/**
+	 * The feature id for the '<em><b>Tags</b></em>' reference list.
+	 * <!-- begin-user-doc -->
+	 * <!-- end-user-doc -->
+	 * @generated
+	 * @ordered
+	 */
+	int LAYER__TAGS = DiagramPackage.LAYER_FEATURE_COUNT + 4;
 
 	/**
 	 * The number of structural features of the '<em>Layer</em>' class.
@@ -733,7 +869,7 @@ public interface DrawioPackage extends EPackage {
 	 * @generated
 	 * @ordered
 	 */
-	int LAYER_FEATURE_COUNT = DiagramPackage.LAYER_FEATURE_COUNT + 1;
+	int LAYER_FEATURE_COUNT = DiagramPackage.LAYER_FEATURE_COUNT + 5;
 
 	/**
 	 * The operation id for the '<em>Collect</em>' operation.
@@ -761,52 +897,6 @@ public interface DrawioPackage extends EPackage {
 	 * @ordered
 	 */
 	int LAYER_OPERATION_COUNT = DiagramPackage.LAYER_OPERATION_COUNT + 0;
-
-	/**
-	 * The meta object id for the '{@link org.nasdanika.sdk.runtime.models.drawio.ModelElement <em>Model Element</em>}' class.
-	 * <!-- begin-user-doc -->
-	 * <!-- end-user-doc -->
-	 * @see org.nasdanika.sdk.runtime.models.drawio.ModelElement
-	 * @see org.nasdanika.sdk.runtime.models.drawio.impl.DrawioPackageImpl#getModelElement()
-	 * @generated
-	 */
-	int MODEL_ELEMENT = 4;
-
-	/**
-	 * The feature id for the '<em><b>Link</b></em>' containment reference.
-	 * <!-- begin-user-doc -->
-	 * <!-- end-user-doc -->
-	 * @generated
-	 * @ordered
-	 */
-	int MODEL_ELEMENT__LINK = LINK_TARGET_FEATURE_COUNT + 0;
-
-	/**
-	 * The feature id for the '<em><b>Tags</b></em>' reference list.
-	 * <!-- begin-user-doc -->
-	 * <!-- end-user-doc -->
-	 * @generated
-	 * @ordered
-	 */
-	int MODEL_ELEMENT__TAGS = LINK_TARGET_FEATURE_COUNT + 1;
-
-	/**
-	 * The number of structural features of the '<em>Model Element</em>' class.
-	 * <!-- begin-user-doc -->
-	 * <!-- end-user-doc -->
-	 * @generated
-	 * @ordered
-	 */
-	int MODEL_ELEMENT_FEATURE_COUNT = LINK_TARGET_FEATURE_COUNT + 2;
-
-	/**
-	 * The number of operations of the '<em>Model Element</em>' class.
-	 * <!-- begin-user-doc -->
-	 * <!-- end-user-doc -->
-	 * @generated
-	 * @ordered
-	 */
-	int MODEL_ELEMENT_OPERATION_COUNT = LINK_TARGET_OPERATION_COUNT + 0;
 
 	/**
 	 * The meta object id for the '{@link org.nasdanika.sdk.runtime.models.drawio.impl.NodeImpl <em>Node</em>}' class.
@@ -909,13 +999,13 @@ public interface DrawioPackage extends EPackage {
 	int NODE__NAME = DiagramPackage.NODE__NAME;
 
 	/**
-	 * The feature id for the '<em><b>Properties</b></em>' map.
+	 * The feature id for the '<em><b>Attributes</b></em>' map.
 	 * <!-- begin-user-doc -->
 	 * <!-- end-user-doc -->
 	 * @generated
 	 * @ordered
 	 */
-	int NODE__PROPERTIES = DiagramPackage.NODE__PROPERTIES;
+	int NODE__ATTRIBUTES = DiagramPackage.NODE__ATTRIBUTES;
 
 	/**
 	 * The feature id for the '<em><b>Semantic Elements</b></em>' reference list.
@@ -972,13 +1062,40 @@ public interface DrawioPackage extends EPackage {
 	int NODE__PORTS = DiagramPackage.NODE__PORTS;
 
 	/**
+	 * The feature id for the '<em><b>Label</b></em>' attribute.
+	 * <!-- begin-user-doc -->
+	 * <!-- end-user-doc -->
+	 * @generated
+	 * @ordered
+	 */
+	int NODE__LABEL = DiagramPackage.NODE_FEATURE_COUNT + 0;
+
+	/**
+	 * The feature id for the '<em><b>Style</b></em>' map.
+	 * <!-- begin-user-doc -->
+	 * <!-- end-user-doc -->
+	 * @generated
+	 * @ordered
+	 */
+	int NODE__STYLE = DiagramPackage.NODE_FEATURE_COUNT + 1;
+
+	/**
+	 * The feature id for the '<em><b>Style String</b></em>' attribute.
+	 * <!-- begin-user-doc -->
+	 * <!-- end-user-doc -->
+	 * @generated
+	 * @ordered
+	 */
+	int NODE__STYLE_STRING = DiagramPackage.NODE_FEATURE_COUNT + 2;
+
+	/**
 	 * The feature id for the '<em><b>Link</b></em>' containment reference.
 	 * <!-- begin-user-doc -->
 	 * <!-- end-user-doc -->
 	 * @generated
 	 * @ordered
 	 */
-	int NODE__LINK = DiagramPackage.NODE_FEATURE_COUNT + 0;
+	int NODE__LINK = DiagramPackage.NODE_FEATURE_COUNT + 3;
 
 	/**
 	 * The feature id for the '<em><b>Tags</b></em>' reference list.
@@ -987,25 +1104,7 @@ public interface DrawioPackage extends EPackage {
 	 * @generated
 	 * @ordered
 	 */
-	int NODE__TAGS = DiagramPackage.NODE_FEATURE_COUNT + 1;
-
-	/**
-	 * The feature id for the '<em><b>Style</b></em>' attribute.
-	 * <!-- begin-user-doc -->
-	 * <!-- end-user-doc -->
-	 * @generated
-	 * @ordered
-	 */
-	int NODE__STYLE = DiagramPackage.NODE_FEATURE_COUNT + 2;
-
-	/**
-	 * The feature id for the '<em><b>Label</b></em>' attribute.
-	 * <!-- begin-user-doc -->
-	 * <!-- end-user-doc -->
-	 * @generated
-	 * @ordered
-	 */
-	int NODE__LABEL = DiagramPackage.NODE_FEATURE_COUNT + 3;
+	int NODE__TAGS = DiagramPackage.NODE_FEATURE_COUNT + 4;
 
 	/**
 	 * The feature id for the '<em><b>Collapsed</b></em>' attribute.
@@ -1014,7 +1113,16 @@ public interface DrawioPackage extends EPackage {
 	 * @generated
 	 * @ordered
 	 */
-	int NODE__COLLAPSED = DiagramPackage.NODE_FEATURE_COUNT + 4;
+	int NODE__COLLAPSED = DiagramPackage.NODE_FEATURE_COUNT + 5;
+
+	/**
+	 * The feature id for the '<em><b>Visible</b></em>' attribute.
+	 * <!-- begin-user-doc -->
+	 * <!-- end-user-doc -->
+	 * @generated
+	 * @ordered
+	 */
+	int NODE__VISIBLE = DiagramPackage.NODE_FEATURE_COUNT + 6;
 
 	/**
 	 * The number of structural features of the '<em>Node</em>' class.
@@ -1023,7 +1131,7 @@ public interface DrawioPackage extends EPackage {
 	 * @generated
 	 * @ordered
 	 */
-	int NODE_FEATURE_COUNT = DiagramPackage.NODE_FEATURE_COUNT + 5;
+	int NODE_FEATURE_COUNT = DiagramPackage.NODE_FEATURE_COUNT + 7;
 
 	/**
 	 * The operation id for the '<em>Collect</em>' operation.
@@ -1153,13 +1261,13 @@ public interface DrawioPackage extends EPackage {
 	int CONNECTION__NAME = DiagramPackage.CONNECTION__NAME;
 
 	/**
-	 * The feature id for the '<em><b>Properties</b></em>' map.
+	 * The feature id for the '<em><b>Attributes</b></em>' map.
 	 * <!-- begin-user-doc -->
 	 * <!-- end-user-doc -->
 	 * @generated
 	 * @ordered
 	 */
-	int CONNECTION__PROPERTIES = DiagramPackage.CONNECTION__PROPERTIES;
+	int CONNECTION__ATTRIBUTES = DiagramPackage.CONNECTION__ATTRIBUTES;
 
 	/**
 	 * The feature id for the '<em><b>Semantic Elements</b></em>' reference list.
@@ -1207,13 +1315,40 @@ public interface DrawioPackage extends EPackage {
 	int CONNECTION__WAYPOINTS = DiagramPackage.CONNECTION__WAYPOINTS;
 
 	/**
+	 * The feature id for the '<em><b>Label</b></em>' attribute.
+	 * <!-- begin-user-doc -->
+	 * <!-- end-user-doc -->
+	 * @generated
+	 * @ordered
+	 */
+	int CONNECTION__LABEL = DiagramPackage.CONNECTION_FEATURE_COUNT + 0;
+
+	/**
+	 * The feature id for the '<em><b>Style</b></em>' map.
+	 * <!-- begin-user-doc -->
+	 * <!-- end-user-doc -->
+	 * @generated
+	 * @ordered
+	 */
+	int CONNECTION__STYLE = DiagramPackage.CONNECTION_FEATURE_COUNT + 1;
+
+	/**
+	 * The feature id for the '<em><b>Style String</b></em>' attribute.
+	 * <!-- begin-user-doc -->
+	 * <!-- end-user-doc -->
+	 * @generated
+	 * @ordered
+	 */
+	int CONNECTION__STYLE_STRING = DiagramPackage.CONNECTION_FEATURE_COUNT + 2;
+
+	/**
 	 * The feature id for the '<em><b>Link</b></em>' containment reference.
 	 * <!-- begin-user-doc -->
 	 * <!-- end-user-doc -->
 	 * @generated
 	 * @ordered
 	 */
-	int CONNECTION__LINK = DiagramPackage.CONNECTION_FEATURE_COUNT + 0;
+	int CONNECTION__LINK = DiagramPackage.CONNECTION_FEATURE_COUNT + 3;
 
 	/**
 	 * The feature id for the '<em><b>Tags</b></em>' reference list.
@@ -1222,25 +1357,16 @@ public interface DrawioPackage extends EPackage {
 	 * @generated
 	 * @ordered
 	 */
-	int CONNECTION__TAGS = DiagramPackage.CONNECTION_FEATURE_COUNT + 1;
+	int CONNECTION__TAGS = DiagramPackage.CONNECTION_FEATURE_COUNT + 4;
 
 	/**
-	 * The feature id for the '<em><b>Style</b></em>' attribute.
+	 * The feature id for the '<em><b>Visible</b></em>' attribute.
 	 * <!-- begin-user-doc -->
 	 * <!-- end-user-doc -->
 	 * @generated
 	 * @ordered
 	 */
-	int CONNECTION__STYLE = DiagramPackage.CONNECTION_FEATURE_COUNT + 2;
-
-	/**
-	 * The feature id for the '<em><b>Label</b></em>' attribute.
-	 * <!-- begin-user-doc -->
-	 * <!-- end-user-doc -->
-	 * @generated
-	 * @ordered
-	 */
-	int CONNECTION__LABEL = DiagramPackage.CONNECTION_FEATURE_COUNT + 3;
+	int CONNECTION__VISIBLE = DiagramPackage.CONNECTION_FEATURE_COUNT + 5;
 
 	/**
 	 * The number of structural features of the '<em>Connection</em>' class.
@@ -1249,7 +1375,7 @@ public interface DrawioPackage extends EPackage {
 	 * @generated
 	 * @ordered
 	 */
-	int CONNECTION_FEATURE_COUNT = DiagramPackage.CONNECTION_FEATURE_COUNT + 4;
+	int CONNECTION_FEATURE_COUNT = DiagramPackage.CONNECTION_FEATURE_COUNT + 6;
 
 	/**
 	 * The operation id for the '<em>Collect</em>' operation.
@@ -4006,6 +4132,17 @@ public interface DrawioPackage extends EPackage {
 	EAttribute getDocument_Compressed();
 
 	/**
+	 * Returns the meta object for the reference list '{@link org.nasdanika.sdk.runtime.models.drawio.Document#getPages <em>Pages</em>}'.
+	 * <!-- begin-user-doc -->
+	 * <!-- end-user-doc -->
+	 * @return the meta object for the reference list '<em>Pages</em>'.
+	 * @see org.nasdanika.sdk.runtime.models.drawio.Document#getPages()
+	 * @see #getDocument()
+	 * @generated
+	 */
+	EReference getDocument_Pages();
+
+	/**
 	 * Returns the meta object for class '{@link org.nasdanika.sdk.runtime.models.drawio.LinkTarget <em>Link Target</em>}'.
 	 * <!-- begin-user-doc -->
 	 * <!-- end-user-doc -->
@@ -4092,25 +4229,26 @@ public interface DrawioPackage extends EPackage {
 	EReference getPage_Tags();
 
 	/**
-	 * Returns the meta object for class '{@link org.nasdanika.sdk.runtime.models.drawio.Layer <em>Layer</em>}'.
+	 * Returns the meta object for the containment reference '{@link org.nasdanika.sdk.runtime.models.drawio.Page#getAnimation <em>Animation</em>}'.
 	 * <!-- begin-user-doc -->
 	 * <!-- end-user-doc -->
-	 * @return the meta object for class '<em>Layer</em>'.
-	 * @see org.nasdanika.sdk.runtime.models.drawio.Layer
+	 * @return the meta object for the containment reference '<em>Animation</em>'.
+	 * @see org.nasdanika.sdk.runtime.models.drawio.Page#getAnimation()
+	 * @see #getPage()
 	 * @generated
 	 */
-	EClass getLayer();
+	EReference getPage_Animation();
 
 	/**
-	 * Returns the meta object for the attribute '{@link org.nasdanika.sdk.runtime.models.drawio.Layer#getStyle <em>Style</em>}'.
+	 * Returns the meta object for the reference list '{@link org.nasdanika.sdk.runtime.models.drawio.Page#getLayers <em>Layers</em>}'.
 	 * <!-- begin-user-doc -->
 	 * <!-- end-user-doc -->
-	 * @return the meta object for the attribute '<em>Style</em>'.
-	 * @see org.nasdanika.sdk.runtime.models.drawio.Layer#getStyle()
-	 * @see #getLayer()
+	 * @return the meta object for the reference list '<em>Layers</em>'.
+	 * @see org.nasdanika.sdk.runtime.models.drawio.Page#getLayers()
+	 * @see #getPage()
 	 * @generated
 	 */
-	EAttribute getLayer_Style();
+	EReference getPage_Layers();
 
 	/**
 	 * Returns the meta object for class '{@link org.nasdanika.sdk.runtime.models.drawio.ModelElement <em>Model Element</em>}'.
@@ -4121,6 +4259,39 @@ public interface DrawioPackage extends EPackage {
 	 * @generated
 	 */
 	EClass getModelElement();
+
+	/**
+	 * Returns the meta object for the attribute '{@link org.nasdanika.sdk.runtime.models.drawio.ModelElement#getLabel <em>Label</em>}'.
+	 * <!-- begin-user-doc -->
+	 * <!-- end-user-doc -->
+	 * @return the meta object for the attribute '<em>Label</em>'.
+	 * @see org.nasdanika.sdk.runtime.models.drawio.ModelElement#getLabel()
+	 * @see #getModelElement()
+	 * @generated
+	 */
+	EAttribute getModelElement_Label();
+
+	/**
+	 * Returns the meta object for the map '{@link org.nasdanika.sdk.runtime.models.drawio.ModelElement#getStyle <em>Style</em>}'.
+	 * <!-- begin-user-doc -->
+	 * <!-- end-user-doc -->
+	 * @return the meta object for the map '<em>Style</em>'.
+	 * @see org.nasdanika.sdk.runtime.models.drawio.ModelElement#getStyle()
+	 * @see #getModelElement()
+	 * @generated
+	 */
+	EReference getModelElement_Style();
+
+	/**
+	 * Returns the meta object for the attribute '{@link org.nasdanika.sdk.runtime.models.drawio.ModelElement#getStyleString <em>Style String</em>}'.
+	 * <!-- begin-user-doc -->
+	 * <!-- end-user-doc -->
+	 * @return the meta object for the attribute '<em>Style String</em>'.
+	 * @see org.nasdanika.sdk.runtime.models.drawio.ModelElement#getStyleString()
+	 * @see #getModelElement()
+	 * @generated
+	 */
+	EAttribute getModelElement_StyleString();
 
 	/**
 	 * Returns the meta object for the containment reference '{@link org.nasdanika.sdk.runtime.models.drawio.ModelElement#getLink <em>Link</em>}'.
@@ -4145,6 +4316,16 @@ public interface DrawioPackage extends EPackage {
 	EReference getModelElement_Tags();
 
 	/**
+	 * Returns the meta object for class '{@link org.nasdanika.sdk.runtime.models.drawio.Layer <em>Layer</em>}'.
+	 * <!-- begin-user-doc -->
+	 * <!-- end-user-doc -->
+	 * @return the meta object for class '<em>Layer</em>'.
+	 * @see org.nasdanika.sdk.runtime.models.drawio.Layer
+	 * @generated
+	 */
+	EClass getLayer();
+
+	/**
 	 * Returns the meta object for class '{@link org.nasdanika.sdk.runtime.models.drawio.Node <em>Node</em>}'.
 	 * <!-- begin-user-doc -->
 	 * <!-- end-user-doc -->
@@ -4153,28 +4334,6 @@ public interface DrawioPackage extends EPackage {
 	 * @generated
 	 */
 	EClass getNode();
-
-	/**
-	 * Returns the meta object for the attribute '{@link org.nasdanika.sdk.runtime.models.drawio.Node#getStyle <em>Style</em>}'.
-	 * <!-- begin-user-doc -->
-	 * <!-- end-user-doc -->
-	 * @return the meta object for the attribute '<em>Style</em>'.
-	 * @see org.nasdanika.sdk.runtime.models.drawio.Node#getStyle()
-	 * @see #getNode()
-	 * @generated
-	 */
-	EAttribute getNode_Style();
-
-	/**
-	 * Returns the meta object for the attribute '{@link org.nasdanika.sdk.runtime.models.drawio.Node#getLabel <em>Label</em>}'.
-	 * <!-- begin-user-doc -->
-	 * <!-- end-user-doc -->
-	 * @return the meta object for the attribute '<em>Label</em>'.
-	 * @see org.nasdanika.sdk.runtime.models.drawio.Node#getLabel()
-	 * @see #getNode()
-	 * @generated
-	 */
-	EAttribute getNode_Label();
 
 	/**
 	 * Returns the meta object for the attribute '{@link org.nasdanika.sdk.runtime.models.drawio.Node#isCollapsed <em>Collapsed</em>}'.
@@ -4188,6 +4347,17 @@ public interface DrawioPackage extends EPackage {
 	EAttribute getNode_Collapsed();
 
 	/**
+	 * Returns the meta object for the attribute '{@link org.nasdanika.sdk.runtime.models.drawio.Node#isVisible <em>Visible</em>}'.
+	 * <!-- begin-user-doc -->
+	 * <!-- end-user-doc -->
+	 * @return the meta object for the attribute '<em>Visible</em>'.
+	 * @see org.nasdanika.sdk.runtime.models.drawio.Node#isVisible()
+	 * @see #getNode()
+	 * @generated
+	 */
+	EAttribute getNode_Visible();
+
+	/**
 	 * Returns the meta object for class '{@link org.nasdanika.sdk.runtime.models.drawio.Connection <em>Connection</em>}'.
 	 * <!-- begin-user-doc -->
 	 * <!-- end-user-doc -->
@@ -4198,26 +4368,15 @@ public interface DrawioPackage extends EPackage {
 	EClass getConnection();
 
 	/**
-	 * Returns the meta object for the attribute '{@link org.nasdanika.sdk.runtime.models.drawio.Connection#getStyle <em>Style</em>}'.
+	 * Returns the meta object for the attribute '{@link org.nasdanika.sdk.runtime.models.drawio.Connection#isVisible <em>Visible</em>}'.
 	 * <!-- begin-user-doc -->
 	 * <!-- end-user-doc -->
-	 * @return the meta object for the attribute '<em>Style</em>'.
-	 * @see org.nasdanika.sdk.runtime.models.drawio.Connection#getStyle()
+	 * @return the meta object for the attribute '<em>Visible</em>'.
+	 * @see org.nasdanika.sdk.runtime.models.drawio.Connection#isVisible()
 	 * @see #getConnection()
 	 * @generated
 	 */
-	EAttribute getConnection_Style();
-
-	/**
-	 * Returns the meta object for the attribute '{@link org.nasdanika.sdk.runtime.models.drawio.Connection#getLabel <em>Label</em>}'.
-	 * <!-- begin-user-doc -->
-	 * <!-- end-user-doc -->
-	 * @return the meta object for the attribute '<em>Label</em>'.
-	 * @see org.nasdanika.sdk.runtime.models.drawio.Connection#getLabel()
-	 * @see #getConnection()
-	 * @generated
-	 */
-	EAttribute getConnection_Label();
+	EAttribute getConnection_Visible();
 
 	/**
 	 * Returns the meta object for class '{@link org.nasdanika.sdk.runtime.models.drawio.Tag <em>Tag</em>}'.
@@ -5086,6 +5245,14 @@ public interface DrawioPackage extends EPackage {
 		EAttribute DOCUMENT__COMPRESSED = eINSTANCE.getDocument_Compressed();
 
 		/**
+		 * The meta object literal for the '<em><b>Pages</b></em>' reference list feature.
+		 * <!-- begin-user-doc -->
+		 * <!-- end-user-doc -->
+		 * @generated
+		 */
+		EReference DOCUMENT__PAGES = eINSTANCE.getDocument_Pages();
+
+		/**
 		 * The meta object literal for the '{@link org.nasdanika.sdk.runtime.models.drawio.LinkTarget <em>Link Target</em>}' class.
 		 * <!-- begin-user-doc -->
 		 * <!-- end-user-doc -->
@@ -5154,22 +5321,20 @@ public interface DrawioPackage extends EPackage {
 		EReference PAGE__TAGS = eINSTANCE.getPage_Tags();
 
 		/**
-		 * The meta object literal for the '{@link org.nasdanika.sdk.runtime.models.drawio.impl.LayerImpl <em>Layer</em>}' class.
+		 * The meta object literal for the '<em><b>Animation</b></em>' containment reference feature.
 		 * <!-- begin-user-doc -->
 		 * <!-- end-user-doc -->
-		 * @see org.nasdanika.sdk.runtime.models.drawio.impl.LayerImpl
-		 * @see org.nasdanika.sdk.runtime.models.drawio.impl.DrawioPackageImpl#getLayer()
 		 * @generated
 		 */
-		EClass LAYER = eINSTANCE.getLayer();
+		EReference PAGE__ANIMATION = eINSTANCE.getPage_Animation();
 
 		/**
-		 * The meta object literal for the '<em><b>Style</b></em>' attribute feature.
+		 * The meta object literal for the '<em><b>Layers</b></em>' reference list feature.
 		 * <!-- begin-user-doc -->
 		 * <!-- end-user-doc -->
 		 * @generated
 		 */
-		EAttribute LAYER__STYLE = eINSTANCE.getLayer_Style();
+		EReference PAGE__LAYERS = eINSTANCE.getPage_Layers();
 
 		/**
 		 * The meta object literal for the '{@link org.nasdanika.sdk.runtime.models.drawio.ModelElement <em>Model Element</em>}' class.
@@ -5180,6 +5345,30 @@ public interface DrawioPackage extends EPackage {
 		 * @generated
 		 */
 		EClass MODEL_ELEMENT = eINSTANCE.getModelElement();
+
+		/**
+		 * The meta object literal for the '<em><b>Label</b></em>' attribute feature.
+		 * <!-- begin-user-doc -->
+		 * <!-- end-user-doc -->
+		 * @generated
+		 */
+		EAttribute MODEL_ELEMENT__LABEL = eINSTANCE.getModelElement_Label();
+
+		/**
+		 * The meta object literal for the '<em><b>Style</b></em>' map feature.
+		 * <!-- begin-user-doc -->
+		 * <!-- end-user-doc -->
+		 * @generated
+		 */
+		EReference MODEL_ELEMENT__STYLE = eINSTANCE.getModelElement_Style();
+
+		/**
+		 * The meta object literal for the '<em><b>Style String</b></em>' attribute feature.
+		 * <!-- begin-user-doc -->
+		 * <!-- end-user-doc -->
+		 * @generated
+		 */
+		EAttribute MODEL_ELEMENT__STYLE_STRING = eINSTANCE.getModelElement_StyleString();
 
 		/**
 		 * The meta object literal for the '<em><b>Link</b></em>' containment reference feature.
@@ -5198,6 +5387,16 @@ public interface DrawioPackage extends EPackage {
 		EReference MODEL_ELEMENT__TAGS = eINSTANCE.getModelElement_Tags();
 
 		/**
+		 * The meta object literal for the '{@link org.nasdanika.sdk.runtime.models.drawio.impl.LayerImpl <em>Layer</em>}' class.
+		 * <!-- begin-user-doc -->
+		 * <!-- end-user-doc -->
+		 * @see org.nasdanika.sdk.runtime.models.drawio.impl.LayerImpl
+		 * @see org.nasdanika.sdk.runtime.models.drawio.impl.DrawioPackageImpl#getLayer()
+		 * @generated
+		 */
+		EClass LAYER = eINSTANCE.getLayer();
+
+		/**
 		 * The meta object literal for the '{@link org.nasdanika.sdk.runtime.models.drawio.impl.NodeImpl <em>Node</em>}' class.
 		 * <!-- begin-user-doc -->
 		 * <!-- end-user-doc -->
@@ -5208,28 +5407,20 @@ public interface DrawioPackage extends EPackage {
 		EClass NODE = eINSTANCE.getNode();
 
 		/**
-		 * The meta object literal for the '<em><b>Style</b></em>' attribute feature.
-		 * <!-- begin-user-doc -->
-		 * <!-- end-user-doc -->
-		 * @generated
-		 */
-		EAttribute NODE__STYLE = eINSTANCE.getNode_Style();
-
-		/**
-		 * The meta object literal for the '<em><b>Label</b></em>' attribute feature.
-		 * <!-- begin-user-doc -->
-		 * <!-- end-user-doc -->
-		 * @generated
-		 */
-		EAttribute NODE__LABEL = eINSTANCE.getNode_Label();
-
-		/**
 		 * The meta object literal for the '<em><b>Collapsed</b></em>' attribute feature.
 		 * <!-- begin-user-doc -->
 		 * <!-- end-user-doc -->
 		 * @generated
 		 */
 		EAttribute NODE__COLLAPSED = eINSTANCE.getNode_Collapsed();
+
+		/**
+		 * The meta object literal for the '<em><b>Visible</b></em>' attribute feature.
+		 * <!-- begin-user-doc -->
+		 * <!-- end-user-doc -->
+		 * @generated
+		 */
+		EAttribute NODE__VISIBLE = eINSTANCE.getNode_Visible();
 
 		/**
 		 * The meta object literal for the '{@link org.nasdanika.sdk.runtime.models.drawio.impl.ConnectionImpl <em>Connection</em>}' class.
@@ -5242,20 +5433,12 @@ public interface DrawioPackage extends EPackage {
 		EClass CONNECTION = eINSTANCE.getConnection();
 
 		/**
-		 * The meta object literal for the '<em><b>Style</b></em>' attribute feature.
+		 * The meta object literal for the '<em><b>Visible</b></em>' attribute feature.
 		 * <!-- begin-user-doc -->
 		 * <!-- end-user-doc -->
 		 * @generated
 		 */
-		EAttribute CONNECTION__STYLE = eINSTANCE.getConnection_Style();
-
-		/**
-		 * The meta object literal for the '<em><b>Label</b></em>' attribute feature.
-		 * <!-- begin-user-doc -->
-		 * <!-- end-user-doc -->
-		 * @generated
-		 */
-		EAttribute CONNECTION__LABEL = eINSTANCE.getConnection_Label();
+		EAttribute CONNECTION__VISIBLE = eINSTANCE.getConnection_Visible();
 
 		/**
 		 * The meta object literal for the '{@link org.nasdanika.sdk.runtime.models.drawio.impl.TagImpl <em>Tag</em>}' class.

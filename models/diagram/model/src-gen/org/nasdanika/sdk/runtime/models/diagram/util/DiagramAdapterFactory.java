@@ -9,6 +9,7 @@ import org.eclipse.emf.common.notify.impl.AdapterFactoryImpl;
 
 import org.eclipse.emf.ecore.EObject;
 
+import org.nasdanika.sdk.runtime.models.core.Attributed;
 import org.nasdanika.sdk.runtime.models.core.Documented;
 import org.nasdanika.sdk.runtime.models.core.Marked;
 import org.nasdanika.sdk.runtime.models.core.ModelElement;
@@ -137,6 +138,10 @@ public class DiagramAdapterFactory extends AdapterFactoryImpl {
 			@Override
 			public Adapter caseNamedElement(NamedElement object) {
 				return createNamedElementAdapter();
+			}
+			@Override
+			public Adapter caseAttributed(Attributed object) {
+				return createAttributedAdapter();
 			}
 			@Override
 			public Adapter defaultCase(EObject object) {
@@ -379,6 +384,20 @@ public class DiagramAdapterFactory extends AdapterFactoryImpl {
 	 * @generated
 	 */
 	public Adapter createNamedElementAdapter() {
+		return null;
+	}
+
+	/**
+	 * Creates a new adapter for an object of class '{@link org.nasdanika.sdk.runtime.models.core.Attributed <em>Attributed</em>}'.
+	 * <!-- begin-user-doc -->
+	 * This default implementation returns null so that we can easily ignore cases;
+	 * it's useful to ignore a case when inheritance will catch all the cases anyway.
+	 * <!-- end-user-doc -->
+	 * @return the new adapter.
+	 * @see org.nasdanika.sdk.runtime.models.core.Attributed
+	 * @generated
+	 */
+	public Adapter createAttributedAdapter() {
 		return null;
 	}
 

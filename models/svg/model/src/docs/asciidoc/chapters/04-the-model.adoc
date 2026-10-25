@@ -1,0 +1,67 @@
+[#the-model]
+== The model
+
+=== Classes and elements
+
+Each class is an SVG element, named after it: `Rect` is `rect`, `G` is `g`, `TSpan` is `tspan`.
+
+[cols="2,3,4",options="header"]
+|===
+| Class | Element | Its own attributes
+
+| `Svg` | `svg` | `version`, `x`, `y`, `width`, `height`, `viewBox`, `preserveAspectRatio`
+| `G` | `g` |
+| `Defs` | `defs` |
+| `A` | `a` | `href`, `target`
+| `Marker` | `marker` | `viewBox`, `refX`, `refY`, `markerWidth`, `markerHeight`, `orient`, `markerUnits`
+| `ClipPath` | `clipPath` | `clipPathUnits`
+| `LinearGradient` | `linearGradient` | `x1`, `y1`, `x2`, `y2`, `gradientUnits`
+| `Stop` | `stop` | `offset`, `stop-color`, `stop-opacity`
+| `Rect` | `rect` | `x`, `y`, `width`, `height`, `rx`, `ry`
+| `Circle` | `circle` | `cx`, `cy`, `r`
+| `Ellipse` | `ellipse` | `cx`, `cy`, `rx`, `ry`
+| `Line` | `line` | `x1`, `y1`, `x2`, `y2`
+| `Polyline`, `Polygon` | `polyline`, `polygon` | `points`
+| `Path` | `path` | `d`
+| `Image` | `image` | `href`, `x`, `y`, `width`, `height`, `preserveAspectRatio`
+| `Use` | `use` | `href`, `x`, `y`
+| `Text`, `TSpan` | `text`, `tspan` | `x`, `y`, `dx`, `dy`
+| `Title`, `Desc`, `Style` | `title`, `desc`, `style` | `value`, the content; `type` for `style`
+|===
+
+Feature names are the attribute names in camel case: `stroke-width` is `strokeWidth`.
+Two are renamed: the `class` attribute is `styleClass`, and the `style` attribute is `styleAttribute`, because `getClass()` belongs to Java and `Style` is the element.
+
+Coordinates and sizes of shapes are doubles.
+Attributes that SVG allows to carry units, percentages or lists, such as `width` of `svg`, `x` of `text`, `stroke-width` and `points`, are strings, written as given.
+An attribute that is not set is not written, and SVG's default applies.
+
+=== The base classes
+
+[cols="2,5",options="header"]
+|===
+| Class | What it has
+
+| `Element`, abstract | `id`, `styleClass`, `styleAttribute`, `transform`: what every element of the subset has.
+| `Presentation`, interface | The presentation attributes: `fill`, `fillOpacity`, `stroke`, `strokeWidth`, `strokeOpacity`, `strokeDasharray`, `strokeLinecap`, `strokeLinejoin`, `opacity`, `fontFamily`, `fontSize`, `fontWeight`, `fontStyle`, `textAnchor`, `dominantBaseline`, `markerStart`, `markerMid`, `markerEnd`, `visibility`, `clipPath`. Presentation attributes are inherited in SVG, so setting them on a group sets them for its children.
+| `Container`, abstract | Children, in `content`. Every structure element and every shape is a container, so a shape can have a `title`.
+| `Shape`, abstract | The shapes.
+| `TextContent`, abstract | Characters and spans, in `mixed`, and the position attributes of text.
+| `DocumentRoot` | The document: the root `svg` element and the namespace prefixes. `SvgFormat` creates it.
+|===
+
+=== Children and text
+
+A container's children are in a feature map, `content`, so that one sequence holds elements of every kind in drawing order.
+Text's characters and spans are in another, `mixed`.
+The model's operations work with them without the feature maps:
+
+[cols="2,5",options="header"]
+|===
+| Operation | Does
+| `container.add(child)` | Appends a child and returns it, typed as it was given
+| `container.children()` | The children, in order
+| `text.addText(characters)` | Appends characters
+| `text.addSpan(span)` | Appends a span and returns it
+| `text.text()` | The characters of the text and its spans, in order
+|===

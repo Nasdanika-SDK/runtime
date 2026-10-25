@@ -3,10 +3,10 @@
 package org.nasdanika.sdk.runtime.models.diagram;
 
 import org.eclipse.emf.common.util.EList;
-import org.eclipse.emf.common.util.EMap;
 
 import org.eclipse.emf.ecore.EObject;
 
+import org.nasdanika.sdk.runtime.models.core.Attributed;
 import org.nasdanika.sdk.runtime.models.core.NamedElement;
 import org.nasdanika.sdk.runtime.models.core.StringIdentity;
 
@@ -23,7 +23,6 @@ import org.nasdanika.sdk.runtime.models.core.StringIdentity;
  * The following features are supported:
  * </p>
  * <ul>
- *   <li>{@link org.nasdanika.sdk.runtime.models.diagram.DiagramElement#getProperties <em>Properties</em>}</li>
  *   <li>{@link org.nasdanika.sdk.runtime.models.diagram.DiagramElement#getSemanticElements <em>Semantic Elements</em>}</li>
  *   <li>{@link org.nasdanika.sdk.runtime.models.diagram.DiagramElement#getChildren <em>Children</em>}</li>
  * </ul>
@@ -32,24 +31,7 @@ import org.nasdanika.sdk.runtime.models.core.StringIdentity;
  * @model abstract="true"
  * @generated
  */
-public interface DiagramElement extends NamedElement, StringIdentity {
-	/**
-	 * Returns the value of the '<em><b>Properties</b></em>' map.
-	 * The key is of type {@link java.lang.String},
-	 * and the value is of type {@link java.lang.String},
-	 * <!-- begin-user-doc -->
-	 * <!-- end-user-doc -->
-	 * <!-- begin-model-doc -->
-	 * Generic string properties — carrier for annotations/semantic mappings
-	 * (same composability technique as the Nasdanika Markdown model).
-	 * <!-- end-model-doc -->
-	 * @return the value of the '<em>Properties</em>' map.
-	 * @see org.nasdanika.sdk.runtime.models.diagram.DiagramPackage#getDiagramElement_Properties()
-	 * @model mapType="org.nasdanika.sdk.runtime.models.core.StringToStringMapEntry&lt;org.eclipse.emf.ecore.EString, org.eclipse.emf.ecore.EString&gt;"
-	 * @generated
-	 */
-	EMap<String, String> getProperties();
-
+public interface DiagramElement extends NamedElement, StringIdentity, Attributed {
 	/**
 	 * Returns the value of the '<em><b>Semantic Elements</b></em>' reference list.
 	 * The list contents are of type {@link org.eclipse.emf.ecore.EObject}.

@@ -18,7 +18,7 @@ Layered layout::
 ELK's algorithm for directed graphs: nodes in layers along the direction of the edges, few crossings, and orthogonal or other routes between layers.
 
 Layout option::
-A named setting of ELK, such as `elk.direction`, set on the graph or on a node, port, edge or label. In the diagram model, a property whose key starts with `elk.`.
+A named setting of ELK, such as `elk.direction`, set on the graph or on a node, port, edge or label. In the diagram model, an attribute whose key starts with `elk.`.
 
 Port::
 An attachment point on a node, at a location relative to the node's size.

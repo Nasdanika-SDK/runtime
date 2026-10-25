@@ -11,4 +11,5 @@ Recording:: An OpenTelemetry SDK that exports to the runtime's telemetry model a
 Route:: A Playwright handler for the requests a page sends to matching URLs, which can change them before they go on.
 Session:: A browser, a context and a page, used by a body in a `Browser` span.
 Step:: A named part of a session, run in a span, with screenshots before, after, or at a failure.
+Video offset:: The time from the start of a session's video to a step, a screenshot or a narration line, recorded as an attribute so the trace and the video can be read together.
 Walk-through:: A recorded session: its steps, what each looked like, and the server's work for each.

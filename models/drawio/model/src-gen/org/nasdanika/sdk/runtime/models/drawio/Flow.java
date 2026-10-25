@@ -9,14 +9,7 @@ package org.nasdanika.sdk.runtime.models.drawio;
  * <!-- end-user-doc -->
  *
  * <!-- begin-model-doc -->
- * Moving dashes along connections - the JSON {"flow": {"start": true}}.
- * 
- * Modelled as a three-state enum because the JSON distinguishes "toggle whatever
- * it is now" (no 'start' key) from forcing it on or off, and a plain boolean
- * cannot say that.
- * 
- * This is the one effect that reads as motion along an edge, which makes it the
- * natural rendering of a message, a transaction, or a control transfer.
+ *  Moving dashes along connections - the JSON {"flow": {"start": true}}.
  * <!-- end-model-doc -->
  *
  * <p>

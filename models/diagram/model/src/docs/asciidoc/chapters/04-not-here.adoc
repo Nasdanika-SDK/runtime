@@ -6,7 +6,7 @@ What it leaves out matters as much as what it has.
 
 *No styling.*
 No fill, no stroke, no font, no theme, no z-order, no animation, no slide transition.
-Those differ from notation to notation and rarely survive a conversion, so they belong to the models of each notation, which extend this one, and to properties.
+Those differ from notation to notation and rarely survive a conversion, so they belong to the models of each notation, which extend this one, and to attributes.
 
 *No editor.*
 The model is not the persistence format of a diagram editor.
@@ -16,8 +16,8 @@ People draw in the editors they already have, and loaders bring their diagrams i
 UML, BPMN, C4 and an enterprise's own conventions are all diagrams to this model.
 What a shape means is either documented on the element, or depicted through `semanticElements`, or both.
 
-*Properties instead of metamodel changes.*
-Every diagram element has `properties`, a map from strings to strings.
+*Attributes instead of metamodel changes.*
+Every diagram element has `attributes`, a map from strings to strings.
 They absorb what a source notation carries and the model does not: a Draw.io style, a PowerPoint placeholder index, the URI of a processor, a mapping rule.
 Supporting a new notation or a new interpreter is then a matter of a loader and some conventions, not a new release of the metamodel.
 

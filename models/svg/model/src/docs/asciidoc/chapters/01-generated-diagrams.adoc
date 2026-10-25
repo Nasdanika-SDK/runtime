@@ -1,0 +1,45 @@
+[#generated-diagrams]
+== Generated diagrams
+
+Many diagrams in documentation are not drawn by anyone.
+They are generated: the classes of a model and how they relate, the modules of a system and what each requires, the systems of an architecture and how they talk.
+A person would draw them worse, more slowly, and once, while the model they show keeps changing.
+
+=== Who lays it out
+
+The deciding question for a diagram is who arranges it.
+The runtime has three answers, each with one job:
+
+[cols="2,2,3,2",options="header"]
+|===
+| Who lays it out | Notation | Path | Merge needed
+| A layout engine, from a model | Boxes and lines: context views, module graphs, class diagrams | Diagram model, ELK, SVG model, SVG | None: it is regenerated, never edited
+| A person | Anything | Draw.io, as an editable PNG | By id, when a generated diagram is arranged by hand
+| A person, in text | UML written by hand | PlantUML, through Asciidoctor Diagram | None
+|===
+
+The first row is the cheapest, and this book is about its last step.
+Generated SVG needs neither an external notation nor a merge, so most generated diagrams should take it.
+Draw.io stays for diagrams that someone wants to arrange.
+
+=== Why not generate PlantUML
+
+For years I generated PlantUML text from models and let PlantUML draw it.
+That is a translation that loses what matters: a class in generated PlantUML text no longer knows the class of the model it came from, so it cannot link to its documentation or show it as a tooltip without more encoded text.
+And generating text only for it to be parsed and drawn is a detour.
+
+PlantUML remains the right tool for diagrams that people write by hand.
+For generated ones, the diagram model and ELK do what PlantUML did here, and keep the link to the model.
+
+=== Why SVG
+
+* *Vector.* It is sharp at any size, in print and on high-density screens.
+* *Everywhere.* Browsers draw it, Asciidoctor PDF draws it into PDF through prawn-svg, and EPUB readers draw it. Only some platforms, Medium and LinkedIn among them, want PNG, and for those a browser can turn SVG into PNG.
+* *Navigable.* Every shape can be a link, to the page of the element it depicts, and have a title, which browsers show as a tooltip. A generated diagram in an HTML book or a site is a map of the documentation.
+* *Text.* It is diffable, so a change to a generated diagram shows in a review.
+
+=== Who measures the text
+
+ELK needs the size of every label before it can lay a diagram out, and the SVG must draw the text in the font that was measured.
+This edition estimates text with an average character width, which needs no fonts and is the same on every machine, but which is a little off for proportional fonts.
+A table of glyph widths for the font the books use, shipped as a resource, is [.planned]#PLANNED#: accurate, still the same on every machine, and with no dependency on the fonts installed.

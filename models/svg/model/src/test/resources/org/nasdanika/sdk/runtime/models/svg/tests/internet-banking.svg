@@ -1,0 +1,37 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<svg xmlns="http://www.w3.org/2000/svg" font-family="Noto Sans, Helvetica, Arial, sans-serif" font-size="12" width="532.3" height="264" viewBox="0 0 532.3 264">
+  <defs>
+    <marker id="arrow" viewBox="0 0 10 10" refX="10" refY="5" markerWidth="8" markerHeight="8" orient="auto">
+      <path fill="none" stroke="#333333" stroke-width="1.5" d="M 0 0 L 10 5 L 0 10"/>
+    </marker>
+  </defs>
+  <g transform="translate(10,10)">
+    <g id="customer">
+      <rect fill="#08427b" stroke="#052e56" x="57.0" y="12.0" width="207.0" height="40.0" rx="6.0"/>
+      <text fill="#ffffff" text-anchor="middle" x="160.5" y="36.2">Personal Banking Customer</text>
+    </g>
+    <a href="https://runtime.sdk.nasdanika.org">
+      <g id="banking">
+        <title>Lets customers view their accounts and make payments</title>
+        <rect fill="#1168bd" stroke="#0b4884" x="167.0" y="108.0" width="193.0" height="40.0" rx="6.0"/>
+        <text fill="#ffffff" text-anchor="middle" x="263.5" y="132.2">Internet Banking System</text>
+      </g>
+    </a>
+    <g id="mainframe">
+      <rect fill="#999999" stroke="#6b6b6b" x="312.3" y="204.0" width="200.0" height="40.0" rx="6.0"/>
+      <text fill="#ffffff" text-anchor="middle" x="412.3" y="228.2">Mainframe Banking System</text>
+    </g>
+    <g id="email">
+      <rect fill="#999999" stroke="#6b6b6b" x="85.0" y="204.0" width="123.0" height="40.0" rx="6.0"/>
+      <text fill="#ffffff" text-anchor="middle" x="146.5" y="228.2">E-mail System</text>
+    </g>
+    <polyline id="customer-banking" fill="none" stroke="#333333" marker-end="url(#arrow)" points="195,52 195,62 263.5,62 263.5,108"/>
+    <text fill="#333333" text-anchor="middle" x="382" y="84.2">Views accounts and makes payments</text>
+    <polyline id="banking-mainframe" fill="none" stroke="#333333" marker-end="url(#arrow)" points="295.7,148 295.7,158 412.3,158 412.3,204"/>
+    <text fill="#333333" text-anchor="middle" x="326.3" y="180.2">Gets account information</text>
+    <polyline id="banking-email" fill="none" stroke="#333333" stroke-dasharray="6 4" marker-end="url(#arrow)" points="231.3,148 231.3,194 167,194 167,204"/>
+    <text fill="#333333" text-anchor="middle" x="187.3" y="180.2">Sends e-mail</text>
+    <polyline id="email-customer" fill="none" stroke="#333333" marker-end="url(#arrow)" points="126,204 126,52"/>
+    <text fill="#333333" text-anchor="middle" x="68" y="132.2">Sends e-mails to</text>
+  </g>
+</svg>

@@ -76,9 +76,11 @@ Waiting for what the step does, with an assertion or `waitFor`, inside the step,
 | `channel` | none | An installed browser, such as `chrome` or `msedge`; none for Playwright's Chromium
 | `headless` | `true` | Without a window
 | `width`, `height` | 1280, 800 | The viewport, in CSS pixels
+| `scale` | 1 | The device scale factor: 2 for screenshots with twice as many pixels in each direction
 | `screenshots` | `target/screenshots` | The directory screenshots are written to, created if missing
 | `stepScreenshots` | `BEFORE_AND_AFTER` | What a step takes by itself: `NONE`, `AFTER`, or `BEFORE_AND_AFTER`
 | `fullPage` | `false` | The full scrollable page rather than the viewport
+| `video` | none | A file to save a video of the session to, WebM at the viewport's size (<<video>>)
 |===
 
 Screenshots are named by their position in the session, the name of the step or screenshot, and the phase: `003-search-for-dune-after.png`.
@@ -93,10 +95,30 @@ The body receives a `Session`:
 | Method | Returns or does
 | `page()` | The page, Playwright's `Page`
 | `context()`, `browser()`, `playwright()` | The rest of Playwright
-| `server()` | The harness server
+| `server()` | The harness server, or null without one
+| `openTelemetry()` | Where the session's spans and log records go
 | `options()` | The options
 | `step(name, body)` | Runs the body in a span, with screenshots
 | `step(name, narration, body)` | The same, narrated as it starts: after the "before" screenshot
 | `narrate(text)`, `narrate(narration)` | Records a line of narration in the current span (<<narration>>)
 | `screenshot(name)` | Takes a screenshot now, in the current span, and returns the file
+| `pause(duration)` | Waits, so that a video shows the page for a while
+| `videoOffset()` | The time since the video started, or null without a video
 |===
+
+[#without-server]
+=== Without a server
+
+Some pages need no server: a diagram rendered by a viewer from a string, a report written to a file.
+`Browsing.inBrowser(openTelemetry, options, body)` runs a session without one, in a `Browser` span of its own trace:
+
+.A session without a server (`WalkthroughTests.java`)
+[source,java]
+----
+include::{booktests}/WalkthroughTests.java[tag=without-server,indent=0]
+----
+<1> The `OpenTelemetry` that receives the spans and log records, in place of a server. The page starts blank, and `setContent` or `navigate` to a file URL fills it.
+
+Everything else is the same: steps, screenshots, narration, video.
+There is no base URL, so relative URLs do not resolve, and no trace context to add to requests.
+The Draw.io Zephyr Book renders diagrams this way.

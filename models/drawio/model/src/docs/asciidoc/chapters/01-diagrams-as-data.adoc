@@ -1,0 +1,61 @@
+[#diagrams-as-data]
+== Draw.io diagrams as data
+
+A Draw.io diagram is a file that people open in an editor.
+It is also, more often than its authors notice, a statement about a system: these are the parts, this one calls that one, this group belongs to that team.
+A file says it to the people who open it.
+A model says it to programs as well.
+
+=== The style string in miniature
+
+A shape's appearance, and a fair amount of its meaning, live in one attribute of the file:
+
+[source,text]
+----
+rounded=1;whiteSpace=wrap;html=1;fillColor=#dae8fc;strokeColor=#6c8ebf;
+----
+
+Sometimes it is the only place the diagram says what a box _is_: `shape=mxgraph.aws4.lambda_function;`.
+A program that keeps the style as a string has learned nothing about it.
+`fillColor` is not queryable, not settable without string surgery, and not comparable between two diagrams.
+
+That is the whole Draw.io modeling problem in miniature.
+The file holds structure, but in a form made for the editor, not for programs: a flat list of cells with parent ids, a style string per cell, properties as XML attributes on an `<object>` wrapper that appears only when a shape gets its first property, and links whose meaning depends on a prefix.
+
+In this model the style is a map, in the order Draw.io wrote it, so `fillColor` is a key with a value.
+Unknown keys are kept, because a model that silently drops `sketch=1` is a model nobody runs twice.
+Properties are attributes, a map as well.
+Links are objects: a link to another page or another shape is a reference to that page or shape, so "what links here" is a query, not a text search.
+
+=== The API is the loader, the model is the resource
+
+The runtime already has a Java API for Draw.io documents, the subject of the _Draw.io_ Zephyr Book.
+It knows the format's quirks: the page, model and root that are logically one thing, compression, documents embedded in PNG images, the `<object>` wrapper.
+It reads, navigates, changes and writes documents.
+
+What a plain Java object tree cannot do is take part in a resource set: be referenced from another model, be saved as XMI, JSON or YAML, be compared with a generic tool, or share a type hierarchy with other diagram notations.
+So the division is deliberate.
+The API loads and saves; the model is what it loads into.
+The runtime's capability framework wires the two together, so that a `.drawio` URI in a resource set resolves to a model without anybody writing glue.
+
+=== What stays Draw.io
+
+Most of what a Draw.io diagram has, every diagram has: shapes with bounds, connections between them, nesting, layers, labels, documentation.
+Those come from the runtime's diagram model, which this one extends.
+What stays Draw.io is small, and worth naming:
+
+* the style vocabulary;
+* the custom properties on the `<object>` wrapper;
+* tags, which the in-browser viewer filters by;
+* the link vocabulary: `data:page/id,` and `data:element/id,`, which turn a folder of files into a network of diagrams;
+* custom actions and page animations, the JSON that shares the `link` attribute;
+* page settings: size, grid, and whether the document is compressed.
+
+=== Fidelity to the format, not to the pixels
+
+A `.drawio` file loaded and saved through the model should open in the editor as its author left it, because Draw.io is the tool people will keep using, and a model that scrambles their files is worthless to them.
+That is a goal for each feature the model has; <<loading>> lists what this edition does not keep yet.
+
+The pixels are a different matter.
+The model has positions and sizes, not routes: Draw.io computes where an orthogonal edge bends, where it meets a shape and how a label wraps each time it draws.
+A picture of a diagram is drawn by Draw.io's own code, through the runtime's `drawio-playwright` module (<<generating>>).

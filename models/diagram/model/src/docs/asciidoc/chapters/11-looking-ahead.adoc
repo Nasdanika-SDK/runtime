@@ -14,7 +14,7 @@ Each brings a loader into the diagram model, and where it makes sense a generato
 === Layout
 
 A diagram generated from a model, or merged from two, has no good positions.
-The runtime's `diagram/elk` module lays out the diagram model with the Eclipse Layout Kernel: layered, tree, force-directed and radial algorithms, configured through the elements' properties, with the results written back into bounds, port locations, waypoints and labels.
+The runtime's `diagram/elk` module lays out the diagram model with the Eclipse Layout Kernel: layered, tree, force-directed and radial algorithms, configured through the elements' attributes, with the results written back into bounds, port locations, waypoints and labels.
 Because layout works on this model, it applies to every notation that loads into it.
 It is [.available]#AVAILABLE#, and its Zephyr Book, _Diagram Layout with ELK_, generates class diagrams of this model, lays them out and renders them with React Flow and Draw.io.
 

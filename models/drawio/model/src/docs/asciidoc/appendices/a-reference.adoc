@@ -1,0 +1,100 @@
+[appendix]
+[#reference]
+== Reference
+
+=== Model classes
+
+[cols="2,3,5",options="header"]
+|===
+| Class | Extends | Features
+
+| `Document`
+| presentation `Presentation`
+| `host`, `agent`, `version`: strings. `compressed`: boolean. `pages`: `Page`, many, derived from `children`.
+
+| `Page`
+| presentation `Slide`, `LinkTarget`
+| `dx`, `dy`, `pageWidth`, `pageHeight`, `gridSize`: doubles. `tags`: `Tag`, many, contained. `animation`: `Animation`, contained. `layers`: `Layer`, many, derived from `children`.
+
+| `LinkTarget`, interface
+|
+| What a custom link can point at: a page or a model element.
+
+| `ModelElement`, interface
+| `LinkTarget`
+| `label`: string. `style`: map of strings to strings. `styleString`: string, derived, read only. `link`: `AbstractLink`, contained. `tags`: `Tag`, many, opposite `elements`.
+
+| `Layer`
+| diagram `Layer`, `ModelElement`
+|
+
+| `Node`
+| diagram `Node`, `ModelElement`
+| `collapsed`: boolean. `visible`: boolean, true by default.
+
+| `Connection`
+| diagram `Connection`, `ModelElement`
+| `visible`: boolean, true by default.
+
+| `Tag`
+| core `StringIdentity`
+| `elements`: `ModelElement`, many, opposite `tags`.
+
+| `AbstractLink`, abstract
+|
+| The `link` attribute.
+
+| `SimpleLink`
+| `AbstractLink`
+| `target`: string, kept as written.
+
+| `CustomLink`
+| `AbstractLink`
+| `resource`: string. `target`: `LinkTarget`. `pageSelectorType`, `elementSelectorType`: `SelectorType`. `pageSelector`, `elementSelector`: strings.
+
+| `SpelLink`
+| `AbstractLink`
+| `expression`: string.
+
+| `Actions`, `Animation`, `Action` and its subclasses
+|
+| Custom actions and page animations. Not loaded or saved in this edition.
+|===
+
+=== Enumerations
+
+[cols="2,5",options="header"]
+|===
+| Enumeration | Literals
+| `SelectorType` | `ID`, `NAME`, `PROPERTY`
+| `TagsMatch` | `OR`, `AND`
+| `FlowMode` | `TOGGLE`, `START`, `STOP`
+|===
+
+=== Java classes
+
+[cols="2,5",options="header"]
+|===
+| Class | What it is for
+
+| `resource.DrawioLoader`
+| Loads a document of the runtime's Draw.io API into the model.
+
+| `resource.DrawioSaver`
+| Writes the model to a document of the API, which saves it as XML.
+
+| `resource.DrawioResourceContentsHandler`
+| The contents handler of Draw.io resources: XML, PNG or SVG.
+
+| `resource.Styles`
+| Style strings and style maps: `parse`, `format`.
+
+| `resource.Links`
+| Link text and link objects: `parse`, `format`.
+
+| `services.DrawioCapabilityFactory`
+| Offers the contents handler for the `drawio` qualifier.
+
+| `services.DrawioResourceSetContributor`
+| Registers the resource factory for `drawio`, `png` and `svg`.
+|===

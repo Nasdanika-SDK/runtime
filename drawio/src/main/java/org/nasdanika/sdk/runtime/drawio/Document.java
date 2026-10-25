@@ -23,6 +23,8 @@ import java.util.stream.Stream;
 import javax.imageio.ImageIO;
 import javax.imageio.ImageReader;
 import javax.imageio.metadata.IIOMetadata;
+import javax.xml.XMLConstants;
+import javax.xml.parsers.DocumentBuilderFactory;
 import javax.xml.parsers.ParserConfigurationException;
 import javax.xml.transform.TransformerException;
 
@@ -479,6 +481,44 @@ public interface Document extends Element<Document> {
 	}
 	
 	/**
+	 * Loads the document that an SVG image carries in the <code>content</code> attribute of its
+	 * root element, as draw.io's editable SVG export writes it.
+	 * External DTDs and entities are not loaded.
+	 * @return The document, or null if the image carries none
+	 */
+	static Document loadFromSvg(InputStream in, URI uri, Context context) throws IOException, ParserConfigurationException, SAXException {
+		DocumentBuilderFactory factory = DocumentBuilderFactory.newInstance();
+		factory.setNamespaceAware(true);
+		factory.setExpandEntityReferences(false);
+		factory.setFeature("http://apache.org/xml/features/nonvalidating/load-external-dtd", false);
+		factory.setAttribute(XMLConstants.ACCESS_EXTERNAL_DTD, "");
+		factory.setAttribute(XMLConstants.ACCESS_EXTERNAL_SCHEMA, "");
+		org.w3c.dom.Element root = factory.newDocumentBuilder().parse(in).getDocumentElement();
+		String content = root.getAttribute("content");
+		return content.isBlank() ? null : load(content, uri, context);
+	}
+	
+	static Document loadFromSvg(InputStream in, URI uri) throws IOException, ParserConfigurationException, SAXException {
+		return loadFromSvg(in, uri, Context.INSTANCE);
+	}
+	
+	static Document loadFromSvg(URL source) throws IOException, ParserConfigurationException, SAXException {
+		try (InputStream in = source.openStream()) {
+			return loadFromSvg(in, URI.createURI(source.toString()));
+		}
+	}
+	
+	/**
+	 * Embeds this document in a PNG image, as draw.io's editable PNG export does: in a <code>tEXt</code>
+	 * chunk with the keyword <code>mxfile</code>, after the image header. The image data is not changed.
+	 * {@link #loadFromPngMetadata(InputStream, URI)} reads the document back, and draw.io opens the image for editing.
+	 * @param png A PNG image, usually a picture of this document
+	 * @param compress See {@link #save(Boolean)}
+	 * @return The image with the document
+	 */
+	byte[] embedInPng(byte[] png, Boolean compress) throws TransformerException, IOException;
+	
+	/**
 	 * @param compress If null keeps the original compression setting. If not null forces either compressed (TRUE) or uncompressed (FALSE).
 	 * This can be used to generate HTML tags with compressed document while keeping the source document uncompressed so it can be manually inspected, edited, diffed, and merged.
 	 * @param viewer URL of the viewer script. Default value is used if null.  
@@ -501,7 +541,6 @@ public interface Document extends Element<Document> {
 		
 	/**
 	 * Generates HTML with a compressed diagram and a veiwer from Jsdelivr
-	 * @param compress
 	 * @return
 	 * @throws TransformerException
 	 * @throws IOException

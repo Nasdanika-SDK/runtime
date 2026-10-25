@@ -1,0 +1,43 @@
+[#applications]
+== What it is for
+
+Some of these work today with the model and the runtime's other modules; most build on it and are [.planned]#PLANNED#.
+Each says which.
+
+=== Queries and checks
+
+Style is a map and properties are attributes, so "every shape whose `fillColor` is `#d5e8d4`", "every connection that is not orthogonal" and "every system without an owner" are queries over a resource set, not regular expressions over XML.
+Tags and links are references, so "every element tagged legacy" and "everything that links to this component" are queries too.
+A check that every system on every diagram has an owner, run in a build, works today.
+
+=== Generated diagrams
+
+A program builds a Draw.io model, lays it out with ELK, saves it as a `.drawio` file, and renders it with Draw.io's own viewer as a PNG image that still carries the document (<<generating>>).
+The image goes into documentation; a person who wants to rearrange the diagram opens the image in Draw.io.
+This works today.
+
+=== Restyling
+
+Changing a palette across a set of diagrams, or applying a corporate template, is a model transformation instead of a person opening files: load, change style values, save.
+This works today.
+
+=== Documentation sites
+
+A `.drawio` file published as a navigable site, every shape a page, every connection a link, with the diagram embedded and interactive.
+Nasdanika core has done this for years; in the runtime it will be generated with its HTML and Bootstrap models, from the Draw.io model or from any diagram. [.planned]#PLANNED#
+
+=== Diagrams mapped to models
+
+Shapes connected to the elements of other models through the diagram model's semantic elements: a box depicts a system in an architecture model, an arrow a dependency.
+The diagram model's book maps a diagram to the Ecore model it depicts.
+Mapping driven by properties, as Nasdanika core's semantic mapping does, is [.planned]#PLANNED#.
+
+=== Animated diagrams
+
+Custom actions and page animations as typed objects whose steps point at cells, layers and tags by reference: highlight the elements that a trace touched, in the order it touched them; animate a payment through the systems it passes; show a sequence diagram's messages on the architecture diagram they run on.
+The vocabulary is in the model; loading and generating it is [.planned]#PLANNED#.
+Recording such an animation as a video works today, with the `drawio-playwright` module.
+
+=== Regeneration without losing human work
+
+A generated diagram that a person arranged by hand should survive the next generation: model changes merged into the person's layout by id, new elements placed, removed ones removed. [.planned]#PLANNED#

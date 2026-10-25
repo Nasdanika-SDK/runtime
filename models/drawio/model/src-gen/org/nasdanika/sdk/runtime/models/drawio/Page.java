@@ -12,7 +12,7 @@ import org.nasdanika.sdk.runtime.models.presentation.Slide;
  * <!-- end-user-doc -->
  *
  * <!-- begin-model-doc -->
- *  mxfile/diagram - a page is a slide is a diagram.
+ *  mxfile/diagram - a page is a slide is a diagram. Its children are layers.
  * <!-- end-model-doc -->
  *
  * <p>
@@ -25,6 +25,8 @@ import org.nasdanika.sdk.runtime.models.presentation.Slide;
  *   <li>{@link org.nasdanika.sdk.runtime.models.drawio.Page#getPageHeight <em>Page Height</em>}</li>
  *   <li>{@link org.nasdanika.sdk.runtime.models.drawio.Page#getGridSize <em>Grid Size</em>}</li>
  *   <li>{@link org.nasdanika.sdk.runtime.models.drawio.Page#getTags <em>Tags</em>}</li>
+ *   <li>{@link org.nasdanika.sdk.runtime.models.drawio.Page#getAnimation <em>Animation</em>}</li>
+ *   <li>{@link org.nasdanika.sdk.runtime.models.drawio.Page#getLayers <em>Layers</em>}</li>
  * </ul>
  *
  * @see org.nasdanika.sdk.runtime.models.drawio.DrawioPackage#getPage()
@@ -150,11 +152,55 @@ public interface Page extends Slide, LinkTarget {
 	 * The list contents are of type {@link org.nasdanika.sdk.runtime.models.drawio.Tag}.
 	 * <!-- begin-user-doc -->
 	 * <!-- end-user-doc -->
+	 * <!-- begin-model-doc -->
+	 * The tags of the page: the union of the tag names on its elements. Draw.io does not
+	 * declare tags anywhere, they are names on cells. A tag's id is its name.
+	 * <!-- end-model-doc -->
 	 * @return the value of the '<em>Tags</em>' containment reference list.
 	 * @see org.nasdanika.sdk.runtime.models.drawio.DrawioPackage#getPage_Tags()
 	 * @model containment="true"
 	 * @generated
 	 */
 	EList<Tag> getTags();
+
+	/**
+	 * Returns the value of the '<em><b>Animation</b></em>' containment reference.
+	 * <!-- begin-user-doc -->
+	 * <!-- end-user-doc -->
+	 * <!-- begin-model-doc -->
+	 * The animation of the page. [PLANNED] Not loaded or saved yet.
+	 * <!-- end-model-doc -->
+	 * @return the value of the '<em>Animation</em>' containment reference.
+	 * @see #setAnimation(Animation)
+	 * @see org.nasdanika.sdk.runtime.models.drawio.DrawioPackage#getPage_Animation()
+	 * @model containment="true"
+	 * @generated
+	 */
+	Animation getAnimation();
+
+	/**
+	 * Sets the value of the '{@link org.nasdanika.sdk.runtime.models.drawio.Page#getAnimation <em>Animation</em>}' containment reference.
+	 * <!-- begin-user-doc -->
+	 * <!-- end-user-doc -->
+	 * @param value the new value of the '<em>Animation</em>' containment reference.
+	 * @see #getAnimation()
+	 * @generated
+	 */
+	void setAnimation(Animation value);
+
+	/**
+	 * Returns the value of the '<em><b>Layers</b></em>' reference list.
+	 * The list contents are of type {@link org.nasdanika.sdk.runtime.models.drawio.Layer}.
+	 * <!-- begin-user-doc -->
+	 * <!-- end-user-doc -->
+	 * <!-- begin-model-doc -->
+	 *  The children of the page, typed as layers.
+	 * <!-- end-model-doc -->
+	 * @return the value of the '<em>Layers</em>' reference list.
+	 * @see org.nasdanika.sdk.runtime.models.drawio.DrawioPackage#getPage_Layers()
+	 * @model transient="true" changeable="false" volatile="true" derived="true"
+	 * @generated
+	 */
+	EList<Layer> getLayers();
 
 } // Page

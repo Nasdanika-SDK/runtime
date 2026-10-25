@@ -7,6 +7,7 @@ import org.eclipse.emf.ecore.EPackage;
 
 import org.eclipse.emf.ecore.util.Switch;
 
+import org.nasdanika.sdk.runtime.models.core.Attributed;
 import org.nasdanika.sdk.runtime.models.core.Documented;
 import org.nasdanika.sdk.runtime.models.core.Marked;
 import org.nasdanika.sdk.runtime.models.core.ModelElement;
@@ -85,6 +86,7 @@ public class PresentationSwitch<T> extends Switch<T> {
 				if (result == null) result = caseDiagram(presentation);
 				if (result == null) result = caseDiagramElement(presentation);
 				if (result == null) result = caseNamedElement(presentation);
+				if (result == null) result = caseAttributed(presentation);
 				if (result == null) result = caseModelElement(presentation);
 				if (result == null) result = caseStringIdentity(presentation);
 				if (result == null) result = caseDocumented(presentation);
@@ -99,6 +101,7 @@ public class PresentationSwitch<T> extends Switch<T> {
 				if (result == null) result = caseDiagram(slide);
 				if (result == null) result = caseDiagramElement(slide);
 				if (result == null) result = caseNamedElement(slide);
+				if (result == null) result = caseAttributed(slide);
 				if (result == null) result = caseModelElement(slide);
 				if (result == null) result = caseStringIdentity(slide);
 				if (result == null) result = caseDocumented(slide);
@@ -114,6 +117,7 @@ public class PresentationSwitch<T> extends Switch<T> {
 				if (result == null) result = caseDiagram(masterSlide);
 				if (result == null) result = caseDiagramElement(masterSlide);
 				if (result == null) result = caseNamedElement(masterSlide);
+				if (result == null) result = caseAttributed(masterSlide);
 				if (result == null) result = caseModelElement(masterSlide);
 				if (result == null) result = caseStringIdentity(masterSlide);
 				if (result == null) result = caseDocumented(masterSlide);
@@ -135,6 +139,7 @@ public class PresentationSwitch<T> extends Switch<T> {
 				if (result == null) result = caseConnectable(shape);
 				if (result == null) result = caseDiagramElement(shape);
 				if (result == null) result = caseNamedElement(shape);
+				if (result == null) result = caseAttributed(shape);
 				if (result == null) result = caseModelElement(shape);
 				if (result == null) result = caseStringIdentity(shape);
 				if (result == null) result = caseDocumented(shape);
@@ -151,6 +156,7 @@ public class PresentationSwitch<T> extends Switch<T> {
 				if (result == null) result = caseConnectable(groupShape);
 				if (result == null) result = caseDiagramElement(groupShape);
 				if (result == null) result = caseNamedElement(groupShape);
+				if (result == null) result = caseAttributed(groupShape);
 				if (result == null) result = caseModelElement(groupShape);
 				if (result == null) result = caseStringIdentity(groupShape);
 				if (result == null) result = caseDocumented(groupShape);
@@ -167,6 +173,7 @@ public class PresentationSwitch<T> extends Switch<T> {
 				if (result == null) result = caseConnectable(textShape);
 				if (result == null) result = caseDiagramElement(textShape);
 				if (result == null) result = caseNamedElement(textShape);
+				if (result == null) result = caseAttributed(textShape);
 				if (result == null) result = caseModelElement(textShape);
 				if (result == null) result = caseStringIdentity(textShape);
 				if (result == null) result = caseDocumented(textShape);
@@ -195,6 +202,7 @@ public class PresentationSwitch<T> extends Switch<T> {
 				if (result == null) result = caseConnectable(imageShape);
 				if (result == null) result = caseDiagramElement(imageShape);
 				if (result == null) result = caseNamedElement(imageShape);
+				if (result == null) result = caseAttributed(imageShape);
 				if (result == null) result = caseModelElement(imageShape);
 				if (result == null) result = caseStringIdentity(imageShape);
 				if (result == null) result = caseDocumented(imageShape);
@@ -211,6 +219,7 @@ public class PresentationSwitch<T> extends Switch<T> {
 				if (result == null) result = caseConnectable(mediaShape);
 				if (result == null) result = caseDiagramElement(mediaShape);
 				if (result == null) result = caseNamedElement(mediaShape);
+				if (result == null) result = caseAttributed(mediaShape);
 				if (result == null) result = caseModelElement(mediaShape);
 				if (result == null) result = caseStringIdentity(mediaShape);
 				if (result == null) result = caseDocumented(mediaShape);
@@ -227,6 +236,7 @@ public class PresentationSwitch<T> extends Switch<T> {
 				if (result == null) result = caseConnectable(tableShape);
 				if (result == null) result = caseDiagramElement(tableShape);
 				if (result == null) result = caseNamedElement(tableShape);
+				if (result == null) result = caseAttributed(tableShape);
 				if (result == null) result = caseModelElement(tableShape);
 				if (result == null) result = caseStringIdentity(tableShape);
 				if (result == null) result = caseDocumented(tableShape);
@@ -253,6 +263,7 @@ public class PresentationSwitch<T> extends Switch<T> {
 				if (result == null) result = caseConnection(connectorShape);
 				if (result == null) result = caseDiagramElement(connectorShape);
 				if (result == null) result = caseNamedElement(connectorShape);
+				if (result == null) result = caseAttributed(connectorShape);
 				if (result == null) result = caseModelElement(connectorShape);
 				if (result == null) result = caseStringIdentity(connectorShape);
 				if (result == null) result = caseDocumented(connectorShape);
@@ -577,6 +588,21 @@ public class PresentationSwitch<T> extends Switch<T> {
 	 * @generated
 	 */
 	public T caseNamedElement(NamedElement object) {
+		return null;
+	}
+
+	/**
+	 * Returns the result of interpreting the object as an instance of '<em>Attributed</em>'.
+	 * <!-- begin-user-doc -->
+	 * This implementation returns null;
+	 * returning a non-null result will terminate the switch.
+	 * <!-- end-user-doc -->
+	 * @param object the target of the switch.
+	 * @return the result of interpreting the object as an instance of '<em>Attributed</em>'.
+	 * @see #doSwitch(org.eclipse.emf.ecore.EObject) doSwitch(EObject)
+	 * @generated
+	 */
+	public T caseAttributed(Attributed object) {
 		return null;
 	}
 

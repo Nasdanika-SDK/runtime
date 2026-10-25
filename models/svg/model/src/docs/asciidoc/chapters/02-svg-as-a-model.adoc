@@ -1,0 +1,45 @@
+[#svg-as-a-model]
+== SVG as a model
+
+=== Why a model and not strings
+
+SVG is XML, so it can be written with string templates or with a DOM.
+Both work for a first diagram.
+Neither knows SVG: a misspelled attribute is written as it is, a child is put where it does not belong, and every generator repeats the same escaping and formatting.
+
+A model gives each element a class and each attribute a typed feature.
+A generator says `rect.setRx(6)`, the compiler checks it, and the model writes it.
+It also gives SVG what every EMF model has: a resource set, reflection, copying, comparison, and a place in a pipeline of models, between the diagram model and the file.
+
+=== A pragmatic subset
+
+SVG 1.1 has some sixty elements, and its weight is in the attributes: dozens of presentation attributes, plus CSS.
+Diagrams need a fraction:
+
+* *Structure:* `svg`, `g`, `defs`, `a`, `marker`, `clipPath`, `linearGradient` and `stop`.
+* *Shapes:* `rect`, `circle`, `ellipse`, `line`, `polyline`, `polygon`, `path`, `image` and `use`.
+* *Text:* `text`, `tspan`, `title`, `desc` and `style`.
+* *Presentation attributes:* fill and stroke with their opacity, width, dashes, caps and joins; opacity; the font attributes; text anchor and baseline; markers; visibility and clipping.
+* *On every element:* `id`, `class`, `style` and `transform`.
+
+The subset is set by what generated diagrams need and by what Asciidoctor PDF's SVG renderer, prawn-svg, draws.
+prawn-svg draws the basic shapes, paths, text, `use`, markers and linear gradients, and not `foreignObject`, filters or masks.
+Staying inside it means that one SVG works in the HTML, the PDF and the EPUB of a book; this book's figure is the test.
+
+=== Written by EMF, not by hand
+
+SVG has no official XML schema to generate a model from, so the model is written by hand, in Xcore.
+Its classes and features are annotated with ExtendedMetaData, the annotations EMF puts on models it generates from XML schemas: this class is the element `rect`, this feature is the attribute `stroke-width`.
+EMF's XML resource reads the annotations, so it writes SVG and reads it back, and there is no serializer to write.
+
+Two consequences shape the model:
+
+* *The namespace URI is SVG's.* An EMF package's namespace URI is the XML namespace its elements are written in, so this package's is `http://www.w3.org/2000/svg`, not a runtime.sdk.nasdanika.org URI like the runtime's other models.
+* *Children are in a feature map.* A group holds rectangles, circles, texts and groups in one sequence, and the order is the drawing order. A typed list per kind of child would lose it. So a container keeps its children in a feature map keyed by element name, and text keeps its characters and spans in another. The model's operations `add`, `children`, `addText`, `addSpan` and `text` hide the feature maps.
+
+=== Links and tooltips
+
+Every shape a generator draws stands for an element of a model.
+Wrapped in an `a`, the shape links to that element's page.
+Given a `title`, it shows the element's documentation as a tooltip.
+That is the difference between a generated diagram and a picture of one, and why the subset has both.

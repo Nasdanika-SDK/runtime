@@ -55,8 +55,8 @@ public class DocumentImpl extends ElementImpl<Document> implements Document {
 	 * 
 	 * @param in
 	 * @param uri
+	 * @param context Loading context: streams of linked documents, properties for placeholders
 	 * @param uriHandler URI handler for loading cross-document page links.
-	 * @param propertySource source of properties to resolve %propertyName% placeholders
 	 * @throws ParserConfigurationException
 	 * @throws SAXException
 	 * @throws IOException
@@ -79,8 +79,8 @@ public class DocumentImpl extends ElementImpl<Document> implements Document {
 	 * 
 	 * @param reader
 	 * @param uri
+	 * @param context Loading context: streams of linked documents, properties for placeholders
 	 * @param uriHandler URI handler for loading cross-document page links.
-	 * @param propertySource source of properties to resolve %propertyName% placeholders
 	 * @throws ParserConfigurationException
 	 * @throws SAXException
 	 * @throws IOException
@@ -138,7 +138,7 @@ public class DocumentImpl extends ElementImpl<Document> implements Document {
 	 * Resolved source URI against this document URI.
 	 * Returns this document if source is equal to this document URI.
 	 * Then loads the document.
-	 * @param uri
+	 * @param source
 	 * @return
 	 * @throws SAXException 
 	 * @throws ParserConfigurationException 
@@ -356,6 +356,41 @@ public class DocumentImpl extends ElementImpl<Document> implements Document {
 	@Override
 	public URI getURI() {
 		return uri;
+	}
+
+	@Override
+	public byte[] embedInPng(byte[] png, Boolean compress) throws TransformerException, IOException {
+		// encodeURIComponent, which draw.io decodes the chunk with: spaces are %20, not +
+		String text = URLEncoder.encode(save(compress), StandardCharsets.UTF_8).replace("+", "%20");
+		return insertPngTextChunk(png, "mxfile", text);
+	}
+
+	private static final byte[] PNG_SIGNATURE = { (byte) 0x89, 'P', 'N', 'G', 0x0D, 0x0A, 0x1A, 0x0A };
+
+	/**
+	 * Inserts a tEXt chunk after the IHDR chunk, which is always the first.
+	 */
+	static byte[] insertPngTextChunk(byte[] png, String keyword, String text) throws IOException {
+		if (png.length < 33 || !java.util.Arrays.equals(png, 0, 8, PNG_SIGNATURE, 0, 8)) {
+			throw new IOException("Not a PNG image");
+		}
+		int ihdrLength = java.nio.ByteBuffer.wrap(png, 8, 4).getInt();
+		int insertAt = 8 + 12 + ihdrLength; // Signature, then length, type, data and CRC of IHDR
+		byte[] data = (keyword + (char) 0 + text).getBytes(StandardCharsets.ISO_8859_1); // keyword, NUL, text
+		java.nio.ByteBuffer chunk = java.nio.ByteBuffer.allocate(12 + data.length);
+		chunk.putInt(data.length);
+		byte[] type = "tEXt".getBytes(StandardCharsets.US_ASCII);
+		chunk.put(type);
+		chunk.put(data);
+		java.util.zip.CRC32 crc = new java.util.zip.CRC32();
+		crc.update(type);
+		crc.update(data);
+		chunk.putInt((int) crc.getValue());
+		java.io.ByteArrayOutputStream out = new java.io.ByteArrayOutputStream(png.length + chunk.capacity());
+		out.write(png, 0, insertAt);
+		out.write(chunk.array());
+		out.write(png, insertAt, png.length - insertAt);
+		return out.toByteArray();
 	}
 
 	@Override

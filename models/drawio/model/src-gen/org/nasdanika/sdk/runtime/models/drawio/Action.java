@@ -11,8 +11,7 @@ import org.eclipse.emf.ecore.EObject;
  *
  * <!-- begin-model-doc -->
  * One step of a sequence.
- * 
- * Draw.io steps carry a 'transient' flag which, when set to false, persists the
+ *  * Draw.io steps carry a 'transient' flag which, when set to false, persists the
  * step's changes into the model instead of only affecting the view. It is modelled
  * as persistChanges on the actions that support it (see PersistableAction) rather
  * than as 'transient', because that word is an Xcore feature modifier and a Java

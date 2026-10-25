@@ -2,10 +2,18 @@
  */
 package org.nasdanika.sdk.runtime.models.drawio.impl;
 
+import org.eclipse.emf.common.util.EList;
+
 import org.eclipse.emf.ecore.EClass;
+import org.eclipse.emf.ecore.InternalEObject;
+
+import org.nasdanika.sdk.runtime.common.DerivedSubsetEList;
+
+import org.nasdanika.sdk.runtime.models.diagram.DiagramPackage;
 
 import org.nasdanika.sdk.runtime.models.drawio.Document;
 import org.nasdanika.sdk.runtime.models.drawio.DrawioPackage;
+import org.nasdanika.sdk.runtime.models.drawio.Page;
 
 import org.nasdanika.sdk.runtime.models.presentation.impl.PresentationImpl;
 
@@ -21,6 +29,7 @@ import org.nasdanika.sdk.runtime.models.presentation.impl.PresentationImpl;
  *   <li>{@link org.nasdanika.sdk.runtime.models.drawio.impl.DocumentImpl#getAgent <em>Agent</em>}</li>
  *   <li>{@link org.nasdanika.sdk.runtime.models.drawio.impl.DocumentImpl#getVersion <em>Version</em>}</li>
  *   <li>{@link org.nasdanika.sdk.runtime.models.drawio.impl.DocumentImpl#isCompressed <em>Compressed</em>}</li>
+ *   <li>{@link org.nasdanika.sdk.runtime.models.drawio.impl.DocumentImpl#getPages <em>Pages</em>}</li>
  * </ul>
  *
  * @generated
@@ -162,6 +171,19 @@ public class DocumentImpl extends PresentationImpl implements Document {
 	 * <!-- end-user-doc -->
 	 * @generated
 	 */
+	public EList<Page> getPages() {
+		return new DerivedSubsetEList<Page>(
+			Page.class, 
+			((InternalEObject) this), 
+			DrawioPackage.DOCUMENT__PAGES, 
+			DiagramPackage.DIAGRAM_ELEMENT__CHILDREN);
+	}
+
+	/**
+	 * <!-- begin-user-doc -->
+	 * <!-- end-user-doc -->
+	 * @generated
+	 */
 	@Override
 	public Object eGet(int featureID, boolean resolve, boolean coreType) {
 		switch (featureID) {
@@ -173,6 +195,8 @@ public class DocumentImpl extends PresentationImpl implements Document {
 				return getVersion();
 			case DrawioPackage.DOCUMENT__COMPRESSED:
 				return isCompressed();
+			case DrawioPackage.DOCUMENT__PAGES:
+				return getPages();
 		}
 		return super.eGet(featureID, resolve, coreType);
 	}
@@ -241,6 +265,8 @@ public class DocumentImpl extends PresentationImpl implements Document {
 				return VERSION_EDEFAULT == null ? getVersion() != null : !VERSION_EDEFAULT.equals(getVersion());
 			case DrawioPackage.DOCUMENT__COMPRESSED:
 				return isCompressed() != COMPRESSED_EDEFAULT;
+			case DrawioPackage.DOCUMENT__PAGES:
+				return !getPages().isEmpty();
 		}
 		return super.eIsSet(featureID);
 	}

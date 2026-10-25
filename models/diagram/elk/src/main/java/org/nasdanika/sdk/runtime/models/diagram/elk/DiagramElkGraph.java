@@ -53,7 +53,7 @@ import org.nasdanika.sdk.runtime.models.diagram.Port;
  * with a missing end are not laid out.</li>
  * <li>The {@link Label} children of a connection become its ELK labels. A connection without
  * labels gets one for its name, placed at its center.</li>
- * <li>Properties whose keys start with {@code elk.} or {@code org.eclipse.elk.} are ELK layout
+ * <li>Attributes whose keys start with {@code elk.} or {@code org.eclipse.elk.} are ELK layout
  * options of the element, such as {@code elk.direction=UP}.</li>
  * </ul>
  * After layout, {@link #apply()} writes back:
@@ -69,7 +69,7 @@ import org.nasdanika.sdk.runtime.models.diagram.Port;
 public class DiagramElkGraph {
 
 	/**
-	 * Property keys with these prefixes are ELK layout options.
+	 * Attribute keys with these prefixes are ELK layout options.
 	 */
 	public static final List<String> OPTION_PREFIXES = List.of("elk.", "org.eclipse.elk.");
 
@@ -310,19 +310,19 @@ public class DiagramElkGraph {
 	}
 
 	/**
-	 * Applies the element's properties that are ELK options.
+	 * Applies the element's attributes that are ELK options.
 	 */
 	static void applyOptions(DiagramElement element, ElkGraphElement elkElement) {
-		for (Map.Entry<String, String> property: element.getProperties()) {
-			String key = property.getKey();
+		for (Map.Entry<String, String> attribute: element.getAttributes()) {
+			String key = attribute.getKey();
 			if (key != null && OPTION_PREFIXES.stream().anyMatch(key::startsWith)) {
 				LayoutOptionData option = LayoutMetaDataService.getInstance().getOptionDataBySuffix(key);
 				if (option == null) {
 					throw new IllegalArgumentException("Unknown ELK option " + key + " on " + element.getId());
 				}
-				Object value = option.parseValue(property.getValue());
+				Object value = option.parseValue(attribute.getValue());
 				if (value == null) {
-					throw new IllegalArgumentException("Invalid value of ELK option " + key + " on " + element.getId() + ": " + property.getValue());
+					throw new IllegalArgumentException("Invalid value of ELK option " + key + " on " + element.getId() + ": " + attribute.getValue());
 				}
 				elkElement.setProperty(option, value);
 			}

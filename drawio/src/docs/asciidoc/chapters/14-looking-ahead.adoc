@@ -41,10 +41,8 @@ The same path makes diagrams scenes of narrated videos: a diagram on screen, wit
 
 === Rendering generated diagrams
 
-A diagram written by a program has no picture until something renders it (<<changing>>).
-For people working in Draw.io that does not matter: the editor renders as it opens.
-For documentation built in a pipeline, such as this book, it does.
-The runtime will render diagrams in a headless browser with Draw.io's own viewer, the way this book's figures were first rendered, so that a generated diagram can be a PNG with the diagram embedded, like a drawn one.
+Rendering is built: <<rendering>> renders pages with Draw.io's own viewer, as PNG and SVG images with the page embedded and as videos.
+What remains [.planned]#PLANNED# is an Asciidoctor extension that renders a `.drawio` file referenced from a book as the book is built, so that the source of a figure in Git is the diagram rather than its image, and the viewer shipped as a resource, so that rendering does not need the network.
 
 === Diagrams and AI assistants
 

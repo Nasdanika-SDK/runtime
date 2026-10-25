@@ -2,6 +2,8 @@
  */
 package org.nasdanika.sdk.runtime.models.drawio;
 
+import org.eclipse.emf.common.util.EList;
+
 import org.nasdanika.sdk.runtime.models.presentation.Presentation;
 
 /**
@@ -10,12 +12,21 @@ import org.nasdanika.sdk.runtime.models.presentation.Presentation;
  * <!-- end-user-doc -->
  *
  * <!-- begin-model-doc -->
- * TODO - adjust to Nasdanika Draw.io API. E.g. style class with a derived style EMap reference backed by 'style' property
- * Have ModelElement interface with style property
- * Connection point - extends Port and has dx/dy (pixels)
- * NodeStyle, ConnectionStyle extending style and adding Node/Connection flavors, Draw.io enums
- * Derived features for Document.pages (from Presentation.slides)
- * Page.layers, ...
+ * A Draw.io document as a model, on the presentation and diagram models: a document is a
+ * presentation, a page is a slide, layers, nodes and connections are their diagram namesakes.
+ * The model holds what makes Draw.io Draw.io, and inherits the rest.
+ *  * Loaded and saved through the runtime's Draw.io API by the resource contents handler in
+ * org.nasdanika.sdk.runtime.models.drawio.resource, for .drawio files and for PNG and SVG images
+ * with the document embedded (.drawio.png, .drawio.svg).
+ *  * What maps where:
+ *   - label        -> ModelElement.label as written (HTML if the style says html=1), and its text
+ *                     in DiagramElement.name
+ *   - tooltip      -> documentation, from core's Documented
+ *   - properties   -> attributes, from core's Attributed (the <object> wrapper's attributes)
+ *   - style        -> ModelElement.style, an ordered map
+ *   - tags         -> Page.tags and ModelElement.tags
+ *   - link         -> ModelElement.link
+ *   - geometry     -> Node.bounds, relative to the parent node, and Connection.waypoints
  * <!-- end-model-doc -->
  *
  * <p>
@@ -26,6 +37,7 @@ import org.nasdanika.sdk.runtime.models.presentation.Presentation;
  *   <li>{@link org.nasdanika.sdk.runtime.models.drawio.Document#getAgent <em>Agent</em>}</li>
  *   <li>{@link org.nasdanika.sdk.runtime.models.drawio.Document#getVersion <em>Version</em>}</li>
  *   <li>{@link org.nasdanika.sdk.runtime.models.drawio.Document#isCompressed <em>Compressed</em>}</li>
+ *   <li>{@link org.nasdanika.sdk.runtime.models.drawio.Document#getPages <em>Pages</em>}</li>
  * </ul>
  *
  * @see org.nasdanika.sdk.runtime.models.drawio.DrawioPackage#getDocument()
@@ -120,5 +132,20 @@ public interface Document extends Presentation {
 	 * @generated
 	 */
 	void setCompressed(boolean value);
+
+	/**
+	 * Returns the value of the '<em><b>Pages</b></em>' reference list.
+	 * The list contents are of type {@link org.nasdanika.sdk.runtime.models.drawio.Page}.
+	 * <!-- begin-user-doc -->
+	 * <!-- end-user-doc -->
+	 * <!-- begin-model-doc -->
+	 *  The slides of the document, typed as pages.
+	 * <!-- end-model-doc -->
+	 * @return the value of the '<em>Pages</em>' reference list.
+	 * @see org.nasdanika.sdk.runtime.models.drawio.DrawioPackage#getDocument_Pages()
+	 * @model transient="true" changeable="false" volatile="true" derived="true"
+	 * @generated
+	 */
+	EList<Page> getPages();
 
 } // Document

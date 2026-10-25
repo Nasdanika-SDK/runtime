@@ -9,8 +9,8 @@ Namespace URI `{nsuri}`, package `org.nasdanika.sdk.runtime.models.diagram`.
 | Class | Extends | Features
 
 | `DiagramElement`, abstract
-| `NamedElement` and `StringIdentity` of the core model
-| `properties`: map of strings to strings. `semanticElements`: any `EObject`, many. `children`: `DiagramElement`, many, contained.
+| `NamedElement`, `StringIdentity` and `Attributed` of the core model
+| `attributes`, from `Attributed`: map of strings to strings. `semanticElements`: any `EObject`, many. `children`: `DiagramElement`, many, contained.
 
 | `Diagram`
 | `DiagramElement`

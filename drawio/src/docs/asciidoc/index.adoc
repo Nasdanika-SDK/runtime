@@ -2,7 +2,7 @@
 Pavel Vlasov
 :doctype: book
 :description: Diagrams that people draw and programs read: the visual communication continuum, and the Nasdanika SDK Runtime's Java API for Draw.io documents.
-:keywords: Draw.io, diagrams.net, diagrams, visual communication, Java, Nasdanika, models, architecture
+:keywords: Draw.io, diagrams.net, diagrams, visual communication, Java, Playwright, rendering, Nasdanika, models, architecture
 :lang: en
 :sectnums:
 :sectnumlevels: 2
@@ -30,6 +30,8 @@ ifndef::testresourcesdir[:testresourcesdir: ../../test/resources]
 ifndef::runtime-root[:runtime-root: ../../../..]
 ifndef::runtime-version[:runtime-version: 2026.10.0]
 :booktests: {testdir}/org/nasdanika/sdk/runtime/drawio/tests/book
+// The drawio-playwright module renders diagrams in a browser; its tests are the listings of the rendering chapter
+:playwrighttests: {runtime-root}/drawio-playwright/src/test/java/org/nasdanika/sdk/runtime/drawio/playwright/tests
 :imagesdir: {testresourcesdir}/org/nasdanika/sdk/runtime/drawio/tests/book
 // The EPUB converter resolves images relative to this directory and packs them by that path
 ifdef::zephyr-epub[:imagesdir: ../../test/resources/org/nasdanika/sdk/runtime/drawio/tests/book]
@@ -56,7 +58,7 @@ include::chapters/04-drawio.adoc[]
 = The How
 
 [partintro]
-The Java API, one task at a time, on one running example: loading and saving diagrams, the document model, navigation, properties, selectors, links, changing diagrams and putting their elements in order.
+The Java API, one task at a time, on one running example: loading and saving diagrams, the document model, navigation, properties, selectors, links, changing diagrams and putting their elements in order. Then rendering pages as images and videos with Draw.io's own viewer in a browser.
 
 include::chapters/05-getting-started.adoc[]
 
@@ -74,13 +76,15 @@ include::chapters/11-changing.adoc[]
 
 include::chapters/12-order.adoc[]
 
+include::chapters/13-rendering.adoc[]
+
 [#ahead]
 = Looking Ahead
 
 [partintro]
 The points of the continuum that this module does not reach yet, and how the runtime will reach them.
 
-include::chapters/13-looking-ahead.adoc[]
+include::chapters/14-looking-ahead.adoc[]
 
 include::appendices/a-reference.adoc[]
 

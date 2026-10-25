@@ -40,6 +40,7 @@ A screenshot is a log record with the event name `nasdanika.screenshot`, in the 
 | `nasdanika.screenshot.path` | The file, relative to the screenshots directory
 | `nasdanika.screenshot.phase` | `before`, `after` or `failure` for a step's own, `explicit` for one taken with `screenshot`
 | `nasdanika.screenshot.index` | The position in the session, from 1
+| `nasdanika.video.offset_ms` | The offset into the video, if the session is recorded (<<video>>)
 | `url.full` | The page's URL
 |===
 
@@ -72,6 +73,46 @@ A line of narration is spoken over the last screenshot taken before it, and a li
 | `nasdanika.narration.pause_ms` | Silence after the line, in milliseconds, if given
 | `url.full` | The page's URL
 |===
+
+[#video]
+=== Video
+
+With a file in the `video` option, the session is recorded: Playwright records the page at the viewport's size, and the file is saved when the session ends, whether its body returned or threw.
+
+.A recorded walk-through (`WalkthroughTests.java`)
+[source,java]
+----
+include::{booktests}/WalkthroughTests.java[tag=video,indent=0]
+----
+<1> The file to save the video to.
+<2> A pause: the video shows the result of the search for half a second.
+<3> The video, WebM.
+<4> When the recording started: a log record in the `Browser` span, written as the page was created.
+<5> Each step's span has its offset into the video, in milliseconds.
+<6> The server's span for the search has no offset of its own, but its start time, less the time of the record of the start, is its offset. It falls inside the step that sent the request.
+
+The video and the trace explain each other.
+In the video, the result list changes at some second; the trace says which step was running then, and which request the server was handling, with its log records.
+In the trace, a slow server span has a time; the video shows what the user looked at while waiting for it.
+The offsets are approximate: the recording starts when the page is created, give or take a frame.
+
+[cols="2,4",options="header"]
+|===
+| Record or attribute | Value
+| `nasdanika.video` | Event name of the record of the start, with the file name as the body
+| `nasdanika.video.path` | The file, as given in the options, with forward slashes
+| `nasdanika.video.offset_ms` | On steps, screenshots and narration: milliseconds since the start
+|===
+
+Recording needs FFmpeg, which Playwright does not download with the browser.
+Install it once, into Playwright's cache in the user's home directory, from a module that depends on Playwright:
+
+[source,shell]
+----
+mvn exec:java -D exec.mainClass=com.microsoft.playwright.CLI -D exec.args="install ffmpeg"
+----
+
+Without it, a session with a video fails at the start with a message that gives the same command.
 
 === The browser's console
 

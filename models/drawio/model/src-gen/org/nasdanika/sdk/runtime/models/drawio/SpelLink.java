@@ -10,9 +10,8 @@ package org.nasdanika.sdk.runtime.models.drawio;
  *
  * <!-- begin-model-doc -->
  * data:spel,<expression>
- * 
- * A link computed by a SpEL expression evaluated against the element it sits on,
- * so a shape can decide at generation time where it points.
+ *  * A link computed by a SpEL expression evaluated against the element it sits on,
+ * so a shape can decide at generation time where it points. Loaded and saved, not evaluated.
  * <!-- end-model-doc -->
  *
  * <p>

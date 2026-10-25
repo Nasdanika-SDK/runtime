@@ -1,0 +1,41 @@
+[appendix]
+[#reference]
+== Reference
+
+=== Java classes
+
+[cols="2,5",options="header"]
+|===
+| Class | What it is for
+
+| `resource.SvgFormat`
+| `save(svg, out)` and `toString(svg)` write a copy of an `svg` element as SVG; `load(in, uri)` reads one.
+
+| `resource.SvgResourceContentsHandler`
+| The contents handler of `.svg` resources.
+
+| `services.SvgCapabilityFactory`
+| Offers the contents handler for the last qualifier, `svg`.
+
+| `services.SvgResourceSetContributor`
+| Registers the resource factory for `svg`, unless one is registered.
+
+| `services.SvgEPackageProvider`
+| Provides the package as a service.
+|===
+
+=== Writing options
+
+`SvgFormat` writes and reads with EMF's XML resource and these options:
+
+[cols="3,4",options="header"]
+|===
+| Option | Why
+| `OPTION_EXTENDED_META_DATA`, with the SVG package | Element and attribute names are SVG's
+| `OPTION_ENCODING`: UTF-8 |
+| `OPTION_LAX_FEATURE_PROCESSING` | Elements and attributes outside the subset are skipped on read, not errors
+| `OPTION_USE_LEXICAL_HANDLER` | Character data is read as it is
+| `OPTION_SAVE_TYPE_INFORMATION`: false | No `xsi:type`: each element's name says its class
+| `OPTION_FORMATTED`, `OPTION_LINE_WIDTH` | Indented output that reads well in a diff
+| No external DTDs | SVG 1.1's DTD is not downloaded on read
+|===

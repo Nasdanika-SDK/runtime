@@ -1,0 +1,96 @@
+[#the-model]
+== The model
+
+=== The classes
+
+[cols="2,3,5",options="header"]
+|===
+| Class | Extends | What it is
+
+| `Document`
+| presentation `Presentation`
+| The file: `host`, `agent`, `version`, `compressed`. Its children are its pages, and `pages` lists them typed.
+
+| `Page`
+| presentation `Slide`
+| A page: `dx`, `dy`, `pageWidth`, `pageHeight`, `gridSize`; the `tags` of the page. Its children are its layers, and `layers` lists them typed. The root cell's properties and tooltip are the page's attributes and documentation.
+
+| `ModelElement`, an interface
+| `LinkTarget`
+| What layers, nodes and connections have in common: `label`, `style`, `styleString`, `link`, `tags`.
+
+| `Layer`
+| diagram `Layer`, `ModelElement`
+| A layer, `visible` or not. Its children are nodes and connections.
+
+| `Node`
+| diagram `Node`, `ModelElement`
+| A shape: `bounds` relative to the parent node, `collapsed`, `visible`. Its children are the nodes and connections inside it.
+
+| `Connection`
+| diagram `Connection`, `ModelElement`
+| An edge: `source` and `target`, `waypoints`, `visible`. Its children are its labels, nodes that Draw.io places along it.
+
+| `Tag`
+| core `StringIdentity`
+| A tag of a page. Its id is its name; `elements` are the elements that have it.
+
+| `SimpleLink`, `CustomLink`, `SpelLink`
+| `AbstractLink`
+| The `link` attribute: a URL or text kept as it is, a link to a page or an element, or a SpEL expression.
+|===
+
+Everything a diagram element has, these have too: `id`, `name`, `documentation`, `attributes`, `semanticElements`, `children`, `markers` and `uris`, from the diagram and core models.
+
+=== What maps where
+
+[cols="2,4",options="header"]
+|===
+| In the file | In the model
+| A cell's `id` | `id`
+| `value` or `label` | `label`, as written: HTML when the style has `html=1`. Its text is `name`
+| `tooltip` | `documentation`
+| `style` | `style`, an ordered map; `styleString` writes it back
+| Other attributes of the `<object>` wrapper: the properties | `attributes`
+| `tags` | `tags`, references to the page's `Tag` objects
+| `link` | `link`
+| `visible="0"` | `visible`
+| `mxGeometry` of a vertex | `bounds`
+| `Array` of points of an edge | `waypoints`
+| `source`, `target` | `source`, `target`
+|===
+
+=== Label and name
+
+A label in Draw.io is often HTML: `<b>Internet Banking System</b><br>Accounts and payments`.
+The model keeps it as written in `label`, so saving reproduces it, and puts its text in `name`, the name every diagram element has: `Internet Banking System Accounts and payments`.
+A program that reads diagrams generically reads `name`.
+A program that builds a Draw.io diagram can set only `name`, and saving writes it as the label.
+
+=== Style
+
+`style` is an EMF map, in the order of the file.
+A key without a value, such as `ellipse` at the start of `ellipse;whiteSpace=wrap;`, has a null value.
+`styleString` is derived from the map, and reads as Draw.io writes a style: each entry followed by a semicolon.
+
+The map does not know what the keys mean.
+Typed styles, with features for the keys worth naming and enumerations for arrows, lines and jumps, as the runtime's Draw.io API has them, are [.planned]#PLANNED#.
+
+=== Links
+
+Draw.io puts three kinds of things in the `link` attribute, so the model has one reference, `link`, to one of three kinds of link:
+
+* *`CustomLink`*, for the Nasdanika link notation, which extends Draw.io's page links to elements and to other documents:
++
+[source,text]
+----
+data:page/id,containers
+data:page/name,System+Context
+data:element/id,id,context/banking
+data:element/name,overview.drawio#name,Systems/Mainframe
+----
++
+The selectors are kept as written: `resource`, the document before `#`; `pageSelectorType` and `pageSelector`; `elementSelectorType` and `elementSelector`.
+A link to a page or an element of the same document is resolved, and `target` refers to it.
+* *`SpelLink`*, for `data:spel,` links, whose expression is kept and not evaluated.
+* *`SimpleLink`*, for everything else: URLs, other `data:` URIs, and custom actions, whose JSON is kept as text.

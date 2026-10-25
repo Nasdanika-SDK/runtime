@@ -290,4 +290,69 @@ class WalkthroughTests {
 			.satisfies(a -> assertThat(a.getValue().getIntValue()).isEqualTo(2000L));
 	}
 
+	static long longAttribute(Span span, String key) {
+		return span.getAttributes().stream()
+			.filter(a -> a.getKey().equals(key))
+			.mapToLong(a -> a.getValue().getIntValue())
+			.findFirst()
+			.orElseThrow(() -> new AssertionError("No attribute " + key + " on " + span.getName()));
+	}
+
+	@Test
+	void video() throws Exception {
+		Path dir = Path.of("target", "video");
+		// tag::video[]
+		Recording recording = Recording.builder().directory(dir, "yml").build();
+		try (recording) {
+			Harness.inServer(recording.getOpenTelemetry(), "Catalog", Catalog::routes, server ->
+				Browsing.inBrowser(server, options(dir).withVideo(dir.resolve("catalog.webm")), session -> { // <1>
+					Page page = session.page();
+					session.step("Open the catalog", () -> page.navigate("/index.html"));
+					session.step("Search for Dune", () -> {
+						page.getByLabel("Title").fill("dune");
+						assertThat(page.locator("#books li")).hasCount(1);
+					});
+					session.pause(Duration.ofMillis(500)); // <2>
+					session.step("Open Dune", () -> page.getByText("Dune").click());
+					return null;
+				}));
+		}
+		assertThat(dir.resolve("catalog.webm")).isNotEmptyFile(); // <3>
+
+		LogRecord started = span(recording, "Browser").getLogRecords().stream() // <4>
+			.filter(log -> Browsing.VIDEO_EVENT.equals(log.getEventName()))
+			.findFirst()
+			.orElseThrow();
+		Span searchStep = span(recording, "Search for Dune");
+		long search = longAttribute(searchStep, Browsing.VIDEO_OFFSET.getKey()); // <5>
+		long open = longAttribute(span(recording, "Open Dune"), Browsing.VIDEO_OFFSET.getKey());
+		Span served = searchStep.getChildren().getFirst(); // GET /data, the search on the server
+		long servedAt = (served.getStartTimeUnixNano() - started.getObservedTimeUnixNano()) / 1_000_000; // <6>
+		assertThat(servedAt).isBetween(search - 50, open);
+		// end::video[]
+		assertThat(attribute(started, Browsing.VIDEO_PATH.getKey())).endsWith("video/catalog.webm");
+		assertThat(open - search).isGreaterThanOrEqualTo(500);
+		try (var files = java.nio.file.Files.list(dir)) {
+			assertThat(files.map(Path::getFileName).map(Path::toString)).noneMatch(name -> name.startsWith(".video"));
+		}
+	}
+
+	@Test
+	void withoutServer() {
+		Path dir = Path.of("target", "without-server");
+		// tag::without-server[]
+		Recording recording = Recording.builder().directory(dir, "yml").build();
+		try (recording) {
+			Browsing.inBrowser(recording.getOpenTelemetry(), options(dir), session -> { // <1>
+				session.page().setContent("<h1>Hello</h1>");
+				session.screenshot("Hello");
+				return null;
+			});
+		}
+		assertThat(span(recording, "Browser").getLogRecords())
+			.extracting(log -> attribute(log, Browsing.SCREENSHOT_PATH.getKey()))
+			.containsExactly("001-hello-explicit.png");
+		// end::without-server[]
+	}
+
 }

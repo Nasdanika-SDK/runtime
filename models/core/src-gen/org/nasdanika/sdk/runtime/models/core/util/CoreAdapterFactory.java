@@ -82,6 +82,10 @@ public class CoreAdapterFactory extends AdapterFactoryImpl {
 				return createStringToStringMapEntryAdapter();
 			}
 			@Override
+			public Adapter caseAttributed(Attributed object) {
+				return createAttributedAdapter();
+			}
+			@Override
 			public Adapter caseMarker(Marker object) {
 				return createMarkerAdapter();
 			}
@@ -204,6 +208,20 @@ public class CoreAdapterFactory extends AdapterFactoryImpl {
 	 * @generated
 	 */
 	public Adapter createStringToStringMapEntryAdapter() {
+		return null;
+	}
+
+	/**
+	 * Creates a new adapter for an object of class '{@link org.nasdanika.sdk.runtime.models.core.Attributed <em>Attributed</em>}'.
+	 * <!-- begin-user-doc -->
+	 * This default implementation returns null so that we can easily ignore cases;
+	 * it's useful to ignore a case when inheritance will catch all the cases anyway.
+	 * <!-- end-user-doc -->
+	 * @return the new adapter.
+	 * @see org.nasdanika.sdk.runtime.models.core.Attributed
+	 * @generated
+	 */
+	public Adapter createAttributedAdapter() {
 		return null;
 	}
 

@@ -84,6 +84,19 @@ class StringToStringMapEntry wraps java.util.Map$Entry {
     String value
 }
 
+/**
+ * Mixin for elements that carry attributes: string keys and values for what a source format
+ * carries and a model does not name, and for conventions of one's own. For example, Draw.io
+ * properties, Markdown and AsciiDoc block attributes, and layout options of diagram elements.
+ * Called attributes, not properties, so that it does not clash with models that have properties
+ * of their own.
+ */
+interface Attributed {
+
+	contains StringToStringMapEntry[] attributes
+
+}
+
 class Marker {
 	
 	String location

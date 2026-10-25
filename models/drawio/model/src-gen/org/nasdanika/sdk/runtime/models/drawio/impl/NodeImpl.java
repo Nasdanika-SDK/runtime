@@ -7,8 +7,10 @@ import java.util.Collection;
 import org.eclipse.emf.common.notify.NotificationChain;
 
 import org.eclipse.emf.common.util.EList;
+import org.eclipse.emf.common.util.EMap;
 
 import org.eclipse.emf.ecore.EClass;
+import org.eclipse.emf.ecore.EStructuralFeature;
 import org.eclipse.emf.ecore.InternalEObject;
 
 import org.eclipse.emf.ecore.util.InternalEList;
@@ -20,6 +22,8 @@ import org.nasdanika.sdk.runtime.models.drawio.ModelElement;
 import org.nasdanika.sdk.runtime.models.drawio.Node;
 import org.nasdanika.sdk.runtime.models.drawio.Tag;
 
+import org.nasdanika.sdk.runtime.models.drawio.resource.Styles;
+
 /**
  * <!-- begin-user-doc -->
  * An implementation of the model object '<em><b>Node</b></em>'.
@@ -28,26 +32,18 @@ import org.nasdanika.sdk.runtime.models.drawio.Tag;
  * The following features are implemented:
  * </p>
  * <ul>
+ *   <li>{@link org.nasdanika.sdk.runtime.models.drawio.impl.NodeImpl#getLabel <em>Label</em>}</li>
+ *   <li>{@link org.nasdanika.sdk.runtime.models.drawio.impl.NodeImpl#getStyle <em>Style</em>}</li>
+ *   <li>{@link org.nasdanika.sdk.runtime.models.drawio.impl.NodeImpl#getStyleString <em>Style String</em>}</li>
  *   <li>{@link org.nasdanika.sdk.runtime.models.drawio.impl.NodeImpl#getLink <em>Link</em>}</li>
  *   <li>{@link org.nasdanika.sdk.runtime.models.drawio.impl.NodeImpl#getTags <em>Tags</em>}</li>
- *   <li>{@link org.nasdanika.sdk.runtime.models.drawio.impl.NodeImpl#getStyle <em>Style</em>}</li>
- *   <li>{@link org.nasdanika.sdk.runtime.models.drawio.impl.NodeImpl#getLabel <em>Label</em>}</li>
  *   <li>{@link org.nasdanika.sdk.runtime.models.drawio.impl.NodeImpl#isCollapsed <em>Collapsed</em>}</li>
+ *   <li>{@link org.nasdanika.sdk.runtime.models.drawio.impl.NodeImpl#isVisible <em>Visible</em>}</li>
  * </ul>
  *
  * @generated
  */
 public class NodeImpl extends org.nasdanika.sdk.runtime.models.diagram.impl.NodeImpl implements Node {
-	/**
-	 * The default value of the '{@link #getStyle() <em>Style</em>}' attribute.
-	 * <!-- begin-user-doc -->
-	 * <!-- end-user-doc -->
-	 * @see #getStyle()
-	 * @generated
-	 * @ordered
-	 */
-	protected static final String STYLE_EDEFAULT = null;
-
 	/**
 	 * The default value of the '{@link #getLabel() <em>Label</em>}' attribute.
 	 * <!-- begin-user-doc -->
@@ -59,6 +55,16 @@ public class NodeImpl extends org.nasdanika.sdk.runtime.models.diagram.impl.Node
 	protected static final String LABEL_EDEFAULT = null;
 
 	/**
+	 * The default value of the '{@link #getStyleString() <em>Style String</em>}' attribute.
+	 * <!-- begin-user-doc -->
+	 * <!-- end-user-doc -->
+	 * @see #getStyleString()
+	 * @generated
+	 * @ordered
+	 */
+	protected static final String STYLE_STRING_EDEFAULT = null;
+
+	/**
 	 * The default value of the '{@link #isCollapsed() <em>Collapsed</em>}' attribute.
 	 * <!-- begin-user-doc -->
 	 * <!-- end-user-doc -->
@@ -67,6 +73,16 @@ public class NodeImpl extends org.nasdanika.sdk.runtime.models.diagram.impl.Node
 	 * @ordered
 	 */
 	protected static final boolean COLLAPSED_EDEFAULT = false;
+
+	/**
+	 * The default value of the '{@link #isVisible() <em>Visible</em>}' attribute.
+	 * <!-- begin-user-doc -->
+	 * <!-- end-user-doc -->
+	 * @see #isVisible()
+	 * @generated
+	 * @ordered
+	 */
+	protected static final boolean VISIBLE_EDEFAULT = true;
 
 	/**
 	 * <!-- begin-user-doc -->
@@ -85,6 +101,43 @@ public class NodeImpl extends org.nasdanika.sdk.runtime.models.diagram.impl.Node
 	@Override
 	protected EClass eStaticClass() {
 		return DrawioPackage.Literals.NODE;
+	}
+
+	/**
+	 * <!-- begin-user-doc -->
+	 * <!-- end-user-doc -->
+	 * @generated
+	 */
+	public String getLabel() {
+		return (String)eDynamicGet(DrawioPackage.NODE__LABEL, DrawioPackage.Literals.MODEL_ELEMENT__LABEL, true, true);
+	}
+
+	/**
+	 * <!-- begin-user-doc -->
+	 * <!-- end-user-doc -->
+	 * @generated
+	 */
+	public void setLabel(String newLabel) {
+		eDynamicSet(DrawioPackage.NODE__LABEL, DrawioPackage.Literals.MODEL_ELEMENT__LABEL, newLabel);
+	}
+
+	/**
+	 * <!-- begin-user-doc -->
+	 * <!-- end-user-doc -->
+	 * @generated
+	 */
+	@SuppressWarnings("unchecked")
+	public EMap<String, String> getStyle() {
+		return (EMap<String, String>)eDynamicGet(DrawioPackage.NODE__STYLE, DrawioPackage.Literals.MODEL_ELEMENT__STYLE, true, true);
+	}
+
+	/**
+	 * <!-- begin-user-doc -->
+	 * <!-- end-user-doc -->
+	 * @generated
+	 */
+	public String getStyleString() {
+		return Styles.format(this.getStyle());
 	}
 
 	/**
@@ -130,42 +183,6 @@ public class NodeImpl extends org.nasdanika.sdk.runtime.models.diagram.impl.Node
 	 * <!-- end-user-doc -->
 	 * @generated
 	 */
-	public String getStyle() {
-		return (String)eDynamicGet(DrawioPackage.NODE__STYLE, DrawioPackage.Literals.NODE__STYLE, true, true);
-	}
-
-	/**
-	 * <!-- begin-user-doc -->
-	 * <!-- end-user-doc -->
-	 * @generated
-	 */
-	public void setStyle(String newStyle) {
-		eDynamicSet(DrawioPackage.NODE__STYLE, DrawioPackage.Literals.NODE__STYLE, newStyle);
-	}
-
-	/**
-	 * <!-- begin-user-doc -->
-	 * <!-- end-user-doc -->
-	 * @generated
-	 */
-	public String getLabel() {
-		return (String)eDynamicGet(DrawioPackage.NODE__LABEL, DrawioPackage.Literals.NODE__LABEL, true, true);
-	}
-
-	/**
-	 * <!-- begin-user-doc -->
-	 * <!-- end-user-doc -->
-	 * @generated
-	 */
-	public void setLabel(String newLabel) {
-		eDynamicSet(DrawioPackage.NODE__LABEL, DrawioPackage.Literals.NODE__LABEL, newLabel);
-	}
-
-	/**
-	 * <!-- begin-user-doc -->
-	 * <!-- end-user-doc -->
-	 * @generated
-	 */
 	public boolean isCollapsed() {
 		return (Boolean)eDynamicGet(DrawioPackage.NODE__COLLAPSED, DrawioPackage.Literals.NODE__COLLAPSED, true, true);
 	}
@@ -177,6 +194,24 @@ public class NodeImpl extends org.nasdanika.sdk.runtime.models.diagram.impl.Node
 	 */
 	public void setCollapsed(boolean newCollapsed) {
 		eDynamicSet(DrawioPackage.NODE__COLLAPSED, DrawioPackage.Literals.NODE__COLLAPSED, newCollapsed);
+	}
+
+	/**
+	 * <!-- begin-user-doc -->
+	 * <!-- end-user-doc -->
+	 * @generated
+	 */
+	public boolean isVisible() {
+		return (Boolean)eDynamicGet(DrawioPackage.NODE__VISIBLE, DrawioPackage.Literals.NODE__VISIBLE, true, true);
+	}
+
+	/**
+	 * <!-- begin-user-doc -->
+	 * <!-- end-user-doc -->
+	 * @generated
+	 */
+	public void setVisible(boolean newVisible) {
+		eDynamicSet(DrawioPackage.NODE__VISIBLE, DrawioPackage.Literals.NODE__VISIBLE, newVisible);
 	}
 
 	/**
@@ -202,6 +237,8 @@ public class NodeImpl extends org.nasdanika.sdk.runtime.models.diagram.impl.Node
 	@Override
 	public NotificationChain eInverseRemove(InternalEObject otherEnd, int featureID, NotificationChain msgs) {
 		switch (featureID) {
+			case DrawioPackage.NODE__STYLE:
+				return ((InternalEList<?>)getStyle()).basicRemove(otherEnd, msgs);
 			case DrawioPackage.NODE__LINK:
 				return basicSetLink(null, msgs);
 			case DrawioPackage.NODE__TAGS:
@@ -218,16 +255,21 @@ public class NodeImpl extends org.nasdanika.sdk.runtime.models.diagram.impl.Node
 	@Override
 	public Object eGet(int featureID, boolean resolve, boolean coreType) {
 		switch (featureID) {
+			case DrawioPackage.NODE__LABEL:
+				return getLabel();
+			case DrawioPackage.NODE__STYLE:
+				if (coreType) return getStyle();
+				else return getStyle().map();
+			case DrawioPackage.NODE__STYLE_STRING:
+				return getStyleString();
 			case DrawioPackage.NODE__LINK:
 				return getLink();
 			case DrawioPackage.NODE__TAGS:
 				return getTags();
-			case DrawioPackage.NODE__STYLE:
-				return getStyle();
-			case DrawioPackage.NODE__LABEL:
-				return getLabel();
 			case DrawioPackage.NODE__COLLAPSED:
 				return isCollapsed();
+			case DrawioPackage.NODE__VISIBLE:
+				return isVisible();
 		}
 		return super.eGet(featureID, resolve, coreType);
 	}
@@ -241,6 +283,12 @@ public class NodeImpl extends org.nasdanika.sdk.runtime.models.diagram.impl.Node
 	@Override
 	public void eSet(int featureID, Object newValue) {
 		switch (featureID) {
+			case DrawioPackage.NODE__LABEL:
+				setLabel((String)newValue);
+				return;
+			case DrawioPackage.NODE__STYLE:
+				((EStructuralFeature.Setting)getStyle()).set(newValue);
+				return;
 			case DrawioPackage.NODE__LINK:
 				setLink((AbstractLink)newValue);
 				return;
@@ -248,14 +296,11 @@ public class NodeImpl extends org.nasdanika.sdk.runtime.models.diagram.impl.Node
 				getTags().clear();
 				getTags().addAll((Collection<? extends Tag>)newValue);
 				return;
-			case DrawioPackage.NODE__STYLE:
-				setStyle((String)newValue);
-				return;
-			case DrawioPackage.NODE__LABEL:
-				setLabel((String)newValue);
-				return;
 			case DrawioPackage.NODE__COLLAPSED:
 				setCollapsed((Boolean)newValue);
+				return;
+			case DrawioPackage.NODE__VISIBLE:
+				setVisible((Boolean)newValue);
 				return;
 		}
 		super.eSet(featureID, newValue);
@@ -269,20 +314,23 @@ public class NodeImpl extends org.nasdanika.sdk.runtime.models.diagram.impl.Node
 	@Override
 	public void eUnset(int featureID) {
 		switch (featureID) {
+			case DrawioPackage.NODE__LABEL:
+				setLabel(LABEL_EDEFAULT);
+				return;
+			case DrawioPackage.NODE__STYLE:
+				getStyle().clear();
+				return;
 			case DrawioPackage.NODE__LINK:
 				setLink((AbstractLink)null);
 				return;
 			case DrawioPackage.NODE__TAGS:
 				getTags().clear();
 				return;
-			case DrawioPackage.NODE__STYLE:
-				setStyle(STYLE_EDEFAULT);
-				return;
-			case DrawioPackage.NODE__LABEL:
-				setLabel(LABEL_EDEFAULT);
-				return;
 			case DrawioPackage.NODE__COLLAPSED:
 				setCollapsed(COLLAPSED_EDEFAULT);
+				return;
+			case DrawioPackage.NODE__VISIBLE:
+				setVisible(VISIBLE_EDEFAULT);
 				return;
 		}
 		super.eUnset(featureID);
@@ -296,16 +344,20 @@ public class NodeImpl extends org.nasdanika.sdk.runtime.models.diagram.impl.Node
 	@Override
 	public boolean eIsSet(int featureID) {
 		switch (featureID) {
+			case DrawioPackage.NODE__LABEL:
+				return LABEL_EDEFAULT == null ? getLabel() != null : !LABEL_EDEFAULT.equals(getLabel());
+			case DrawioPackage.NODE__STYLE:
+				return !getStyle().isEmpty();
+			case DrawioPackage.NODE__STYLE_STRING:
+				return STYLE_STRING_EDEFAULT == null ? getStyleString() != null : !STYLE_STRING_EDEFAULT.equals(getStyleString());
 			case DrawioPackage.NODE__LINK:
 				return getLink() != null;
 			case DrawioPackage.NODE__TAGS:
 				return !getTags().isEmpty();
-			case DrawioPackage.NODE__STYLE:
-				return STYLE_EDEFAULT == null ? getStyle() != null : !STYLE_EDEFAULT.equals(getStyle());
-			case DrawioPackage.NODE__LABEL:
-				return LABEL_EDEFAULT == null ? getLabel() != null : !LABEL_EDEFAULT.equals(getLabel());
 			case DrawioPackage.NODE__COLLAPSED:
 				return isCollapsed() != COLLAPSED_EDEFAULT;
+			case DrawioPackage.NODE__VISIBLE:
+				return isVisible() != VISIBLE_EDEFAULT;
 		}
 		return super.eIsSet(featureID);
 	}
@@ -324,6 +376,9 @@ public class NodeImpl extends org.nasdanika.sdk.runtime.models.diagram.impl.Node
 		}
 		if (baseClass == ModelElement.class) {
 			switch (derivedFeatureID) {
+				case DrawioPackage.NODE__LABEL: return DrawioPackage.MODEL_ELEMENT__LABEL;
+				case DrawioPackage.NODE__STYLE: return DrawioPackage.MODEL_ELEMENT__STYLE;
+				case DrawioPackage.NODE__STYLE_STRING: return DrawioPackage.MODEL_ELEMENT__STYLE_STRING;
 				case DrawioPackage.NODE__LINK: return DrawioPackage.MODEL_ELEMENT__LINK;
 				case DrawioPackage.NODE__TAGS: return DrawioPackage.MODEL_ELEMENT__TAGS;
 				default: return -1;
@@ -346,6 +401,9 @@ public class NodeImpl extends org.nasdanika.sdk.runtime.models.diagram.impl.Node
 		}
 		if (baseClass == ModelElement.class) {
 			switch (baseFeatureID) {
+				case DrawioPackage.MODEL_ELEMENT__LABEL: return DrawioPackage.NODE__LABEL;
+				case DrawioPackage.MODEL_ELEMENT__STYLE: return DrawioPackage.NODE__STYLE;
+				case DrawioPackage.MODEL_ELEMENT__STYLE_STRING: return DrawioPackage.NODE__STYLE_STRING;
 				case DrawioPackage.MODEL_ELEMENT__LINK: return DrawioPackage.NODE__LINK;
 				case DrawioPackage.MODEL_ELEMENT__TAGS: return DrawioPackage.NODE__TAGS;
 				default: return -1;

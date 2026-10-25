@@ -35,7 +35,7 @@ include::{booktests}/DrawioToDiagram.java[tag=converter,indent=0]
 <4> Draw.io nodes contain nodes and connections, and so do the model's.
 <5> Labels in Draw.io are often HTML. The name keeps their text.
 
-What the minimal converter leaves out, a complete one adds: Draw.io's connection points as ports, labels on connections as `Label` children, tags and styles as properties, links between pages, and markers that record the file and page each element came from.
+What the minimal converter leaves out, a complete one adds: Draw.io's connection points as ports, labels on connections as `Label` children, tags and styles as attributes, links between pages, and markers that record the file and page each element came from.
 None of it needs a change to the model.
 
 === The result
@@ -45,7 +45,7 @@ None of it needs a change to the model.
 ----
 include::{booktests}/SemanticTests.java[tag=convert,indent=0]
 ----
-<1> The Draw.io properties of the box, here the package of the class it shows, are the element's properties.
+<1> The Draw.io properties of the box, here the package of the class it shows, are the element's attributes.
 <2> The figure's arrows are connections of the model, navigable from the node.
 
 The converted diagram is a model with thirteen documented nodes and eighteen connections, and no idea yet what any of them means.

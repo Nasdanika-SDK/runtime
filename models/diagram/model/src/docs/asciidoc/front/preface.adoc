@@ -48,6 +48,6 @@ ifdef::editor-notes[]
 ====
 Editor's notes record inconsistencies between the model and its documentation found while writing. They are shown in builds for the author and left out of published editions.
 
-The readme this book replaces described the model as it was in Nasdanika's model collection: `DiagramElement` extending the requirements model's `Satisfier`, a `tags` feature, the nxcore model, the model tower and its floors, and `semanticElementsSelector`. The runtime's model has none of them yet; `DiagramElement` extends the runtime core model's `NamedElement` and `StringIdentity`, and the `Satisfier` supertype is a TODO in the Xcore. This book describes the model as it is, and the rest as planned.
+The readme this book replaces described the model as it was in Nasdanika's model collection: `DiagramElement` extending the requirements model's `Satisfier`, a `tags` feature, the nxcore model, the model tower and its floors, and `semanticElementsSelector`. The runtime's model has none of them yet; `DiagramElement` extends the runtime core model's `NamedElement`, `StringIdentity` and `Attributed`, and the `Satisfier` supertype is a TODO in the Xcore. The readme's `properties` are `attributes`, from core's `Attributed`, since 2026-10-25. This book describes the model as it is, and the rest as planned.
 ====
 endif::[]

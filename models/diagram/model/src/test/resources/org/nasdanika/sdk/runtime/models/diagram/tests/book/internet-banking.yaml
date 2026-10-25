@@ -10,14 +10,14 @@ children:
   - eClass: https://runtime.sdk.nasdanika.org/models/diagram#//Node
     id: customer
     name: Personal Banking Customer
-    properties:
+    attributes:
       type: person
     bounds: { x: 240, "y": 0, width: 200, height: 80 }
   - eClass: https://runtime.sdk.nasdanika.org/models/diagram#//Node
     id: ibs
     name: Internet Banking System
     documentation: Lets customers view their accounts and make payments.
-    properties:
+    attributes:
       type: software-system
       owner: Digital Channels
     bounds: { x: 240, "y": 200, width: 200, height: 90 }
@@ -28,7 +28,7 @@ children:
   - eClass: https://runtime.sdk.nasdanika.org/models/diagram#//Node
     id: mainframe
     name: Mainframe Banking System
-    properties:
+    attributes:
       type: software-system
       owner: Core Banking
     bounds: { x: 240, "y": 400, width: 200, height: 90 }
@@ -40,7 +40,7 @@ children:
   - eClass: https://runtime.sdk.nasdanika.org/models/diagram#//Connection
     id: ibs-mainframe
     name: Gets account information from
-    properties:
+    attributes:
       protocol: XML/HTTPS
     source:
       eClass: https://runtime.sdk.nasdanika.org/models/diagram#//Port

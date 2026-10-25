@@ -1,0 +1,35 @@
+[#landscape]
+== What else there is
+
+=== Draw.io itself
+
+The source, not the rival, and the tool this model exists to keep people using.
+Draw.io has a JavaScript object model that lives in the editor and is gone when the tab closes.
+Its extension points (plug-ins, shape libraries, templates) extend the editor.
+Nothing in it is about what happens when a thousand diagrams need to be queried, checked, generated or connected to an architecture model, because that was never its job.
+
+=== Parsers and one-off converters
+
+Scripts that inflate the XML and walk it, the export modes of the Draw.io desktop application, converters to Mermaid or to images.
+Each solves one direction of one problem and produces a parse tree that lives for a few milliseconds.
+Few round-trip, none knows what a shape stands for, and many fail on the `<object>` wrapper, page links or a style key they have not seen before.
+
+=== Diagrams as code
+
+Mermaid, PlantUML, D2, Graphviz and the Structurizr DSL are text first, version-controlled, and good at what they do.
+Their limit is that the source is the artifact: there is no object graph to query, no stable identity to refer to from elsewhere, and references between diagrams are string matching.
+And they are not drawing tools for the people who own the content: a subject-matter expert will draw a box, and will not learn a DSL.
+
+Structurizr is the closest relative in spirit: a model with views generated from it.
+The difference is direction.
+Structurizr is model first and shaped by C4, with diagrams as output; this model is diagram first, with mapping to models as an optional step, and its editor is the one people already have.
+
+=== Modeling tools
+
+Eclipse's GMF, Sirius, Graphiti and GLSP keep diagrams in models too, as the persistence format of their editors.
+Those formats are bound to their editors, and a shape without its semantic element is an orphan.
+Here the editor is Draw.io, and a shape that depicts nothing is still a documented element.
+
+=== The real competitor
+
+A `.drawio` file committed to a repository that nothing reads, a PNG pasted into a wiki, and an architecture diagram that was accurate on the day it was drawn.

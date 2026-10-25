@@ -11,8 +11,7 @@ import org.eclipse.emf.common.util.EList;
  *
  * <!-- begin-model-doc -->
  * Base for every action that selects the cells it applies to.
- * 
- * The selector is the reason this is worth modelling rather than storing as a
+ *  * The selector is the reason this is worth modelling rather than storing as a
  * string: 'cells', 'layers', and 'tags' are identifiers in the JSON, and as
  * references they survive a rename, break a build when the target is deleted, and
  * let a generator say "animate the elements depicting this service" instead of

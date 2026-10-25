@@ -10,10 +10,7 @@ import org.nasdanika.sdk.runtime.models.diagram.Bounds;
  * <!-- end-user-doc -->
  *
  * <!-- begin-model-doc -->
- * Move the viewport to a rectangle.
- * 
- * Reuses diagram Bounds rather than redeclaring x/y/width/height, which is the
- * same reuse rule the rest of the model follows.
+ *  Move the viewport to a rectangle.
  * <!-- end-model-doc -->
  *
  * <p>

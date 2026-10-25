@@ -7,6 +7,7 @@ import org.eclipse.emf.ecore.EPackage;
 
 import org.eclipse.emf.ecore.util.Switch;
 
+import org.nasdanika.sdk.runtime.models.core.Attributed;
 import org.nasdanika.sdk.runtime.models.core.Documented;
 import org.nasdanika.sdk.runtime.models.core.Marked;
 import org.nasdanika.sdk.runtime.models.core.ModelElement;
@@ -90,6 +91,7 @@ public class DiagramSwitch<T> extends Switch<T> {
 				DiagramElement diagramElement = (DiagramElement)theEObject;
 				T result = caseDiagramElement(diagramElement);
 				if (result == null) result = caseNamedElement(diagramElement);
+				if (result == null) result = caseAttributed(diagramElement);
 				if (result == null) result = caseModelElement(diagramElement);
 				if (result == null) result = caseStringIdentity(diagramElement);
 				if (result == null) result = caseDocumented(diagramElement);
@@ -103,6 +105,7 @@ public class DiagramSwitch<T> extends Switch<T> {
 				T result = caseDiagram(diagram);
 				if (result == null) result = caseDiagramElement(diagram);
 				if (result == null) result = caseNamedElement(diagram);
+				if (result == null) result = caseAttributed(diagram);
 				if (result == null) result = caseModelElement(diagram);
 				if (result == null) result = caseStringIdentity(diagram);
 				if (result == null) result = caseDocumented(diagram);
@@ -116,6 +119,7 @@ public class DiagramSwitch<T> extends Switch<T> {
 				T result = caseLayer(layer);
 				if (result == null) result = caseDiagramElement(layer);
 				if (result == null) result = caseNamedElement(layer);
+				if (result == null) result = caseAttributed(layer);
 				if (result == null) result = caseModelElement(layer);
 				if (result == null) result = caseStringIdentity(layer);
 				if (result == null) result = caseDocumented(layer);
@@ -129,6 +133,7 @@ public class DiagramSwitch<T> extends Switch<T> {
 				T result = caseConnectable(connectable);
 				if (result == null) result = caseDiagramElement(connectable);
 				if (result == null) result = caseNamedElement(connectable);
+				if (result == null) result = caseAttributed(connectable);
 				if (result == null) result = caseModelElement(connectable);
 				if (result == null) result = caseStringIdentity(connectable);
 				if (result == null) result = caseDocumented(connectable);
@@ -143,6 +148,7 @@ public class DiagramSwitch<T> extends Switch<T> {
 				if (result == null) result = caseConnectable(node);
 				if (result == null) result = caseDiagramElement(node);
 				if (result == null) result = caseNamedElement(node);
+				if (result == null) result = caseAttributed(node);
 				if (result == null) result = caseModelElement(node);
 				if (result == null) result = caseStringIdentity(node);
 				if (result == null) result = caseDocumented(node);
@@ -157,6 +163,7 @@ public class DiagramSwitch<T> extends Switch<T> {
 				if (result == null) result = caseConnectable(port);
 				if (result == null) result = caseDiagramElement(port);
 				if (result == null) result = caseNamedElement(port);
+				if (result == null) result = caseAttributed(port);
 				if (result == null) result = caseModelElement(port);
 				if (result == null) result = caseStringIdentity(port);
 				if (result == null) result = caseDocumented(port);
@@ -170,6 +177,7 @@ public class DiagramSwitch<T> extends Switch<T> {
 				T result = caseConnection(connection);
 				if (result == null) result = caseDiagramElement(connection);
 				if (result == null) result = caseNamedElement(connection);
+				if (result == null) result = caseAttributed(connection);
 				if (result == null) result = caseModelElement(connection);
 				if (result == null) result = caseStringIdentity(connection);
 				if (result == null) result = caseDocumented(connection);
@@ -185,6 +193,7 @@ public class DiagramSwitch<T> extends Switch<T> {
 				if (result == null) result = caseConnectable(label);
 				if (result == null) result = caseDiagramElement(label);
 				if (result == null) result = caseNamedElement(label);
+				if (result == null) result = caseAttributed(label);
 				if (result == null) result = caseModelElement(label);
 				if (result == null) result = caseStringIdentity(label);
 				if (result == null) result = caseDocumented(label);
@@ -434,6 +443,21 @@ public class DiagramSwitch<T> extends Switch<T> {
 	 * @generated
 	 */
 	public T caseNamedElement(NamedElement object) {
+		return null;
+	}
+
+	/**
+	 * Returns the result of interpreting the object as an instance of '<em>Attributed</em>'.
+	 * <!-- begin-user-doc -->
+	 * This implementation returns null;
+	 * returning a non-null result will terminate the switch.
+	 * <!-- end-user-doc -->
+	 * @param object the target of the switch.
+	 * @return the result of interpreting the object as an instance of '<em>Attributed</em>'.
+	 * @see #doSwitch(org.eclipse.emf.ecore.EObject) doSwitch(EObject)
+	 * @generated
+	 */
+	public T caseAttributed(Attributed object) {
 		return null;
 	}
 

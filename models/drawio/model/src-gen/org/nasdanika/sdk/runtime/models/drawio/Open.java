@@ -9,11 +9,7 @@ package org.nasdanika.sdk.runtime.models.drawio;
  * <!-- end-user-doc -->
  *
  * <!-- begin-model-doc -->
- * Open a link - a URL, or another page via data:page/id,<id>.
- * 
- * Typed as AbstractLink rather than String so that an action opening a page is the
- * same navigable reference as an element's own link, and a page rename does not
- * quietly break the animation.
+ *  Open a link - a URL, or another page via data:page/id,<id>.
  * <!-- end-model-doc -->
  *
  * <p>

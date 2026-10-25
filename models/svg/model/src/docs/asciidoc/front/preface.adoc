@@ -1,0 +1,37 @@
+[preface]
+== Preface
+
+This book is about SVG as an EMF model: a subset of SVG, the twenty-odd elements and the presentation attributes that generated diagrams need, as Java classes that EMF writes as SVG and reads back.
+Its point is generated diagrams.
+A model is turned into a diagram, ELK lays the diagram out, and the SVG model draws it, with every shape a link and every documented shape a tooltip.
+
+The first part of the book is the why: why generated diagrams should be SVG, and why SVG should be a model.
+The second part is the how, for Java developers, and ends with a diagram laid out with ELK and written as SVG, which is this book's figure.
+The third says what comes next.
+
+=== Who this book is for
+
+*Developers* who generate diagrams from models for documentation, sites and books, and want them in vector form, navigable, and the same in HTML and PDF.
+
+*Writers of technical documentation* who want to know why a diagram in a Nasdanika book looks as it does, and how to get the same in their own.
+
+=== A book that stands on its own
+
+This book is one of the Nasdanika Zephyr Books: in-depth manuals, one per module of the Nasdanika SDK Runtime, in the manner of IBM Redbooks.
+Two of them are close to this one: _Diagram Model_, the notation-neutral model of diagrams, and _Diagram Layout with ELK_, which lays it out.
+You do not need either to read this one: where the books touch, this one repeats what you need.
+
+The series is named after the Bootswatch theme it is styled with, Zephyr, and has nothing to do with the Zephyr real-time operating system or with SmartBear's Zephyr test management.
+
+=== What you need
+
+* *A JDK for Java 25* and *Maven 3.9.16 or later*.
+* The model's Java module is `org.nasdanika.sdk.runtime.models.svg`, its Maven coordinates are `{group-id}:{artifact-id}:{runtime-version}`, and its namespace URI is SVG's own, `{nsuri}`.
+* Some familiarity with EMF helps in part two: an EMF model is a set of Java interfaces generated from a metamodel, with containment, references, reflection and persistence for free.
+
+=== Conventions
+
+* *Every listing is included from a test* of the module and compiled and run when the book is built. Callouts, such as <1>, explain the lines they mark.
+* *The figure is generated.* It is the SVG file a test writes, included as it is, in vector form, in the HTML, the PDF and the EPUB.
+* *Status labels* mark what this edition does not have yet: [.planned]#PLANNED# for designed but not built, [.sketch]#SKETCH# for partly built.
+* *Voice.* I write in the first person.

@@ -1,0 +1,186 @@
+// Defaults for previewing this file on its own; index.adoc and the Maven build set these
+ifndef::imagesdir[:imagesdir: ../../../test/resources/org/nasdanika/sdk/runtime/drawio/tests/book]
+ifndef::runtime-root[:runtime-root: ../../../../..]
+ifndef::playwrighttests[:playwrighttests: {runtime-root}/drawio-playwright/src/test/java/org/nasdanika/sdk/runtime/drawio/playwright/tests]
+
+[#rendering]
+== Rendering in a browser
+
+A diagram that a program built or changed has no picture until something draws it (<<changing>>).
+In Draw.io that does not matter, because the editor draws a diagram as it opens it.
+A documentation build, a report or a video needs the picture as a file.
+This chapter renders pages as PNG and SVG images, clicks shapes before taking the picture, and records videos of pages shown in sequence.
+
+=== Why draw.io's own viewer
+
+A `.drawio` file does not hold everything that Draw.io shows.
+Draw.io computes much of it each time it draws:
+
+* *Edge routes*, from the style. An orthogonal edge often stores few points or none, and line jumps and loops are computed too.
+* *Where an edge meets a shape*, from the shape's outline and the edge's exit and entry constraints.
+* *Labels*, which are usually HTML that the browser wraps.
+
+Drawing a diagram in Java would mean rebuilding all of that, and keeping up with Draw.io as it changes.
+Instead, the module runs Draw.io's own viewer, the script that shows diagrams embedded in web pages, in a browser that Playwright starts and drives.
+The picture is what the person who drew the diagram saw, because it is drawn by the same code.
+The price is a browser.
+
+=== The module
+
+Rendering is in a module of its own, `org.nasdanika.sdk.runtime:drawio-playwright`, so that the `drawio` module stays light: Playwright and a browser come only with this one.
+It is in this book because it is about Draw.io documents.
+
+.The module declaration of `drawio-playwright`
+[source,java]
+----
+include::{runtime-root}/drawio-playwright/src/main/java/module-info.java[tag=module,indent=0]
+----
+
+Your `module-info.java` needs `requires org.nasdanika.sdk.runtime.drawio.playwright;`, which brings the Draw.io API and the runtime's Playwright module with it.
+
+A rendering launches Chromium, in one of two ways:
+
+* With a *channel*, a browser installed on the machine, such as `chrome` or `msedge`. Nothing is downloaded.
+* Without one, the *Chromium that Playwright downloads* on first use into a cache in the user's home directory, a few hundred megabytes, once.
+
+The tests take the channel from the `nasdanika.playwright.channel` system property, which the build sets from the `playwright.channel` Maven property, `chrome` by default.
+They are skipped if no browser can be launched.
+Videos also need FFmpeg, which Playwright installs on request:
+
+[source,shell]
+----
+mvn exec:java -D exec.mainClass=com.microsoft.playwright.CLI -D exec.args="install ffmpeg"
+----
+
+The listings work on a document with three pages: _Context_ and _Containers_, a smaller variant of this book's running example, and _Payment_, with a button that runs custom actions.
+
+=== A page as PNG
+
+.Rendering the first page (`TestDrawioPlaywright.java`)
+[source,java]
+----
+include::{playwrighttests}/TestDrawioPlaywright.java[tag=png,indent=0]
+----
+<1> The first page of the document, cropped to the diagram and a border of 10 pixels, written to the file.
+<2> The image carries the page, as Draw.io's own PNG export does with _Include a copy of my diagram_: `loadFromPngMetadata` reads it back, and Draw.io opens the image for editing.
+
+The embedded document has only the page in the picture.
+A person who opens the image in Draw.io edits that page, and saves the image again with the page in it, which is what the figures of this book are.
+
+.The _Context_ page at scale 2 (`rendering-context.png`)
+image::rendering-context.png[The Context page rendered by the viewer,pdfwidth=50%,width=450]
+
+The Draw.io API also writes the embedding directly: `document.embedInPng(png, compress)` adds the document to any PNG image, after its header, without changing the image data.
+
+=== A page as SVG
+
+.Rendering a page as SVG
+[source,java]
+----
+include::{playwrighttests}/TestDrawioPlaywright.java[tag=svg,indent=0]
+----
+<1> The SVG carries the page in the `content` attribute of its root element, as Draw.io's editable SVG export does. `Document.loadFromSvg` reads it.
+
+The SVG is the one Draw.io exports: shapes and edges as SVG elements with `data-cell-id` attributes naming their cells, and HTML labels as `foreignObject` elements.
+Browsers draw `foreignObject`.
+Some other renderers do not, among them the one Asciidoctor PDF uses, so a PDF takes the PNG.
+
+=== Several pages
+
+.Rendering pages by name, at scale 2
+[source,java]
+----
+include::{playwrighttests}/TestDrawioPlaywright.java[tag=pages,indent=0]
+----
+<1> Pages by name, in the order given. `Pages.byId` picks them by ID, and `Pages.all` takes them all. A missing page is an error, not a gap.
+<2> Twice as many pixels in each direction, through the browser's device scale factor. The diagram is drawn at that resolution, not enlarged afterwards.
+<3> A file per page, named by a function of the page: `Rendering.fileNames(".png")` names a page's file after its name, in lower case with words joined by hyphens.
+
+The pages are rendered in one browser session: the viewer is loaded once and shows each page in turn.
+`svg` takes the same arguments.
+
+=== Interacting before the picture
+
+A page can be changed in the browser before its picture is taken.
+The last argument of `png` and `svg` is a function that receives the viewer and the page once the viewer shows the page:
+
+.Clicking a button that runs custom actions
+[source,java]
+----
+include::{playwrighttests}/TestDrawioPlaywright.java[tag=callback,indent=0]
+----
+<1> A picture of the page as it is first shown. The function can take as many as it likes.
+<2> A click in the middle of the shape of the cell with the ID `pay-button`, as a person would click it. The button's link holds custom actions, which start flow animations on the two connections and color the ledger.
+<3> Time for the actions to run. The pause is in the browser session's API, with the rest of Playwright.
+
+.Before the click (`rendering-payment-before.png`)
+image::rendering-payment-before.png[The Payment page before the click,pdfwidth=70%,width=560]
+
+.After the click (`rendering-payment-after.png`)
+image::rendering-payment-after.png[The Payment page after the click: dashed flowing connections and a green ledger,pdfwidth=70%,width=560]
+
+The function receives a `Viewer`.
+`viewer.session()` is the runtime's Playwright session, with Playwright's page, steps, screenshots and narration, and the viewer itself is in the browser's global variable `nasdanikaViewer` for scripts that need more of Draw.io's API.
+
+[cols="2,5",options="header"]
+|===
+| Method | Returns or does
+| `page()`, `document()` | The page shown, and its document
+| `show(page)` | Shows another page of the document
+| `click(id)`, `click(element)` | Clicks the shape of a cell, in its middle
+| `png()`, `png(file)` | The page shown as a PNG image, with the page embedded
+| `svg()`, `svg(file)` | The page shown as SVG, with the page embedded
+| `session()` | The browser session
+|===
+
+`rendering.inViewer(document, viewer -> ...)` opens a document in the viewer and hands the viewer over, for anything the methods above do not cover.
+
+=== Videos
+
+A video shows pages in sequence, each for as long as its frame says:
+
+.A tour of three pages
+[source,java]
+----
+include::{playwrighttests}/TestDrawioPlaywright.java[tag=video,indent=0]
+----
+<1> A frame: a page and how long it is shown.
+<2> A frame with a function, which runs once the page is shown: here it clicks the button, and the actions play while the frame lasts.
+
+The video is WebM, at the size of the browser's viewport, 1280 by 800 pixels by default.
+Each page is fit to the viewport and centered, enlarged at most twice.
+The recording starts when the browser opens its page, so the video begins with the fraction of a second the viewer takes to load.
+
+Draw.io animations are what videos are for: flow animations along connections, and custom actions that show, hide, fade, highlight and restyle shapes.
+In the viewer they run only when a person clicks, and in a video they run on cue, the same way every time.
+
+=== Rendering options
+
+`Rendering` is a record with a `with` method per component, and `Rendering.DEFAULT`:
+
+[cols="2,2,4",options="header"]
+|===
+| Component | Default | Meaning
+| `openTelemetry` | the current one | Receives the spans and log records of the sessions
+| `browser` | Playwright's Chromium, headless, 1280 by 800, scale 1, no step screenshots | The browser session's options; `withScale` sets the scale of PNG images
+| `viewer` | Draw.io's viewer 32.5.5 from jsDelivr | The URL of the viewer script
+| `border` | 10 | Space around the diagram in PNG and SVG images, in pixels
+| `embed` | `true` | Embed the page in PNG and SVG images
+|===
+
+Each rendering is a browser session in a `Browser` span of the trace, and each page a step span named after the page.
+With a video, each step span carries its offset into the video, so a trace and a video can be read together.
+The runtime's Playwright module and its Zephyr Book describe sessions, steps and the trace in full.
+
+=== Limits
+
+* *The viewer comes from jsDelivr*, at a pinned version, so rendering needs the network. It is downloaded once per JVM and served to the browser from memory. Shipping the viewer as a resource, for builds without the network, is [.planned]#PLANNED#.
+* *Fonts are the machine's.* Draw.io's default font is Helvetica, and a browser draws it with whatever it substitutes: Arial on Windows, Liberation Sans on Linux. The same page can come out a few pixels different on two machines, so tests compare embedded documents, not pixels.
+* *What the viewer does not draw is not in the picture*: shapes from stencil libraries that the viewer does not include, or images that cannot be loaded.
+
+ifdef::editor-notes[]
+[IMPORTANT,caption="Editor's note"]
+====
+The runtime's figure tool, `doc/zephyr/tools/drawio-figure`, renders the first page of a document with a shell script, Chrome's screenshot option and a Java program that crops the image and embeds the document. This module does the same from Java, so the tool can be retired once the books' figures are rendered with it.
+====
+endif::[]

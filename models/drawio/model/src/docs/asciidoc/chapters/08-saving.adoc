@@ -1,0 +1,34 @@
+// Defaults for previewing this file on its own; index.adoc and the Maven build set these
+ifndef::booktests[:booktests: ../../../test/java/org/nasdanika/sdk/runtime/models/drawio/tests]
+
+[#saving]
+== Changing and saving
+
+A Draw.io model is changed like any EMF model, and saved like any resource.
+
+.Changing a style and a property, and saving (`DrawioTests.java`)
+[source,java]
+----
+include::{booktests}/DrawioTests.java[tag=save,indent=0]
+----
+<1> A style value and an attribute, changed through their maps.
+<2> A resource for a `.drawio` file, with a copy of the document.
+<3> The saved file, read with the runtime's Draw.io API: the change is there, and the links are written as they were read.
+
+The test then loads the saved file into another resource set and compares it with what was saved: they are equal.
+
+=== How a document is written
+
+The saver creates a document with the runtime's Draw.io API and lets it write the XML:
+
+* Pages, layers and nodes first, in containment order, with their ids, so that children refer to their parents.
+* Then connections, which need both ends.
+* Then links, which need their targets. A custom link is written with its selectors, as its author wrote it. One that a program created with a target and no selectors is written by id.
+* An element without a label gets its name as the label. An element without an id gets one from the API.
+
+The document is compressed if its `compressed` feature says so.
+
+=== Images
+
+A `.drawio.png` or `.drawio.svg` resource loads, but does not save: an image is a picture of the document, and the model has no pictures.
+Save the document as a `.drawio` file, and render it with the runtime's `drawio-playwright` module, which draws it with Draw.io's own viewer and embeds the document in the image (<<generating>>).

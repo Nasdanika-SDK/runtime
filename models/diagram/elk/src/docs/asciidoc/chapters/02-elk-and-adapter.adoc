@@ -22,7 +22,7 @@ It does not, on purpose.
 * *ELK is already the abstraction.* A dozen algorithms behind one API and one vocabulary of options. A wrapper could only narrow it.
 * *Nothing needs to choose yet.* The capability framework is for choosing among implementations by requirement. The other layout engines a diagram meets, Draw.io's own and elkjs, run in JavaScript, not in the JVM.
 
-So the module is an adapter: from the diagram model to ELK's graph, ELK's options from the diagram's own properties, and the results written back into the diagram.
+So the module is an adapter: from the diagram model to ELK's graph, ELK's options from the diagram's own attributes, and the results written back into the diagram.
 Its entry point, `ElkLayout.layout(DiagramElement)`, is already the shape a layout service would have.
 When a second engine has a real consumer, such as a command that lets a user pick one, that signature becomes an interface and ELK one capability providing it; the adapter does not change.
 

@@ -9,11 +9,7 @@ package org.nasdanika.sdk.runtime.models.drawio;
  * <!-- end-user-doc -->
  *
  * <!-- begin-model-doc -->
- * Set opacity outright, 0..1.
- * 
- * The accounting case wants exactly this: opacity carrying a magnitude, so a flow
- * arrow between two accounts is faint when little moved through it and solid when
- * a lot did.
+ *  Set opacity outright, 0..1.
  * <!-- end-model-doc -->
  *
  * <p>

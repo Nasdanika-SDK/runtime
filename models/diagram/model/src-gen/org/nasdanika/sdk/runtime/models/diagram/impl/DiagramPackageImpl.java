@@ -234,7 +234,7 @@ public class DiagramPackageImpl extends EPackageImpl implements DiagramPackage {
 	 * <!-- end-user-doc -->
 	 * @generated
 	 */
-	public EReference getDiagramElement_Properties() {
+	public EReference getDiagramElement_SemanticElements() {
 		return (EReference)diagramElementEClass.getEStructuralFeatures().get(0);
 	}
 
@@ -243,17 +243,8 @@ public class DiagramPackageImpl extends EPackageImpl implements DiagramPackage {
 	 * <!-- end-user-doc -->
 	 * @generated
 	 */
-	public EReference getDiagramElement_SemanticElements() {
-		return (EReference)diagramElementEClass.getEStructuralFeatures().get(1);
-	}
-
-	/**
-	 * <!-- begin-user-doc -->
-	 * <!-- end-user-doc -->
-	 * @generated
-	 */
 	public EReference getDiagramElement_Children() {
-		return (EReference)diagramElementEClass.getEStructuralFeatures().get(2);
+		return (EReference)diagramElementEClass.getEStructuralFeatures().get(1);
 	}
 
 	/**
@@ -455,7 +446,6 @@ public class DiagramPackageImpl extends EPackageImpl implements DiagramPackage {
 		createEAttribute(boundsEClass, BOUNDS__HEIGHT);
 
 		diagramElementEClass = createEClass(DIAGRAM_ELEMENT);
-		createEReference(diagramElementEClass, DIAGRAM_ELEMENT__PROPERTIES);
 		createEReference(diagramElementEClass, DIAGRAM_ELEMENT__SEMANTIC_ELEMENTS);
 		createEReference(diagramElementEClass, DIAGRAM_ELEMENT__CHILDREN);
 
@@ -520,6 +510,7 @@ public class DiagramPackageImpl extends EPackageImpl implements DiagramPackage {
 		boundsEClass.getESuperTypes().add(this.getPoint());
 		diagramElementEClass.getESuperTypes().add(theCorePackage.getNamedElement());
 		diagramElementEClass.getESuperTypes().add(theCorePackage.getStringIdentity());
+		diagramElementEClass.getESuperTypes().add(theCorePackage.getAttributed());
 		diagramEClass.getESuperTypes().add(this.getDiagramElement());
 		layerEClass.getESuperTypes().add(this.getDiagramElement());
 		connectableEClass.getESuperTypes().add(this.getDiagramElement());
@@ -538,7 +529,6 @@ public class DiagramPackageImpl extends EPackageImpl implements DiagramPackage {
 		initEAttribute(getBounds_Height(), theEcorePackage.getEDouble(), "height", null, 0, 1, Bounds.class, !IS_TRANSIENT, !IS_VOLATILE, IS_CHANGEABLE, !IS_UNSETTABLE, !IS_ID, !IS_UNIQUE, !IS_DERIVED, IS_ORDERED);
 
 		initEClass(diagramElementEClass, DiagramElement.class, "DiagramElement", IS_ABSTRACT, !IS_INTERFACE, IS_GENERATED_INSTANCE_CLASS);
-		initEReference(getDiagramElement_Properties(), theCorePackage.getStringToStringMapEntry(), null, "properties", null, 0, -1, DiagramElement.class, !IS_TRANSIENT, !IS_VOLATILE, IS_CHANGEABLE, IS_COMPOSITE, !IS_RESOLVE_PROXIES, !IS_UNSETTABLE, IS_UNIQUE, !IS_DERIVED, IS_ORDERED);
 		initEReference(getDiagramElement_SemanticElements(), theEcorePackage.getEObject(), null, "semanticElements", null, 0, -1, DiagramElement.class, !IS_TRANSIENT, !IS_VOLATILE, IS_CHANGEABLE, !IS_COMPOSITE, IS_RESOLVE_PROXIES, !IS_UNSETTABLE, IS_UNIQUE, !IS_DERIVED, IS_ORDERED);
 		initEReference(getDiagramElement_Children(), this.getDiagramElement(), null, "children", null, 0, -1, DiagramElement.class, !IS_TRANSIENT, !IS_VOLATILE, IS_CHANGEABLE, IS_COMPOSITE, !IS_RESOLVE_PROXIES, !IS_UNSETTABLE, IS_UNIQUE, !IS_DERIVED, IS_ORDERED);
 
@@ -609,12 +599,6 @@ public class DiagramPackageImpl extends EPackageImpl implements DiagramPackage {
 		   source,
 		   new String[] {
 			   "documentation", " ---- Core ----"
-		   });
-		addAnnotation
-		  (getDiagramElement_Properties(),
-		   source,
-		   new String[] {
-			   "documentation", "Generic string properties \u2014 carrier for annotations/semantic mappings\n(same composability technique as the Nasdanika Markdown model)."
 		   });
 		addAnnotation
 		  (getDiagramElement_SemanticElements(),

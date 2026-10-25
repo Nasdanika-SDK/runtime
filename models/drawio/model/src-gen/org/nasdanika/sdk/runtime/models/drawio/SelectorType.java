@@ -15,10 +15,7 @@ import org.eclipse.emf.common.util.Enumerator;
  * <!-- end-user-doc -->
  * <!-- begin-model-doc -->
  * How a page or an element is picked out by a selector.
- * 
- * ID and NAME are the two qualified forms in the notation - 'id,' and 'name,'.
- * PROPERTY is the element-only 'property=value' form supported by the Java API's
- * selector syntax.
+ *  * ID and NAME are the two qualified forms in the notation - 'id,' and 'name,'.
  * <!-- end-model-doc -->
  * @see org.nasdanika.sdk.runtime.models.drawio.DrawioPackage#getSelectorType()
  * @model

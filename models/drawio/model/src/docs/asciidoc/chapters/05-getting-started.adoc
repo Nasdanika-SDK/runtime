@@ -1,0 +1,54 @@
+// Defaults for previewing this file on its own; index.adoc and the Maven build set these
+ifndef::runtime-root[:runtime-root: ../../../../../../..]
+
+[#getting-started]
+== Getting started
+
+The model is an EMF model, defined in Xcore and generated into Java when the runtime is built.
+Using it takes a Maven dependency, a line in `module-info.java`, and a resource set.
+
+=== Adding the model
+
+The runtime's models have a bill of materials, `org.nasdanika.sdk.runtime.models:bom`, which manages their versions.
+Import it in `dependencyManagement`, and depend on `{group-id}:{artifact-id}` without a version.
+
+The model is a named Java module:
+
+.The module declaration of the Draw.io model
+[source,java]
+----
+include::{runtime-root}/models/drawio/model/src/main/java/module-info.java[tag=module,indent=0]
+----
+
+It requires the presentation model transitively, which brings the diagram model, the runtime's core model, EMF and the runtime's `common` module with it.
+It requires the runtime's Draw.io API transitively too, because the loader takes the API's documents.
+It provides three services: its `EPackage`, a capability factory that offers the contents handler, and a resource set contributor that registers the resource factory.
+
+=== Files a resource set loads
+
+`NasdanikaResourceSet.createAndConfigure()` creates a resource set and lets every module on the module path contribute to it.
+With the model on the module path, these load as a Draw.io `Document`:
+
+[cols="2,4",options="header"]
+|===
+| File | What it is
+| `system.drawio` | A Draw.io document, compressed or not
+| `system.drawio.png` | A PNG image with the document embedded, as Draw.io exports it with _Include a copy of my diagram_
+| `system.drawio.svg` | An SVG image with the document in the `content` attribute of its root element, as Draw.io's editable SVG export writes it
+|===
+
+The `.drawio.png` and `.drawio.svg` names are the convention of Draw.io's Visual Studio Code extension, which edits such images directly.
+A `.drawio` file can be saved; images cannot (<<saving>>).
+
+=== How the right handler is found
+
+The model registers the runtime's `ContentsHandlingResourceFactory` for the `drawio` extension, and for `png` and `svg` unless another factory has them already.
+The factory reads the dots in the file name as qualifiers, right to left, and asks the capability framework for a contents handler for each, starting with the leftmost: in `system.drawio.png`, the qualifiers are `png`, `drawio` and `system`, and the model's handler answers for `drawio`, reading the qualifier to its right to know the format.
+Another module can offer handlers for its own qualifiers in the same way, for example `system.c4.drawio` for a mapping of Draw.io documents to a C4 model.
+
+=== What the build does
+
+The Xcore definition is in `src/main/resources/org/nasdanika/sdk/runtime/models/drawio/drawio.xcore`.
+Maven generates the Java sources into `src-gen` with the Xtext Maven plugin.
+The generated API is in three packages: the interfaces in `org.nasdanika.sdk.runtime.models.drawio`, their implementations in `impl`, and the switch and adapter factory in `util`.
+The loader, the saver and the contents handler are hand-written, in `resource`; the services are in `services`.

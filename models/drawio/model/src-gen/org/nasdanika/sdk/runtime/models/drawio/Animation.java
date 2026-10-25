@@ -13,10 +13,7 @@ import org.eclipse.emf.ecore.EObject;
  *
  * <!-- begin-model-doc -->
  * Page-level animation:
- * 
- *     {"animation": {"enabled": true, "loop": true, "steps": [ ... ]}}
- * 
- * MERGE NOTE - add 'contains Animation animation' to Page.
+ *  *     {"animation": {"enabled": true, "loop": true, "steps": [ ... ]}}
  * <!-- end-model-doc -->
  *
  * <p>

@@ -1,4 +1,4 @@
-﻿<project xmlns="http://maven.apache.org/POM/4.0.0"
+<project xmlns="http://maven.apache.org/POM/4.0.0"
     xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
     xsi:schemaLocation="http://maven.apache.org/POM/4.0.0 http://maven.apache.org/xsd/maven-4.0.0.xsd">
     <modelVersion>4.0.0</modelVersion>
@@ -10,13 +10,39 @@
     </parent>
     <artifactId>model</artifactId>
     <packaging>jar</packaging>
-    <name>Nasdanika SDK Runtime Drawio Model</name>
+    <name>Nasdanika SDK Runtime Draw.io Model</name>
+    <description>
+        Draw.io documents as an EMF model on the presentation and diagram models, loaded into and
+        saved from resource sets through the runtime's Draw.io API: .drawio files, and PNG and SVG
+        images with the document embedded. Its Nasdanika Zephyr Book, "Draw.io Model", is built from
+        src/docs/asciidoc with listings from the tests.
+    </description>
+
+    <properties>
+        <!-- The Zephyr Book's file name: the artifactId, model, says too little -->
+        <zephyr.book.name>drawio-model-${project.version}-book</zephyr.book.name>
+        <!--
+            The browser the tests render with: an installed one, such as chrome or msedge, or empty
+            for the Chromium that Playwright downloads on first use. Rendering tests are skipped if
+            it cannot be launched.
+        -->
+        <playwright.channel>chrome</playwright.channel>
+    </properties>
 
     <build>
         <plugins>
             <plugin>
                 <groupId>org.eclipse.xtext</groupId>
                 <artifactId>xtext-maven-plugin</artifactId>
+            </plugin>
+            <plugin>
+                <groupId>org.apache.maven.plugins</groupId>
+                <artifactId>maven-surefire-plugin</artifactId>
+                <configuration>
+                    <systemPropertyVariables>
+                        <nasdanika.playwright.channel>${playwright.channel}</nasdanika.playwright.channel>
+                    </systemPropertyVariables>
+                </configuration>
             </plugin>
             <plugin>
                 <groupId>org.codehaus.mojo</groupId>
@@ -28,7 +54,29 @@
 		<dependency>
 		    <groupId>org.nasdanika.sdk.runtime.models.presentation</groupId>
 		    <artifactId>model</artifactId>
-		</dependency> 		
+		</dependency>
+		<dependency>
+		    <groupId>org.nasdanika.sdk.runtime</groupId>
+		    <artifactId>drawio</artifactId>
+		    <version>${project.version}</version>
+		</dependency>
+		<dependency>
+		    <groupId>org.jsoup</groupId>
+		    <artifactId>jsoup</artifactId>
+		</dependency>
+		<!-- The Zephyr Book's demo: ELK layout, and rendering with Draw.io's viewer -->
+		<dependency>
+		    <groupId>org.nasdanika.sdk.runtime.models.diagram</groupId>
+		    <artifactId>elk</artifactId>
+		    <version>${project.version}</version>
+		    <scope>test</scope>
+		</dependency>
+		<dependency>
+		    <groupId>org.nasdanika.sdk.runtime</groupId>
+		    <artifactId>drawio-playwright</artifactId>
+		    <version>${project.version}</version>
+		    <scope>test</scope>
+		</dependency>
         <dependency>
             <groupId>org.eclipse.xtext</groupId>
             <artifactId>org.eclipse.xtext.xbase.lib</artifactId>

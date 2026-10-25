@@ -1,0 +1,27 @@
+[appendix]
+[#glossary]
+== Glossary
+
+ExtendedMetaData::
+EMF's annotations that map a model to XML: which element or attribute a class or a feature is, in which namespace. EMF puts them on models it generates from XML schemas; this model has them by hand.
+
+Feature map::
+An EMF list of entries, each a feature and a value, which keeps values of different features in one order. Here, the children of a container and the characters and spans of a text.
+
+Layout::
+Positions and sizes of nodes, routes of connections and positions of labels, computed here by the Eclipse Layout Kernel.
+
+Marker::
+A small drawing at the vertices of a line, such as an arrowhead, defined once and referred to by the lines that use it.
+
+Presentation attribute::
+An SVG attribute that says how an element is painted, such as `fill` or `stroke-width`. Inherited by an element's children.
+
+prawn-svg::
+The library Asciidoctor PDF draws SVG with. What it draws sets the subset of this model.
+
+Qualifier::
+A part of a file name between dots. In `system.drawio.svg`, the qualifiers are `svg`, `drawio` and `system`, read right to left.
+
+View box::
+The rectangle of user coordinates that an `svg` element shows, `min-x min-y width height`.

@@ -1,5 +1,5 @@
 @Ecore(
-   	nsURI="https://runtime.sdk.nasdanika.org/models/drawio", 
+   	nsURI="https://runtime.sdk.nasdanika.org/models/drawio",
 	nsPrefix="org.nasdanika.sdk.runtime.models.drawio")
 @GenModel(
 	modelDirectory="/model/src-gen",
@@ -12,6 +12,10 @@
 )
 package org.nasdanika.sdk.runtime.models.drawio
 
+import org.eclipse.emf.ecore.InternalEObject
+import org.nasdanika.sdk.runtime.common.DerivedSubsetEList
+import org.nasdanika.sdk.runtime.models.core.StringToStringMapEntry
+import org.nasdanika.sdk.runtime.models.diagram.DiagramPackage
 import org.nasdanika.sdk.runtime.models.presentation.Presentation
 import org.nasdanika.sdk.runtime.models.presentation.Slide
 
@@ -20,13 +24,24 @@ annotation "http://www.eclipse.org/emf/2002/GenModel" as GenModel
 annotation "urn:org.nasdanika" as Nasdanika
 
 /*
- * TODO - adjust to Nasdanika Draw.io API. E.g. style class with a derived style EMap reference backed by 'style' property 
- * Have ModelElement interface with style property
- * Connection point - extends Port and has dx/dy (pixels)
- * NodeStyle, ConnectionStyle extending style and adding Node/Connection flavors, Draw.io enums
- * Derived features for Document.pages (from Presentation.slides)
- * Page.layers, ... 
- */ 
+ * A Draw.io document as a model, on the presentation and diagram models: a document is a
+ * presentation, a page is a slide, layers, nodes and connections are their diagram namesakes.
+ * The model holds what makes Draw.io Draw.io, and inherits the rest.
+ *
+ * Loaded and saved through the runtime's Draw.io API by the resource contents handler in
+ * org.nasdanika.sdk.runtime.models.drawio.resource, for .drawio files and for PNG and SVG images
+ * with the document embedded (.drawio.png, .drawio.svg).
+ *
+ * What maps where:
+ *   - label        -> ModelElement.label as written (HTML if the style says html=1), and its text
+ *                     in DiagramElement.name
+ *   - tooltip      -> documentation, from core's Documented
+ *   - properties   -> attributes, from core's Attributed (the <object> wrapper's attributes)
+ *   - style        -> ModelElement.style, an ordered map
+ *   - tags         -> Page.tags and ModelElement.tags
+ *   - link         -> ModelElement.link
+ *   - geometry     -> Node.bounds, relative to the parent node, and Connection.waypoints
+ */
 
 /* mxfile */
 class Document extends Presentation {
@@ -34,6 +49,15 @@ class Document extends Presentation {
     String agent
     String version
     boolean compressed
+
+    /* The slides of the document, typed as pages. */
+    refers derived transient volatile Page[] pages get {
+        new DerivedSubsetEList<Page>(
+            typeof(Page),
+            this as InternalEObject,
+            DrawioPackage.DOCUMENT__PAGES,
+            DiagramPackage.DIAGRAM_ELEMENT__CHILDREN)
+    }
 }
 
 /* ============================================================================
@@ -41,20 +65,16 @@ class Document extends Presentation {
  * ============================================================================ */
 
 /*
- * Something a link can point at - a Page or an Element.
+ * Something a link can point at - a Page or a ModelElement.
  *
- * Mirrors org.nasdanika.drawio.LinkTarget in the Java API, which is likewise the
+ * Mirrors org.nasdanika.sdk.runtime.drawio.LinkTarget in the Java API, which is likewise the
  * common supertype of Page and ModelElement.
- *
- * Declared as an interface so that Page and Element can pick it up as a second
- * supertype without disturbing the presentation/diagram hierarchy they already
- * extend. With featureDelegation="Dynamic" the mixin costs nothing at runtime.
  */
 interface LinkTarget {
-	
+
 }
 
-/* mxfile/diagram - a page is a slide is a diagram. */
+/* mxfile/diagram - a page is a slide is a diagram. Its children are layers. */
 class Page extends Slide, LinkTarget {
     /* mxGraphModel attributes worth keeping. */
     double dx
@@ -62,36 +82,55 @@ class Page extends Slide, LinkTarget {
     double pageWidth
     double pageHeight
     double gridSize
-    
-	contains Tag[] tags    
-    
-}
 
-/* Common mxCell aspects: style string + custom properties (mxCell wrapped in <object>). */
-class Layer extends org.nasdanika.sdk.runtime.models.diagram.Layer {
-    String style
+    /*
+     * The tags of the page: the union of the tag names on its elements. Draw.io does not
+     * declare tags anywhere, they are names on cells. A tag's id is its name.
+     */
+	contains Tag[] tags
+
+	/*
+	 * The animation of the page. [PLANNED] Not loaded or saved yet.
+	 */
+	contains Animation animation
+
+    /* The children of the page, typed as layers. */
+    refers derived transient volatile Layer[] layers get {
+        new DerivedSubsetEList<Layer>(
+            typeof(Layer),
+            this as InternalEObject,
+            DrawioPackage.PAGE__LAYERS,
+            DiagramPackage.DIAGRAM_ELEMENT__CHILDREN)
+    }
+
 }
 
 /*
- * Common supertype of the Draw.io layer elements - what the format calls a cell
- * and the Java API calls ModelElement: the things that carry a style, a link,
- * tags, and custom properties.
- *
- * NAMING - the Java API calls this ModelElement and reserves Element for the
- * wider base (Document, Page, Model, Root, ModelElement). This file follows the
- * shorter name; if the API name is preferred, rename here and in doc/readme.md
- * together.
- *
- * To be merged into drawio.xcore as a second supertype:
- *
- *     class DrawioLayer      extends Layer,      Element { ... }
- *     class DrawioNode       extends Node,       Element { ... }
- *     class DrawioConnection extends Connection, Element { ... }
- *
- * Ecore supports the resulting diamond (Node and Element both reach
- * DiagramElement) without special handling.
+ * Common supertype of the Draw.io layers, nodes and connections: the cells, which the Java API
+ * calls ModelElement. They carry a label, a style, a link and tags. Their properties are the
+ * attributes, and their tooltip the documentation, of DiagramElement.
  */
 interface ModelElement extends LinkTarget {
+
+	/*
+	 * The label as Draw.io stores it: HTML when the style has html=1. DiagramElement.name is its
+	 * text. When the label is not set, saving writes the name.
+	 */
+	String label
+
+	/*
+	 * The style as an ordered map of keys and values, such as rounded -> 1 and fillColor -> #dae8fc.
+	 * A key without a value, such as ellipse or text at the start of a style, has a null value.
+	 * Unknown keys are kept, so a document round-trips.
+	 */
+	contains StringToStringMapEntry[] style
+
+	/*
+	 * The style as Draw.io writes it: key=value pairs, and keys without values, joined with ';'.
+	 */
+	derived readonly String styleString get {
+		org.nasdanika.sdk.runtime.models.drawio.resource.Styles.format(style)
+	}
 
     /*
      * The 'link' attribute, parsed. Null when the element has no link.
@@ -102,61 +141,40 @@ interface ModelElement extends LinkTarget {
     contains AbstractLink link
 
     /*
-     * Tag objects for the raw tag names inherited from DiagramElement.tags,
-     * resolved against the containing Page.
-     *
-     * Derived because DiagramElement.tags is the state - Draw.io tags are not
-     * declared anywhere, they are just strings on cells. This reference is what
-     * makes actions able to point at a tag rather than repeat its name.
+     * The tags of the element, contained by its page.
      */
     refers Tag[] tags opposite elements
 
-    /*
-     * NOTE for the merge: the style reference discussed in doc/readme.md belongs
-     * here as well, so that layers, nodes, and connections all have one:
-     *
-     *     refers derived transient volatile Style style
-     */
 }
 
+class Layer extends org.nasdanika.sdk.runtime.models.diagram.Layer, ModelElement {
+}
+
+/* A shape. Its children are the nodes and connections inside it. */
 class Node extends org.nasdanika.sdk.runtime.models.diagram.Node, ModelElement {
-    /* Raw draw.io style string, e.g. "rounded=1;fillColor=#dae8fc;". Parsed access via util. */
-    String style
-    String label
     boolean collapsed
-    /* Custom properties from the <object> wrapper are loaded into DiagramElement.properties. */
-}
-
-class Connection extends org.nasdanika.sdk.runtime.models.diagram.Connection, ModelElement {
-    String style
-    String label
-    /* Exit/entry X/Y style attributes are represented as Ports on source/target nodes. */
+    boolean visible = "true"
 }
 
 /*
- * A Draw.io tag.
+ * A connection. Its children are its labels, nodes that Draw.io positions along it. Exit and
+ * entry points (exitX, exitY, entryX, entryY) stay in the style. [PLANNED] Connection points as
+ * ports.
+ */
+class Connection extends org.nasdanika.sdk.runtime.models.diagram.Connection, ModelElement {
+    boolean visible = "true"
+}
+
+/*
+ * A Draw.io tag. Its id is its name.
  *
  * Tags matter more here than they look: the in-browser viewer can filter by them
  * with no server involved, and custom actions can target them, so a tag is the
  * cheapest way to say "this group of shapes moves together".
- *
- * MERGE NOTE - Page needs a containment for these, and it cannot be called 'tags'
- * because DiagramElement.tags (String[], inherited through Slide -> Diagram) already
- * occupies that name:
- *
- *     class Page extends Slide, LinkTarget {
- *         contains Tag[] tagDefinitions keys name
- *         contains Animation animation
- *         ...
- *     }
- *
- * The loader populates tagDefinitions from the union of the tag strings on the
- * page's elements. If the clash is worth resolving properly, the alternative is
- * renaming DiagramElement.tags on the diagram floor - a wider change than this one.
  */
 class Tag extends org.nasdanika.sdk.runtime.models.core.StringIdentity {
 
-    /* Elements on the page carrying this tag - the inverse of Element.elementTags. */
+    /* Elements on the page carrying this tag - the inverse of ModelElement.tags. */
     refers ModelElement[] elements opposite tags
 }
 
@@ -178,9 +196,10 @@ abstract class AbstractLink {
 
 /*
  * A link that is stored and used verbatim: an http(s) URL, a mailto:, a relative
- * path, or a data: URI this model does not interpret.
+ * path, a data: URI this model does not interpret, custom actions (data:action/json,...)
+ * until Actions are loaded, and a page or element link whose target is not in the document.
  *
- * Anything not recognised as a CustomLink, SpelLink, or Actions lands here, which
+ * Anything not recognised as a CustomLink or a SpelLink lands here, which
  * is what keeps the round trip lossless.
  */
 class SimpleLink extends AbstractLink {
@@ -191,8 +210,6 @@ class SimpleLink extends AbstractLink {
  * How a page or an element is picked out by a selector.
  *
  * ID and NAME are the two qualified forms in the notation - 'id,' and 'name,'.
- * PROPERTY is the element-only 'property=value' form supported by the Java API's
- * selector syntax.
  */
 enum SelectorType {
     ID
@@ -206,24 +223,19 @@ enum SelectorType {
  *
  *     data:page/id,<page id>
  *     data:page/name,<url encoded page name>
- *     data:element/id,<element id>
- *     data:element/name,<url encoded label>
+ *     data:element/id,[<page selector>/]<element id>
+ *     data:element/name,[<page selector>/]<url encoded label>
  *
  * with an optional document URI before a '#', resolved relative to the URI of the
- * containing document and therefore able to reach through URI handlers:
+ * containing document. A page selector is 'id,<page id>' or 'name,<page name>'.
  *
- *     data:element/name,compressed.drawio#name,Page+2/Linked
- *     data:page/name,maven://<gav>/my-system.drawio#My+Component
+ * The resolved references are the point of modelling this at all: "what links to this
+ * component" is a getReferrers query rather than a text search. Links within the document
+ * are loaded as custom links with their targets; links into other documents are loaded as
+ * simple links. [PLANNED] Targets in other documents of the resource set.
  *
- * The resolved references are the point of modelling this at all. In a resource
- * set a folder of .drawio files stops being a folder and becomes one traversable
- * object graph, so "what links to this component" is a getReferrers query rather
- * than a text search - and a link into a document that was never checked out still
- * resolves.
- *
- * The selector attributes are kept alongside the references so that saving
- * reproduces the notation the author wrote. A link written as 'name,' should not
- * come back as 'id,' just because the loader found it easier.
+ * The selectors are kept alongside the target so that saving reproduces the notation the
+ * author wrote. A custom link with a target and no selectors is saved by id.
  */
 class CustomLink extends AbstractLink {
 
@@ -233,7 +245,7 @@ class CustomLink extends AbstractLink {
      */
     String resource
 
-    /* The target, resolved. A Page for a page link, an Element for an element link. */
+    /* The target, resolved. A Page for a page link, a ModelElement for an element link. */
     refers LinkTarget target
 
     /* How the page was selected. Blank pageSelector means "the current page". */
@@ -249,14 +261,18 @@ class CustomLink extends AbstractLink {
  * data:spel,<expression>
  *
  * A link computed by a SpEL expression evaluated against the element it sits on,
- * so a shape can decide at generation time where it points.
+ * so a shape can decide at generation time where it points. Loaded and saved, not evaluated.
  */
 class SpelLink extends AbstractLink {
     String expression
 }
 
 /* ============================================================================
- * Custom actions and animations
+ * Custom actions and animations [PLANNED]
+ *
+ * The vocabulary of Draw.io's custom actions, as typed objects whose cells, layers and
+ * tags are references. Not loaded or saved yet: custom actions in links are loaded as
+ * simple links, so they round-trip as text.
  *
  * Draw.io's docs use "action" and "effect" more or less interchangeably; the JSON
  * calls them actions, so the model does too.
@@ -281,8 +297,6 @@ class Actions extends AbstractLink {
  * Page-level animation:
  *
  *     {"animation": {"enabled": true, "loop": true, "steps": [ ... ]}}
- *
- * MERGE NOTE - add 'contains Animation animation' to Page.
  */
 class Animation {
     boolean enabled = "true"
@@ -370,13 +384,7 @@ class Hide extends PersistableAction {
 class Toggle extends PersistableAction {
 }
 
-/*
- * Set opacity outright, 0..1.
- *
- * The accounting case wants exactly this: opacity carrying a magnitude, so a flow
- * arrow between two accounts is faint when little moved through it and solid when
- * a lot did.
- */
+/* Set opacity outright, 0..1. */
 class SetOpacity extends TargetedAction {
     double opacity
 }
@@ -424,14 +432,6 @@ class PopOut extends TransitionEffect {
 
 /*
  * Set one style key - the JSON {"style": {"key": "fillColor", "value": "#d5e8d4"}}.
- *
- * This is the action the RAG and progress-status cases are built on: red for
- * critical, amber for warning, green for good; grey/blue/green/red/amber for
- * backlog, in progress, done, blocked, past due.
- *
- * 'key' is a style key, so the Style hierarchy is the place to look for what is
- * settable. Kept as a plain string here because Draw.io accepts any key, including
- * ones this model does not name.
  */
 class SetStyle extends PersistableAction {
     String key
@@ -447,12 +447,7 @@ class ToggleStyle extends PersistableAction {
     String defaultValue
 }
 
-/*
- * Pulse a colour over the cells.
- *
- * The workhorse for observability overlays - the "this activity is slow" or "this
- * step failed" marker on an otherwise unchanged diagram.
- */
+/* Pulse a colour over the cells. */
 class Highlight extends TargetedAction {
     /* #RRGGBB. */
     String color
@@ -469,16 +464,7 @@ enum FlowMode {
     STOP
 }
 
-/*
- * Moving dashes along connections - the JSON {"flow": {"start": true}}.
- *
- * Modelled as a three-state enum because the JSON distinguishes "toggle whatever
- * it is now" (no 'start' key) from forcing it on or off, and a plain boolean
- * cannot say that.
- *
- * This is the one effect that reads as motion along an edge, which makes it the
- * natural rendering of a message, a transaction, or a control transfer.
- */
+/* Moving dashes along connections - the JSON {"flow": {"start": true}}. */
 class Flow extends TargetedAction {
     FlowMode mode = "TOGGLE"
 }
@@ -494,24 +480,13 @@ class Scroll extends TargetedAction {
     boolean smooth
 }
 
-/*
- * Move the viewport to a rectangle.
- *
- * Reuses diagram Bounds rather than redeclaring x/y/width/height, which is the
- * same reuse rule the rest of the model follows.
- */
+/* Move the viewport to a rectangle. */
 class Viewbox extends Action {
     contains org.nasdanika.sdk.runtime.models.diagram.Bounds bounds
     boolean smooth
 }
 
-/*
- * Open a link - a URL, or another page via data:page/id,<id>.
- *
- * Typed as AbstractLink rather than String so that an action opening a page is the
- * same navigable reference as an element's own link, and a page rename does not
- * quietly break the animation.
- */
+/* Open a link - a URL, or another page via data:page/id,<id>. */
 class Open extends Action {
     contains AbstractLink target
 }
@@ -520,14 +495,9 @@ class Open extends Action {
 
 /*
  * Change which tags are visible - {"tags": {"toggle": [], "hidden": [], "visible": []}}.
- *
- * Distinct from TargetedAction.tags, which selects cells *by* tag; this one turns
- * whole tag groups on and off, which is how a single diagram shows one scenario at
- * a time.
  */
 class TagsAction extends Action {
     refers Tag[] toggle
     refers Tag[] hidden
     refers Tag[] visible
 }
-

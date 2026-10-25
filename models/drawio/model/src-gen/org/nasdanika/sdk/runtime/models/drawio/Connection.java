@@ -8,12 +8,17 @@ package org.nasdanika.sdk.runtime.models.drawio;
  * A representation of the model object '<em><b>Connection</b></em>'.
  * <!-- end-user-doc -->
  *
+ * <!-- begin-model-doc -->
+ * A connection. Its children are its labels, nodes that Draw.io positions along it. Exit and
+ * entry points (exitX, exitY, entryX, entryY) stay in the style. [PLANNED] Connection points as
+ * ports.
+ * <!-- end-model-doc -->
+ *
  * <p>
  * The following features are supported:
  * </p>
  * <ul>
- *   <li>{@link org.nasdanika.sdk.runtime.models.drawio.Connection#getStyle <em>Style</em>}</li>
- *   <li>{@link org.nasdanika.sdk.runtime.models.drawio.Connection#getLabel <em>Label</em>}</li>
+ *   <li>{@link org.nasdanika.sdk.runtime.models.drawio.Connection#isVisible <em>Visible</em>}</li>
  * </ul>
  *
  * @see org.nasdanika.sdk.runtime.models.drawio.DrawioPackage#getConnection()
@@ -22,47 +27,26 @@ package org.nasdanika.sdk.runtime.models.drawio;
  */
 public interface Connection extends org.nasdanika.sdk.runtime.models.diagram.Connection, ModelElement {
 	/**
-	 * Returns the value of the '<em><b>Style</b></em>' attribute.
+	 * Returns the value of the '<em><b>Visible</b></em>' attribute.
+	 * The default value is <code>"true"</code>.
 	 * <!-- begin-user-doc -->
 	 * <!-- end-user-doc -->
-	 * @return the value of the '<em>Style</em>' attribute.
-	 * @see #setStyle(String)
-	 * @see org.nasdanika.sdk.runtime.models.drawio.DrawioPackage#getConnection_Style()
-	 * @model unique="false"
+	 * @return the value of the '<em>Visible</em>' attribute.
+	 * @see #setVisible(boolean)
+	 * @see org.nasdanika.sdk.runtime.models.drawio.DrawioPackage#getConnection_Visible()
+	 * @model default="true" unique="false"
 	 * @generated
 	 */
-	String getStyle();
+	boolean isVisible();
 
 	/**
-	 * Sets the value of the '{@link org.nasdanika.sdk.runtime.models.drawio.Connection#getStyle <em>Style</em>}' attribute.
+	 * Sets the value of the '{@link org.nasdanika.sdk.runtime.models.drawio.Connection#isVisible <em>Visible</em>}' attribute.
 	 * <!-- begin-user-doc -->
 	 * <!-- end-user-doc -->
-	 * @param value the new value of the '<em>Style</em>' attribute.
-	 * @see #getStyle()
+	 * @param value the new value of the '<em>Visible</em>' attribute.
+	 * @see #isVisible()
 	 * @generated
 	 */
-	void setStyle(String value);
-
-	/**
-	 * Returns the value of the '<em><b>Label</b></em>' attribute.
-	 * <!-- begin-user-doc -->
-	 * <!-- end-user-doc -->
-	 * @return the value of the '<em>Label</em>' attribute.
-	 * @see #setLabel(String)
-	 * @see org.nasdanika.sdk.runtime.models.drawio.DrawioPackage#getConnection_Label()
-	 * @model unique="false"
-	 * @generated
-	 */
-	String getLabel();
-
-	/**
-	 * Sets the value of the '{@link org.nasdanika.sdk.runtime.models.drawio.Connection#getLabel <em>Label</em>}' attribute.
-	 * <!-- begin-user-doc -->
-	 * <!-- end-user-doc -->
-	 * @param value the new value of the '<em>Label</em>' attribute.
-	 * @see #getLabel()
-	 * @generated
-	 */
-	void setLabel(String value);
+	void setVisible(boolean value);
 
 } // Connection

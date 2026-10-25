@@ -9,10 +9,7 @@ package org.nasdanika.sdk.runtime.models.drawio;
  * <!-- end-user-doc -->
  *
  * <!-- begin-model-doc -->
- * Pulse a colour over the cells.
- * 
- * The workhorse for observability overlays - the "this activity is slow" or "this
- * step failed" marker on an otherwise unchanged diagram.
+ *  Pulse a colour over the cells.
  * <!-- end-model-doc -->
  *
  * <p>

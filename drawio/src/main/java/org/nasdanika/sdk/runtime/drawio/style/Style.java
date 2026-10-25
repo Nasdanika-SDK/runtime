@@ -3,7 +3,7 @@ package org.nasdanika.sdk.runtime.drawio.style;
 import java.util.Map;
 
 /**
- * Base style interface extending Map<String,String>.
+ * Base style interface extending {@code Map<String,String>}.
  */
 public interface Style extends Map<String,String> {
 	

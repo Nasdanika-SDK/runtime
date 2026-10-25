@@ -1,0 +1,25 @@
+[appendix]
+[#building-this-book]
+== Building this book, and its figure
+
+This book is AsciiDoc in `models/svg/model/src/docs/asciidoc`, built with the model after its tests have passed:
+
+[source,text]
+----
+mvn -pl models/svg/model -am verify                         # the model, its tests and this book
+mvn -pl models/svg/model verify -Dzephyr.editor-notes=false   # without editor's notes
+mvn -pl models/svg/model verify -Dasciidoctor.skip=true       # without the book
+----
+
+The PDF and the single-page HTML are written to `target/book` and attached to the model's artifact with the classifier `book`; the test sources are attached with the classifier `test-sources`.
+The look comes from the runtime's `doc/zephyr` directory, shared by all the Nasdanika Zephyr Books.
+
+Listings are tagged regions of the tests in `src/test/java/org/nasdanika/sdk/runtime/models/svg/tests`.
+A listing line holds at most 96 characters, and a warning fails the build.
+
+=== The figure
+
+The figure, `internet-banking.svg` in `src/test/resources/org/nasdanika/sdk/runtime/models/svg/tests`, is the file that `SvgTests.testDiagram` writes to `target/svg`, copied.
+To change it, change the test or the converter, run the tests, and copy the file again.
+
+The figure is also the test of the subset against Asciidoctor PDF's SVG renderer: a warning from the renderer fails the build of the PDF.

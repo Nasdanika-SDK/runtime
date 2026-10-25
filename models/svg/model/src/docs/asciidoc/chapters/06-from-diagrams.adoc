@@ -1,0 +1,71 @@
+// Defaults for previewing this file on its own; index.adoc and the Maven build set these
+ifndef::booktests[:booktests: ../../../test/java/org/nasdanika/sdk/runtime/models/svg/tests]
+ifndef::imagesdir[:imagesdir: ../../../test/resources/org/nasdanika/sdk/runtime/models/svg/tests]
+
+[#from-diagrams]
+== From a diagram to SVG
+
+This chapter builds a diagram with the runtime's diagram model, lays it out with ELK, and draws it as SVG.
+The diagram is the system context of an Internet Banking System, after the C4 model's example.
+
+=== The diagram
+
+.A system context in the diagram model (`SvgTests.java`)
+[source,java]
+----
+include::{booktests}/SvgTests.java[tag=diagram,indent=0]
+----
+<1> ELK's layout options are attributes of the diagram: top to bottom, orthogonal routes, and room between nodes.
+<2> Documentation, which becomes a tooltip, and a link attribute, which becomes a hyperlink.
+
+The diagram has nodes and connections, and no coordinates.
+
+=== Laying out and drawing
+
+.Layout, conversion and writing
+[source,java]
+----
+include::{booktests}/SvgTests.java[tag=layout,indent=0]
+----
+<1> ELK sizes the nodes to fit their names, with padding, places them, routes the connections, and places a label for each connection's name. It writes bounds, routes and label positions into the diagram.
+<2> The converter, below, draws the laid-out diagram with the SVG model.
+<3> The SVG, written to a file.
+
+.The system context, laid out by ELK and drawn as SVG (`internet-banking.svg`)
+image::internet-banking.svg[The Internet Banking System's context: a customer, the system, a mainframe and an e-mail system,pdfwidth=90%]
+
+In the HTML edition of this book, the Internet Banking System box is a link, and its documentation is its tooltip.
+
+=== The converter
+
+The converter is in the module's tests: it is a demonstration, and a diagram's look is a choice of the generator, not of the model.
+It walks the diagram, keeping track of where each node's coordinates start, because the bounds of a node are relative to the node that contains it:
+
+.Walking the diagram (`DiagramToSvg.java`)
+[source,java]
+----
+include::{booktests}/DiagramToSvg.java[tag=converter,indent=0]
+----
+<1> The size of the drawing, from the extent of the laid-out diagram, and a view box in the same units.
+<2> A group with a margin, moved by a transform.
+
+A node is a group with a rounded rectangle and its name, in colors by its `type` attribute:
+
+.A node
+[source,java]
+----
+include::{booktests}/DiagramToSvg.java[tag=node,indent=0]
+----
+<1> A node with a `link` attribute is wrapped in a link.
+<2> A node's documentation is the group's title: its tooltip.
+<3> The name, centered. The baseline is moved down by a third of the font size, which centers lowercase text closely enough, and works in renderers that do not support `dominant-baseline`.
+
+A connection is a polyline through the route ELK computed, with an arrowhead, and its name where ELK placed its label:
+
+.A connection
+[source,java]
+----
+include::{booktests}/DiagramToSvg.java[tag=connection,indent=0]
+----
+<1> The arrowhead is a marker, defined once in `defs` and referred to by every line.
+<2> ELK reserved this rectangle for the label, so names do not overlap lines or boxes.

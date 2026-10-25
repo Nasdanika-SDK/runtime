@@ -11,12 +11,13 @@ import org.eclipse.emf.common.util.EList;
  *
  * <!-- begin-model-doc -->
  *  ============================================================================
- * Custom actions and animations
- * 
- * Draw.io's docs use "action" and "effect" more or less interchangeably; the JSON
+ * Custom actions and animations [PLANNED]
+ *  * The vocabulary of Draw.io's custom actions, as typed objects whose cells, layers and
+ * tags are references. Not loaded or saved yet: custom actions in links are loaded as
+ * simple links, so they round-trip as text.
+ *  * Draw.io's docs use "action" and "effect" more or less interchangeably; the JSON
  * calls them actions, so the model does too.
- * 
- * Two carriers, one vocabulary:
+ *  * Two carriers, one vocabulary:
  *   - Actions   - attached to an element, run when it is clicked.
  *   - Animation - attached to a page, runs on load, optionally looping.
  * ============================================================================

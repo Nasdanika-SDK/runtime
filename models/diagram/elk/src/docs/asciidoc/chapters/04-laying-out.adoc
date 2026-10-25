@@ -14,7 +14,7 @@ Three nodes and two connections, laid out left to right:
 ----
 include::{booktests}/LayoutTests.java[tag=pipeline,indent=0]
 ----
-<1> A layout option, as a property of the diagram. Keys that start with `elk.` or `org.eclipse.elk.` are ELK options; the value is parsed by the option's type.
+<1> A layout option, as an attribute of the diagram. Keys that start with `elk.` or `org.eclipse.elk.` are ELK options; the value is parsed by the option's type.
 <2> Builds the ELK graph, lays it out, and writes the results back into the diagram.
 <3> The nodes now have bounds, in the order of the flow.
 <4> A node without bounds is sized to fit its name, here the minimum width.
@@ -51,7 +51,7 @@ include::{booktests}/LayoutTests.java[tag=pipeline,indent=0]
 | `ElkLabel` of the edge
 | Bounds, in the coordinates of the waypoints
 
-| Properties with `elk.` keys
+| Attributes with `elk.` keys
 | Layout options of the element
 | Nothing
 |===
@@ -99,14 +99,14 @@ include::{booktests}/LayoutTests.java[tag=nested,indent=0]
 <4> ELK routes the edge in the root, the lowest node containing both ends.
 <5> The route ends on the API, in the coordinates of the diagram, where the connection is.
 
-When any node has children, the adapter sets ELK's `elk.hierarchyHandling` to `INCLUDE_CHILDREN` on the root, unless the root's properties say otherwise.
+When any node has children, the adapter sets ELK's `elk.hierarchyHandling` to `INCLUDE_CHILDREN` on the root, unless the root's attributes say otherwise.
 Containers get padding at the top for their name, and a minimum size to fit it.
 
 === Options
 
-Options come from three places, later ones winning: ELK's defaults, options set on `ElkLayout` in code, which apply to the root, and the properties of diagram elements.
+Options come from three places, later ones winning: ELK's defaults, options set on `ElkLayout` in code, which apply to the root, and the attributes of diagram elements.
 
-.Options in code and in properties
+.Options in code and in attributes
 [source,java]
 ----
 include::{booktests}/LayoutTests.java[tag=options,indent=0]
@@ -115,7 +115,7 @@ include::{booktests}/LayoutTests.java[tag=options,indent=0]
 <2> `build` makes the ELK graph without laying it out, to inspect it or to change it before `layout()` and `apply()`.
 <3> An unknown option, or a value the option cannot parse, fails before anything is laid out.
 
-Options in properties are data: they travel with the diagram, in a file, in a model, from a generator, and an editor that keeps unknown properties keeps them.
+Options in attributes are data: they travel with the diagram, in a file, in a model, from a generator, and an editor that keeps unknown attributes keeps them.
 Options in code suit what a program decides for every diagram it lays out.
 <<layout-options>> lists the ones used most.
 

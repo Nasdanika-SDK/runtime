@@ -9,6 +9,7 @@ import org.eclipse.emf.common.notify.impl.AdapterFactoryImpl;
 
 import org.eclipse.emf.ecore.EObject;
 
+import org.nasdanika.sdk.runtime.models.core.Attributed;
 import org.nasdanika.sdk.runtime.models.core.Documented;
 import org.nasdanika.sdk.runtime.models.core.Marked;
 import org.nasdanika.sdk.runtime.models.core.NamedElement;
@@ -93,12 +94,12 @@ public class DrawioAdapterFactory extends AdapterFactoryImpl {
 				return createPageAdapter();
 			}
 			@Override
-			public Adapter caseLayer(Layer object) {
-				return createLayerAdapter();
-			}
-			@Override
 			public Adapter caseModelElement(ModelElement object) {
 				return createModelElementAdapter();
+			}
+			@Override
+			public Adapter caseLayer(Layer object) {
+				return createLayerAdapter();
 			}
 			@Override
 			public Adapter caseNode(Node object) {
@@ -261,6 +262,10 @@ public class DrawioAdapterFactory extends AdapterFactoryImpl {
 				return createNamedElementAdapter();
 			}
 			@Override
+			public Adapter caseAttributed(Attributed object) {
+				return createAttributedAdapter();
+			}
+			@Override
 			public Adapter caseDiagramElement(DiagramElement object) {
 				return createDiagramElementAdapter();
 			}
@@ -355,20 +360,6 @@ public class DrawioAdapterFactory extends AdapterFactoryImpl {
 	}
 
 	/**
-	 * Creates a new adapter for an object of class '{@link org.nasdanika.sdk.runtime.models.drawio.Layer <em>Layer</em>}'.
-	 * <!-- begin-user-doc -->
-	 * This default implementation returns null so that we can easily ignore cases;
-	 * it's useful to ignore a case when inheritance will catch all the cases anyway.
-	 * <!-- end-user-doc -->
-	 * @return the new adapter.
-	 * @see org.nasdanika.sdk.runtime.models.drawio.Layer
-	 * @generated
-	 */
-	public Adapter createLayerAdapter() {
-		return null;
-	}
-
-	/**
 	 * Creates a new adapter for an object of class '{@link org.nasdanika.sdk.runtime.models.drawio.ModelElement <em>Model Element</em>}'.
 	 * <!-- begin-user-doc -->
 	 * This default implementation returns null so that we can easily ignore cases;
@@ -379,6 +370,20 @@ public class DrawioAdapterFactory extends AdapterFactoryImpl {
 	 * @generated
 	 */
 	public Adapter createModelElementAdapter() {
+		return null;
+	}
+
+	/**
+	 * Creates a new adapter for an object of class '{@link org.nasdanika.sdk.runtime.models.drawio.Layer <em>Layer</em>}'.
+	 * <!-- begin-user-doc -->
+	 * This default implementation returns null so that we can easily ignore cases;
+	 * it's useful to ignore a case when inheritance will catch all the cases anyway.
+	 * <!-- end-user-doc -->
+	 * @return the new adapter.
+	 * @see org.nasdanika.sdk.runtime.models.drawio.Layer
+	 * @generated
+	 */
+	public Adapter createLayerAdapter() {
 		return null;
 	}
 
@@ -939,6 +944,20 @@ public class DrawioAdapterFactory extends AdapterFactoryImpl {
 	 * @generated
 	 */
 	public Adapter createNamedElementAdapter() {
+		return null;
+	}
+
+	/**
+	 * Creates a new adapter for an object of class '{@link org.nasdanika.sdk.runtime.models.core.Attributed <em>Attributed</em>}'.
+	 * <!-- begin-user-doc -->
+	 * This default implementation returns null so that we can easily ignore cases;
+	 * it's useful to ignore a case when inheritance will catch all the cases anyway.
+	 * <!-- end-user-doc -->
+	 * @return the new adapter.
+	 * @see org.nasdanika.sdk.runtime.models.core.Attributed
+	 * @generated
+	 */
+	public Adapter createAttributedAdapter() {
 		return null;
 	}
 

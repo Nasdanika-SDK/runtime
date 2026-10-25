@@ -38,6 +38,7 @@ This book keeps their argument and rebuilds their how on the runtime.
 
 * *A JDK for Java 25* and *Maven 3.9.16 or later* to build against the module. Its Java module is `org.nasdanika.sdk.runtime.drawio`, and its Maven coordinates are `{group-id}:{artifact-id}:{runtime-version}`.
 * *Draw.io*, to draw: the desktop application, the web application at {drawio-site}, or the Draw.io extension for Visual Studio Code. All of them read and write the same files.
+* *Chrome, Edge or Playwright's Chromium*, only to render diagrams as images or videos (<<rendering>>).
 
 === Conventions
 

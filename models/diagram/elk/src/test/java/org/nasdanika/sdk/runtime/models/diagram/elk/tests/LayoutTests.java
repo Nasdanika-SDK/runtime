@@ -53,7 +53,7 @@ public class LayoutTests {
 		// tag::pipeline[]
 		Diagram diagram = FACTORY.createDiagram();
 		diagram.setId("pipeline");
-		diagram.getProperties().put("elk.direction", "RIGHT"); // <1>
+		diagram.getAttributes().put("elk.direction", "RIGHT"); // <1>
 		Node build = node(diagram, "Build");
 		Node test = node(diagram, "Test");
 		Node deploy = node(diagram, "Deploy");
@@ -83,8 +83,8 @@ public class LayoutTests {
 		// tag::ports[]
 		Diagram diagram = FACTORY.createDiagram();
 		diagram.setId("ports");
-		diagram.getProperties().put("elk.direction", "UP");
-		diagram.getProperties().put("elk.edgeRouting", "ORTHOGONAL");
+		diagram.getAttributes().put("elk.direction", "UP");
+		diagram.getAttributes().put("elk.edgeRouting", "ORTHOGONAL");
 		Node general = node(diagram, "General");
 		Node special = node(diagram, "Special");
 		Port top = FACTORY.createPort(); // <1>
@@ -156,7 +156,7 @@ public class LayoutTests {
 		// tag::options[]
 		Diagram diagram = FACTORY.createDiagram();
 		diagram.setId("options");
-		node(diagram, "A").getProperties().put("elk.nodeSize.minimum", "(200, 100)");
+		node(diagram, "A").getAttributes().put("elk.nodeSize.minimum", "(200, 100)");
 
 		DiagramElkGraph graph = new ElkLayout()
 			.option(CoreOptions.DIRECTION, Direction.DOWN) // <1>
@@ -166,7 +166,7 @@ public class LayoutTests {
 		ElkNode a = elkRoot.getChildren().getFirst();
 		assertThat(a.getProperty(CoreOptions.NODE_SIZE_MINIMUM).x).isEqualTo(200);
 
-		diagram.getProperties().put("elk.direction", "SIDEWAYS");
+		diagram.getAttributes().put("elk.direction", "SIDEWAYS");
 		assertThatThrownBy(() -> new ElkLayout().build(diagram)) // <3>
 			.isInstanceOf(IllegalArgumentException.class)
 			.hasMessageContaining("elk.direction");

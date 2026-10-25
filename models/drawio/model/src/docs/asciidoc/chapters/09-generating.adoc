@@ -1,0 +1,65 @@
+// Defaults for previewing this file on its own; index.adoc and the Maven build set these
+ifndef::booktests[:booktests: ../../../test/java/org/nasdanika/sdk/runtime/models/drawio/tests]
+ifndef::imagesdir[:imagesdir: ../../../test/resources/org/nasdanika/sdk/runtime/models/drawio/tests]
+
+[#generating]
+== Generating, laying out and rendering
+
+This chapter generates a diagram from a model, lays it out with ELK, saves it as a `.drawio` file, renders it with Draw.io's viewer, and loads the picture back.
+The model is the running JVM: the runtime's modules in the boot layer, and which of them requires which.
+
+=== Generating
+
+.A page of modules (`GeneratedDiagramTests.java`)
+[source,java]
+----
+include::{booktests}/GeneratedDiagramTests.java[tag=generate,indent=0]
+----
+<1> ELK's layout options are attributes: top to bottom, with orthogonal routes.
+<2> The name is the label, since no label is set.
+<3> The style as a map. Models are blue, the rest grey.
+<4> A `requires transitive` is dashed.
+
+No node has bounds yet.
+
+=== Laying out
+
+The runtime's `diagram/elk` module lays out diagram model elements, and a Draw.io page is one.
+Layers are transparent to it: their nodes are laid out together.
+
+.Laying out, and saving
+[source,java]
+----
+include::{booktests}/GeneratedDiagramTests.java[tag=layout,indent=0]
+----
+<1> ELK sizes the nodes to fit their names, places them, and routes the connections. The bounds and waypoints are written back into the model.
+<2> A `.drawio` file. Draw.io opens it with the layout ELK computed.
+
+ELK routes a connection from the outline of its source to the outline of its target, and writes the whole route.
+Draw.io wants the bends as waypoints, and the ends as points on the shapes, relative to their bounds:
+
+.From an ELK route to Draw.io's waypoints and connection points
+[source,java]
+----
+include::{booktests}/GeneratedDiagramTests.java[tag=anchor,indent=0]
+----
+
+=== Rendering
+
+.Rendering with Draw.io's viewer, and loading the picture
+[source,java]
+----
+include::{booktests}/GeneratedDiagramTests.java[tag=render,indent=0]
+----
+<1> The saved file, read with the runtime's Draw.io API.
+<2> A PNG image at twice the size, drawn by Draw.io's own viewer in a browser driven by Playwright, through the `drawio-playwright` module, with the document embedded. The _Draw.io_ Zephyr Book describes rendering in full.
+<3> The image is a Draw.io resource too: `.drawio.png` loads as the document it carries.
+
+.The modules of the test run (`modules.drawio.png`)
+image::modules.drawio.png[The runtime modules of the test run and what they require,pdfwidth=60%,width=480]
+
+The figure shows the modules the test ran with: the Draw.io model and what it requires.
+The test's other dependencies, the ELK adapter and the rendering module, are on the class path in the test run, so they are not in the boot layer.
+
+The same pipeline draws any model: a class hierarchy, a deployment, the systems of an architecture.
+A person who wants to arrange the result by hand opens the PNG in Draw.io; the next generation would overwrite their work, and merging the two is [.planned]#PLANNED# (<<looking-ahead>>).

@@ -17,7 +17,7 @@ The running example is the system context of an internet banking system, after t
 include::{booktests}/BuildingTests.java[tag=build,indent=0]
 ----
 <1> The document is a diagram, and so is its page: diagrams nest.
-<2> Properties are an EMF map: `getProperties()` returns an `EMap<String, String>`, with `put`, `get` and `map()` for a `java.util.Map` view.
+<2> Attributes are an EMF map: `getAttributes()` returns an `EMap<String, String>`, with `put`, `get` and `map()` for a `java.util.Map` view.
 <3> Documentation comes from the runtime's core model.
 <4> A port on the bottom edge of the Internet Banking System, from which the connection to the mainframe leaves.
 

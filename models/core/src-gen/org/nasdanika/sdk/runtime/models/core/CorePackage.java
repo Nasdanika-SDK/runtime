@@ -208,6 +208,43 @@ public interface CorePackage extends EPackage {
 	int STRING_TO_STRING_MAP_ENTRY_OPERATION_COUNT = 0;
 
 	/**
+	 * The meta object id for the '{@link org.nasdanika.sdk.runtime.models.core.Attributed <em>Attributed</em>}' class.
+	 * <!-- begin-user-doc -->
+	 * <!-- end-user-doc -->
+	 * @see org.nasdanika.sdk.runtime.models.core.Attributed
+	 * @see org.nasdanika.sdk.runtime.models.core.impl.CorePackageImpl#getAttributed()
+	 * @generated
+	 */
+	int ATTRIBUTED = 3;
+
+	/**
+	 * The feature id for the '<em><b>Attributes</b></em>' map.
+	 * <!-- begin-user-doc -->
+	 * <!-- end-user-doc -->
+	 * @generated
+	 * @ordered
+	 */
+	int ATTRIBUTED__ATTRIBUTES = 0;
+
+	/**
+	 * The number of structural features of the '<em>Attributed</em>' class.
+	 * <!-- begin-user-doc -->
+	 * <!-- end-user-doc -->
+	 * @generated
+	 * @ordered
+	 */
+	int ATTRIBUTED_FEATURE_COUNT = 1;
+
+	/**
+	 * The number of operations of the '<em>Attributed</em>' class.
+	 * <!-- begin-user-doc -->
+	 * <!-- end-user-doc -->
+	 * @generated
+	 * @ordered
+	 */
+	int ATTRIBUTED_OPERATION_COUNT = 0;
+
+	/**
 	 * The meta object id for the '{@link org.nasdanika.sdk.runtime.models.core.impl.MarkerImpl <em>Marker</em>}' class.
 	 * <!-- begin-user-doc -->
 	 * <!-- end-user-doc -->
@@ -215,7 +252,7 @@ public interface CorePackage extends EPackage {
 	 * @see org.nasdanika.sdk.runtime.models.core.impl.CorePackageImpl#getMarker()
 	 * @generated
 	 */
-	int MARKER = 3;
+	int MARKER = 4;
 
 	/**
 	 * The feature id for the '<em><b>Location</b></em>' attribute.
@@ -306,7 +343,7 @@ public interface CorePackage extends EPackage {
 	 * @see org.nasdanika.sdk.runtime.models.core.impl.CorePackageImpl#getGitMarker()
 	 * @generated
 	 */
-	int GIT_MARKER = 4;
+	int GIT_MARKER = 5;
 
 	/**
 	 * The feature id for the '<em><b>Location</b></em>' attribute.
@@ -442,7 +479,7 @@ public interface CorePackage extends EPackage {
 	 * @see org.nasdanika.sdk.runtime.models.core.impl.CorePackageImpl#getMarked()
 	 * @generated
 	 */
-	int MARKED = 5;
+	int MARKED = 6;
 
 	/**
 	 * The feature id for the '<em><b>Markers</b></em>' containment reference list.
@@ -479,7 +516,7 @@ public interface CorePackage extends EPackage {
 	 * @see org.nasdanika.sdk.runtime.models.core.impl.CorePackageImpl#getContent()
 	 * @generated
 	 */
-	int CONTENT = 6;
+	int CONTENT = 7;
 
 	/**
 	 * The feature id for the '<em><b>Content</b></em>' attribute.
@@ -534,7 +571,7 @@ public interface CorePackage extends EPackage {
 	 * @see org.nasdanika.sdk.runtime.models.core.impl.CorePackageImpl#getSectionReference()
 	 * @generated
 	 */
-	int SECTION_REFERENCE = 7;
+	int SECTION_REFERENCE = 8;
 
 	/**
 	 * The feature id for the '<em><b>Title</b></em>' attribute.
@@ -580,7 +617,7 @@ public interface CorePackage extends EPackage {
 	 * @see org.nasdanika.sdk.runtime.models.core.impl.CorePackageImpl#getSection()
 	 * @generated
 	 */
-	int SECTION = 8;
+	int SECTION = 9;
 
 	/**
 	 * The feature id for the '<em><b>Title</b></em>' attribute.
@@ -644,7 +681,7 @@ public interface CorePackage extends EPackage {
 	 * @see org.nasdanika.sdk.runtime.models.core.impl.CorePackageImpl#getDocumented()
 	 * @generated
 	 */
-	int DOCUMENTED = 9;
+	int DOCUMENTED = 10;
 
 	/**
 	 * The feature id for the '<em><b>Documentation</b></em>' attribute.
@@ -717,7 +754,7 @@ public interface CorePackage extends EPackage {
 	 * @see org.nasdanika.sdk.runtime.models.core.impl.CorePackageImpl#getModelElement()
 	 * @generated
 	 */
-	int MODEL_ELEMENT = 10;
+	int MODEL_ELEMENT = 11;
 
 	/**
 	 * The feature id for the '<em><b>Id</b></em>' attribute.
@@ -844,7 +881,7 @@ public interface CorePackage extends EPackage {
 	 * @see org.nasdanika.sdk.runtime.models.core.impl.CorePackageImpl#getNamedElement()
 	 * @generated
 	 */
-	int NAMED_ELEMENT = 11;
+	int NAMED_ELEMENT = 12;
 
 	/**
 	 * The feature id for the '<em><b>Id</b></em>' attribute.
@@ -980,7 +1017,7 @@ public interface CorePackage extends EPackage {
 	 * @see org.nasdanika.sdk.runtime.models.core.impl.CorePackageImpl#getEvaluator()
 	 * @generated
 	 */
-	int EVALUATOR = 12;
+	int EVALUATOR = 13;
 
 	/**
 	 * The feature id for the '<em><b>Documentation</b></em>' attribute.
@@ -1098,7 +1135,7 @@ public interface CorePackage extends EPackage {
 	 * @see org.nasdanika.sdk.runtime.models.core.impl.CorePackageImpl#getSourceEvaluator()
 	 * @generated
 	 */
-	int SOURCE_EVALUATOR = 13;
+	int SOURCE_EVALUATOR = 14;
 
 	/**
 	 * The feature id for the '<em><b>Documentation</b></em>' attribute.
@@ -1234,7 +1271,7 @@ public interface CorePackage extends EPackage {
 	 * @see org.nasdanika.sdk.runtime.models.core.impl.CorePackageImpl#getExpressionEvaluator()
 	 * @generated
 	 */
-	int EXPRESSION_EVALUATOR = 14;
+	int EXPRESSION_EVALUATOR = 15;
 
 	/**
 	 * The feature id for the '<em><b>Documentation</b></em>' attribute.
@@ -1361,7 +1398,7 @@ public interface CorePackage extends EPackage {
 	 * @see org.nasdanika.sdk.runtime.models.core.impl.CorePackageImpl#getSpelEvaluator()
 	 * @generated
 	 */
-	int SPEL_EVALUATOR = 15;
+	int SPEL_EVALUATOR = 16;
 
 	/**
 	 * The feature id for the '<em><b>Documentation</b></em>' attribute.
@@ -1488,7 +1525,7 @@ public interface CorePackage extends EPackage {
 	 * @see org.nasdanika.sdk.runtime.models.core.impl.CorePackageImpl#getXPathEvaluator()
 	 * @generated
 	 */
-	int XPATH_EVALUATOR = 16;
+	int XPATH_EVALUATOR = 17;
 
 	/**
 	 * The feature id for the '<em><b>Documentation</b></em>' attribute.
@@ -1615,7 +1652,7 @@ public interface CorePackage extends EPackage {
 	 * @see org.nasdanika.sdk.runtime.models.core.impl.CorePackageImpl#getScriptEvaluator()
 	 * @generated
 	 */
-	int SCRIPT_EVALUATOR = 17;
+	int SCRIPT_EVALUATOR = 18;
 
 	/**
 	 * The feature id for the '<em><b>Documentation</b></em>' attribute.
@@ -1760,7 +1797,7 @@ public interface CorePackage extends EPackage {
 	 * @see org.nasdanika.sdk.runtime.models.core.impl.CorePackageImpl#getGroovyEvaluator()
 	 * @generated
 	 */
-	int GROOVY_EVALUATOR = 18;
+	int GROOVY_EVALUATOR = 19;
 
 	/**
 	 * The feature id for the '<em><b>Documentation</b></em>' attribute.
@@ -1896,7 +1933,7 @@ public interface CorePackage extends EPackage {
 	 * @see org.nasdanika.sdk.runtime.models.core.impl.CorePackageImpl#getInstant()
 	 * @generated
 	 */
-	int INSTANT = 19;
+	int INSTANT = 20;
 
 	/**
 	 * The meta object id for the '<em>Duration</em>' data type.
@@ -1906,7 +1943,7 @@ public interface CorePackage extends EPackage {
 	 * @see org.nasdanika.sdk.runtime.models.core.impl.CorePackageImpl#getDuration()
 	 * @generated
 	 */
-	int DURATION = 20;
+	int DURATION = 21;
 
 	/**
 	 * The meta object id for the '<em>Class</em>' data type.
@@ -1916,7 +1953,7 @@ public interface CorePackage extends EPackage {
 	 * @see org.nasdanika.sdk.runtime.models.core.impl.CorePackageImpl#getClass_()
 	 * @generated
 	 */
-	int CLASS = 21;
+	int CLASS = 22;
 
 	/**
 	 * The meta object id for the '<em>Map</em>' data type.
@@ -1926,7 +1963,7 @@ public interface CorePackage extends EPackage {
 	 * @see org.nasdanika.sdk.runtime.models.core.impl.CorePackageImpl#getMap()
 	 * @generated
 	 */
-	int MAP = 22;
+	int MAP = 23;
 
 	/**
 	 * The meta object id for the '<em>Object</em>' data type.
@@ -1936,7 +1973,7 @@ public interface CorePackage extends EPackage {
 	 * @see org.nasdanika.sdk.runtime.models.core.impl.CorePackageImpl#getObject()
 	 * @generated
 	 */
-	int OBJECT = 23;
+	int OBJECT = 24;
 
 
 	/**
@@ -2023,6 +2060,27 @@ public interface CorePackage extends EPackage {
 	 * @generated
 	 */
 	EAttribute getStringToStringMapEntry_Value();
+
+	/**
+	 * Returns the meta object for class '{@link org.nasdanika.sdk.runtime.models.core.Attributed <em>Attributed</em>}'.
+	 * <!-- begin-user-doc -->
+	 * <!-- end-user-doc -->
+	 * @return the meta object for class '<em>Attributed</em>'.
+	 * @see org.nasdanika.sdk.runtime.models.core.Attributed
+	 * @generated
+	 */
+	EClass getAttributed();
+
+	/**
+	 * Returns the meta object for the map '{@link org.nasdanika.sdk.runtime.models.core.Attributed#getAttributes <em>Attributes</em>}'.
+	 * <!-- begin-user-doc -->
+	 * <!-- end-user-doc -->
+	 * @return the meta object for the map '<em>Attributes</em>'.
+	 * @see org.nasdanika.sdk.runtime.models.core.Attributed#getAttributes()
+	 * @see #getAttributed()
+	 * @generated
+	 */
+	EReference getAttributed_Attributes();
 
 	/**
 	 * Returns the meta object for class '{@link org.nasdanika.sdk.runtime.models.core.Marker <em>Marker</em>}'.
@@ -2763,6 +2821,24 @@ public interface CorePackage extends EPackage {
 		 * @generated
 		 */
 		EAttribute STRING_TO_STRING_MAP_ENTRY__VALUE = eINSTANCE.getStringToStringMapEntry_Value();
+
+		/**
+		 * The meta object literal for the '{@link org.nasdanika.sdk.runtime.models.core.Attributed <em>Attributed</em>}' class.
+		 * <!-- begin-user-doc -->
+		 * <!-- end-user-doc -->
+		 * @see org.nasdanika.sdk.runtime.models.core.Attributed
+		 * @see org.nasdanika.sdk.runtime.models.core.impl.CorePackageImpl#getAttributed()
+		 * @generated
+		 */
+		EClass ATTRIBUTED = eINSTANCE.getAttributed();
+
+		/**
+		 * The meta object literal for the '<em><b>Attributes</b></em>' map feature.
+		 * <!-- begin-user-doc -->
+		 * <!-- end-user-doc -->
+		 * @generated
+		 */
+		EReference ATTRIBUTED__ATTRIBUTES = eINSTANCE.getAttributed_Attributes();
 
 		/**
 		 * The meta object literal for the '{@link org.nasdanika.sdk.runtime.models.core.impl.MarkerImpl <em>Marker</em>}' class.

@@ -12,7 +12,7 @@ The Javadoc of the module is the complete reference.
 | Type | What it is for
 
 | `Document`
-| The file. Static `load` methods for strings, readers, streams, files, URLs and URIs, `data:` URIs included; `loadFromPngMetadata` for PNG images; `create` for a new document. Instance methods: `getPages`, `createPage`, `getPageByName`, `getPageById`, `save`, `toHtml`, `toDataURI`, `getDocument(URI)` for linked documents, `getProperty` from the context.
+| The file. Static `load` methods for strings, readers, streams, files, URLs and URIs, `data:` URIs included; `loadFromPngMetadata` for PNG images; `loadFromSvg` for SVG images with the document in the `content` attribute; `create` for a new document. Instance methods: `getPages`, `createPage`, `getPageByName`, `getPageById`, `save`, `toHtml`, `toDataURI`, `embedInPng`, `getDocument(URI)` for linked documents, `getProperty` from the context.
 
 | `Document.Context`
 | What a document is loaded with: `openStream(URI)` for linked documents, `getProperty(name)` for placeholders, `filterProperty(element, name, value)`. Factories `fromPropertySource`, `fromURIHandler`, `fromURIConverter`; `from(...)`, `compose` and `reduce` to combine contexts.
@@ -124,6 +124,30 @@ ifdef::editor-notes[]
 `Util.traverser` has two overloads. The one that takes a `BiFunction` visits the target of a connection twice and never its source: it calls `getConnectableNode(connection.getTarget())` for both. The `Consumer` overload is correct. The `package-info.java` of the module links to the documentation of Nasdanika core, and the Javadoc of `Document.Context.getVariables` still mentions `$spel` magic properties, which the module no longer has; `getVariables` itself is not used by the module. The `impl` and `style.impl` packages are exported, which makes the implementation classes part of the API.
 ====
 endif::[]
+
+=== `org.nasdanika.sdk.runtime.drawio.playwright`
+
+In the module `drawio-playwright` (<<rendering>>).
+
+[cols="2,5",options="header"]
+|===
+| Type | What it is for
+
+| `Rendering`
+| Renders pages with Draw.io's viewer in a browser: `png` and `svg` for a document's first page, a page, or pages with a file name function and an optional `PageBody`; `video` for frames; `inViewer` for full control; `fileNames(extension)`. A record with `with` methods; `DEFAULT`.
+
+| `Rendering.PageBody`
+| What to do with a page once the viewer shows it: `run(viewer, page)`.
+
+| `Viewer`
+| A document open in the viewer: `page`, `document`, `show`, `click` by ID or element, `png`, `svg`, `session`. The viewer is the browser's global variable `nasdanikaViewer`.
+
+| `Frame`
+| A page of a video, its duration and an optional `PageBody`.
+
+| `Pages`
+| Pages to render: `byId`, `byName`, `all`.
+|===
 
 === Selectors
 

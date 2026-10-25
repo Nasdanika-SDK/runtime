@@ -19,6 +19,7 @@ import org.eclipse.emf.ecore.EcorePackage;
 
 import org.eclipse.emf.ecore.impl.EPackageImpl;
 
+import org.nasdanika.sdk.runtime.models.core.Attributed;
 import org.nasdanika.sdk.runtime.models.core.Content;
 import org.nasdanika.sdk.runtime.models.core.CoreFactory;
 import org.nasdanika.sdk.runtime.models.core.CorePackage;
@@ -67,6 +68,13 @@ public class CorePackageImpl extends EPackageImpl implements CorePackage {
 	 * @generated
 	 */
 	private EClass stringToStringMapEntryEClass = null;
+
+	/**
+	 * <!-- begin-user-doc -->
+	 * <!-- end-user-doc -->
+	 * @generated
+	 */
+	private EClass attributedEClass = null;
 
 	/**
 	 * <!-- begin-user-doc -->
@@ -348,6 +356,24 @@ public class CorePackageImpl extends EPackageImpl implements CorePackage {
 	 */
 	public EAttribute getStringToStringMapEntry_Value() {
 		return (EAttribute)stringToStringMapEntryEClass.getEStructuralFeatures().get(1);
+	}
+
+	/**
+	 * <!-- begin-user-doc -->
+	 * <!-- end-user-doc -->
+	 * @generated
+	 */
+	public EClass getAttributed() {
+		return attributedEClass;
+	}
+
+	/**
+	 * <!-- begin-user-doc -->
+	 * <!-- end-user-doc -->
+	 * @generated
+	 */
+	public EReference getAttributed_Attributes() {
+		return (EReference)attributedEClass.getEStructuralFeatures().get(0);
 	}
 
 	/**
@@ -938,6 +964,9 @@ public class CorePackageImpl extends EPackageImpl implements CorePackage {
 		createEAttribute(stringToStringMapEntryEClass, STRING_TO_STRING_MAP_ENTRY__KEY);
 		createEAttribute(stringToStringMapEntryEClass, STRING_TO_STRING_MAP_ENTRY__VALUE);
 
+		attributedEClass = createEClass(ATTRIBUTED);
+		createEReference(attributedEClass, ATTRIBUTED__ATTRIBUTES);
+
 		markerEClass = createEClass(MARKER);
 		createEAttribute(markerEClass, MARKER__LOCATION);
 		createEAttribute(markerEClass, MARKER__POSITION);
@@ -1085,6 +1114,9 @@ public class CorePackageImpl extends EPackageImpl implements CorePackage {
 		initEClass(stringToStringMapEntryEClass, Map.Entry.class, "StringToStringMapEntry", !IS_ABSTRACT, !IS_INTERFACE, !IS_GENERATED_INSTANCE_CLASS);
 		initEAttribute(getStringToStringMapEntry_Key(), theEcorePackage.getEString(), "key", null, 0, 1, Map.Entry.class, !IS_TRANSIENT, !IS_VOLATILE, IS_CHANGEABLE, !IS_UNSETTABLE, !IS_ID, !IS_UNIQUE, !IS_DERIVED, IS_ORDERED);
 		initEAttribute(getStringToStringMapEntry_Value(), theEcorePackage.getEString(), "value", null, 0, 1, Map.Entry.class, !IS_TRANSIENT, !IS_VOLATILE, IS_CHANGEABLE, !IS_UNSETTABLE, !IS_ID, !IS_UNIQUE, !IS_DERIVED, IS_ORDERED);
+
+		initEClass(attributedEClass, Attributed.class, "Attributed", IS_ABSTRACT, IS_INTERFACE, IS_GENERATED_INSTANCE_CLASS);
+		initEReference(getAttributed_Attributes(), this.getStringToStringMapEntry(), null, "attributes", null, 0, -1, Attributed.class, !IS_TRANSIENT, !IS_VOLATILE, IS_CHANGEABLE, IS_COMPOSITE, !IS_RESOLVE_PROXIES, !IS_UNSETTABLE, IS_UNIQUE, !IS_DERIVED, IS_ORDERED);
 
 		initEClass(markerEClass, Marker.class, "Marker", !IS_ABSTRACT, !IS_INTERFACE, IS_GENERATED_INSTANCE_CLASS);
 		initEAttribute(getMarker_Location(), theEcorePackage.getEString(), "location", null, 0, 1, Marker.class, !IS_TRANSIENT, !IS_VOLATILE, IS_CHANGEABLE, !IS_UNSETTABLE, !IS_ID, !IS_UNIQUE, !IS_DERIVED, IS_ORDERED);
@@ -1293,6 +1325,12 @@ public class CorePackageImpl extends EPackageImpl implements CorePackage {
 		   source,
 		   new String[] {
 			   "body", "final <%org.eclipse.emf.common.util.BasicEList%><<%org.eclipse.emf.ecore.EObject%>> ret = new <%org.eclipse.emf.common.util.BasicEList%><<%org.eclipse.emf.ecore.EObject%>>();\nfinal <%org.eclipse.emf.ecore.resource.Resource%> res = this.eResource();\n<%org.eclipse.emf.common.util.TreeIterator%><?> cit = null;\nif ((res == null))\n{\n\t<%org.eclipse.emf.ecore.EObject%> root = this;\n\t<%org.eclipse.emf.ecore.EObject%> rc = null;\n\twhile (((rc = root.eContainer()) != null))\n\t{\n\t\troot = rc;\n\t}\n\tif ((root != null))\n\t{\n\t\tthis.collect(root, eReference, ret);\n\t\tcit = root.eAllContents();\n\t}\n}\nelse\n{\n\tfinal <%org.eclipse.emf.ecore.resource.ResourceSet%> rSet = res.getResourceSet();\n\t<%org.eclipse.emf.common.util.TreeIterator%><? extends <%org.eclipse.emf.common.notify.Notifier%>> _xifexpression = null;\n\tif ((rSet == null))\n\t{\n\t\t_xifexpression = res.getAllContents();\n\t}\n\telse\n\t{\n\t\t_xifexpression = rSet.getAllContents();\n\t}\n\tcit = _xifexpression;\n}\nif ((cit != null))\n{\n\twhile (cit.hasNext())\n\t{\n\t\tthis.collect(cit.next(), eReference, ret);\n\t}\n}\nreturn ret;"
+		   });
+		addAnnotation
+		  (attributedEClass,
+		   source,
+		   new String[] {
+			   "documentation", "*\nMixin for elements that carry attributes: string keys and values for what a source format\ncarries and a model does not name, and for conventions of one\'s own. For example, Draw.io\nproperties, Markdown and AsciiDoc block attributes, and layout options of diagram elements.\nCalled attributes, not properties, so that it does not clash with models that have properties\nof their own."
 		   });
 		addAnnotation
 		  (getMarker_Feature(),

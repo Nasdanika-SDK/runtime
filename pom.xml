@@ -1,5 +1,6 @@
 ﻿<project xmlns="http://maven.apache.org/POM/4.0.0" xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
-	xsi:schemaLocation="http://maven.apache.org/POM/4.0.0 http://maven.apache.org/xsd/maven-4.0.0.xsd">
+	xsi:schemaLocation="http://maven.apache.org/POM/4.0.0 http://maven.apache.org/xsd/maven-4.0.0.xsd"
+	child.project.url.inherit.append.path="false">
 	<modelVersion>4.0.0</modelVersion>
 	<groupId>org.nasdanika.sdk.runtime</groupId>
 	<version>2026.10.0</version>
@@ -8,6 +9,11 @@
 	<name>Nasdanika SDK Runtime</name>
 	<description>Parent pom.</description>
 
+	<!--
+		Modules inherit this URL and the SCM URL as they are. Maven would otherwise append each
+		module's artifactId, and the intermediate poms are all called parent, which gives broken URLs
+		such as .../index.html/parent/parent/model in published poms.
+	-->
 	<url>https://sdk.nasdanika.org/runtime/index.html</url>
 		
 	<licenses>
@@ -18,7 +24,7 @@
 		</license>
 	</licenses>
 
-	<scm>
+	<scm child.scm.url.inherit.append.path="false">
 		<url>https://github.com/Nasdanika-SDK/runtime</url>
 	</scm>
 

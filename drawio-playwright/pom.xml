@@ -9,10 +9,20 @@
 	  </parent>
 	<artifactId>drawio-playwright</artifactId>
 	<packaging>jar</packaging>
-	<name>Nasdanika SDK Runtime Draw.io Playwright </name>
+	<name>Nasdanika SDK Runtime Draw.io Playwright</name>
 	<description>
-		 Browser automation for Draw.io using Playwright.
+		Draw.io documents rendered with draw.io's own viewer in a browser driven by Playwright: pages
+		as PNG and SVG images with the page embedded, so draw.io opens them for editing, and videos of
+		pages shown in sequence. Documented in the Draw.io Zephyr Book.
 	</description>
+
+	<properties>
+		<!--
+			The browser the tests drive: an installed one, such as chrome or msedge, or empty for the
+			Chromium that Playwright downloads on first use. Tests are skipped if it cannot be launched.
+		-->
+		<playwright.channel>chrome</playwright.channel>
+	</properties>
 
 	<dependencyManagement>
 		<dependencies>
@@ -26,7 +36,25 @@
 		</dependencies>
 	</dependencyManagement>	
 
+	<build>
+		<plugins>
+			<plugin>
+				<groupId>org.apache.maven.plugins</groupId>
+				<artifactId>maven-surefire-plugin</artifactId>
+				<configuration>
+					<systemPropertyVariables>
+						<nasdanika.playwright.channel>${playwright.channel}</nasdanika.playwright.channel>
+					</systemPropertyVariables>
+				</configuration>
+			</plugin>
+		</plugins>
+	</build>
+
 	<dependencies>
+		<dependency>
+			<groupId>org.json</groupId>
+			<artifactId>json</artifactId>
+		</dependency>
 		<dependency>
 			<groupId>${project.groupId}</groupId>
 			<artifactId>drawio</artifactId>

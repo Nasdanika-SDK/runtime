@@ -24,7 +24,7 @@ import org.nasdanika.sdk.runtime.models.diagram.Point;
 /**
  * A minimal converter from a Draw.io document, read with the runtime's Draw.io API, to the diagram
  * model: pages, layers, nodes with their bounds and children, connections with their waypoints,
- * labels as names, tooltips as documentation, and properties.
+ * labels as names, tooltips as documentation, and properties as attributes.
  */
 // tag::converter[]
 public class DrawioToDiagram {
@@ -102,7 +102,7 @@ public class DrawioToDiagram {
 		}
 		for (String name: source.getPropertyNames()) {
 			if (!"id".equals(name)) {
-				target.getProperties().put(name, source.getProperty(name));
+				target.getAttributes().put(name, source.getProperty(name));
 			}
 		}
 		converted.put(source, target);

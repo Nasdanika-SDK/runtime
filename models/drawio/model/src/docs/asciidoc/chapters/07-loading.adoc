@@ -1,0 +1,63 @@
+// Defaults for previewing this file on its own; index.adoc and the Maven build set these
+ifndef::booktests[:booktests: ../../../test/java/org/nasdanika/sdk/runtime/models/drawio/tests]
+ifndef::bookresources[:bookresources: ../../../test/resources/org/nasdanika/sdk/runtime/models/drawio/tests]
+
+[#loading]
+== Loading and reading
+
+The listings work on `internet-banking.drawio`, a hand-written document after the C4 model's example.
+Its first page, _System Context_, has a person and two systems with properties and tags, connections between them, a link to the second page, and a _Notes_ layer.
+Its second page, _Containers_, has a boundary that links back to the system on the first page, with two containers inside it.
+
+=== Loading
+
+.Loading a document into a resource set (`DrawioTests.java`)
+[source,java]
+----
+include::{booktests}/DrawioTests.java[tag=load,indent=0]
+----
+<1> A resource set to which every module on the module path has contributed: the model's resource factory and contents handler among them.
+<2> The resource's contents is one `Document`.
+<3> The page's layers: the default layer, which has no name, and _Notes_.
+<4> The properties of the page's root cell are the page's attributes.
+
+=== Reading elements
+
+.A node and a connection
+[source,java]
+----
+include::{booktests}/DrawioTests.java[tag=elements,indent=0]
+----
+<1> The label as written, HTML, and its text as the name.
+<2> The tooltip is the documentation.
+<3> The properties are the attributes. Label, tooltip, tags and link have features of their own.
+<4> The style is a map; `styleString` is the style as Draw.io writes it.
+<5> Connections refer to their ends, and the ends know their connections.
+
+`DrawioTests.element` finds an element by id anywhere in the document.
+Containment is the diagram model's: a page's children are its layers, a layer's children its nodes and connections, a node's children the nodes and connections inside it.
+
+=== Tags and links
+
+.Tags and links as references
+[source,java]
+----
+include::{booktests}/DrawioTests.java[tag=links,indent=0]
+----
+<1> A tag knows its elements, and an element its tags.
+<2> A page link, resolved to the page.
+<3> An element link to another page, resolved to the element; the selectors are kept as written.
+<4> "What links here", answered by the core model's `getReferrers`.
+<5> A URL, kept as it is.
+
+=== What this edition does not load
+
+The loader reads what the table in <<the-model>> lists.
+These are not kept yet, so a document that has them loses them when saved through the model:
+
+* the end points of a connection without a source or a target;
+* the offsets of connection labels, and label positions along a connection beyond the geometry of their nodes;
+* connection points defined on a shape, other than as `exitX`, `exitY`, `entryX` and `entryY` in the style;
+* the page's background, and settings of the `mxGraphModel` other than those in the table.
+
+Custom actions are loaded as `SimpleLink` text, so they are kept.

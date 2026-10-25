@@ -1,0 +1,54 @@
+[preface]
+== Preface
+
+This book is about Draw.io diagrams as an EMF model.
+A `.drawio` file, or a PNG or SVG image that Draw.io exported with the diagram in it, loads into a resource set as a document of pages, layers, shapes and connections, each with its style, properties, tags and link.
+Programs read it, change it, generate it and save it, and people keep drawing in Draw.io.
+
+The first part of the book is the why: why a diagram should be a model, what the model adds to a file, where it sits among the runtime's diagram models, and what it is good for.
+The second part is the how, for Java developers, and ends with a diagram generated from the running JVM, laid out with ELK and drawn by Draw.io's viewer.
+The third says what the model is designed to do and does not do yet.
+
+=== Who this book is for
+
+*Architects and analysts* who keep diagrams in Draw.io and want programs to read, check and generate them.
+Part one is for you, and needs no code.
+
+*Developers* who read Draw.io documents, generate them, or connect them to the models of the systems they describe.
+Read the book in order.
+
+=== A book that stands on its own
+
+This book is one of the Nasdanika Zephyr Books: in-depth manuals, one per module of the Nasdanika SDK Runtime, in the manner of IBM Redbooks.
+Two of them are close to this one.
+_Draw.io_ is the book of the runtime's Java API for Draw.io documents, which this model loads and saves with, and of rendering diagrams with Draw.io's viewer.
+_Diagram Model_ is the book of the notation-neutral model this one extends.
+You do not need either to read this one: where the books touch, this one repeats what you need.
+
+The series is named after the Bootswatch theme it is styled with, Zephyr, and has nothing to do with the Zephyr real-time operating system or with SmartBear's Zephyr test management.
+
+The model comes from the Draw.io model of Nasdanika's model collection, rebuilt on the runtime's presentation and diagram models.
+This book replaces the model's readme, and keeps its argument.
+
+=== What you need
+
+* *A JDK for Java 25* and *Maven 3.9.16 or later*.
+* The model's Java module is `org.nasdanika.sdk.runtime.models.drawio`, its Maven coordinates are `{group-id}:{artifact-id}:{runtime-version}`, and its namespace URI is `{nsuri}`.
+* *Draw.io*, to draw: the desktop application, the web application at {drawio-site}, or the Draw.io extension for Visual Studio Code.
+* Some familiarity with EMF helps in part two: an EMF model is a set of Java interfaces generated from a metamodel, with containment, references, reflection and persistence for free.
+
+=== Conventions
+
+* *Every listing is included from a test* of the module, or from a resource that a test loads, and is compiled and run when the book is built. Callouts, such as <1>, explain the lines they mark.
+* *The figure is a diagram.* It is a PNG image with the Draw.io document embedded: open it in Draw.io to edit it, or load it into a resource set.
+* *Status labels* mark what this edition does not have yet: [.planned]#PLANNED# for designed but not built, [.sketch]#SKETCH# for partly built.
+* *Voice.* I write in the first person.
+
+ifdef::editor-notes[]
+[IMPORTANT,caption="Editor's note"]
+====
+Editor's notes record inconsistencies between the model and its documentation found while writing. They are shown in builds for the author and left out of published editions.
+
+The readme this book replaces described the model in Nasdanika's model collection: a model tower with floors (C4, architecture, threat, work, governance, nxcore), `DrawioDocument`, `DrawioNode` and `DrawioConnection` class names, a derived read-only `Style` object with typed `NodeStyle` and `ConnectionStyle` subclasses and enumerations, `ConnectionPoint` as a port, loading of custom actions, and the sibling models for Visio, PowerPoint, PlantUML, ODP, PDF and Sprotty. The runtime's model has a style map and no typed styles, keeps connection points in the style, loads custom actions as text, and its siblings are the presentation and diagram models. Visio, PowerPoint and Excel models were postponed on 2026-10-25. This book describes the model as it is, and the rest as planned.
+====
+endif::[]

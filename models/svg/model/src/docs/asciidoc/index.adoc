@@ -1,0 +1,84 @@
+= SVG Model: A Nasdanika Zephyr Book
+Pavel Vlasov
+:doctype: book
+:description: A pragmatic subset of SVG as an EMF model, written and read by EMF's XML resource: generated diagrams laid out with ELK and drawn as SVG that works in HTML, PDF and EPUB, with links and tooltips.
+:keywords: SVG, EMF, Ecore, Xcore, ExtendedMetaData, diagrams, ELK, layout, generated diagrams, Nasdanika
+:lang: en
+:sectnums:
+:sectnumlevels: 2
+:partnums:
+:chapter-signifier: Chapter
+:part-signifier: Part
+:appendix-caption: Appendix
+:toc:
+:toclevels: 2
+:title-page:
+:listing-caption: Listing
+:figure-caption: Figure
+:table-caption: Table
+:source-language: java
+:tabsize: 4
+:hide-uri-scheme:
+:runtime-repo: https://github.com/Nasdanika-SDK/runtime
+:runtime-site: https://runtime.sdk.nasdanika.org
+:medium: https://medium.com/nasdanika
+:nsuri: http://www.w3.org/2000/svg
+// Defaults for previews in an editor; the Maven build sets these
+ifndef::testdir[:testdir: ../../test/java]
+ifndef::testresourcesdir[:testresourcesdir: ../../test/resources]
+ifndef::runtime-root[:runtime-root: ../../../../../..]
+ifndef::runtime-version[:runtime-version: 2026.10.0]
+ifndef::group-id[:group-id: org.nasdanika.sdk.runtime.models.svg]
+ifndef::artifact-id[:artifact-id: model]
+:booktests: {testdir}/org/nasdanika/sdk/runtime/models/svg/tests
+:bookresources: {testresourcesdir}/org/nasdanika/sdk/runtime/models/svg/tests
+:imagesdir: {bookresources}
+// The EPUB converter resolves images relative to this directory and packs them by that path
+ifdef::zephyr-epub[:imagesdir: ../../test/resources/org/nasdanika/sdk/runtime/models/svg/tests]
+
+include::front/colophon.adoc[]
+
+include::front/preface.adoc[]
+
+[#why]
+= The Why
+
+[partintro]
+Why generated diagrams should be SVG, and why SVG should be a model. No code is needed to read this part.
+
+include::chapters/01-generated-diagrams.adoc[]
+
+include::chapters/02-svg-as-a-model.adoc[]
+
+[#how]
+= The How
+
+[partintro]
+The model in Java: adding it to a project, its classes, building, writing and reading SVG, and drawing a diagram that ELK has laid out.
+
+include::chapters/03-getting-started.adoc[]
+
+include::chapters/04-the-model.adoc[]
+
+include::chapters/05-building.adoc[]
+
+include::chapters/06-from-diagrams.adoc[]
+
+[#ahead]
+= Looking Ahead
+
+[partintro]
+What comes next for generated diagrams.
+
+include::chapters/07-looking-ahead.adoc[]
+
+include::appendices/a-reference.adoc[]
+
+include::appendices/b-building.adoc[]
+
+include::appendices/c-glossary.adoc[]
+
+ifdef::backend-pdf[]
+[index]
+== Index
+endif::[]

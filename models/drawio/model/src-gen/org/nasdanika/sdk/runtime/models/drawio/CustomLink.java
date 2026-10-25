@@ -11,27 +11,18 @@ package org.nasdanika.sdk.runtime.models.drawio;
  * <!-- begin-model-doc -->
  * The Nasdanika extended link notation, which widens Draw.io's page linking into
  * element linking and cross-document linking:
- * 
- *     data:page/id,<page id>
+ *  *     data:page/id,<page id>
  *     data:page/name,<url encoded page name>
- *     data:element/id,<element id>
- *     data:element/name,<url encoded label>
- * 
- * with an optional document URI before a '#', resolved relative to the URI of the
- * containing document and therefore able to reach through URI handlers:
- * 
- *     data:element/name,compressed.drawio#name,Page+2/Linked
- *     data:page/name,maven://<gav>/my-system.drawio#My+Component
- * 
- * The resolved references are the point of modelling this at all. In a resource
- * set a folder of .drawio files stops being a folder and becomes one traversable
- * object graph, so "what links to this component" is a getReferrers query rather
- * than a text search - and a link into a document that was never checked out still
- * resolves.
- * 
- * The selector attributes are kept alongside the references so that saving
- * reproduces the notation the author wrote. A link written as 'name,' should not
- * come back as 'id,' just because the loader found it easier.
+ *     data:element/id,[<page selector>/]<element id>
+ *     data:element/name,[<page selector>/]<url encoded label>
+ *  * with an optional document URI before a '#', resolved relative to the URI of the
+ * containing document. A page selector is 'id,<page id>' or 'name,<page name>'.
+ *  * The resolved references are the point of modelling this at all: "what links to this
+ * component" is a getReferrers query rather than a text search. Links within the document
+ * are loaded as custom links with their targets; links into other documents are loaded as
+ * simple links. [PLANNED] Targets in other documents of the resource set.
+ *  * The selectors are kept alongside the target so that saving reproduces the notation the
+ * author wrote. A custom link with a target and no selectors is saved by id.
  * <!-- end-model-doc -->
  *
  * <p>
@@ -82,7 +73,7 @@ public interface CustomLink extends AbstractLink {
 	 * <!-- begin-user-doc -->
 	 * <!-- end-user-doc -->
 	 * <!-- begin-model-doc -->
-	 *  The target, resolved. A Page for a page link, an Element for an element link.
+	 *  The target, resolved. A Page for a page link, a ModelElement for an element link.
 	 * <!-- end-model-doc -->
 	 * @return the value of the '<em>Target</em>' reference.
 	 * @see #setTarget(LinkTarget)

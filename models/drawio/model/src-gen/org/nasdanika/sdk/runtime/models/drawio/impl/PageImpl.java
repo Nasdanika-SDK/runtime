@@ -13,7 +13,13 @@ import org.eclipse.emf.ecore.InternalEObject;
 
 import org.eclipse.emf.ecore.util.InternalEList;
 
+import org.nasdanika.sdk.runtime.common.DerivedSubsetEList;
+
+import org.nasdanika.sdk.runtime.models.diagram.DiagramPackage;
+
+import org.nasdanika.sdk.runtime.models.drawio.Animation;
 import org.nasdanika.sdk.runtime.models.drawio.DrawioPackage;
+import org.nasdanika.sdk.runtime.models.drawio.Layer;
 import org.nasdanika.sdk.runtime.models.drawio.Page;
 import org.nasdanika.sdk.runtime.models.drawio.Tag;
 
@@ -33,6 +39,8 @@ import org.nasdanika.sdk.runtime.models.presentation.impl.SlideImpl;
  *   <li>{@link org.nasdanika.sdk.runtime.models.drawio.impl.PageImpl#getPageHeight <em>Page Height</em>}</li>
  *   <li>{@link org.nasdanika.sdk.runtime.models.drawio.impl.PageImpl#getGridSize <em>Grid Size</em>}</li>
  *   <li>{@link org.nasdanika.sdk.runtime.models.drawio.impl.PageImpl#getTags <em>Tags</em>}</li>
+ *   <li>{@link org.nasdanika.sdk.runtime.models.drawio.impl.PageImpl#getAnimation <em>Animation</em>}</li>
+ *   <li>{@link org.nasdanika.sdk.runtime.models.drawio.impl.PageImpl#getLayers <em>Layers</em>}</li>
  * </ul>
  *
  * @generated
@@ -212,11 +220,54 @@ public class PageImpl extends SlideImpl implements Page {
 	 * <!-- end-user-doc -->
 	 * @generated
 	 */
+	public Animation getAnimation() {
+		return (Animation)eDynamicGet(DrawioPackage.PAGE__ANIMATION, DrawioPackage.Literals.PAGE__ANIMATION, true, true);
+	}
+
+	/**
+	 * <!-- begin-user-doc -->
+	 * <!-- end-user-doc -->
+	 * @generated
+	 */
+	public NotificationChain basicSetAnimation(Animation newAnimation, NotificationChain msgs) {
+		msgs = eDynamicInverseAdd((InternalEObject)newAnimation, DrawioPackage.PAGE__ANIMATION, msgs);
+		return msgs;
+	}
+
+	/**
+	 * <!-- begin-user-doc -->
+	 * <!-- end-user-doc -->
+	 * @generated
+	 */
+	public void setAnimation(Animation newAnimation) {
+		eDynamicSet(DrawioPackage.PAGE__ANIMATION, DrawioPackage.Literals.PAGE__ANIMATION, newAnimation);
+	}
+
+	/**
+	 * <!-- begin-user-doc -->
+	 * <!-- end-user-doc -->
+	 * @generated
+	 */
+	public EList<Layer> getLayers() {
+		return new DerivedSubsetEList<Layer>(
+			Layer.class, 
+			((InternalEObject) this), 
+			DrawioPackage.PAGE__LAYERS, 
+			DiagramPackage.DIAGRAM_ELEMENT__CHILDREN);
+	}
+
+	/**
+	 * <!-- begin-user-doc -->
+	 * <!-- end-user-doc -->
+	 * @generated
+	 */
 	@Override
 	public NotificationChain eInverseRemove(InternalEObject otherEnd, int featureID, NotificationChain msgs) {
 		switch (featureID) {
 			case DrawioPackage.PAGE__TAGS:
 				return ((InternalEList<?>)getTags()).basicRemove(otherEnd, msgs);
+			case DrawioPackage.PAGE__ANIMATION:
+				return basicSetAnimation(null, msgs);
 		}
 		return super.eInverseRemove(otherEnd, featureID, msgs);
 	}
@@ -241,6 +292,10 @@ public class PageImpl extends SlideImpl implements Page {
 				return getGridSize();
 			case DrawioPackage.PAGE__TAGS:
 				return getTags();
+			case DrawioPackage.PAGE__ANIMATION:
+				return getAnimation();
+			case DrawioPackage.PAGE__LAYERS:
+				return getLayers();
 		}
 		return super.eGet(featureID, resolve, coreType);
 	}
@@ -273,6 +328,9 @@ public class PageImpl extends SlideImpl implements Page {
 				getTags().clear();
 				getTags().addAll((Collection<? extends Tag>)newValue);
 				return;
+			case DrawioPackage.PAGE__ANIMATION:
+				setAnimation((Animation)newValue);
+				return;
 		}
 		super.eSet(featureID, newValue);
 	}
@@ -303,6 +361,9 @@ public class PageImpl extends SlideImpl implements Page {
 			case DrawioPackage.PAGE__TAGS:
 				getTags().clear();
 				return;
+			case DrawioPackage.PAGE__ANIMATION:
+				setAnimation((Animation)null);
+				return;
 		}
 		super.eUnset(featureID);
 	}
@@ -327,6 +388,10 @@ public class PageImpl extends SlideImpl implements Page {
 				return getGridSize() != GRID_SIZE_EDEFAULT;
 			case DrawioPackage.PAGE__TAGS:
 				return !getTags().isEmpty();
+			case DrawioPackage.PAGE__ANIMATION:
+				return getAnimation() != null;
+			case DrawioPackage.PAGE__LAYERS:
+				return !getLayers().isEmpty();
 		}
 		return super.eIsSet(featureID);
 	}

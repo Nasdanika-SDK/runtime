@@ -24,7 +24,7 @@ The generator, `EcoreDiagrams`, follows a few conventions, which the layout and 
 
 === Options for class diagrams
 
-The generator sets the layout options of its diagrams as properties:
+The generator sets the layout options of its diagrams as attributes:
 
 .Layout options of the generated diagrams (`EcoreDiagrams.java`)
 [source,java]
@@ -64,7 +64,7 @@ include::{booktests}/EcoreDiagrams.java[tag=references,indent=0]
 <2> A reference without an opposite is labeled at its center.
 <3> A reference with an opposite is labeled at the end it leads to, its head, and the opposite at the other end, its tail. ELK's option `elk.edgeLabels.placement` on each label says which.
 
-Containment is a property of the connection, which the renderers draw as a diamond at the containing end.
+Containment is an attribute of the connection, which the renderers draw as a diamond at the containing end.
 
 === The package diagram
 

@@ -95,14 +95,14 @@ public class DrawioPackageImpl extends EPackageImpl implements DrawioPackage {
 	 * <!-- end-user-doc -->
 	 * @generated
 	 */
-	private EClass layerEClass = null;
+	private EClass modelElementEClass = null;
 
 	/**
 	 * <!-- begin-user-doc -->
 	 * <!-- end-user-doc -->
 	 * @generated
 	 */
-	private EClass modelElementEClass = null;
+	private EClass layerEClass = null;
 
 	/**
 	 * <!-- begin-user-doc -->
@@ -479,6 +479,15 @@ public class DrawioPackageImpl extends EPackageImpl implements DrawioPackage {
 	 * <!-- end-user-doc -->
 	 * @generated
 	 */
+	public EReference getDocument_Pages() {
+		return (EReference)documentEClass.getEStructuralFeatures().get(4);
+	}
+
+	/**
+	 * <!-- begin-user-doc -->
+	 * <!-- end-user-doc -->
+	 * @generated
+	 */
 	public EClass getLinkTarget() {
 		return linkTargetEClass;
 	}
@@ -551,8 +560,8 @@ public class DrawioPackageImpl extends EPackageImpl implements DrawioPackage {
 	 * <!-- end-user-doc -->
 	 * @generated
 	 */
-	public EClass getLayer() {
-		return layerEClass;
+	public EReference getPage_Animation() {
+		return (EReference)pageEClass.getEStructuralFeatures().get(6);
 	}
 
 	/**
@@ -560,8 +569,8 @@ public class DrawioPackageImpl extends EPackageImpl implements DrawioPackage {
 	 * <!-- end-user-doc -->
 	 * @generated
 	 */
-	public EAttribute getLayer_Style() {
-		return (EAttribute)layerEClass.getEStructuralFeatures().get(0);
+	public EReference getPage_Layers() {
+		return (EReference)pageEClass.getEStructuralFeatures().get(7);
 	}
 
 	/**
@@ -578,8 +587,35 @@ public class DrawioPackageImpl extends EPackageImpl implements DrawioPackage {
 	 * <!-- end-user-doc -->
 	 * @generated
 	 */
+	public EAttribute getModelElement_Label() {
+		return (EAttribute)modelElementEClass.getEStructuralFeatures().get(0);
+	}
+
+	/**
+	 * <!-- begin-user-doc -->
+	 * <!-- end-user-doc -->
+	 * @generated
+	 */
+	public EReference getModelElement_Style() {
+		return (EReference)modelElementEClass.getEStructuralFeatures().get(1);
+	}
+
+	/**
+	 * <!-- begin-user-doc -->
+	 * <!-- end-user-doc -->
+	 * @generated
+	 */
+	public EAttribute getModelElement_StyleString() {
+		return (EAttribute)modelElementEClass.getEStructuralFeatures().get(2);
+	}
+
+	/**
+	 * <!-- begin-user-doc -->
+	 * <!-- end-user-doc -->
+	 * @generated
+	 */
 	public EReference getModelElement_Link() {
-		return (EReference)modelElementEClass.getEStructuralFeatures().get(0);
+		return (EReference)modelElementEClass.getEStructuralFeatures().get(3);
 	}
 
 	/**
@@ -588,7 +624,16 @@ public class DrawioPackageImpl extends EPackageImpl implements DrawioPackage {
 	 * @generated
 	 */
 	public EReference getModelElement_Tags() {
-		return (EReference)modelElementEClass.getEStructuralFeatures().get(1);
+		return (EReference)modelElementEClass.getEStructuralFeatures().get(4);
+	}
+
+	/**
+	 * <!-- begin-user-doc -->
+	 * <!-- end-user-doc -->
+	 * @generated
+	 */
+	public EClass getLayer() {
+		return layerEClass;
 	}
 
 	/**
@@ -605,7 +650,7 @@ public class DrawioPackageImpl extends EPackageImpl implements DrawioPackage {
 	 * <!-- end-user-doc -->
 	 * @generated
 	 */
-	public EAttribute getNode_Style() {
+	public EAttribute getNode_Collapsed() {
 		return (EAttribute)nodeEClass.getEStructuralFeatures().get(0);
 	}
 
@@ -614,17 +659,8 @@ public class DrawioPackageImpl extends EPackageImpl implements DrawioPackage {
 	 * <!-- end-user-doc -->
 	 * @generated
 	 */
-	public EAttribute getNode_Label() {
+	public EAttribute getNode_Visible() {
 		return (EAttribute)nodeEClass.getEStructuralFeatures().get(1);
-	}
-
-	/**
-	 * <!-- begin-user-doc -->
-	 * <!-- end-user-doc -->
-	 * @generated
-	 */
-	public EAttribute getNode_Collapsed() {
-		return (EAttribute)nodeEClass.getEStructuralFeatures().get(2);
 	}
 
 	/**
@@ -641,17 +677,8 @@ public class DrawioPackageImpl extends EPackageImpl implements DrawioPackage {
 	 * <!-- end-user-doc -->
 	 * @generated
 	 */
-	public EAttribute getConnection_Style() {
+	public EAttribute getConnection_Visible() {
 		return (EAttribute)connectionEClass.getEStructuralFeatures().get(0);
-	}
-
-	/**
-	 * <!-- begin-user-doc -->
-	 * <!-- end-user-doc -->
-	 * @generated
-	 */
-	public EAttribute getConnection_Label() {
-		return (EAttribute)connectionEClass.getEStructuralFeatures().get(1);
 	}
 
 	/**
@@ -1371,6 +1398,7 @@ public class DrawioPackageImpl extends EPackageImpl implements DrawioPackage {
 		createEAttribute(documentEClass, DOCUMENT__AGENT);
 		createEAttribute(documentEClass, DOCUMENT__VERSION);
 		createEAttribute(documentEClass, DOCUMENT__COMPRESSED);
+		createEReference(documentEClass, DOCUMENT__PAGES);
 
 		linkTargetEClass = createEClass(LINK_TARGET);
 
@@ -1381,22 +1409,24 @@ public class DrawioPackageImpl extends EPackageImpl implements DrawioPackage {
 		createEAttribute(pageEClass, PAGE__PAGE_HEIGHT);
 		createEAttribute(pageEClass, PAGE__GRID_SIZE);
 		createEReference(pageEClass, PAGE__TAGS);
-
-		layerEClass = createEClass(LAYER);
-		createEAttribute(layerEClass, LAYER__STYLE);
+		createEReference(pageEClass, PAGE__ANIMATION);
+		createEReference(pageEClass, PAGE__LAYERS);
 
 		modelElementEClass = createEClass(MODEL_ELEMENT);
+		createEAttribute(modelElementEClass, MODEL_ELEMENT__LABEL);
+		createEReference(modelElementEClass, MODEL_ELEMENT__STYLE);
+		createEAttribute(modelElementEClass, MODEL_ELEMENT__STYLE_STRING);
 		createEReference(modelElementEClass, MODEL_ELEMENT__LINK);
 		createEReference(modelElementEClass, MODEL_ELEMENT__TAGS);
 
+		layerEClass = createEClass(LAYER);
+
 		nodeEClass = createEClass(NODE);
-		createEAttribute(nodeEClass, NODE__STYLE);
-		createEAttribute(nodeEClass, NODE__LABEL);
 		createEAttribute(nodeEClass, NODE__COLLAPSED);
+		createEAttribute(nodeEClass, NODE__VISIBLE);
 
 		connectionEClass = createEClass(CONNECTION);
-		createEAttribute(connectionEClass, CONNECTION__STYLE);
-		createEAttribute(connectionEClass, CONNECTION__LABEL);
+		createEAttribute(connectionEClass, CONNECTION__VISIBLE);
 
 		tagEClass = createEClass(TAG);
 		createEReference(tagEClass, TAG__ELEMENTS);
@@ -1535,8 +1565,8 @@ public class DrawioPackageImpl extends EPackageImpl implements DrawioPackage {
 		// Obtain other dependent packages
 		PresentationPackage thePresentationPackage = (PresentationPackage)EPackage.Registry.INSTANCE.getEPackage(PresentationPackage.eNS_URI);
 		EcorePackage theEcorePackage = (EcorePackage)EPackage.Registry.INSTANCE.getEPackage(EcorePackage.eNS_URI);
-		DiagramPackage theDiagramPackage = (DiagramPackage)EPackage.Registry.INSTANCE.getEPackage(DiagramPackage.eNS_URI);
 		CorePackage theCorePackage = (CorePackage)EPackage.Registry.INSTANCE.getEPackage(CorePackage.eNS_URI);
+		DiagramPackage theDiagramPackage = (DiagramPackage)EPackage.Registry.INSTANCE.getEPackage(DiagramPackage.eNS_URI);
 
 		// Create type parameters
 
@@ -1546,8 +1576,9 @@ public class DrawioPackageImpl extends EPackageImpl implements DrawioPackage {
 		documentEClass.getESuperTypes().add(thePresentationPackage.getPresentation());
 		pageEClass.getESuperTypes().add(thePresentationPackage.getSlide());
 		pageEClass.getESuperTypes().add(this.getLinkTarget());
-		layerEClass.getESuperTypes().add(theDiagramPackage.getLayer());
 		modelElementEClass.getESuperTypes().add(this.getLinkTarget());
+		layerEClass.getESuperTypes().add(theDiagramPackage.getLayer());
+		layerEClass.getESuperTypes().add(this.getModelElement());
 		nodeEClass.getESuperTypes().add(theDiagramPackage.getNode());
 		nodeEClass.getESuperTypes().add(this.getModelElement());
 		connectionEClass.getESuperTypes().add(theDiagramPackage.getConnection());
@@ -1588,6 +1619,7 @@ public class DrawioPackageImpl extends EPackageImpl implements DrawioPackage {
 		initEAttribute(getDocument_Agent(), theEcorePackage.getEString(), "agent", null, 0, 1, Document.class, !IS_TRANSIENT, !IS_VOLATILE, IS_CHANGEABLE, !IS_UNSETTABLE, !IS_ID, !IS_UNIQUE, !IS_DERIVED, IS_ORDERED);
 		initEAttribute(getDocument_Version(), theEcorePackage.getEString(), "version", null, 0, 1, Document.class, !IS_TRANSIENT, !IS_VOLATILE, IS_CHANGEABLE, !IS_UNSETTABLE, !IS_ID, !IS_UNIQUE, !IS_DERIVED, IS_ORDERED);
 		initEAttribute(getDocument_Compressed(), theEcorePackage.getEBoolean(), "compressed", null, 0, 1, Document.class, !IS_TRANSIENT, !IS_VOLATILE, IS_CHANGEABLE, !IS_UNSETTABLE, !IS_ID, !IS_UNIQUE, !IS_DERIVED, IS_ORDERED);
+		initEReference(getDocument_Pages(), this.getPage(), null, "pages", null, 0, -1, Document.class, IS_TRANSIENT, IS_VOLATILE, !IS_CHANGEABLE, !IS_COMPOSITE, IS_RESOLVE_PROXIES, !IS_UNSETTABLE, IS_UNIQUE, IS_DERIVED, IS_ORDERED);
 
 		initEClass(linkTargetEClass, LinkTarget.class, "LinkTarget", IS_ABSTRACT, IS_INTERFACE, IS_GENERATED_INSTANCE_CLASS);
 
@@ -1598,22 +1630,24 @@ public class DrawioPackageImpl extends EPackageImpl implements DrawioPackage {
 		initEAttribute(getPage_PageHeight(), theEcorePackage.getEDouble(), "pageHeight", null, 0, 1, Page.class, !IS_TRANSIENT, !IS_VOLATILE, IS_CHANGEABLE, !IS_UNSETTABLE, !IS_ID, !IS_UNIQUE, !IS_DERIVED, IS_ORDERED);
 		initEAttribute(getPage_GridSize(), theEcorePackage.getEDouble(), "gridSize", null, 0, 1, Page.class, !IS_TRANSIENT, !IS_VOLATILE, IS_CHANGEABLE, !IS_UNSETTABLE, !IS_ID, !IS_UNIQUE, !IS_DERIVED, IS_ORDERED);
 		initEReference(getPage_Tags(), this.getTag(), null, "tags", null, 0, -1, Page.class, !IS_TRANSIENT, !IS_VOLATILE, IS_CHANGEABLE, IS_COMPOSITE, !IS_RESOLVE_PROXIES, !IS_UNSETTABLE, IS_UNIQUE, !IS_DERIVED, IS_ORDERED);
-
-		initEClass(layerEClass, Layer.class, "Layer", !IS_ABSTRACT, !IS_INTERFACE, IS_GENERATED_INSTANCE_CLASS);
-		initEAttribute(getLayer_Style(), theEcorePackage.getEString(), "style", null, 0, 1, Layer.class, !IS_TRANSIENT, !IS_VOLATILE, IS_CHANGEABLE, !IS_UNSETTABLE, !IS_ID, !IS_UNIQUE, !IS_DERIVED, IS_ORDERED);
+		initEReference(getPage_Animation(), this.getAnimation(), null, "animation", null, 0, 1, Page.class, !IS_TRANSIENT, !IS_VOLATILE, IS_CHANGEABLE, IS_COMPOSITE, !IS_RESOLVE_PROXIES, !IS_UNSETTABLE, IS_UNIQUE, !IS_DERIVED, IS_ORDERED);
+		initEReference(getPage_Layers(), this.getLayer(), null, "layers", null, 0, -1, Page.class, IS_TRANSIENT, IS_VOLATILE, !IS_CHANGEABLE, !IS_COMPOSITE, IS_RESOLVE_PROXIES, !IS_UNSETTABLE, IS_UNIQUE, IS_DERIVED, IS_ORDERED);
 
 		initEClass(modelElementEClass, ModelElement.class, "ModelElement", IS_ABSTRACT, IS_INTERFACE, IS_GENERATED_INSTANCE_CLASS);
+		initEAttribute(getModelElement_Label(), theEcorePackage.getEString(), "label", null, 0, 1, ModelElement.class, !IS_TRANSIENT, !IS_VOLATILE, IS_CHANGEABLE, !IS_UNSETTABLE, !IS_ID, !IS_UNIQUE, !IS_DERIVED, IS_ORDERED);
+		initEReference(getModelElement_Style(), theCorePackage.getStringToStringMapEntry(), null, "style", null, 0, -1, ModelElement.class, !IS_TRANSIENT, !IS_VOLATILE, IS_CHANGEABLE, IS_COMPOSITE, !IS_RESOLVE_PROXIES, !IS_UNSETTABLE, IS_UNIQUE, !IS_DERIVED, IS_ORDERED);
+		initEAttribute(getModelElement_StyleString(), theEcorePackage.getEString(), "styleString", null, 0, 1, ModelElement.class, IS_TRANSIENT, IS_VOLATILE, !IS_CHANGEABLE, !IS_UNSETTABLE, !IS_ID, !IS_UNIQUE, IS_DERIVED, IS_ORDERED);
 		initEReference(getModelElement_Link(), this.getAbstractLink(), null, "link", null, 0, 1, ModelElement.class, !IS_TRANSIENT, !IS_VOLATILE, IS_CHANGEABLE, IS_COMPOSITE, !IS_RESOLVE_PROXIES, !IS_UNSETTABLE, IS_UNIQUE, !IS_DERIVED, IS_ORDERED);
 		initEReference(getModelElement_Tags(), this.getTag(), this.getTag_Elements(), "tags", null, 0, -1, ModelElement.class, !IS_TRANSIENT, !IS_VOLATILE, IS_CHANGEABLE, !IS_COMPOSITE, IS_RESOLVE_PROXIES, !IS_UNSETTABLE, IS_UNIQUE, !IS_DERIVED, IS_ORDERED);
 
+		initEClass(layerEClass, Layer.class, "Layer", !IS_ABSTRACT, !IS_INTERFACE, IS_GENERATED_INSTANCE_CLASS);
+
 		initEClass(nodeEClass, Node.class, "Node", !IS_ABSTRACT, !IS_INTERFACE, IS_GENERATED_INSTANCE_CLASS);
-		initEAttribute(getNode_Style(), theEcorePackage.getEString(), "style", null, 0, 1, Node.class, !IS_TRANSIENT, !IS_VOLATILE, IS_CHANGEABLE, !IS_UNSETTABLE, !IS_ID, !IS_UNIQUE, !IS_DERIVED, IS_ORDERED);
-		initEAttribute(getNode_Label(), theEcorePackage.getEString(), "label", null, 0, 1, Node.class, !IS_TRANSIENT, !IS_VOLATILE, IS_CHANGEABLE, !IS_UNSETTABLE, !IS_ID, !IS_UNIQUE, !IS_DERIVED, IS_ORDERED);
 		initEAttribute(getNode_Collapsed(), theEcorePackage.getEBoolean(), "collapsed", null, 0, 1, Node.class, !IS_TRANSIENT, !IS_VOLATILE, IS_CHANGEABLE, !IS_UNSETTABLE, !IS_ID, !IS_UNIQUE, !IS_DERIVED, IS_ORDERED);
+		initEAttribute(getNode_Visible(), theEcorePackage.getEBoolean(), "visible", "true", 0, 1, Node.class, !IS_TRANSIENT, !IS_VOLATILE, IS_CHANGEABLE, !IS_UNSETTABLE, !IS_ID, !IS_UNIQUE, !IS_DERIVED, IS_ORDERED);
 
 		initEClass(connectionEClass, Connection.class, "Connection", !IS_ABSTRACT, !IS_INTERFACE, IS_GENERATED_INSTANCE_CLASS);
-		initEAttribute(getConnection_Style(), theEcorePackage.getEString(), "style", null, 0, 1, Connection.class, !IS_TRANSIENT, !IS_VOLATILE, IS_CHANGEABLE, !IS_UNSETTABLE, !IS_ID, !IS_UNIQUE, !IS_DERIVED, IS_ORDERED);
-		initEAttribute(getConnection_Label(), theEcorePackage.getEString(), "label", null, 0, 1, Connection.class, !IS_TRANSIENT, !IS_VOLATILE, IS_CHANGEABLE, !IS_UNSETTABLE, !IS_ID, !IS_UNIQUE, !IS_DERIVED, IS_ORDERED);
+		initEAttribute(getConnection_Visible(), theEcorePackage.getEBoolean(), "visible", "true", 0, 1, Connection.class, !IS_TRANSIENT, !IS_VOLATILE, IS_CHANGEABLE, !IS_UNSETTABLE, !IS_ID, !IS_UNIQUE, !IS_DERIVED, IS_ORDERED);
 
 		initEClass(tagEClass, Tag.class, "Tag", !IS_ABSTRACT, !IS_INTERFACE, IS_GENERATED_INSTANCE_CLASS);
 		initEReference(getTag_Elements(), this.getModelElement(), this.getModelElement_Tags(), "elements", null, 0, -1, Tag.class, !IS_TRANSIENT, !IS_VOLATILE, IS_CHANGEABLE, !IS_COMPOSITE, IS_RESOLVE_PROXIES, !IS_UNSETTABLE, IS_UNIQUE, !IS_DERIVED, IS_ORDERED);
@@ -1770,7 +1804,14 @@ public class DrawioPackageImpl extends EPackageImpl implements DrawioPackage {
 		  (documentEClass,
 		   source,
 		   new String[] {
-			   "documentation", "TODO - adjust to Nasdanika Draw.io API. E.g. style class with a derived style EMap reference backed by \'style\' property\nHave ModelElement interface with style property\nConnection point - extends Port and has dx/dy (pixels)\nNodeStyle, ConnectionStyle extending style and adding Node/Connection flavors, Draw.io enums\nDerived features for Document.pages (from Presentation.slides)\nPage.layers, ..."
+			   "documentation", "A Draw.io document as a model, on the presentation and diagram models: a document is a\npresentation, a page is a slide, layers, nodes and connections are their diagram namesakes.\nThe model holds what makes Draw.io Draw.io, and inherits the rest.\n * Loaded and saved through the runtime\'s Draw.io API by the resource contents handler in\norg.nasdanika.sdk.runtime.models.drawio.resource, for .drawio files and for PNG and SVG images\nwith the document embedded (.drawio.png, .drawio.svg).\n * What maps where:\n  - label        -> ModelElement.label as written (HTML if the style says html=1), and its text\n                    in DiagramElement.name\n  - tooltip      -> documentation, from core\'s Documented\n  - properties   -> attributes, from core\'s Attributed (the <object> wrapper\'s attributes)\n  - style        -> ModelElement.style, an ordered map\n  - tags         -> Page.tags and ModelElement.tags\n  - link         -> ModelElement.link\n  - geometry     -> Node.bounds, relative to the parent node, and Connection.waypoints"
+		   });
+		addAnnotation
+		  (getDocument_Pages(),
+		   source,
+		   new String[] {
+			   "documentation", " The slides of the document, typed as pages.",
+			   "get", "return new <%org.nasdanika.sdk.runtime.common.DerivedSubsetEList%><<%org.nasdanika.sdk.runtime.models.drawio.Page%>>(\n\t<%org.nasdanika.sdk.runtime.models.drawio.Page%>.class, \n\t((<%org.eclipse.emf.ecore.InternalEObject%>) this), \n\t<%org.nasdanika.sdk.runtime.models.drawio.DrawioPackage%>.DOCUMENT__PAGES, \n\t<%org.nasdanika.sdk.runtime.models.diagram.DiagramPackage%>.DIAGRAM_ELEMENT__CHILDREN);"
 		   });
 		addAnnotation
 		  (linkTargetEClass,
@@ -1782,7 +1823,7 @@ public class DrawioPackageImpl extends EPackageImpl implements DrawioPackage {
 		  (pageEClass,
 		   source,
 		   new String[] {
-			   "documentation", " mxfile/diagram - a page is a slide is a diagram."
+			   "documentation", " mxfile/diagram - a page is a slide is a diagram. Its children are layers."
 		   });
 		addAnnotation
 		  (getPage_Dx(),
@@ -1791,46 +1832,84 @@ public class DrawioPackageImpl extends EPackageImpl implements DrawioPackage {
 			   "documentation", " mxGraphModel attributes worth keeping."
 		   });
 		addAnnotation
-		  (layerEClass,
+		  (getPage_Tags(),
 		   source,
 		   new String[] {
-			   "documentation", " Common mxCell aspects: style string + custom properties (mxCell wrapped in <object>)."
+			   "documentation", "The tags of the page: the union of the tag names on its elements. Draw.io does not\ndeclare tags anywhere, they are names on cells. A tag\'s id is its name."
+		   });
+		addAnnotation
+		  (getPage_Animation(),
+		   source,
+		   new String[] {
+			   "documentation", "The animation of the page. [PLANNED] Not loaded or saved yet."
+		   });
+		addAnnotation
+		  (getPage_Layers(),
+		   source,
+		   new String[] {
+			   "documentation", " The children of the page, typed as layers.",
+			   "get", "return new <%org.nasdanika.sdk.runtime.common.DerivedSubsetEList%><<%org.nasdanika.sdk.runtime.models.drawio.Layer%>>(\n\t<%org.nasdanika.sdk.runtime.models.drawio.Layer%>.class, \n\t((<%org.eclipse.emf.ecore.InternalEObject%>) this), \n\t<%org.nasdanika.sdk.runtime.models.drawio.DrawioPackage%>.PAGE__LAYERS, \n\t<%org.nasdanika.sdk.runtime.models.diagram.DiagramPackage%>.DIAGRAM_ELEMENT__CHILDREN);"
 		   });
 		addAnnotation
 		  (modelElementEClass,
 		   source,
 		   new String[] {
-			   "documentation", "Common supertype of the Draw.io layer elements - what the format calls a cell\nand the Java API calls ModelElement: the things that carry a style, a link,\ntags, and custom properties.\n\nNAMING - the Java API calls this ModelElement and reserves Element for the\nwider base (Document, Page, Model, Root, ModelElement). This file follows the\nshorter name; if the API name is preferred, rename here and in doc/readme.md\ntogether.\n\nTo be merged into drawio.xcore as a second supertype:\n\n    class DrawioLayer      extends Layer,      Element { ... }\n    class DrawioNode       extends Node,       Element { ... }\n    class DrawioConnection extends Connection, Element { ... }\n\nEcore supports the resulting diamond (Node and Element both reach\nDiagramElement) without special handling."
+			   "documentation", "Common supertype of the Draw.io layers, nodes and connections: the cells, which the Java API\ncalls ModelElement. They carry a label, a style, a link and tags. Their properties are the\nattributes, and their tooltip the documentation, of DiagramElement."
+		   });
+		addAnnotation
+		  (getModelElement_Label(),
+		   source,
+		   new String[] {
+			   "documentation", "The label as Draw.io stores it: HTML when the style has html=1. DiagramElement.name is its\ntext. When the label is not set, saving writes the name."
+		   });
+		addAnnotation
+		  (getModelElement_Style(),
+		   source,
+		   new String[] {
+			   "documentation", "The style as an ordered map of keys and values, such as rounded -> 1 and fillColor -> #dae8fc.\nA key without a value, such as ellipse or text at the start of a style, has a null value.\nUnknown keys are kept, so a document round-trips."
+		   });
+		addAnnotation
+		  (getModelElement_StyleString(),
+		   source,
+		   new String[] {
+			   "documentation", "The style as Draw.io writes it: key=value pairs, and keys without values, joined with \';\'.",
+			   "get", "return <%org.nasdanika.sdk.runtime.models.drawio.resource.Styles%>.format(this.getStyle());"
 		   });
 		addAnnotation
 		  (getModelElement_Link(),
 		   source,
 		   new String[] {
-			   "documentation", "The \'link\' attribute, parsed. Null when the element has no link.\n\nContainment rather than an attribute because a link is either a target or a\nscript - see AbstractLink."
+			   "documentation", "The \'link\' attribute, parsed. Null when the element has no link.\n     * Containment rather than an attribute because a link is either a target or a\nscript - see AbstractLink."
 		   });
 		addAnnotation
 		  (getModelElement_Tags(),
 		   source,
 		   new String[] {
-			   "documentation", "Tag objects for the raw tag names inherited from DiagramElement.tags,\nresolved against the containing Page.\n\nDerived because DiagramElement.tags is the state - Draw.io tags are not\ndeclared anywhere, they are just strings on cells. This reference is what\nmakes actions able to point at a tag rather than repeat its name."
+			   "documentation", "The tags of the element, contained by its page."
 		   });
 		addAnnotation
-		  (getNode_Style(),
+		  (nodeEClass,
 		   source,
 		   new String[] {
-			   "documentation", " Raw draw.io style string, e.g. \"rounded=1;fillColor=#dae8fc;\". Parsed access via util."
+			   "documentation", " A shape. Its children are the nodes and connections inside it."
+		   });
+		addAnnotation
+		  (connectionEClass,
+		   source,
+		   new String[] {
+			   "documentation", "A connection. Its children are its labels, nodes that Draw.io positions along it. Exit and\nentry points (exitX, exitY, entryX, entryY) stay in the style. [PLANNED] Connection points as\nports."
 		   });
 		addAnnotation
 		  (tagEClass,
 		   source,
 		   new String[] {
-			   "documentation", "A Draw.io tag.\n\nTags matter more here than they look: the in-browser viewer can filter by them\nwith no server involved, and custom actions can target them, so a tag is the\ncheapest way to say \"this group of shapes moves together\".\n\nMERGE NOTE - Page needs a containment for these, and it cannot be called \'tags\'\nbecause DiagramElement.tags (String[], inherited through Slide -> Diagram) already\noccupies that name:\n\n    class Page extends Slide, LinkTarget {\n        contains Tag[] tagDefinitions keys name\n        contains Animation animation\n        ...\n    }\n\nThe loader populates tagDefinitions from the union of the tag strings on the\npage\'s elements. If the clash is worth resolving properly, the alternative is\nrenaming DiagramElement.tags on the diagram floor - a wider change than this one."
+			   "documentation", "A Draw.io tag. Its id is its name.\n * Tags matter more here than they look: the in-browser viewer can filter by them\nwith no server involved, and custom actions can target them, so a tag is the\ncheapest way to say \"this group of shapes moves together\"."
 		   });
 		addAnnotation
 		  (getTag_Elements(),
 		   source,
 		   new String[] {
-			   "documentation", " Elements on the page carrying this tag - the inverse of Element.elementTags."
+			   "documentation", " Elements on the page carrying this tag - the inverse of ModelElement.tags."
 		   });
 		addAnnotation
 		  (abstractLinkEClass,
@@ -1842,19 +1921,19 @@ public class DrawioPackageImpl extends EPackageImpl implements DrawioPackage {
 		  (simpleLinkEClass,
 		   source,
 		   new String[] {
-			   "documentation", "A link that is stored and used verbatim: an http(s) URL, a mailto:, a relative\npath, or a data: URI this model does not interpret.\n\nAnything not recognised as a CustomLink, SpelLink, or Actions lands here, which\nis what keeps the round trip lossless."
+			   "documentation", "A link that is stored and used verbatim: an http(s) URL, a mailto:, a relative\npath, a data: URI this model does not interpret, custom actions (data:action/json,...)\nuntil Actions are loaded, and a page or element link whose target is not in the document.\n * Anything not recognised as a CustomLink or a SpelLink lands here, which\nis what keeps the round trip lossless."
 		   });
 		addAnnotation
 		  (selectorTypeEEnum,
 		   source,
 		   new String[] {
-			   "documentation", "How a page or an element is picked out by a selector.\n\nID and NAME are the two qualified forms in the notation - \'id,\' and \'name,\'.\nPROPERTY is the element-only \'property=value\' form supported by the Java API\'s\nselector syntax."
+			   "documentation", "How a page or an element is picked out by a selector.\n * ID and NAME are the two qualified forms in the notation - \'id,\' and \'name,\'."
 		   });
 		addAnnotation
 		  (customLinkEClass,
 		   source,
 		   new String[] {
-			   "documentation", "The Nasdanika extended link notation, which widens Draw.io\'s page linking into\nelement linking and cross-document linking:\n\n    data:page/id,<page id>\n    data:page/name,<url encoded page name>\n    data:element/id,<element id>\n    data:element/name,<url encoded label>\n\nwith an optional document URI before a \'#\', resolved relative to the URI of the\ncontaining document and therefore able to reach through URI handlers:\n\n    data:element/name,compressed.drawio#name,Page+2/Linked\n    data:page/name,maven://<gav>/my-system.drawio#My+Component\n\nThe resolved references are the point of modelling this at all. In a resource\nset a folder of .drawio files stops being a folder and becomes one traversable\nobject graph, so \"what links to this component\" is a getReferrers query rather\nthan a text search - and a link into a document that was never checked out still\nresolves.\n\nThe selector attributes are kept alongside the references so that saving\nreproduces the notation the author wrote. A link written as \'name,\' should not\ncome back as \'id,\' just because the loader found it easier."
+			   "documentation", "The Nasdanika extended link notation, which widens Draw.io\'s page linking into\nelement linking and cross-document linking:\n *     data:page/id,<page id>\n    data:page/name,<url encoded page name>\n    data:element/id,[<page selector>/]<element id>\n    data:element/name,[<page selector>/]<url encoded label>\n * with an optional document URI before a \'#\', resolved relative to the URI of the\ncontaining document. A page selector is \'id,<page id>\' or \'name,<page name>\'.\n * The resolved references are the point of modelling this at all: \"what links to this\ncomponent\" is a getReferrers query rather than a text search. Links within the document\nare loaded as custom links with their targets; links into other documents are loaded as\nsimple links. [PLANNED] Targets in other documents of the resource set.\n * The selectors are kept alongside the target so that saving reproduces the notation the\nauthor wrote. A custom link with a target and no selectors is saved by id."
 		   });
 		addAnnotation
 		  (getCustomLink_Resource(),
@@ -1866,7 +1945,7 @@ public class DrawioPackageImpl extends EPackageImpl implements DrawioPackage {
 		  (getCustomLink_Target(),
 		   source,
 		   new String[] {
-			   "documentation", " The target, resolved. A Page for a page link, an Element for an element link."
+			   "documentation", " The target, resolved. A Page for a page link, a ModelElement for an element link."
 		   });
 		addAnnotation
 		  (getCustomLink_PageSelectorType(),
@@ -1884,13 +1963,13 @@ public class DrawioPackageImpl extends EPackageImpl implements DrawioPackage {
 		  (spelLinkEClass,
 		   source,
 		   new String[] {
-			   "documentation", "data:spel,<expression>\n\nA link computed by a SpEL expression evaluated against the element it sits on,\nso a shape can decide at generation time where it points."
+			   "documentation", "data:spel,<expression>\n * A link computed by a SpEL expression evaluated against the element it sits on,\nso a shape can decide at generation time where it points. Loaded and saved, not evaluated."
 		   });
 		addAnnotation
 		  (actionsEClass,
 		   source,
 		   new String[] {
-			   "documentation", " ============================================================================\nCustom actions and animations\n\nDraw.io\'s docs use \"action\" and \"effect\" more or less interchangeably; the JSON\ncalls them actions, so the model does too.\n\nTwo carriers, one vocabulary:\n  - Actions   - attached to an element, run when it is clicked.\n  - Animation - attached to a page, runs on load, optionally looping.\n============================================================================"
+			   "documentation", " ============================================================================\nCustom actions and animations [PLANNED]\n * The vocabulary of Draw.io\'s custom actions, as typed objects whose cells, layers and\ntags are references. Not loaded or saved yet: custom actions in links are loaded as\nsimple links, so they round-trip as text.\n * Draw.io\'s docs use \"action\" and \"effect\" more or less interchangeably; the JSON\ncalls them actions, so the model does too.\n * Two carriers, one vocabulary:\n  - Actions   - attached to an element, run when it is clicked.\n  - Animation - attached to a page, runs on load, optionally looping.\n============================================================================"
 		   });
 		addAnnotation
 		  (getActions_Title(),
@@ -1902,13 +1981,13 @@ public class DrawioPackageImpl extends EPackageImpl implements DrawioPackage {
 		  (animationEClass,
 		   source,
 		   new String[] {
-			   "documentation", "Page-level animation:\n\n    {\"animation\": {\"enabled\": true, \"loop\": true, \"steps\": [ ... ]}}\n\nMERGE NOTE - add \'contains Animation animation\' to Page."
+			   "documentation", "Page-level animation:\n *     {\"animation\": {\"enabled\": true, \"loop\": true, \"steps\": [ ... ]}}"
 		   });
 		addAnnotation
 		  (actionEClass,
 		   source,
 		   new String[] {
-			   "documentation", "One step of a sequence.\n\nDraw.io steps carry a \'transient\' flag which, when set to false, persists the\nstep\'s changes into the model instead of only affecting the view. It is modelled\nas persistChanges on the actions that support it (see PersistableAction) rather\nthan as \'transient\', because that word is an Xcore feature modifier and a Java\nkeyword, and the inverted name reads better than an escaped one."
+			   "documentation", "One step of a sequence.\n * Draw.io steps carry a \'transient\' flag which, when set to false, persists the\nstep\'s changes into the model instead of only affecting the view. It is modelled\nas persistChanges on the actions that support it (see PersistableAction) rather\nthan as \'transient\', because that word is an Xcore feature modifier and a Java\nkeyword, and the inverted name reads better than an escaped one."
 		   });
 		addAnnotation
 		  (getAction_Immediate(),
@@ -1932,7 +2011,7 @@ public class DrawioPackageImpl extends EPackageImpl implements DrawioPackage {
 		  (targetedActionEClass,
 		   source,
 		   new String[] {
-			   "documentation", "Base for every action that selects the cells it applies to.\n\nThe selector is the reason this is worth modelling rather than storing as a\nstring: \'cells\', \'layers\', and \'tags\' are identifiers in the JSON, and as\nreferences they survive a rename, break a build when the target is deleted, and\nlet a generator say \"animate the elements depicting this service\" instead of\nhand-assembling a list of ids."
+			   "documentation", "Base for every action that selects the cells it applies to.\n * The selector is the reason this is worth modelling rather than storing as a\nstring: \'cells\', \'layers\', and \'tags\' are identifiers in the JSON, and as\nreferences they survive a rename, break a build when the target is deleted, and\nlet a generator say \"animate the elements depicting this service\" instead of\nhand-assembling a list of ids."
 		   });
 		addAnnotation
 		  (getTargetedAction_Cells(),
@@ -1998,7 +2077,7 @@ public class DrawioPackageImpl extends EPackageImpl implements DrawioPackage {
 		  (setOpacityEClass,
 		   source,
 		   new String[] {
-			   "documentation", "Set opacity outright, 0..1.\n\nThe accounting case wants exactly this: opacity carrying a magnitude, so a flow\narrow between two accounts is faint when little moved through it and solid when\na lot did."
+			   "documentation", " Set opacity outright, 0..1."
 		   });
 		addAnnotation
 		  (transitionEffectEClass,
@@ -2064,7 +2143,7 @@ public class DrawioPackageImpl extends EPackageImpl implements DrawioPackage {
 		  (highlightEClass,
 		   source,
 		   new String[] {
-			   "documentation", "Pulse a colour over the cells.\n\nThe workhorse for observability overlays - the \"this activity is slow\" or \"this\nstep failed\" marker on an otherwise unchanged diagram."
+			   "documentation", " Pulse a colour over the cells."
 		   });
 		addAnnotation
 		  (getHighlight_Color(),
@@ -2094,7 +2173,7 @@ public class DrawioPackageImpl extends EPackageImpl implements DrawioPackage {
 		  (flowEClass,
 		   source,
 		   new String[] {
-			   "documentation", "Moving dashes along connections - the JSON {\"flow\": {\"start\": true}}.\n\nModelled as a three-state enum because the JSON distinguishes \"toggle whatever\nit is now\" (no \'start\' key) from forcing it on or off, and a plain boolean\ncannot say that.\n\nThis is the one effect that reads as motion along an edge, which makes it the\nnatural rendering of a message, a transaction, or a control transfer."
+			   "documentation", " Moving dashes along connections - the JSON {\"flow\": {\"start\": true}}."
 		   });
 		addAnnotation
 		  (selectEClass,
@@ -2112,13 +2191,13 @@ public class DrawioPackageImpl extends EPackageImpl implements DrawioPackage {
 		  (viewboxEClass,
 		   source,
 		   new String[] {
-			   "documentation", "Move the viewport to a rectangle.\n\nReuses diagram Bounds rather than redeclaring x/y/width/height, which is the\nsame reuse rule the rest of the model follows."
+			   "documentation", " Move the viewport to a rectangle."
 		   });
 		addAnnotation
 		  (openEClass,
 		   source,
 		   new String[] {
-			   "documentation", "Open a link - a URL, or another page via data:page/id,<id>.\n\nTyped as AbstractLink rather than String so that an action opening a page is the\nsame navigable reference as an element\'s own link, and a page rename does not\nquietly break the animation."
+			   "documentation", " Open a link - a URL, or another page via data:page/id,<id>."
 		   });
 		addAnnotation
 		  (tagsActionEClass,

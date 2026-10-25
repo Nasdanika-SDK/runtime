@@ -47,7 +47,7 @@ public class FigureTests {
 		Document document = Document.loadFromPngMetadata(png).getFirst(); // <1>
 		for (Node node: EcoreDiagrams.nodes(diagram)) {
 			Geometry drawn = geometry(document, node.getId());
-			if (EcoreDiagrams.CLASS.equals(node.getProperties().get(EcoreDiagrams.KIND))) {
+			if (EcoreDiagrams.CLASS.equals(node.getAttributes().get(EcoreDiagrams.KIND))) {
 				Bounds bounds = node.getBounds(); // <2>
 				assertThat(drawn.getWidth()).as(node.getId()).isEqualTo(bounds.getWidth());
 				assertThat(drawn.getHeight()).as(node.getId()).isEqualTo(bounds.getHeight());

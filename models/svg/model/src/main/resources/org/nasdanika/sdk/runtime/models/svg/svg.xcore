@@ -1,6 +1,22 @@
+/*
+ * A pragmatic subset of SVG as an EMF model: the twenty-odd elements and the presentation
+ * attributes that generated diagrams need, and that Asciidoctor PDF's SVG renderer, prawn-svg,
+ * draws, so one SVG works in HTML, PDF and EPUB.
+ *
+ * The model is annotated with ExtendedMetaData, as models generated from XML schemas are, so EMF's
+ * XML resource writes and reads SVG: element and attribute names are SVG's, and the namespace is
+ * SVG's, which is why the namespace URI of this package is http://www.w3.org/2000/svg rather than
+ * a runtime.sdk.nasdanika.org URI. Elements and attributes outside the subset are recorded on load,
+ * not lost.
+ *
+ * Containers hold their children in a feature map, content, keyed by the elements of DocumentRoot,
+ * which is how one list holds rect, circle and g in document order. Text holds character data and
+ * tspan elements in its mixed feature map. The add, children, addText, addSpan and text operations
+ * add and read children and text without touching feature maps.
+ */
 @Ecore(
-   	nsURI="https://runtime.sdk.nasdanika.org/models/svg", 
-	nsPrefix="org.nasdanika.sdk.runtime.models.svg")
+   	nsURI="http://www.w3.org/2000/svg",
+	nsPrefix="svg")
 @GenModel(
 	modelDirectory="/model/src-gen",
     featureDelegation="Dynamic",
@@ -12,10 +28,462 @@
 )
 package org.nasdanika.sdk.runtime.models.svg
 
+import org.eclipse.emf.ecore.EFeatureMapEntry
+import org.eclipse.emf.ecore.EStringToStringMapEntry
+
 annotation "http://www.eclipse.org/emf/2002/Ecore" as Ecore
 annotation "http://www.eclipse.org/emf/2002/GenModel" as GenModel
 annotation "urn:org.nasdanika" as Nasdanika
 
-class Circle {
-    
+/* ============================================================================
+ * The document
+ * ============================================================================ */
+
+/*
+ * The document: its root element, and the namespace prefixes. Saving writes SVG's namespace as
+ * the default one, without a prefix.
+ */
+@xcore.lang.ExtendedMetaData(name="", kind="mixed")
+class DocumentRoot {
+	@xcore.lang.ExtendedMetaData(kind="elementWildcard", name=":mixed")
+	EFeatureMapEntry[] mixed
+	@xcore.lang.ExtendedMetaData(kind="attribute", name="xmlns:prefix")
+	contains transient EStringToStringMapEntry[] xMLNSPrefixMap
+	@xcore.lang.ExtendedMetaData(kind="attribute", name="xsi:schemaLocation")
+	contains transient EStringToStringMapEntry[] xSISchemaLocation
+
+	@xcore.lang.ExtendedMetaData(kind="element", name="svg", namespace="##targetNamespace")
+	contains transient volatile derived Svg[0..?] svg
+	@xcore.lang.ExtendedMetaData(kind="element", name="g", namespace="##targetNamespace")
+	contains transient volatile derived G[0..?] g
+	@xcore.lang.ExtendedMetaData(kind="element", name="defs", namespace="##targetNamespace")
+	contains transient volatile derived Defs[0..?] defs
+	@xcore.lang.ExtendedMetaData(kind="element", name="a", namespace="##targetNamespace")
+	contains transient volatile derived A[0..?] a
+	@xcore.lang.ExtendedMetaData(kind="element", name="title", namespace="##targetNamespace")
+	contains transient volatile derived Title[0..?] title
+	@xcore.lang.ExtendedMetaData(kind="element", name="desc", namespace="##targetNamespace")
+	contains transient volatile derived Desc[0..?] desc
+	@xcore.lang.ExtendedMetaData(kind="element", name="style", namespace="##targetNamespace")
+	contains transient volatile derived Style[0..?] style
+	@xcore.lang.ExtendedMetaData(kind="element", name="rect", namespace="##targetNamespace")
+	contains transient volatile derived Rect[0..?] rect
+	@xcore.lang.ExtendedMetaData(kind="element", name="circle", namespace="##targetNamespace")
+	contains transient volatile derived Circle[0..?] circle
+	@xcore.lang.ExtendedMetaData(kind="element", name="ellipse", namespace="##targetNamespace")
+	contains transient volatile derived Ellipse[0..?] ellipse
+	@xcore.lang.ExtendedMetaData(kind="element", name="line", namespace="##targetNamespace")
+	contains transient volatile derived Line[0..?] line
+	@xcore.lang.ExtendedMetaData(kind="element", name="polyline", namespace="##targetNamespace")
+	contains transient volatile derived Polyline[0..?] polyline
+	@xcore.lang.ExtendedMetaData(kind="element", name="polygon", namespace="##targetNamespace")
+	contains transient volatile derived Polygon[0..?] polygon
+	@xcore.lang.ExtendedMetaData(kind="element", name="path", namespace="##targetNamespace")
+	contains transient volatile derived Path[0..?] path
+	@xcore.lang.ExtendedMetaData(kind="element", name="text", namespace="##targetNamespace")
+	contains transient volatile derived Text[0..?] text
+	@xcore.lang.ExtendedMetaData(kind="element", name="tspan", namespace="##targetNamespace")
+	contains transient volatile derived TSpan[0..?] tspan
+	@xcore.lang.ExtendedMetaData(kind="element", name="image", namespace="##targetNamespace")
+	contains transient volatile derived Image[0..?] image
+	@xcore.lang.ExtendedMetaData(kind="element", name="use", namespace="##targetNamespace")
+	contains transient volatile derived Use[0..?] use
+	@xcore.lang.ExtendedMetaData(kind="element", name="marker", namespace="##targetNamespace")
+	contains transient volatile derived Marker[0..?] marker
+	@xcore.lang.ExtendedMetaData(kind="element", name="clipPath", namespace="##targetNamespace")
+	contains transient volatile derived ClipPath[0..?] clipPath
+	@xcore.lang.ExtendedMetaData(kind="element", name="linearGradient", namespace="##targetNamespace")
+	contains transient volatile derived LinearGradient[0..?] linearGradient
+	@xcore.lang.ExtendedMetaData(kind="element", name="stop", namespace="##targetNamespace")
+	contains transient volatile derived Stop[0..?] stop
+}
+
+/* ============================================================================
+ * Common attributes
+ * ============================================================================ */
+
+/* id, class, style and transform, which every element of the subset can have. */
+@xcore.lang.ExtendedMetaData(name="Element", kind="empty")
+abstract class Element {
+	@xcore.lang.ExtendedMetaData(kind="attribute", name="id")
+	String ^id
+	/* The class attribute: names of CSS classes, separated by spaces. */
+	@xcore.lang.ExtendedMetaData(kind="attribute", name="class")
+	String styleClass
+	/* Inline CSS. */
+	@xcore.lang.ExtendedMetaData(kind="attribute", name="style")
+	String styleAttribute
+	@xcore.lang.ExtendedMetaData(kind="attribute", name="transform")
+	String transform
+}
+
+/*
+ * The presentation attributes of the subset: how a shape or a text is painted. Values are as in
+ * SVG: colors such as #1168bd or none, lengths, and url(#id) references to markers and gradients.
+ */
+interface Presentation {
+	@xcore.lang.ExtendedMetaData(kind="attribute", name="fill")
+	String fill
+	@xcore.lang.ExtendedMetaData(kind="attribute", name="fill-opacity")
+	String fillOpacity
+	@xcore.lang.ExtendedMetaData(kind="attribute", name="stroke")
+	String stroke
+	@xcore.lang.ExtendedMetaData(kind="attribute", name="stroke-width")
+	String strokeWidth
+	@xcore.lang.ExtendedMetaData(kind="attribute", name="stroke-opacity")
+	String strokeOpacity
+	@xcore.lang.ExtendedMetaData(kind="attribute", name="stroke-dasharray")
+	String strokeDasharray
+	@xcore.lang.ExtendedMetaData(kind="attribute", name="stroke-linecap")
+	String strokeLinecap
+	@xcore.lang.ExtendedMetaData(kind="attribute", name="stroke-linejoin")
+	String strokeLinejoin
+	@xcore.lang.ExtendedMetaData(kind="attribute", name="opacity")
+	String opacity
+	@xcore.lang.ExtendedMetaData(kind="attribute", name="font-family")
+	String fontFamily
+	@xcore.lang.ExtendedMetaData(kind="attribute", name="font-size")
+	String fontSize
+	@xcore.lang.ExtendedMetaData(kind="attribute", name="font-weight")
+	String fontWeight
+	@xcore.lang.ExtendedMetaData(kind="attribute", name="font-style")
+	String fontStyle
+	@xcore.lang.ExtendedMetaData(kind="attribute", name="text-anchor")
+	String textAnchor
+	@xcore.lang.ExtendedMetaData(kind="attribute", name="dominant-baseline")
+	String dominantBaseline
+	@xcore.lang.ExtendedMetaData(kind="attribute", name="marker-start")
+	String markerStart
+	@xcore.lang.ExtendedMetaData(kind="attribute", name="marker-mid")
+	String markerMid
+	@xcore.lang.ExtendedMetaData(kind="attribute", name="marker-end")
+	String markerEnd
+	@xcore.lang.ExtendedMetaData(kind="attribute", name="visibility")
+	String visibility
+	@xcore.lang.ExtendedMetaData(kind="attribute", name="clip-path")
+	String clipPath
+}
+
+/* ============================================================================
+ * Structure
+ * ============================================================================ */
+
+/*
+ * An element with children, in document order: shapes, text, groups, links, definitions. The
+ * children are in a feature map whose keys are the elements of DocumentRoot.
+ */
+@xcore.lang.ExtendedMetaData(name="Container", kind="elementOnly")
+abstract class Container extends Element, Presentation {
+	@xcore.lang.ExtendedMetaData(kind="elementWildcard", wildcards="##targetNamespace", name=":content", processing="lax")
+	EFeatureMapEntry[] content
+
+	/* Appends a child, keyed by its element of DocumentRoot, and returns it. */
+	op <T extends Element> T add(T child) {
+		val metaData = org.eclipse.emf.ecore.util.ExtendedMetaData.INSTANCE
+		content.add(metaData.getElement(SvgPackage.eNS_URI, metaData.getName(child.eClass)), child)
+		return child
+	}
+
+	/* The children that are elements of the subset, in document order. */
+	op Element[] children() {
+		val children = new org.eclipse.emf.common.util.BasicEList<Element>
+		for (entry : content) {
+			val value = entry.value
+			if (value instanceof Element) {
+				children.add(value)
+			}
+		}
+		return children
+	}
+}
+
+/* The root element, or a nested viewport. */
+@xcore.lang.ExtendedMetaData(name="svg", kind="elementOnly")
+class Svg extends Container {
+	@xcore.lang.ExtendedMetaData(kind="attribute", name="version")
+	String version
+	@xcore.lang.ExtendedMetaData(kind="attribute", name="x")
+	String x
+	@xcore.lang.ExtendedMetaData(kind="attribute", name="y")
+	String y
+	/* A length, such as 640, 640px or 100%. */
+	@xcore.lang.ExtendedMetaData(kind="attribute", name="width")
+	String width
+	@xcore.lang.ExtendedMetaData(kind="attribute", name="height")
+	String height
+	/* min-x, min-y, width and height of the user coordinates, such as 0 0 640 480. */
+	@xcore.lang.ExtendedMetaData(kind="attribute", name="viewBox")
+	String viewBox
+	@xcore.lang.ExtendedMetaData(kind="attribute", name="preserveAspectRatio")
+	String preserveAspectRatio
+}
+
+/* A group. */
+@xcore.lang.ExtendedMetaData(name="g", kind="elementOnly")
+class G extends Container {
+}
+
+/* Definitions: markers, gradients and clip paths, drawn only where they are referenced. */
+@xcore.lang.ExtendedMetaData(name="defs", kind="elementOnly")
+class Defs extends Container {
+}
+
+/* A hyperlink around its children. */
+@xcore.lang.ExtendedMetaData(name="a", kind="elementOnly")
+class A extends Container {
+	/* The link. SVG 2's href; SVG 1.1 renderers read xlink:href. */
+	@xcore.lang.ExtendedMetaData(kind="attribute", name="href")
+	String href
+	@xcore.lang.ExtendedMetaData(kind="attribute", name="target")
+	String target
+}
+
+/* A marker: an arrowhead or another decoration drawn at the vertices of a line. */
+@xcore.lang.ExtendedMetaData(name="marker", kind="elementOnly")
+class Marker extends Container {
+	@xcore.lang.ExtendedMetaData(kind="attribute", name="viewBox")
+	String viewBox
+	@xcore.lang.ExtendedMetaData(kind="attribute", name="refX")
+	String refX
+	@xcore.lang.ExtendedMetaData(kind="attribute", name="refY")
+	String refY
+	@xcore.lang.ExtendedMetaData(kind="attribute", name="markerWidth")
+	String markerWidth
+	@xcore.lang.ExtendedMetaData(kind="attribute", name="markerHeight")
+	String markerHeight
+	/* auto, auto-start-reverse, or an angle. */
+	@xcore.lang.ExtendedMetaData(kind="attribute", name="orient")
+	String orient
+	/* strokeWidth (the default) or userSpaceOnUse. */
+	@xcore.lang.ExtendedMetaData(kind="attribute", name="markerUnits")
+	String markerUnits
+}
+
+/* A clip path: its children are the region that clips what refers to it. */
+@xcore.lang.ExtendedMetaData(name="clipPath", kind="elementOnly")
+class ClipPath extends Container {
+	@xcore.lang.ExtendedMetaData(kind="attribute", name="clipPathUnits")
+	String clipPathUnits
+}
+
+/* A linear gradient, with stops as its children. */
+@xcore.lang.ExtendedMetaData(name="linearGradient", kind="elementOnly")
+class LinearGradient extends Container {
+	@xcore.lang.ExtendedMetaData(kind="attribute", name="x1")
+	String x1
+	@xcore.lang.ExtendedMetaData(kind="attribute", name="y1")
+	String y1
+	@xcore.lang.ExtendedMetaData(kind="attribute", name="x2")
+	String x2
+	@xcore.lang.ExtendedMetaData(kind="attribute", name="y2")
+	String y2
+	@xcore.lang.ExtendedMetaData(kind="attribute", name="gradientUnits")
+	String gradientUnits
+}
+
+/* A color stop of a gradient. */
+@xcore.lang.ExtendedMetaData(name="stop", kind="empty")
+class Stop extends Element {
+	@xcore.lang.ExtendedMetaData(kind="attribute", name="offset")
+	String offset
+	@xcore.lang.ExtendedMetaData(kind="attribute", name="stop-color")
+	String stopColor
+	@xcore.lang.ExtendedMetaData(kind="attribute", name="stop-opacity")
+	String stopOpacity
+}
+
+/* ============================================================================
+ * Text content of their own
+ * ============================================================================ */
+
+/* A title: the tooltip of its parent in a browser, and its accessible name. */
+@xcore.lang.ExtendedMetaData(name="title", kind="simple")
+class Title extends Element {
+	@xcore.lang.ExtendedMetaData(name=":0", kind="simple")
+	String value
+}
+
+/* A description of its parent. */
+@xcore.lang.ExtendedMetaData(name="desc", kind="simple")
+class Desc extends Element {
+	@xcore.lang.ExtendedMetaData(name=":0", kind="simple")
+	String value
+}
+
+/* A style sheet. */
+@xcore.lang.ExtendedMetaData(name="style", kind="simple")
+class Style extends Element {
+	@xcore.lang.ExtendedMetaData(name=":0", kind="simple")
+	String value
+	@xcore.lang.ExtendedMetaData(kind="attribute", name="type")
+	String ^type
+}
+
+/* ============================================================================
+ * Shapes
+ * ============================================================================ */
+
+/*
+ * A shape. Shapes can have a title and a description as children, so they are containers too:
+ * a rectangle with a title has a tooltip in a browser.
+ */
+@xcore.lang.ExtendedMetaData(name="Shape", kind="elementOnly")
+abstract class Shape extends Container {
+}
+
+@xcore.lang.ExtendedMetaData(name="rect", kind="elementOnly")
+class Rect extends Shape {
+	@xcore.lang.ExtendedMetaData(kind="attribute", name="x")
+	double x
+	@xcore.lang.ExtendedMetaData(kind="attribute", name="y")
+	double y
+	@xcore.lang.ExtendedMetaData(kind="attribute", name="width")
+	double width
+	@xcore.lang.ExtendedMetaData(kind="attribute", name="height")
+	double height
+	/* Corner radii. */
+	@xcore.lang.ExtendedMetaData(kind="attribute", name="rx")
+	double rx
+	@xcore.lang.ExtendedMetaData(kind="attribute", name="ry")
+	double ry
+}
+
+@xcore.lang.ExtendedMetaData(name="circle", kind="elementOnly")
+class Circle extends Shape {
+	@xcore.lang.ExtendedMetaData(kind="attribute", name="cx")
+	double cx
+	@xcore.lang.ExtendedMetaData(kind="attribute", name="cy")
+	double cy
+	@xcore.lang.ExtendedMetaData(kind="attribute", name="r")
+	double r
+}
+
+@xcore.lang.ExtendedMetaData(name="ellipse", kind="elementOnly")
+class Ellipse extends Shape {
+	@xcore.lang.ExtendedMetaData(kind="attribute", name="cx")
+	double cx
+	@xcore.lang.ExtendedMetaData(kind="attribute", name="cy")
+	double cy
+	@xcore.lang.ExtendedMetaData(kind="attribute", name="rx")
+	double rx
+	@xcore.lang.ExtendedMetaData(kind="attribute", name="ry")
+	double ry
+}
+
+@xcore.lang.ExtendedMetaData(name="line", kind="elementOnly")
+class Line extends Shape {
+	@xcore.lang.ExtendedMetaData(kind="attribute", name="x1")
+	double x1
+	@xcore.lang.ExtendedMetaData(kind="attribute", name="y1")
+	double y1
+	@xcore.lang.ExtendedMetaData(kind="attribute", name="x2")
+	double x2
+	@xcore.lang.ExtendedMetaData(kind="attribute", name="y2")
+	double y2
+}
+
+/* Points as SVG writes them: x,y pairs separated by spaces. */
+@xcore.lang.ExtendedMetaData(name="polyline", kind="elementOnly")
+class Polyline extends Shape {
+	@xcore.lang.ExtendedMetaData(kind="attribute", name="points")
+	String points
+}
+
+@xcore.lang.ExtendedMetaData(name="polygon", kind="elementOnly")
+class Polygon extends Shape {
+	@xcore.lang.ExtendedMetaData(kind="attribute", name="points")
+	String points
+}
+
+/* A path, in SVG's path data: M 0 0 L 10 0 Z. */
+@xcore.lang.ExtendedMetaData(name="path", kind="elementOnly")
+class Path extends Shape {
+	@xcore.lang.ExtendedMetaData(kind="attribute", name="d")
+	String d
+}
+
+@xcore.lang.ExtendedMetaData(name="image", kind="elementOnly")
+class Image extends Shape {
+	@xcore.lang.ExtendedMetaData(kind="attribute", name="href")
+	String href
+	@xcore.lang.ExtendedMetaData(kind="attribute", name="x")
+	double x
+	@xcore.lang.ExtendedMetaData(kind="attribute", name="y")
+	double y
+	@xcore.lang.ExtendedMetaData(kind="attribute", name="width")
+	double width
+	@xcore.lang.ExtendedMetaData(kind="attribute", name="height")
+	double height
+	@xcore.lang.ExtendedMetaData(kind="attribute", name="preserveAspectRatio")
+	String preserveAspectRatio
+}
+
+/* A copy of another element, by reference: href="#id". */
+@xcore.lang.ExtendedMetaData(name="use", kind="elementOnly")
+class Use extends Shape {
+	@xcore.lang.ExtendedMetaData(kind="attribute", name="href")
+	String href
+	@xcore.lang.ExtendedMetaData(kind="attribute", name="x")
+	double x
+	@xcore.lang.ExtendedMetaData(kind="attribute", name="y")
+	double y
+}
+
+/* ============================================================================
+ * Text
+ * ============================================================================ */
+
+/*
+ * Text, and spans of it. Character data and tspan children are in the mixed feature map, in
+ * document order.
+ */
+@xcore.lang.ExtendedMetaData(name="TextContent", kind="mixed")
+abstract class TextContent extends Element, Presentation {
+	@xcore.lang.ExtendedMetaData(kind="elementWildcard", name=":mixed")
+	EFeatureMapEntry[] mixed
+	/* The elements among the mixed content: spans. */
+	@xcore.lang.ExtendedMetaData(kind="elementWildcard", wildcards="##targetNamespace", name=":1", processing="lax", group="#mixed")
+	transient volatile derived EFeatureMapEntry[] any
+	/* x of each character, or of the first: one number or several. */
+	@xcore.lang.ExtendedMetaData(kind="attribute", name="x")
+	String x
+	@xcore.lang.ExtendedMetaData(kind="attribute", name="y")
+	String y
+	@xcore.lang.ExtendedMetaData(kind="attribute", name="dx")
+	String dx
+	@xcore.lang.ExtendedMetaData(kind="attribute", name="dy")
+	String dy
+
+	/* Appends character data. */
+	op void addText(String text) {
+		mixed.add(org.eclipse.emf.ecore.xml.^type.XMLTypePackage.Literals.XML_TYPE_DOCUMENT_ROOT__TEXT, text)
+	}
+
+	/* Appends a span, and returns it. */
+	op TSpan addSpan(TSpan span) {
+		mixed.add(SvgPackage.Literals.DOCUMENT_ROOT__TSPAN, span)
+		return span
+	}
+
+	/* The character data of this element and its spans, in document order. */
+	op String text() {
+		val text = new StringBuilder
+		for (entry : mixed) {
+			val value = entry.value
+			if (value instanceof TextContent) {
+				text.append(value.text())
+			} else if (entry.EStructuralFeature == org.eclipse.emf.ecore.xml.^type.XMLTypePackage.Literals.XML_TYPE_DOCUMENT_ROOT__TEXT) {
+				text.append(value)
+			}
+		}
+		return text.toString
+	}
+}
+
+@xcore.lang.ExtendedMetaData(name="text", kind="mixed")
+class Text extends TextContent {
+}
+
+@xcore.lang.ExtendedMetaData(name="tspan", kind="mixed")
+class TSpan extends TextContent {
 }

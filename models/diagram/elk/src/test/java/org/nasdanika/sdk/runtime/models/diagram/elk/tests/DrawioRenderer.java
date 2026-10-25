@@ -75,7 +75,7 @@ final class DrawioRenderer {
 				bounds.getWidth(),
 				bounds.getHeight());
 		boolean container = node.getChildren().stream().anyMatch(Node.class::isInstance);
-		boolean isAbstract = "true".equals(node.getProperties().get(EcoreDiagrams.ABSTRACT));
+		boolean isAbstract = "true".equals(node.getAttributes().get(EcoreDiagrams.ABSTRACT));
 		String fontStyle = "fontStyle=" + (isAbstract ? 3 : 1) + ";"; // 1 bold, 3 bold italic
 		String style = container ? PACKAGE_STYLE : CLASS_STYLE + fontStyle;
 		drawioNode.getStyle().putAll(Util.loadStyle(style));
@@ -114,7 +114,7 @@ final class DrawioRenderer {
 
 	private void addLabel(Label label, List<double[]> route, double[] frame,
 			org.nasdanika.sdk.runtime.drawio.Connection drawioConnection) {
-		String placement = label.getProperties().get(EcoreDiagrams.PLACEMENT);
+		String placement = label.getAttributes().get(EcoreDiagrams.PLACEMENT);
 		double position;
 		double[] anchor;
 		if ("TAIL".equals(placement)) {
@@ -163,17 +163,17 @@ final class DrawioRenderer {
 	}
 
 	private static String decorations(Connection connection) {
-		Map<String, String> properties = connection.getProperties().map();
+		Map<String, String> attributes = connection.getAttributes().map();
 		boolean bidirectional = connection.getChildren().size() > 1;
 		StringBuilder ret = new StringBuilder();
-		if ("true".equals(properties.get(EcoreDiagrams.CONTAINMENT))) {
+		if ("true".equals(attributes.get(EcoreDiagrams.CONTAINMENT))) {
 			ret.append("startArrow=diamondThin;startFill=1;");
 		} else {
 			ret.append("startArrow=none;");
 		}
-		if (EcoreDiagrams.GENERALIZATION.equals(properties.get(EcoreDiagrams.KIND))) {
+		if (EcoreDiagrams.GENERALIZATION.equals(attributes.get(EcoreDiagrams.KIND))) {
 			ret.append("endArrow=block;endFill=0;");
-		} else if ("true".equals(properties.get(EcoreDiagrams.CONTAINER))) {
+		} else if ("true".equals(attributes.get(EcoreDiagrams.CONTAINER))) {
 			ret.append("endArrow=diamondThin;endFill=1;");
 		} else if (bidirectional) {
 			ret.append("endArrow=none;");

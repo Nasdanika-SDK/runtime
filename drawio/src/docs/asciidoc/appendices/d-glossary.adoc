@@ -17,14 +17,23 @@ The effort readers spend to get what they need from a diagram.
 Context::
 What a document is loaded with: the streams of linked documents, properties for placeholders, and a filter for properties.
 
+Custom action::
+A step that Draw.io's viewer runs when a shape with a `data:action/json` link is clicked: show, hide, fade, highlight, restyle or animate cells.
+
 Diagram as data::
 A diagram whose elements carry properties with agreed meanings that programs read.
+
+Editable image::
+A PNG or SVG image that carries the diagram it shows, so that Draw.io opens it for editing and the API loads it.
 
 Element link::
 A link from a diagram element to another element, on the same page, another page or another document, in the form `data:element/...`.
 
 Entity::
 A thing a diagram element stands for.
+
+Frame::
+A page of a rendered video, shown for a time, with an optional function that runs once the page is shown.
 
 Layer::
 A part of a page that is shown and hidden as a whole. Every page has at least one.
@@ -52,6 +61,9 @@ A path of segments, such as `..`, `child` and `outgoing-connection`, which selec
 
 Tag::
 A name that elements of a page share, so that they can be shown and hidden together.
+
+Viewer::
+Draw.io's script that shows diagrams in web pages, with pages, layers, links and custom actions. The module `drawio-playwright` renders diagrams with it in a browser.
 
 Visual communication continuum::
 The range of structure a diagram can carry, from a picture to a diagram mapped to a model, with each step adding a little to the same file.

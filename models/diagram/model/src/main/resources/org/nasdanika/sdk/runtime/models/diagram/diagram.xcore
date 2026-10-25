@@ -14,7 +14,7 @@ package org.nasdanika.sdk.runtime.models.diagram
 
 import org.eclipse.emf.ecore.EObject
 import org.nasdanika.sdk.runtime.models.core.NamedElement
-import org.nasdanika.sdk.runtime.models.core.StringToStringMapEntry
+import org.nasdanika.sdk.runtime.models.core.Attributed
 import org.nasdanika.sdk.runtime.models.core.StringIdentity
 
 annotation "http://www.eclipse.org/emf/2002/Ecore" as Ecore
@@ -35,13 +35,13 @@ class Bounds extends Point {
 
 /* ---- Core ---- */
 
-abstract class DiagramElement extends NamedElement, StringIdentity { 
+/*
+ * Attributes, from core's Attributed mixin, are generic string key/value pairs: the carrier for
+ * annotations, layout options and semantic mappings, and for what a source notation carries and
+ * the model does not (same composability technique as the document model).
+ */
+abstract class DiagramElement extends NamedElement, StringIdentity, Attributed { 
 
-    /*
-     * Generic string properties — carrier for annotations/semantic mappings
-     * (same composability technique as the Nasdanika Markdown model).
-     */
-    contains StringToStringMapEntry[] properties
     /*
      * Semantic model elements this notation element depicts - the "other" model.
      * Named after the semantic model / representation model distinction rather than

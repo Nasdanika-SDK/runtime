@@ -1,0 +1,35 @@
+[#looking-ahead]
+== Looking ahead
+
+Everything in this chapter is [.planned]#PLANNED#.
+
+=== Custom actions and animations as objects
+
+The model has the vocabulary of Draw.io's custom actions: show, hide, toggle, fade, wipe, pop, set and toggle style, highlight, flow, select, scroll, move the view, open a link, and change which tags are visible, with waits between steps.
+Their cells, layers and tags are references, not ids.
+`Actions` hold a sequence for a click, and `Animation` a sequence that a page runs when it is shown.
+
+Loading the JSON into these objects and writing it back is next.
+Then an animation can be generated the way a diagram is: "highlight the elements that this trace touched, in order" or "show this sequence diagram's messages on the architecture diagram", checked before anything renders, because every step refers to elements that exist.
+The runtime's `drawio-playwright` module already records such animations as videos, so a generated animation becomes a generated video.
+
+=== Typed styles
+
+Features for the style keys worth naming, `fillColor`, `strokeColor`, `rounded`, `dashed`, `edgeStyle`, `startArrow` and `endArrow` among them, and enumerations for the closed vocabularies, derived from the style map so that the map stays the one copy of the truth.
+
+=== Connection points as ports
+
+Draw.io's `exitX`, `exitY`, `entryX` and `entryY` are ports by another name: a point on a shape where a connection attaches.
+As diagram model ports, they survive conversion to other notations and take part in layout.
+
+=== Links across documents
+
+Links into other documents loaded into the same resource set, resolved to their targets, so that a folder of diagrams is one graph and "what links here" works across files.
+
+=== Merging generated and arranged diagrams
+
+A diagram generated from a model and then arranged by a person, regenerated when the model changes, with the changes merged into the person's layout by id: new elements placed, removed elements removed, the arrangement kept.
+
+=== Mapping to models
+
+Elements mapped to the objects of other models by their properties, as Nasdanika core's semantic mapping does, through the diagram model's semantic elements.

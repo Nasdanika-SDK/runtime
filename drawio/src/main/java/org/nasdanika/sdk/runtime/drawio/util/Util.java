@@ -482,7 +482,6 @@ public final class Util {
 	}
 	
 	/**
-	 * @param <T>
 	 * @param visitor
 	 * @param connectionBase Connection base for visiting linked pages.
 	 * @return Visitor which passes itself to connected elements (incoming and outgoing connnections for nodes and source and target nodes for connections) and linked pages and adds linked pages' result to child results.

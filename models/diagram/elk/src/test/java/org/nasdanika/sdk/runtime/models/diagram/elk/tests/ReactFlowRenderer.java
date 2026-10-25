@@ -124,7 +124,7 @@ final class ReactFlowRenderer {
 		flowNode.setParent(parent); // <2>
 		FlowData data = FLOW.createFlowData();
 		data.setLabel(node.getName());
-		if ("true".equals(node.getProperties().get(EcoreDiagrams.ABSTRACT))) {
+		if ("true".equals(node.getAttributes().get(EcoreDiagrams.ABSTRACT))) {
 			data.getValues().add(expression("abstract", "true"));
 		}
 		flowNode.setData(data);
@@ -156,11 +156,11 @@ final class ReactFlowRenderer {
 		FlowData data = FLOW.createFlowData();
 		data.getValues().add(expression("points", points(Coordinates.route(connection)))); // <2>
 		data.getValues().add(expression("labels", labels(connection)));
-		Map<String, String> properties = connection.getProperties().map();
-		String kind = properties.get(EcoreDiagrams.KIND);
+		Map<String, String> attributes = connection.getAttributes().map();
+		String kind = attributes.get(EcoreDiagrams.KIND);
 		data.getValues().add(value("kind", kind));
-		boolean containment = "true".equals(properties.get(EcoreDiagrams.CONTAINMENT));
-		boolean container = "true".equals(properties.get(EcoreDiagrams.CONTAINER));
+		boolean containment = "true".equals(attributes.get(EcoreDiagrams.CONTAINMENT));
+		boolean container = "true".equals(attributes.get(EcoreDiagrams.CONTAINER));
 		boolean bidirectional = connection.getChildren().size() > 1;
 		if (containment) {
 			data.getValues().add(value("markerStart", "diamond"));

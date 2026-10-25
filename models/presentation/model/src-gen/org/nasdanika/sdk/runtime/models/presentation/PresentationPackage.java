@@ -161,13 +161,13 @@ public interface PresentationPackage extends EPackage {
 	int PRESENTATION__NAME = DiagramPackage.DIAGRAM__NAME;
 
 	/**
-	 * The feature id for the '<em><b>Properties</b></em>' map.
+	 * The feature id for the '<em><b>Attributes</b></em>' map.
 	 * <!-- begin-user-doc -->
 	 * <!-- end-user-doc -->
 	 * @generated
 	 * @ordered
 	 */
-	int PRESENTATION__PROPERTIES = DiagramPackage.DIAGRAM__PROPERTIES;
+	int PRESENTATION__ATTRIBUTES = DiagramPackage.DIAGRAM__ATTRIBUTES;
 
 	/**
 	 * The feature id for the '<em><b>Semantic Elements</b></em>' reference list.
@@ -360,13 +360,13 @@ public interface PresentationPackage extends EPackage {
 	int SLIDE__NAME = DiagramPackage.DIAGRAM__NAME;
 
 	/**
-	 * The feature id for the '<em><b>Properties</b></em>' map.
+	 * The feature id for the '<em><b>Attributes</b></em>' map.
 	 * <!-- begin-user-doc -->
 	 * <!-- end-user-doc -->
 	 * @generated
 	 * @ordered
 	 */
-	int SLIDE__PROPERTIES = DiagramPackage.DIAGRAM__PROPERTIES;
+	int SLIDE__ATTRIBUTES = DiagramPackage.DIAGRAM__ATTRIBUTES;
 
 	/**
 	 * The feature id for the '<em><b>Semantic Elements</b></em>' reference list.
@@ -550,13 +550,13 @@ public interface PresentationPackage extends EPackage {
 	int MASTER_SLIDE__NAME = SLIDE__NAME;
 
 	/**
-	 * The feature id for the '<em><b>Properties</b></em>' map.
+	 * The feature id for the '<em><b>Attributes</b></em>' map.
 	 * <!-- begin-user-doc -->
 	 * <!-- end-user-doc -->
 	 * @generated
 	 * @ordered
 	 */
-	int MASTER_SLIDE__PROPERTIES = SLIDE__PROPERTIES;
+	int MASTER_SLIDE__ATTRIBUTES = SLIDE__ATTRIBUTES;
 
 	/**
 	 * The feature id for the '<em><b>Semantic Elements</b></em>' reference list.
@@ -777,13 +777,13 @@ public interface PresentationPackage extends EPackage {
 	int SHAPE__NAME = DiagramPackage.NODE__NAME;
 
 	/**
-	 * The feature id for the '<em><b>Properties</b></em>' map.
+	 * The feature id for the '<em><b>Attributes</b></em>' map.
 	 * <!-- begin-user-doc -->
 	 * <!-- end-user-doc -->
 	 * @generated
 	 * @ordered
 	 */
-	int SHAPE__PROPERTIES = DiagramPackage.NODE__PROPERTIES;
+	int SHAPE__ATTRIBUTES = DiagramPackage.NODE__ATTRIBUTES;
 
 	/**
 	 * The feature id for the '<em><b>Semantic Elements</b></em>' reference list.
@@ -1012,13 +1012,13 @@ public interface PresentationPackage extends EPackage {
 	int GROUP_SHAPE__NAME = SHAPE__NAME;
 
 	/**
-	 * The feature id for the '<em><b>Properties</b></em>' map.
+	 * The feature id for the '<em><b>Attributes</b></em>' map.
 	 * <!-- begin-user-doc -->
 	 * <!-- end-user-doc -->
 	 * @generated
 	 * @ordered
 	 */
-	int GROUP_SHAPE__PROPERTIES = SHAPE__PROPERTIES;
+	int GROUP_SHAPE__ATTRIBUTES = SHAPE__ATTRIBUTES;
 
 	/**
 	 * The feature id for the '<em><b>Semantic Elements</b></em>' reference list.
@@ -1247,13 +1247,13 @@ public interface PresentationPackage extends EPackage {
 	int TEXT_SHAPE__NAME = SHAPE__NAME;
 
 	/**
-	 * The feature id for the '<em><b>Properties</b></em>' map.
+	 * The feature id for the '<em><b>Attributes</b></em>' map.
 	 * <!-- begin-user-doc -->
 	 * <!-- end-user-doc -->
 	 * @generated
 	 * @ordered
 	 */
-	int TEXT_SHAPE__PROPERTIES = SHAPE__PROPERTIES;
+	int TEXT_SHAPE__ATTRIBUTES = SHAPE__ATTRIBUTES;
 
 	/**
 	 * The feature id for the '<em><b>Semantic Elements</b></em>' reference list.
@@ -1646,13 +1646,13 @@ public interface PresentationPackage extends EPackage {
 	int IMAGE_SHAPE__NAME = SHAPE__NAME;
 
 	/**
-	 * The feature id for the '<em><b>Properties</b></em>' map.
+	 * The feature id for the '<em><b>Attributes</b></em>' map.
 	 * <!-- begin-user-doc -->
 	 * <!-- end-user-doc -->
 	 * @generated
 	 * @ordered
 	 */
-	int IMAGE_SHAPE__PROPERTIES = SHAPE__PROPERTIES;
+	int IMAGE_SHAPE__ATTRIBUTES = SHAPE__ATTRIBUTES;
 
 	/**
 	 * The feature id for the '<em><b>Semantic Elements</b></em>' reference list.
@@ -1899,13 +1899,13 @@ public interface PresentationPackage extends EPackage {
 	int MEDIA_SHAPE__NAME = SHAPE__NAME;
 
 	/**
-	 * The feature id for the '<em><b>Properties</b></em>' map.
+	 * The feature id for the '<em><b>Attributes</b></em>' map.
 	 * <!-- begin-user-doc -->
 	 * <!-- end-user-doc -->
 	 * @generated
 	 * @ordered
 	 */
-	int MEDIA_SHAPE__PROPERTIES = SHAPE__PROPERTIES;
+	int MEDIA_SHAPE__ATTRIBUTES = SHAPE__ATTRIBUTES;
 
 	/**
 	 * The feature id for the '<em><b>Semantic Elements</b></em>' reference list.
@@ -2152,13 +2152,13 @@ public interface PresentationPackage extends EPackage {
 	int TABLE_SHAPE__NAME = SHAPE__NAME;
 
 	/**
-	 * The feature id for the '<em><b>Properties</b></em>' map.
+	 * The feature id for the '<em><b>Attributes</b></em>' map.
 	 * <!-- begin-user-doc -->
 	 * <!-- end-user-doc -->
 	 * @generated
 	 * @ordered
 	 */
-	int TABLE_SHAPE__PROPERTIES = SHAPE__PROPERTIES;
+	int TABLE_SHAPE__ATTRIBUTES = SHAPE__ATTRIBUTES;
 
 	/**
 	 * The feature id for the '<em><b>Semantic Elements</b></em>' reference list.
@@ -2497,13 +2497,13 @@ public interface PresentationPackage extends EPackage {
 	int CONNECTOR_SHAPE__NAME = DiagramPackage.CONNECTION__NAME;
 
 	/**
-	 * The feature id for the '<em><b>Properties</b></em>' map.
+	 * The feature id for the '<em><b>Attributes</b></em>' map.
 	 * <!-- begin-user-doc -->
 	 * <!-- end-user-doc -->
 	 * @generated
 	 * @ordered
 	 */
-	int CONNECTOR_SHAPE__PROPERTIES = DiagramPackage.CONNECTION__PROPERTIES;
+	int CONNECTOR_SHAPE__ATTRIBUTES = DiagramPackage.CONNECTION__ATTRIBUTES;
 
 	/**
 	 * The feature id for the '<em><b>Semantic Elements</b></em>' reference list.

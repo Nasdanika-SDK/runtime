@@ -3,6 +3,7 @@ package org.nasdanika.sdk.runtime.playwright;
 import java.io.IOException;
 import java.io.UncheckedIOException;
 import java.nio.file.Files;
+import java.nio.file.Path;
 import java.util.HashMap;
 import java.util.Map;
 
@@ -15,7 +16,9 @@ import com.microsoft.playwright.BrowserType;
 import com.microsoft.playwright.Page;
 import com.microsoft.playwright.Playwright;
 import com.microsoft.playwright.Route;
+import com.microsoft.playwright.Video;
 
+import io.opentelemetry.api.OpenTelemetry;
 import io.opentelemetry.api.common.AttributeKey;
 import io.opentelemetry.api.common.Attributes;
 import io.opentelemetry.api.common.AttributesBuilder;
@@ -43,6 +46,17 @@ import io.opentelemetry.context.Context;
  * <p>
  * The trace context is added to requests to the server only, never to requests to other origins,
  * such as content delivery networks, which have no use for it.
+ *
+ * <p>
+ * With a {@link Options#video() video} file in the options, the session is recorded, and a log
+ * record in the {@code Browser} span says when the recording started. Steps, screenshots and
+ * narration carry their offset into the video, so a span of the server, which has a timestamp, can
+ * be found on the screen too, and what is on the screen in the trace.
+ *
+ * <p>
+ * A browser can also be run without a server, {@link #inBrowser(OpenTelemetry, Options, BrowserBody)
+ * in a trace of its own}, for pages that are set with {@code Page.setContent} or opened from files,
+ * such as a diagram rendered by a viewer.
  */
 public final class Browsing {
 
@@ -117,6 +131,22 @@ public final class Browsing {
 	 */
 	public static final AttributeKey<String> URL_FULL = AttributeKey.stringKey("url.full");
 
+	/**
+	 * Event name of the log record of the start of a video recording. The body is the file name.
+	 */
+	public static final String VIDEO_EVENT = "nasdanika.video";
+
+	/**
+	 * The video file, as given in the options, with forward slashes.
+	 */
+	public static final AttributeKey<String> VIDEO_PATH = AttributeKey.stringKey("nasdanika.video.path");
+
+	/**
+	 * Milliseconds from the start of the video to a step, a screenshot or a narration line.
+	 * Approximate: the recording starts when the page is created, give or take a frame.
+	 */
+	public static final AttributeKey<Long> VIDEO_OFFSET = AttributeKey.longKey("nasdanika.video.offset_ms");
+
 	public static final AttributeKey<String> BROWSER_NAME = AttributeKey.stringKey("browser.name");
 
 	public static final AttributeKey<String> BROWSER_VERSION = AttributeKey.stringKey("browser.version");
@@ -152,8 +182,32 @@ public final class Browsing {
 	 * server's base, runs the body in a {@code Browser} span, and closes everything.
 	 */
 	public static <T, E extends Throwable> T inBrowser(Server server, Options options, BrowserBody<T, E> body) throws E {
+		return run(server.openTelemetry(), server, options, body);
+	}
+
+	/**
+	 * Without a server: starts Playwright and a browser, opens a blank page, runs the body in a
+	 * {@code Browser} span, and closes everything. For pages that need no server, such as content
+	 * set with {@code Page.setContent} or files.
+	 *
+	 * @param openTelemetry Receives the spans and log records of the session
+	 */
+	public static <T, E extends Throwable> T inBrowser(OpenTelemetry openTelemetry, Options options, BrowserBody<T, E> body) throws E {
+		return run(openTelemetry, null, options, body);
+	}
+
+	private static <T, E extends Throwable> T run(OpenTelemetry openTelemetry, Server server, Options options, BrowserBody<T, E> body) throws E {
+		Path videoDirectory;
 		try {
 			Files.createDirectories(options.screenshots());
+			if (options.video() == null) {
+				videoDirectory = null;
+			} else {
+				// Playwright names the files it records, so it records to a directory of its own
+				Path parent = options.video().toAbsolutePath().getParent();
+				Files.createDirectories(parent);
+				videoDirectory = Files.createTempDirectory(parent, ".video");
+			}
 		} catch (IOException e) {
 			throw new UncheckedIOException(e);
 		}
@@ -162,17 +216,26 @@ public final class Browsing {
 			// An installed browser: Playwright's own is not needed
 			environment.put("PLAYWRIGHT_SKIP_BROWSER_DOWNLOAD", "1");
 		}
+		Browser.NewContextOptions contextOptions = new Browser.NewContextOptions()
+				.setViewportSize(options.width(), options.height())
+				.setDeviceScaleFactor(options.scale());
+		if (server != null) {
+			contextOptions.setBaseURL(server.base().toString());
+		}
+		if (videoDirectory != null) {
+			contextOptions.setRecordVideoDir(videoDirectory).setRecordVideoSize(options.width(), options.height());
+		}
 		try (Playwright playwright = Playwright.create(new Playwright.CreateOptions().setEnv(environment));
 				Browser browser = playwright.chromium().launch(new BrowserType.LaunchOptions()
 						.setChannel(options.channel())
 						.setHeadless(options.headless()));
-				BrowserContext context = browser.newContext(new Browser.NewContextOptions()
-						.setBaseURL(server.base().toString())
-						.setViewportSize(options.width(), options.height()))) {
+				BrowserContext context = browser.newContext(contextOptions)) {
 
-			// Requests to the server carry the span current when the browser sends them: Playwright
-			// calls handlers on the thread that is waiting in a Playwright call, the test's thread
-			context.route(server.base() + "**", route -> propagate(server, route));
+			if (server != null) {
+				// Requests to the server carry the span current when the browser sends them: Playwright
+				// calls handlers on the thread that is waiting in a Playwright call, the test's thread
+				context.route(server.base() + "**", route -> propagate(server, route));
+			}
 
 			AttributesBuilder attributes = Attributes.builder()
 					.put(BROWSER_NAME, browser.browserType().name())
@@ -180,12 +243,41 @@ public final class Browsing {
 			if (options.channel() != null) {
 				attributes.put(BROWSER_CHANNEL, options.channel());
 			}
-			return Telemetry.inSpan(Telemetry.tracer(server.openTelemetry()), "Browser", attributes.build(), span -> {
+			return Telemetry.inSpan(Telemetry.tracer(openTelemetry), "Browser", attributes.build(), span -> {
 				Page page = context.newPage();
-				Session session = new Session(server, options, playwright, browser, context, page);
-				return body.run(session);
+				Session session = new Session(openTelemetry, server, options, playwright, browser, context, page);
+				try {
+					return body.run(session);
+				} finally {
+					if (videoDirectory != null) {
+						saveVideo(page, options.video());
+					}
+				}
 			});
+		} finally {
+			if (videoDirectory != null) {
+				try (var files = Files.list(videoDirectory)) {
+					for (Path file : files.toList()) {
+						Files.deleteIfExists(file);
+					}
+					Files.deleteIfExists(videoDirectory);
+				} catch (IOException e) {
+					throw new UncheckedIOException(e);
+				}
+			}
 		}
+	}
+
+	/**
+	 * A video is complete when its page is closed.
+	 */
+	private static void saveVideo(Page page, Path file) {
+		Video video = page.video();
+		if (!page.isClosed()) {
+			page.close();
+		}
+		video.saveAs(file);
+		video.delete();
 	}
 
 	private static void propagate(Server server, Route route) {

@@ -4,7 +4,7 @@
 A recorded walk-through holds what a document about a scenario needs: the steps in order, named; what each looked like; what each asked of the server; what went wrong, where.
 With narration (<<narration>>), it also holds what a person would _say_ about each step, in order with the screenshots.
 The test that drives the browser writes the script of a video and the text of a guide as it goes, next to the code that does what the text describes, and both are checked by the same run.
-Everything else in this chapter is [.planned]#PLANNED#.
+Screen recording is built (<<video>>); everything else in this chapter is [.planned]#PLANNED#.
 
 === Videos
 
@@ -12,7 +12,7 @@ Screenshots and narration records, in the order they were recorded, are a storyb
 
 * *Narrated videos*: the narration spoken by a text-to-speech service, the screenshots as frames held for the length of their lines, transitions between steps, and subtitles from the same text, rendered with a tool such as FFmpeg. A walk-through recorded by a nightly build is a demo video of last night's application.
 * *A video model*: the storyboard as a model of its own, generated from the trace, which a person can reorder, trim and annotate before rendering, and which is regenerated, keeping their changes, when the walk-through changes.
-* *Screen recordings*: Playwright can record a video of a browser context; a recording aligned with the steps' spans by their timestamps gives motion instead of stills, with the narration laid over it.
+* *Narrated screen recordings*: a session's video is recorded already, with each step's offset into it (<<video>>). Laying the narration over the recording at the offsets of the steps that narrate it gives motion instead of stills.
 
 === Documents
 

@@ -271,13 +271,13 @@ public interface DiagramPackage extends EPackage {
 	int DIAGRAM_ELEMENT__NAME = CorePackage.NAMED_ELEMENT__NAME;
 
 	/**
-	 * The feature id for the '<em><b>Properties</b></em>' map.
+	 * The feature id for the '<em><b>Attributes</b></em>' map.
 	 * <!-- begin-user-doc -->
 	 * <!-- end-user-doc -->
 	 * @generated
 	 * @ordered
 	 */
-	int DIAGRAM_ELEMENT__PROPERTIES = CorePackage.NAMED_ELEMENT_FEATURE_COUNT + 0;
+	int DIAGRAM_ELEMENT__ATTRIBUTES = CorePackage.NAMED_ELEMENT_FEATURE_COUNT + 0;
 
 	/**
 	 * The feature id for the '<em><b>Semantic Elements</b></em>' reference list.
@@ -434,13 +434,13 @@ public interface DiagramPackage extends EPackage {
 	int DIAGRAM__NAME = DIAGRAM_ELEMENT__NAME;
 
 	/**
-	 * The feature id for the '<em><b>Properties</b></em>' map.
+	 * The feature id for the '<em><b>Attributes</b></em>' map.
 	 * <!-- begin-user-doc -->
 	 * <!-- end-user-doc -->
 	 * @generated
 	 * @ordered
 	 */
-	int DIAGRAM__PROPERTIES = DIAGRAM_ELEMENT__PROPERTIES;
+	int DIAGRAM__ATTRIBUTES = DIAGRAM_ELEMENT__ATTRIBUTES;
 
 	/**
 	 * The feature id for the '<em><b>Semantic Elements</b></em>' reference list.
@@ -597,13 +597,13 @@ public interface DiagramPackage extends EPackage {
 	int LAYER__NAME = DIAGRAM_ELEMENT__NAME;
 
 	/**
-	 * The feature id for the '<em><b>Properties</b></em>' map.
+	 * The feature id for the '<em><b>Attributes</b></em>' map.
 	 * <!-- begin-user-doc -->
 	 * <!-- end-user-doc -->
 	 * @generated
 	 * @ordered
 	 */
-	int LAYER__PROPERTIES = DIAGRAM_ELEMENT__PROPERTIES;
+	int LAYER__ATTRIBUTES = DIAGRAM_ELEMENT__ATTRIBUTES;
 
 	/**
 	 * The feature id for the '<em><b>Semantic Elements</b></em>' reference list.
@@ -778,13 +778,13 @@ public interface DiagramPackage extends EPackage {
 	int CONNECTABLE__NAME = DIAGRAM_ELEMENT__NAME;
 
 	/**
-	 * The feature id for the '<em><b>Properties</b></em>' map.
+	 * The feature id for the '<em><b>Attributes</b></em>' map.
 	 * <!-- begin-user-doc -->
 	 * <!-- end-user-doc -->
 	 * @generated
 	 * @ordered
 	 */
-	int CONNECTABLE__PROPERTIES = DIAGRAM_ELEMENT__PROPERTIES;
+	int CONNECTABLE__ATTRIBUTES = DIAGRAM_ELEMENT__ATTRIBUTES;
 
 	/**
 	 * The feature id for the '<em><b>Semantic Elements</b></em>' reference list.
@@ -959,13 +959,13 @@ public interface DiagramPackage extends EPackage {
 	int NODE__NAME = CONNECTABLE__NAME;
 
 	/**
-	 * The feature id for the '<em><b>Properties</b></em>' map.
+	 * The feature id for the '<em><b>Attributes</b></em>' map.
 	 * <!-- begin-user-doc -->
 	 * <!-- end-user-doc -->
 	 * @generated
 	 * @ordered
 	 */
-	int NODE__PROPERTIES = CONNECTABLE__PROPERTIES;
+	int NODE__ATTRIBUTES = CONNECTABLE__ATTRIBUTES;
 
 	/**
 	 * The feature id for the '<em><b>Semantic Elements</b></em>' reference list.
@@ -1158,13 +1158,13 @@ public interface DiagramPackage extends EPackage {
 	int PORT__NAME = CONNECTABLE__NAME;
 
 	/**
-	 * The feature id for the '<em><b>Properties</b></em>' map.
+	 * The feature id for the '<em><b>Attributes</b></em>' map.
 	 * <!-- begin-user-doc -->
 	 * <!-- end-user-doc -->
 	 * @generated
 	 * @ordered
 	 */
-	int PORT__PROPERTIES = CONNECTABLE__PROPERTIES;
+	int PORT__ATTRIBUTES = CONNECTABLE__ATTRIBUTES;
 
 	/**
 	 * The feature id for the '<em><b>Semantic Elements</b></em>' reference list.
@@ -1348,13 +1348,13 @@ public interface DiagramPackage extends EPackage {
 	int CONNECTION__NAME = DIAGRAM_ELEMENT__NAME;
 
 	/**
-	 * The feature id for the '<em><b>Properties</b></em>' map.
+	 * The feature id for the '<em><b>Attributes</b></em>' map.
 	 * <!-- begin-user-doc -->
 	 * <!-- end-user-doc -->
 	 * @generated
 	 * @ordered
 	 */
-	int CONNECTION__PROPERTIES = DIAGRAM_ELEMENT__PROPERTIES;
+	int CONNECTION__ATTRIBUTES = DIAGRAM_ELEMENT__ATTRIBUTES;
 
 	/**
 	 * The feature id for the '<em><b>Semantic Elements</b></em>' reference list.
@@ -1538,13 +1538,13 @@ public interface DiagramPackage extends EPackage {
 	int LABEL__NAME = NODE__NAME;
 
 	/**
-	 * The feature id for the '<em><b>Properties</b></em>' map.
+	 * The feature id for the '<em><b>Attributes</b></em>' map.
 	 * <!-- begin-user-doc -->
 	 * <!-- end-user-doc -->
 	 * @generated
 	 * @ordered
 	 */
-	int LABEL__PROPERTIES = NODE__PROPERTIES;
+	int LABEL__ATTRIBUTES = NODE__ATTRIBUTES;
 
 	/**
 	 * The feature id for the '<em><b>Semantic Elements</b></em>' reference list.
@@ -1719,17 +1719,6 @@ public interface DiagramPackage extends EPackage {
 	 * @generated
 	 */
 	EClass getDiagramElement();
-
-	/**
-	 * Returns the meta object for the map '{@link org.nasdanika.sdk.runtime.models.diagram.DiagramElement#getProperties <em>Properties</em>}'.
-	 * <!-- begin-user-doc -->
-	 * <!-- end-user-doc -->
-	 * @return the meta object for the map '<em>Properties</em>'.
-	 * @see org.nasdanika.sdk.runtime.models.diagram.DiagramElement#getProperties()
-	 * @see #getDiagramElement()
-	 * @generated
-	 */
-	EReference getDiagramElement_Properties();
 
 	/**
 	 * Returns the meta object for the reference list '{@link org.nasdanika.sdk.runtime.models.diagram.DiagramElement#getSemanticElements <em>Semantic Elements</em>}'.
@@ -2028,14 +2017,6 @@ public interface DiagramPackage extends EPackage {
 		 * @generated
 		 */
 		EClass DIAGRAM_ELEMENT = eINSTANCE.getDiagramElement();
-
-		/**
-		 * The meta object literal for the '<em><b>Properties</b></em>' map feature.
-		 * <!-- begin-user-doc -->
-		 * <!-- end-user-doc -->
-		 * @generated
-		 */
-		EReference DIAGRAM_ELEMENT__PROPERTIES = eINSTANCE.getDiagramElement_Properties();
 
 		/**
 		 * The meta object literal for the '<em><b>Semantic Elements</b></em>' reference list feature.

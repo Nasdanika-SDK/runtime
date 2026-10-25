@@ -57,7 +57,7 @@ public class SemanticTests {
 		List<Node> nodes = all(diagram, Node.class);
 		assertThat(nodes).hasSize(13);
 		Node node = nodes.stream().filter(n -> "Node".equals(n.getName())).findFirst().orElseThrow();
-		assertThat(node.getProperties().map()).containsEntry("package", "diagram"); // <1>
+		assertThat(node.getAttributes().map()).containsEntry("package", "diagram"); // <1>
 		assertThat(node.getDocumentation()).isEqualTo("A shape with bounds and ports");
 		assertThat(node.getOutgoingConnections()) // <2>
 			.extracting(DiagramElement::getName)
@@ -73,12 +73,12 @@ public class SemanticTests {
 			"ecore", EcorePackage.eINSTANCE);
 
 		for (Node node: all(diagram, Node.class)) {
-			EPackage ePackage = packages.get(node.getProperties().get("package"));
+			EPackage ePackage = packages.get(node.getAttributes().get("package"));
 			node.getSemanticElements().add(ePackage.getEClassifier(node.getName())); // <1>
 		}
 
 		for (Connection connection: all(diagram, Connection.class)) {
-			if ("reference".equals(connection.getProperties().get("relationship"))) {
+			if ("reference".equals(connection.getAttributes().get("relationship"))) {
 				EClass source = (EClass) connection.getSource().getSemanticElements().getFirst();
 				String name = connection.getName();
 				EReference reference = (EReference) source.getEStructuralFeature(name);
@@ -96,12 +96,12 @@ public class SemanticTests {
 		for (Connection connection: all(diagram, Connection.class)) {
 			EClass source = (EClass) connection.getSource().getSemanticElements().getFirst();
 			EClass target = (EClass) connection.getTarget().getSemanticElements().getFirst();
-			switch (connection.getProperties().get("relationship")) {
+			switch (connection.getAttributes().get("relationship")) {
 			case "extends" -> assertThat(source.getEAllSuperTypes()).contains(target);
 			case "reference" -> {
 				EReference reference = (EReference) connection.getSemanticElements().getFirst();
 				assertThat(reference.getEReferenceType()).isEqualTo(target);
-				String opposite = connection.getProperties().get("opposite");
+				String opposite = connection.getAttributes().get("opposite");
 				if (opposite != null) {
 					assertThat(reference.getEOpposite().getName()).isEqualTo(opposite);
 				}

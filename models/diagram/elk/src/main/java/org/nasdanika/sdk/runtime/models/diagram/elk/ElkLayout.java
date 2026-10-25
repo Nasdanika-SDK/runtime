@@ -18,7 +18,7 @@ import io.opentelemetry.api.common.Attributes;
  * {@link #layout(DiagramElement)} builds an ELK graph from a diagram element and what it contains,
  * runs ELK, and writes the results back into the diagram (see {@link DiagramElkGraph}). Layout
  * options come from three places, later ones winning: ELK's defaults, options set on this object
- * with {@link #option(IProperty, Object)}, and properties of the diagram elements whose keys are
+ * with {@link #option(IProperty, Object)}, and attributes of the diagram elements whose keys are
  * ELK option ids, such as {@code elk.algorithm} or {@code elk.direction}.
  * <p>
  * Nodes without bounds are sized to fit their name, measured with the {@link TextMeasurer}.
@@ -79,7 +79,7 @@ public class ElkLayout {
 	}
 
 	/**
-	 * An option of the root of the ELK graph, which properties of the root element override.
+	 * An option of the root of the ELK graph, which attributes of the root element override.
 	 */
 	public <T> ElkLayout option(IProperty<T> option, T value) {
 		options.put(option, value);

@@ -12,8 +12,9 @@
 	<name>Nasdanika SDK Runtime Playwright</name>
 	<description>
 		Browser sessions with Playwright against a harness server, in the server's trace: steps as
-		spans, requests to the server as their children, and screenshots recorded in the steps they
-		were taken in. The module's Zephyr Book takes its listings from the tests.
+		spans, requests to the server as their children, screenshots recorded in the steps they were
+		taken in, and a video with each step's offset into it. The module's Zephyr Book takes its
+		listings from the tests.
 	</description>
 
 	<properties>

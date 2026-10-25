@@ -1,0 +1,57 @@
+// Defaults for previewing this file on its own; index.adoc and the Maven build set these
+ifndef::booktests[:booktests: ../../../test/java/org/nasdanika/sdk/runtime/models/svg/tests]
+
+[#building]
+== Building, writing and reading
+
+=== Building and writing
+
+.A group, a rectangle with a tooltip, a circle and text (`SvgTests.java`)
+[source,java]
+----
+include::{booktests}/SvgTests.java[tag=build,indent=0]
+----
+<1> `add` appends a child and returns it, typed. The group's fill and stroke apply to its children.
+<2> A title, the rectangle's tooltip in a browser.
+<3> Text is characters and spans, in order.
+<4> The SVG, written by EMF's XML resource.
+
+What it writes:
+
+[source,xml]
+----
+<?xml version="1.0" encoding="UTF-8"?>
+<svg xmlns="http://www.w3.org/2000/svg" width="120" height="60">
+  <g fill="#dae8fc" stroke="#6c8ebf">
+    <rect width="80.0" height="40.0" rx="6.0">
+      <title>A tooltip</title>
+    </rect>
+    <circle cx="100.0" cy="20.0" r="10.0"/>
+  </g>
+  <text text-anchor="middle" x="40" y="55">Hello, <tspan font-weight="bold">SVG</tspan></text>
+</svg>
+----
+
+SVG's namespace is the default one, so the elements have no prefix, and the output can also be pasted into an HTML page.
+Attributes come in the order of the model's features, the presentation attributes first.
+
+=== Reading
+
+.Reading the written SVG back
+[source,java]
+----
+include::{booktests}/SvgTests.java[tag=read,indent=0]
+----
+
+Elements and attributes outside the subset are skipped when SVG is read, so an SVG file written by another tool loads as far as the model reaches.
+Keeping what the model does not have, so that such a file can be changed and written back without losses, is [.planned]#PLANNED#.
+
+=== In a resource set
+
+.Saving and loading `.svg` resources
+[source,java]
+----
+include::{booktests}/SvgTests.java[tag=resource,indent=0]
+----
+<1> A resource for a `.svg` file. Its contents is one `Svg` element.
+<2> Loaded, the contents is the root `Svg` element.

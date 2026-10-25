@@ -41,14 +41,14 @@ public class BuildingTests {
 		diagram.getChildren().add(page);
 
 		Node customer = node("customer", "Personal Banking Customer", 240, 0, 200, 80);
-		customer.getProperties().put("type", "person"); // <2>
+		customer.getAttributes().put("type", "person"); // <2>
 		Node ibs = node("ibs", "Internet Banking System", 240, 200, 200, 90);
-		ibs.getProperties().put("type", "software-system");
-		ibs.getProperties().put("owner", "Digital Channels");
+		ibs.getAttributes().put("type", "software-system");
+		ibs.getAttributes().put("owner", "Digital Channels");
 		ibs.setDocumentation("Lets customers view their accounts and make payments."); // <3>
 		Node mainframe = node("mainframe", "Mainframe Banking System", 240, 400, 200, 90);
-		mainframe.getProperties().put("type", "software-system");
-		mainframe.getProperties().put("owner", "Core Banking");
+		mainframe.getAttributes().put("type", "software-system");
+		mainframe.getAttributes().put("owner", "Core Banking");
 		page.getChildren().addAll(List.of(customer, ibs, mainframe));
 
 		Port api = factory.createPort(); // <4>
@@ -63,7 +63,7 @@ public class BuildingTests {
 		page.getChildren().add(connection("uses-ibs", "Uses", customer, ibs));
 		Connection calls = connection("ibs-mainframe", "Gets account information from", api,
 				mainframe);
-		calls.getProperties().put("protocol", "XML/HTTPS");
+		calls.getAttributes().put("protocol", "XML/HTTPS");
 		page.getChildren().add(calls);
 		return diagram;
 	}

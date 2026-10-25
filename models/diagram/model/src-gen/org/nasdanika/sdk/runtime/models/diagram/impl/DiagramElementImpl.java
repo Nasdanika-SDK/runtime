@@ -16,6 +16,9 @@ import org.eclipse.emf.ecore.InternalEObject;
 
 import org.eclipse.emf.ecore.util.InternalEList;
 
+import org.nasdanika.sdk.runtime.models.core.Attributed;
+import org.nasdanika.sdk.runtime.models.core.CorePackage;
+
 import org.nasdanika.sdk.runtime.models.core.impl.NamedElementImpl;
 
 import org.nasdanika.sdk.runtime.models.diagram.DiagramElement;
@@ -29,7 +32,7 @@ import org.nasdanika.sdk.runtime.models.diagram.DiagramPackage;
  * The following features are implemented:
  * </p>
  * <ul>
- *   <li>{@link org.nasdanika.sdk.runtime.models.diagram.impl.DiagramElementImpl#getProperties <em>Properties</em>}</li>
+ *   <li>{@link org.nasdanika.sdk.runtime.models.diagram.impl.DiagramElementImpl#getAttributes <em>Attributes</em>}</li>
  *   <li>{@link org.nasdanika.sdk.runtime.models.diagram.impl.DiagramElementImpl#getSemanticElements <em>Semantic Elements</em>}</li>
  *   <li>{@link org.nasdanika.sdk.runtime.models.diagram.impl.DiagramElementImpl#getChildren <em>Children</em>}</li>
  * </ul>
@@ -62,8 +65,8 @@ public abstract class DiagramElementImpl extends NamedElementImpl implements Dia
 	 * @generated
 	 */
 	@SuppressWarnings("unchecked")
-	public EMap<String, String> getProperties() {
-		return (EMap<String, String>)eDynamicGet(DiagramPackage.DIAGRAM_ELEMENT__PROPERTIES, DiagramPackage.Literals.DIAGRAM_ELEMENT__PROPERTIES, true, true);
+	public EMap<String, String> getAttributes() {
+		return (EMap<String, String>)eDynamicGet(DiagramPackage.DIAGRAM_ELEMENT__ATTRIBUTES, CorePackage.Literals.ATTRIBUTED__ATTRIBUTES, true, true);
 	}
 
 	/**
@@ -94,8 +97,8 @@ public abstract class DiagramElementImpl extends NamedElementImpl implements Dia
 	@Override
 	public NotificationChain eInverseRemove(InternalEObject otherEnd, int featureID, NotificationChain msgs) {
 		switch (featureID) {
-			case DiagramPackage.DIAGRAM_ELEMENT__PROPERTIES:
-				return ((InternalEList<?>)getProperties()).basicRemove(otherEnd, msgs);
+			case DiagramPackage.DIAGRAM_ELEMENT__ATTRIBUTES:
+				return ((InternalEList<?>)getAttributes()).basicRemove(otherEnd, msgs);
 			case DiagramPackage.DIAGRAM_ELEMENT__CHILDREN:
 				return ((InternalEList<?>)getChildren()).basicRemove(otherEnd, msgs);
 		}
@@ -110,9 +113,9 @@ public abstract class DiagramElementImpl extends NamedElementImpl implements Dia
 	@Override
 	public Object eGet(int featureID, boolean resolve, boolean coreType) {
 		switch (featureID) {
-			case DiagramPackage.DIAGRAM_ELEMENT__PROPERTIES:
-				if (coreType) return getProperties();
-				else return getProperties().map();
+			case DiagramPackage.DIAGRAM_ELEMENT__ATTRIBUTES:
+				if (coreType) return getAttributes();
+				else return getAttributes().map();
 			case DiagramPackage.DIAGRAM_ELEMENT__SEMANTIC_ELEMENTS:
 				return getSemanticElements();
 			case DiagramPackage.DIAGRAM_ELEMENT__CHILDREN:
@@ -130,8 +133,8 @@ public abstract class DiagramElementImpl extends NamedElementImpl implements Dia
 	@Override
 	public void eSet(int featureID, Object newValue) {
 		switch (featureID) {
-			case DiagramPackage.DIAGRAM_ELEMENT__PROPERTIES:
-				((EStructuralFeature.Setting)getProperties()).set(newValue);
+			case DiagramPackage.DIAGRAM_ELEMENT__ATTRIBUTES:
+				((EStructuralFeature.Setting)getAttributes()).set(newValue);
 				return;
 			case DiagramPackage.DIAGRAM_ELEMENT__SEMANTIC_ELEMENTS:
 				getSemanticElements().clear();
@@ -153,8 +156,8 @@ public abstract class DiagramElementImpl extends NamedElementImpl implements Dia
 	@Override
 	public void eUnset(int featureID) {
 		switch (featureID) {
-			case DiagramPackage.DIAGRAM_ELEMENT__PROPERTIES:
-				getProperties().clear();
+			case DiagramPackage.DIAGRAM_ELEMENT__ATTRIBUTES:
+				getAttributes().clear();
 				return;
 			case DiagramPackage.DIAGRAM_ELEMENT__SEMANTIC_ELEMENTS:
 				getSemanticElements().clear();
@@ -174,14 +177,46 @@ public abstract class DiagramElementImpl extends NamedElementImpl implements Dia
 	@Override
 	public boolean eIsSet(int featureID) {
 		switch (featureID) {
-			case DiagramPackage.DIAGRAM_ELEMENT__PROPERTIES:
-				return !getProperties().isEmpty();
+			case DiagramPackage.DIAGRAM_ELEMENT__ATTRIBUTES:
+				return !getAttributes().isEmpty();
 			case DiagramPackage.DIAGRAM_ELEMENT__SEMANTIC_ELEMENTS:
 				return !getSemanticElements().isEmpty();
 			case DiagramPackage.DIAGRAM_ELEMENT__CHILDREN:
 				return !getChildren().isEmpty();
 		}
 		return super.eIsSet(featureID);
+	}
+
+	/**
+	 * <!-- begin-user-doc -->
+	 * <!-- end-user-doc -->
+	 * @generated
+	 */
+	@Override
+	public int eBaseStructuralFeatureID(int derivedFeatureID, Class<?> baseClass) {
+		if (baseClass == Attributed.class) {
+			switch (derivedFeatureID) {
+				case DiagramPackage.DIAGRAM_ELEMENT__ATTRIBUTES: return CorePackage.ATTRIBUTED__ATTRIBUTES;
+				default: return -1;
+			}
+		}
+		return super.eBaseStructuralFeatureID(derivedFeatureID, baseClass);
+	}
+
+	/**
+	 * <!-- begin-user-doc -->
+	 * <!-- end-user-doc -->
+	 * @generated
+	 */
+	@Override
+	public int eDerivedStructuralFeatureID(int baseFeatureID, Class<?> baseClass) {
+		if (baseClass == Attributed.class) {
+			switch (baseFeatureID) {
+				case CorePackage.ATTRIBUTED__ATTRIBUTES: return DiagramPackage.DIAGRAM_ELEMENT__ATTRIBUTES;
+				default: return -1;
+			}
+		}
+		return super.eDerivedStructuralFeatureID(baseFeatureID, baseClass);
 	}
 
 } //DiagramElementImpl
