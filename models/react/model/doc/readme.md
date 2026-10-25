@@ -120,7 +120,7 @@ with an owner.
   several renderers. Its concepts map onto this model in a transformation rather than by
   inheritance, because React is a rendering technology and a drawn interface should not become React
   shaped while it is being drawn.
-* **The reflective viewer**: a browser application that renders any model, and live telemetry,
+* **The polymorphic UI in React**: a browser application that renders any model, and live telemetry,
   generated from models with this model and served by the runtime.
 
 ## Further reading

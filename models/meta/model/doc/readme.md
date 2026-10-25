@@ -206,7 +206,7 @@ an object and when, which separates confirmed facts from unreviewed machine gues
 
 What this makes possible: a vocabulary as a model whose terms are classes and whose permitted
 values are instances, serving a generated glossary for people and a lookup tool for an agent from
-one source; a reflective viewer over anything Meta describes, with no generated code; and queries
+one source; a polymorphic UI over anything Meta describes, with no generated code; and queries
 over instances and their types in one statement, because the type is an edge like any other.
 
 ## Federated by design

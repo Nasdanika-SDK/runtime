@@ -5,7 +5,7 @@
 > Part of the [Nasdanika SDK Runtime](https://github.com/Nasdanika-SDK/runtime) · **Sketch**: the model and its
 > generated code are here; the behavior of its operations is being attached
 
-Files and directories as a model: the API that agents, the command line, the reflective viewer and
+Files and directories as a model: the API that agents, the command line, the polymorphic UI and
 queries use over any file system the runtime can reach, such as a local directory, a zip, an
 in-memory sandbox, a Git repository over the GitHub API, or a model presented as files.
 
@@ -15,8 +15,8 @@ in-memory sandbox, a Git repository over the GitHub API, or a model presented as
   documentation, which is everything a tool declaration needs. `TextFile.view`, `replace` and
   `insert` are an agent's file tools, and a specialized file type adds tools by subclassing:
   `JsonFile.query`, `XcoreFile.validate`, `DrawioFile.pages`.
-* **A file system becomes queryable and viewable.** Queries run over a repository; the reflective
-  viewer shows a directory.
+* **A file system becomes queryable and viewable.** Queries run over a repository; the polymorphic
+  UI shows a directory.
 * **Snapshots serialize.** A tree can be detached and saved as JSON or binary: a test fixture, a
   sandbox base in one file, the before and after states of an agent run next to its recorded
   session.

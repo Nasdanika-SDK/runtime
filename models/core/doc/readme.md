@@ -18,8 +18,8 @@ The value of a shared core grows with the number of models that extend it:
 
 * **One generator for many models.** A documentation generator that knows `NamedElement`,
   `Documented` and `Marked` documents any model built on them, including models written after it.
-* **One viewer for many models.** A reflective viewer shows names, icons, documentation and
-  provenance for any element without knowing its class.
+* **One UI for many models.** The polymorphic UI's views of the core model show names, icons,
+  documentation and provenance for any element, whatever its class.
 * **Merging across teams.** Alias URIs let independently maintained models be assembled into one.
 * **Traceability by default.** Markers are there to be filled by loaders, importers and agents
   recording where an element, or a change, came from.
