@@ -1,0 +1,93 @@
+// Defaults for previewing this file on its own; index.adoc and the Maven build set these
+ifndef::booktests[:booktests: ../../../test/java/org/nasdanika/sdk/runtime/models/react/tests]
+ifndef::bookresources[:bookresources: ../../../test/resources/expected]
+
+[#the-react-model]
+== The React model
+
+The TypeScript model leaves bodies as opaque code blocks, with no JSX, on purpose.
+Generating React through it alone would put every component's body into opaque text and lose import management, provenance and structure.
+`CodeBlock` has a `references` list so that a structured body could be substituted; the React model's `JsxBlock` is that substitution.
+
+[cols="1,4",options="header"]
+|===
+| Area | Classes
+| Base | `ReactElement`, `TsxModule`
+| Components | `ComponentDeclaration`, a TypeScript function declaration; `JsxBlock`
+| Hooks | `Hook`, `StateHook`, `EffectHook`, `MemoHook`, `ContextHook`, `RefHook`, `OpaqueHook`
+| Context | `ContextDeclaration`, `ContextProvider`
+| JSX | `JsxNode`, `JsxContainer`, `JsxElement`, `JsxFragment`, `JsxText`, `JsxExpression`, `JsxConditional`, `JsxIterator`, `OpaqueJsx`
+| HTML | `Intrinsic`, an element of the HTML model used as a JSX intrinsic; `JsxContent`, JSX inside an HTML container
+| Component libraries | `LibraryComponent`, `LibraryHook`, `ValueBlock`
+| Attributes | `JsxAttribute`, `LiteralAttribute`, `ExpressionAttribute`, `EventAttribute`, `SpreadAttribute`
+|===
+
+`JsxElement.componentType` is the feature everything turns on: a reference to the component's declaration, which the generator follows to decide which components to import, from which module, and whether the import can be type-only.
+
+=== A component in two syntaxes
+
+The listings of this chapter build a package of two modules: a `Badge` component, and a `UserList` that filters users by name and shows each with a badge.
+They use a small helper of the tests, `Jsx`: each of its methods creates one object of the React, TypeScript or HTML model and sets what the call passes.
+The same builder produces either syntax: JSX in a `TsxModule`, with type annotations, or `createElement` calls in a plain module, without them.
+
+.A component (`ReactGeneratorTests.java`)
+[source,java]
+----
+include::{booktests}/ReactGeneratorTests.java[tag=badge,indent=0]
+----
+
+A context, with a type in TypeScript:
+
+.A context (`ReactGeneratorTests.java`)
+[source,java]
+----
+include::{booktests}/ReactGeneratorTests.java[tag=context,indent=0]
+----
+
+Hooks are model objects: state, a context, and a memoized value with its dependencies.
+
+.Hooks (`ReactGeneratorTests.java`)
+[source,java]
+----
+include::{booktests}/ReactGeneratorTests.java[tag=hooks,indent=0]
+----
+
+The render is a tree of JSX.
+HTML elements are elements of the runtime's HTML model, used as intrinsics, with JSX attributes for what is computed; `JsxContent` puts JSX back inside an HTML element, as the badge inside the list item:
+
+.The render (`ReactGeneratorTests.java`)
+[source,java]
+----
+include::{booktests}/ReactGeneratorTests.java[tag=render,indent=0]
+----
+
+In JSX syntax, the generator writes:
+
+.`users.tsx`
+[source,tsx]
+----
+include::{bookresources}/users.tsx[]
+----
+
+And in a plain module, `createElement` calls that a browser runs as they are:
+
+.`users.js`
+[source,javascript]
+----
+include::{bookresources}/users.js[]
+----
+
+The imports are computed from the model: the hooks, `memo`, `createContext` and `createElement` from `react`, and `Badge` from its module, by the reference of the JSX element to its declaration.
+The HTML intrinsics are written as React expects them: `class` as `className`, `for` as `htmlFor`, the style as an object with camel-cased properties, and the static value of the input dropped in favor of the JSX attribute that controls it.
+The test compares both outputs with these files.
+
+=== HTML, shared
+
+An `Intrinsic` holds an element of the HTML model, interpreted by the same structure the HTML generator uses.
+A page model and a component model therefore mean the same markup, and HTML built by a transformation, a Bootstrap layout of the runtime's HTML Bootstrap model for example, can be used in a component as it is: `new ReactGenerator(new BootstrapStructure())` renders Bootstrap elements as intrinsics.
+
+=== The generator
+
+`ReactGenerator` is a TypeScript generator that also writes components with hooks, contexts and JSX.
+The syntax is chosen per module: JSX in a `TsxModule`, written to `.tsx` and compiled with the automatic runtime, and `createElement` calls in any other module, which is plain JavaScript when it has no type annotations.
+A component declared with `memo` is wrapped in React's `memo`; a component's documentation becomes JSDoc.

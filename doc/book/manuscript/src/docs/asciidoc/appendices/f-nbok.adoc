@@ -1,0 +1,85 @@
+// The Nasdanika Body of Knowledge: one appendix, word for word, in every book of it.
+// Books in the runtime's repository include it with
+//   include::{runtime-root}/doc/book/manuscript/src/docs/asciidoc/appendices/f-nbok.adoc[]
+// so it must not refer to anything one book has and another does not: no cross-references to
+// chapters, and only attributes it defines below when a book has not.
+ifndef::runtime-repo[:runtime-repo: https://github.com/Nasdanika-SDK/runtime]
+ifndef::runtime-site[:runtime-site: https://runtime.sdk.nasdanika.org]
+
+[appendix]
+[#nbok]
+== The Nasdanika Body of Knowledge
+
+This book is part of the Nasdanika Body of Knowledge, NBOK for short: the books, stories and example code about Nasdanika, organized so that people and AI assistants can find what they need in it and rely on what they find.
+Every book in it ends with this appendix, word for word, so that whichever one you are reading, you know where the others are and how they fit together.
+
+Bodies of knowledge such as SWEBOK for software engineering and PMBOK for project management are written guides.
+NBOK is built.
+Its listings are regions of code that is compiled and tested before a book is rendered, so a book whose code no longer does what it says does not build.
+
+=== What it holds
+
+* *The SDK book*, _Nasdanika SDK Runtime: More Structure with Less Effort_: the overview, with the why, the key capabilities and the high-level how. Read it first.
+* *Nasdanika Zephyr Books*: one per module, or per small group of modules used together, each the detail for its modules, as user guide, developer guide and reference. Each stands on its own.
+* *Readmes*: one page on what a module is and why. A module with a Zephyr Book may have none.
+* *Stories* [.planned]#PLANNED#: one use case each, written as a Maven module whose code is the source of its listings, and collected each year as _Nasdanika Stories_.
+* *The International Banking System* [.planned]#PLANNED#: the practice of architecture as code, taught as a course on one example that grows with the platform. Inspired by the C4 Model "Internet Banking System".
+
+A story is à la carte; the International Banking System is the course.
+
+=== How it is laid out
+
+Every repository of NBOK follows one layout, the Maven layout with a few additions:
+
+[source,text]
+----
+pom.xml                          the reactor: its modules, their names and descriptions
+doc/                             documentation about the repository as a whole
+  book/manuscript/               a book about the repository, if it has one
+  book/examples/<topic>/         that book's examples, one Maven module per topic
+<module>/
+  pom.xml                        the module's name and description
+  readme.md                      what the module is and why, on one page
+  src/main/java/                 the code, with module-info.java
+  src/main/resources/            resources, and Xcore models under the package path
+  src/test/java/                 the tests: the source of the book's listings
+  src/test/resources/            test data: the source of the book's figures
+  src/docs/asciidoc/index.adoc   the module's Zephyr Book, with front/, chapters/
+                                 and appendices/ beside it
+----
+
+A module has a Zephyr Book when it has `src/docs/asciidoc/index.adoc`.
+A story [.planned]#PLANNED# is a module at `<year>/<topic>/`, with `story.adoc` beside its code, and `<year>/book/` builds the year's collection from the stories next to it.
+
+=== How it is published
+
+* *Maven Central*, per module and version: the jar, its `sources` and `javadoc`, and, for a module with a Zephyr Book, the book as PDF and HTML with the classifier `book` and the tests with the classifier `test-sources`, the complete source of every listing. Central is permanent, so the book of every released version stays available.
+* *The runtime's site*, [.planned]#PLANNED# {runtime-site}, with the latest books.
+* *Leanpub*: the SDK book, with the Zephyr Books that have readers beyond the runtime in a bundle, and the yearly collection of stories [.planned]#PLANNED#, each free with a suggested price.
+* *Zenodo*, sources published by GitHub and books uploaded manually.
+* *Lulu* for print-on-demand copies of the books.
+
+=== How to read it
+
+People read the PDF or the HTML: the SDK book for the why and the big picture, then the Zephyr Book of the module at hand.
+
+AI assistants are better served by the sources than by the renders.
+AsciiDoc is a fraction of the size of the HTML, whose markup and highlighting multiply it, and the sources lead to the code itself.
+In a repository of NBOK, an assistant finds its way as an engineer does:
+
+. The root `pom.xml` lists the modules, with a name and a description each.
+. A module's `readme.md`, where it has one, says what the module is.
+. A module's `src/docs/asciidoc/index.adoc` includes the book's files, and each listing's `include::` names the test file and the tagged region it comes from: follow it to the code.
+. A term is in a book's glossary appendix, and a convention in its rules or building appendix.
+
+Two aids for assistants are planned [.planned]#PLANNED#: each book and story also as one AsciiDoc file with its includes resolved, so that it is complete without the repository, and an index generated from the headers of the books and stories (title, description, keywords, version), so that an assistant can choose the few it needs instead of reading all of them.
+
+=== Why it can be trusted, and for which version
+
+* *Listings are code.* Every listing is a tagged region of a test or an example that is compiled and run before the book is rendered, and a warning, such as a missing tag, fails the build.
+* *Every book has a version.* A book is built with a release of the runtime and carries its version, here {runtime-version}. It is true for that version; for another, read the book of that version.
+* *Status labels* mark what is not built yet: [.sketch]#SKETCH# for what is designed and partly built, [.planned]#PLANNED# for what is designed and not built. Everything without a label is available.
+* *Editor's notes*, the author's notes on what is still to be checked, are left out of published editions.
+* *Stories are built twice* [.planned]#PLANNED#: against the release each was published with, so that it reproduces, and against the next one, so that a story that no longer applies is marked before a reader finds out.
+
+The source of this appendix is `doc/book/manuscript/src/docs/asciidoc/appendices/f-nbok.adoc` in {runtime-repo}.

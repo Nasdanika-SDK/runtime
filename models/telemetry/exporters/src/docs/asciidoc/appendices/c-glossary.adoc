@@ -1,0 +1,30 @@
+[appendix]
+[#glossary]
+== Glossary
+
+Change description::
+EMF's record of changes to objects and resources. The runtime stores it forward and detached from the model, in the span it was recorded in.
+
+Exemplar::
+A sample measurement of a metric, with the trace context it was taken in.
+
+Exporter::
+The part of the OpenTelemetry SDK that sends finished telemetry somewhere: here, into models.
+
+Instrumentation scope::
+The library or component that emitted telemetry, by name and version.
+
+OTLP::
+The OpenTelemetry Protocol, and its data model, which the telemetry model follows.
+
+Resource::
+In OpenTelemetry, the entity that produced telemetry, such as a service, described by attributes. Not an EMF resource, which is a file of a model.
+
+Sink::
+The consumer of recorded change descriptions current in the OpenTelemetry context; the span exporter is one.
+
+Span::
+A unit of work in a trace, with a name, a start and an end, attributes, events and links; here, also with its children, log records and recorded changes.
+
+Unit of work::
+What a recording covers: a command, a release, an agent run, a migration.

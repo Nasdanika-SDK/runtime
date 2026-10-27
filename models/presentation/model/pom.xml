@@ -11,6 +11,17 @@
     <artifactId>model</artifactId>
     <packaging>jar</packaging>
     <name>Nasdanika SDK Runtime Presentation Model</name>
+    <description>
+        Presentations as data, on the diagram model: a deck, its slides and masters, the shapes on
+        them, the text in the shapes, the connectors between them, tables, and speaker notes. A
+        slide is a diagram. Its Nasdanika Zephyr Book, "Presentation Model", is built from
+        src/docs/asciidoc with listings from the tests.
+    </description>
+
+    <properties>
+        <!-- The Zephyr Book's file name: the artifactId, model, says too little -->
+        <zephyr.book.name>presentation-model-${project.version}-book</zephyr.book.name>
+    </properties>
 
     <build>
         <plugins>

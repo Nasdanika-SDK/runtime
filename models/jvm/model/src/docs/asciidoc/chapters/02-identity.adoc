@@ -1,0 +1,41 @@
+[#identity]
+== Identity
+
+The decision everything else rests on is how elements are named.
+The JVM model names them the way the JVM does: binary names and descriptors, such as `java.util.List`, `java.util.Map$Entry`, `[I` and `get(I)Ljava/lang/Object;`.
+
+=== Why the JVM's own names
+
+That is not a local convention.
+It is the form in the constant pool, in stack traces, in `jdeps` output, in JDK Flight Recorder events, and in profilers and coverage tools.
+OpenTelemetry's code attributes carry its two halves: the type and the method.
+A build scan, a coverage report, a profile and a span name the same method the same way, so models produced independently merge on their URIs with no translation step:
+
+[cols="1,3",options="header"]
+|===
+| Element | URI
+| Module | `jvm:module/<module name>`
+| Package | `jvm:package/<binary package name>`
+| Type | `jvm:type/<binary name>`
+| Method | `jvm:method/<owner binary name>#<name><descriptor>`
+| Field | `jvm:field/<owner binary name>#<name>:<descriptor>`
+| Parameter | `jvm:parameter/<owner method>#<index>`
+|===
+
+`List.get`, for example, is `jvm:method/java.util.List#get(I)Ljava/lang/Object;`, whoever loaded it and whatever tool reported it.
+
+=== Joining is mechanical
+
+Joining static structure to runtime observation is then mechanical, not a project.
+JaCoCo is the worked example: its XML report already keys classes by binary name and methods by name and descriptor, so coverage attaches to the elements of a JVM model with no mapping layer and no configuration per project.
+A slow span resolves to a method, the method to a type in a module, the module to the artifact it came from, and the artifact to the team that owns it.
+
+=== Erasure, and generics as data
+
+Descriptors are erased: `List.get` returns `Ljava/lang/Object;`, not the element type.
+That is right for identity, because the JVM tells overloads apart by their erased descriptors, so two members of a type never differ only in their generic types.
+
+Generic types are carried as data: the class file's `Signature` attribute, verbatim, on types and members, such as `<T:Ljava/lang/Object;>(TT;)Ljava/util/Optional<TT;>;`.
+It is the JVM's own form rather than Java source text, for the same reason identity uses descriptors: it is what bytecode carries, so a scan of class files copies it, and a live loader writes the same string from `java.lang.reflect.Type`.
+The difference between the two strings is also the difference between kinds of change: a change to a signature alone breaks source compatibility, and a change to a descriptor breaks binary compatibility.
+Parsing signatures into type structure is left to consumers, such as a projection to the runtime's Meta model.

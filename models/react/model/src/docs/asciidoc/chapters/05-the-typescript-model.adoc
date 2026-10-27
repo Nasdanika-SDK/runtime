@@ -1,0 +1,76 @@
+// Defaults for previewing this file on its own; index.adoc and the Maven build set these
+ifndef::tstests[:tstests: ../../../../../../typescript/model/src/test/java/org/nasdanika/sdk/runtime/models/typescript/tests/book]
+ifndef::tsresources[:tsresources: ../../../../../../typescript/model/src/test/resources/org/nasdanika/sdk/runtime/models/typescript/tests/book]
+
+[#the-typescript-model]
+== The TypeScript model
+
+[cols="1,4",options="header"]
+|===
+| Area | Classes
+| Base | `TypeScriptElement`, a core model `NamedElement`
+| Packaging | `Package`, `Module`
+| Imports | `Import`, `ImportBinding`, `ImportKind`
+| Type references | `TypeReference`, `PrimitiveTypeReference`, `NamedTypeReference`, `ArrayTypeReference`, `UnionTypeReference`, `IntersectionTypeReference`, `LiteralTypeReference`, `TypeLiteralReference`, `FunctionTypeReference`, `OpaqueTypeReference`
+| Declarations | `Declaration`, `InterfaceDeclaration`, `ClassDeclaration`, `TypeAliasDeclaration`, `EnumDeclaration`, `EnumMember`, `FunctionDeclaration`, `VariableDeclaration`
+| Signatures | `Callable`, `Parameter`, `TypeParameter`, `CodeBlock`
+| Members | `Member`, `Property`, `Method`, `Constructor`, `Accessor`, `OpaqueMember`
+|===
+
+A `Package` is deliberately thin: a scoped `packageName`, a `version`, a description, a license, the module type, dependencies, and its `modules`, enough to write `package.json` and lay out files.
+It is there because a generator that writes modules but not the package around them leaves the last mile to a script, and that script is where drift starts.
+
+A `Module` has a `path` in the package, `declarationOnly` for a `.d.ts`, a header, its authored `imports`, and its `declarations`.
+A `Declaration` may be `exported` or `ambient`.
+
+`Callable` is the supertype of functions, methods, constructors and accessors, so the generator writes one signature routine for all four: type parameters, parameters, a return type, a body, `async` and `generator`.
+
+A `NamedTypeReference` points at a declaration of the model through `target`, or names a type the model does not own by `qualifiedName` and `moduleSpecifier`, with `typeArguments`.
+The target is what the import resolver follows.
+
+=== Imports, computed
+
+The test of this chapter builds a small package of a bank: a module of common types, a module of the bank's model, and a module of a legacy system with a type of the same name.
+
+.A package of three modules (`ImportManagementTests.java`, in the TypeScript model)
+[source,java]
+----
+include::{tstests}/ImportManagementTests.java[tag=package,indent=0]
+----
+<1> A dependency of the package, written into `package.json`.
+<2> A type of a package the model does not own, named by its module specifier.
+<3> Another `Account`, in another module.
+
+A fourth module uses them, and its imports are not written by hand:
+
+.A module whose imports are computed (`ImportManagementTests.java`)
+[source,java]
+----
+include::{tstests}/ImportManagementTests.java[tag=service,indent=0]
+----
+<1> `Account` is used only as a type.
+<2> The body is opaque text, and it uses `Currency` as a value. Its references say so.
+<3> A superclass is evaluated at run time: a value import.
+<4> The legacy `Account`, used only as a type.
+
+The generator writes, and the test compares with this file:
+
+.The generated module (`service/accounts.ts`)
+[source,typescript]
+----
+include::{tsresources}/accounts.ts[]
+----
+
+`Currency` and `AbstractAccount` are value imports, because a code block and a superclass need them at run time.
+The bank's `Account` is a type import, erased when compiled.
+The legacy `Account` came second and is aliased.
+Specifiers are relative, with the `.js` extension `NodeNext` requires.
+
+=== The generator
+
+`Generator` writes a `Package` or a `Module` to a `GenericVolume<String>`, the runtime's abstraction of a tree of files, here of text: a directory adapted to text, an in-memory volume for a test, or any other volume.
+For a package it writes `package.json`, `tsconfig.json`, and a file per module under `src`; missing directories are created through the volume.
+`generate(module)` returns one module as a string.
+
+The module's `BankTests` generate a larger package that uses every construct of the model into `target/bank`.
+It compiles with `tsc` under `strict` and `--verbatimModuleSyntax`, which turns a wrong decision between a type and a value import into a compile error, in a step outside the Maven build (<<building-this-book>>).

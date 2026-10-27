@@ -11,6 +11,9 @@ A method annotated with `@Adapter` whose return type declares a type the object 
 Assembly::
 A set of modules on a module path, run together: a test, a command line distribution, an application. What an assembly became at run time is what the JVM model snapshots (<<jvm>>).
 
+Attributes::
+String keys and values on an `Attributed` element of the core model, for what a source format carries and a model does not name, such as the properties of a Draw.io shape (<<core-model>>).
+
 Automatic module::
 A jar without a module descriptor on the module path. Its name comes from its manifest or file name, it reads every module, and a module that reads one automatic module reads all of them (<<jvm>>).
 
@@ -38,6 +41,9 @@ The state of a file in a volume: a re-readable source of bytes that does no I/O 
 Core model::
 The model of identity, documentation, provenance and evaluators that the other models extend (<<core-model>>).
 
+Decision binding::
+Fixing an open question of a design so that it can be executed, at design time, build time, deployment or run time, by a person, a tool or an assistant. Software development is the process of binding decisions, and with assistants binding some of them, the record of who or what bound each one matters as much as the result (<<built-with-ai>>).
+
 Distribution::
 A directory, or an archive of one, with the jars of a command line, its options file, the bootstrap and wrapper scripts (<<distributions>>).
 
@@ -49,6 +55,9 @@ A value that a parent produces for a child while the child executes, in the chil
 
 Explaining listener::
 A listener that tells, line by line, which factories a capability loader asked about a requirement, which declined, and what each produced (<<capabilities>>).
+
+Gradient ascent::
+Ordering the work by taking, at each point, the step with the most value per unit of time and effort, then measuring again from where the work stands; the best next action is picked from a roadmap of interconnected decisions that an assistant keeps consistent, with the North Star as the guard against climbing the wrong hill (<<gradient-ascent>>).
 
 Import map::
 A script in a web page that maps bare module specifiers, such as `react`, to URLs, so that a browser loads libraries as ES modules from a CDN with no build step (<<web>>).
@@ -69,10 +78,16 @@ Mix-in::
 A set of options contributed to a command, by a factory or by a picocli `@Mixin` field (<<commands>>).
 
 Model tower::
-The stack of small models, each extending the ones below: the core model at the bottom, then Meta, the JVM model, telemetry and the floors above (<<vision>>).
+The stack of small models, each extending the ones below: the core model at the bottom, then Meta, the JVM model, telemetry, the diagram models and the floors above (<<vision>>).
 
 Nano-model::
 One of several small models in one module, because they are reused and changed together, such as the four telemetry models (<<principles>>).
+
+Nasdanika Body of Knowledge (NBOK)::
+The books, stories and example code about Nasdanika, laid out by one convention and built so that every listing is tested code; every book in it ends with the same appendix on how it is organized (<<nbok>>).
+
+Nasdanika Zephyr Book::
+An in-depth technical manual for one module of the runtime, or a small group of modules used together, in the manner of IBM Redbooks, with every listing included from the module's tests. It is on the module's page and attached to the module's artifact with the classifier `book`, as PDF and HTML (<<zephyr-books>>).
 
 nsURI::
 The namespace URI of an EMF package: its identity, under `https://runtime.sdk.nasdanika.org/` for the runtime's models (<<principles>>).
@@ -81,7 +96,7 @@ Planes::
 The data plane where data sits, the semantic plane of models with resolved references, and the presentation plane of what people and agents read, separated by volumes, with commands writing down (<<vision>>).
 
 Polymorphic UI::
-A user interface that renders each element with the view of its class, or of its nearest superclass that has one, or with a reflective view of last resort, the way a method call dispatches on the class of its receiver (<<polymorphic-ui>>).
+A user interface that renders each element with the view of its class, or of its nearest superclass that has one, or with a reflective view of last resort, the way a method call dispatches on the class of its receiver. With several formats (HTML, React, Markdown, AsciiDoc), it dispatches on the format as well (<<polymorphic-ui>>).
 
 Published Language::
 In Domain-Driven Design, a documented, shared vocabulary that bounded contexts translate into and out of. Meta is one that is machine-checkable (<<meta>>).
@@ -104,6 +119,9 @@ A type, possibly generic, and payloads that select and parameterize what is requ
 Resource set contributor::
 A service that configures resource sets: packages, factories, URI handlers, adapters (<<models>>).
 
+Semantic elements::
+The objects of other models that a diagram element depicts, such as the book a node of a diagram stands for. A diagram element is a model element in its own right, so a diagram is a model even when it depicts nothing (<<diagrams>>).
+
 Snapshot::
 A model of a running system saved as a file, such as the JVM model of a module layer: evidence of what ran (<<jvm>>).
 
@@ -121,6 +139,9 @@ A function from sources to publishers of targets, with mappings declared by anno
 
 Type token::
 An object that captures a generic type at compile time, such as `new TypeToken<Supplier<Library>>() {}`, where erasure would lose it (<<generic-types>>).
+
+UI::
+Wherever a person or an agent exchanges information with a system, even in one direction: a page, a PDF, Markdown or AsciiDoc that an agent reads, a tool it calls (<<polymorphic-ui>>).
 
 Unit of work::
 A piece of work with its own OpenTelemetry instance and its own record: a command run, a request served, an agent session, a test (<<telemetry>>).

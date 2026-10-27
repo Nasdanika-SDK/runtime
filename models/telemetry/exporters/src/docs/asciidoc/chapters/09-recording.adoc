@@ -1,0 +1,35 @@
+// Defaults for previewing this file on its own; index.adoc and the Maven build set these
+ifndef::booktests[:booktests: ../../../test/java/org/nasdanika/sdk/runtime/models/telemetry/exporters/book]
+
+[#recording]
+== Recording a unit of work
+
+`Recording`, in the exporters module, packages the SDK of <<exporting>> into one object: an OpenTelemetry SDK with the three model exporters, the log record exporter linked to the span exporter, and W3C propagators, recording to a traces, a logs and a metrics resource that are saved when it is closed.
+
+.Recording a unit of work (`TelemetryBookTests.java`)
+[source,java]
+----
+include::{booktests}/TelemetryBookTests.java[tag=recording,indent=0]
+----
+<1> `traces.xml`, `logs.xml` and `metrics.xml` in the directory, which is created if it does not exist. `directory(path, extension)` chooses another format: `yml` or `json` with the runtime's `emf-json` module, `ebin` or `egz` for EMF's binary format. `resources(traces, logs, metrics)` takes resources made elsewhere.
+<2> `makeCurrent()` makes the recording's instance the unit of work's: what `Telemetry.current()` returns.
+<3> A log record emitted in a span goes into the span.
+<4> Closing the recording shuts the SDK down, which exports what is pending and saves the resources.
+<5> The model, complete once the recording is closed. `getLogs()` has the log records that were not in a recorded span, and `getMetrics()` the metrics.
+
+`serviceName`, `serviceVersion` and `attribute` set the attributes of the resource the telemetry comes from.
+
+=== Where the runtime records
+
+The runtime's command line launcher records every command it runs with a `Recording`, in a directory per launch:
+
+[source,text]
+----
+<home>/telemetry/2026/10/16-14-03-12-345/
+  traces.yml
+  logs.yml
+  metrics.yml
+----
+
+The format is chosen with the system property `nsdk.telemetry.format` or the environment variable `NSDK_TELEMETRY_FORMAT`.
+Tests record with it what they, and the servers and browsers they start, did: the runtime's walk-throughs of generated web applications are recordings in which each step has its screenshots and the server's spans for the requests it caused.

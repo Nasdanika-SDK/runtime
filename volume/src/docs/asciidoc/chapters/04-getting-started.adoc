@@ -1,0 +1,39 @@
+// Defaults for previewing this file on its own; index.adoc and the Maven build set these
+ifndef::runtime-root[:runtime-root: ../../../../..]
+
+[#getting-started]
+== Getting started
+
+=== Adding the module
+
+The runtime's bill of materials, `org.nasdanika.sdk.runtime:bom`, manages the versions of the runtime's modules and their dependencies.
+Import it in `dependencyManagement`, and depend on the module without a version:
+
+[source,xml,subs="attributes+"]
+----
+<dependency>
+    <groupId>{group-id}</groupId>
+    <artifactId>{artifact-id}</artifactId>
+</dependency>
+----
+
+The module is a named Java module:
+
+.The module declaration of the volume module
+[source,java]
+----
+include::{runtime-root}/volume/src/main/java/module-info.java[tag=module,indent=0]
+----
+
+It requires the runtime's `common` module, for resource sets and telemetry, EMF, the OpenTelemetry API, and two modules of the JDK: the HTTP client, for content at URLs, and the HTTP server, `jdk.httpserver`, for serving volumes.
+It needs no OpenTelemetry SDK; an application that exports telemetry brings its own.
+
+=== Three packages
+
+[cols="2,5",options="header"]
+|===
+| Package | What it has
+| `org.nasdanika.sdk.runtime.volume` | `GenericVolume`, `Volume`, their capabilities, and `Content`
+| `org.nasdanika.sdk.runtime.volume.emf` | `VolumeURIHandler`, which stores EMF resources in a volume
+| `org.nasdanika.sdk.runtime.volume.http` | `VolumeHttpHandler`, `WebDavHandler`, `TelemetryHandler` and `MediaTypes`, for the JDK's HTTP server
+|===

@@ -1,0 +1,21 @@
+[#landscape]
+== The landscape
+
+*Observability platforms* are built for the firehose: ingestion of high cardinality, sampling, short retention, questions about health now.
+This model is not a competitor and would be a poor one.
+It is for the small fraction of signals worth keeping, with the same instrumentation and a different exporter.
+
+*Observability tools for language models and agents* keep traces of prompts and tool calls per session, which refer to names in someone else's service.
+Here a span lands next to the models the agent worked on, and its changes are in it.
+
+*OpenTelemetry itself* says how signals travel; collectors and backends say where they go.
+Neither says what signals mean against a model of the system.
+This model is a destination that stays faithful to OpenTelemetry at its boundary.
+
+*Audit logs and W3C PROV.*
+Audit logs have the instinct to retain, but no types and no joins.
+PROV has the right concepts, activity, agent and entity, as a separate vocabulary to adopt.
+Here provenance is part of the same models.
+
+*The status quo* is grep over archives of logs, a wiki page titled "why did this change", and the person who remembers.
+The claim of this model is that the person who remembers can be a query.

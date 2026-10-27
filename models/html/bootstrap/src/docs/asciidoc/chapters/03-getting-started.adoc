@@ -1,0 +1,57 @@
+// Defaults for previewing this file on its own; index.adoc and the Maven build set these
+ifndef::runtime-root[:runtime-root: ../../../../../../..]
+
+[#getting-started]
+== Getting started
+
+=== Two modules
+
+[cols="2,3",options="header"]
+|===
+| Module | What it has
+| `org.nasdanika.sdk.runtime.models.html` | The HTML model, `Generator`, which writes HTML text, and `HtmlStructure`, which maps the model to elements and attributes
+| `org.nasdanika.sdk.runtime.models.html.bootstrap` | The Bootstrap model in five packages, `BootstrapStructure`, and `NavigationTree`
+|===
+
+=== Adding the models
+
+The runtime's models have a bill of materials, `org.nasdanika.sdk.runtime.models:bom`, which manages their versions.
+Import it in `dependencyManagement`, and depend on the Bootstrap model, which brings the HTML model:
+
+[source,xml,subs="attributes+"]
+----
+<dependency>
+    <groupId>{group-id}</groupId>
+    <artifactId>{artifact-id}</artifactId>
+</dependency>
+----
+
+The models are named Java modules:
+
+.The module declaration of the HTML model
+[source,java]
+----
+include::{runtime-root}/models/html/model/src/main/java/module-info.java[tag=module,indent=0]
+----
+
+The HTML model requires the runtime's core model transitively, for markers and the map entries of attributes and styles.
+
+.The module declaration of the Bootstrap model
+[source,java]
+----
+include::{runtime-root}/models/html/bootstrap/src/main/java/module-info.java[tag=module,indent=0]
+----
+
+Both provide their packages as services, so a resource set configured from the module path loads and saves page models in every format the runtime supports.
+
+=== Names that clash
+
+The HTML model's classes have the names of HTML's elements: `Document`, `Element`, `Node`, `Text`, `Image`, `Table`, `Form`.
+`Document`, `Element`, `Node` and `Text` are also in `org.w3c.dom`, and the Bootstrap model has its own `Container`, `Image`, `Figure`, `Table` and `Button`, more specific than HTML's.
+The listings of this book create objects through the factories, so the imports rarely matter.
+
+=== What the build does
+
+The Xcore definitions are `html.xcore` in the HTML model, and `bootstrap.xcore`, `forms.xcore`, and `components/content.xcore`, `navigation.xcore` and `overlays.xcore` in the Bootstrap model.
+Maven generates the Java sources into `src-gen` with the Xtext Maven plugin.
+The generators, `BootstrapStructure` and `NavigationTree` are hand-written.

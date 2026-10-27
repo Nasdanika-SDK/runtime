@@ -1,0 +1,56 @@
+// Defaults for previewing this file on its own; index.adoc and the Maven build set these
+ifndef::runtime-root[:runtime-root: ../../../../../../..]
+
+[#getting-started]
+== Getting started
+
+=== Four modules
+
+[cols="2,4",options="header"]
+|===
+| Module | What it has
+| `org.nasdanika.sdk.runtime.models.typescript` | The TypeScript model and `Generator`, which writes modules and packages with managed imports to a volume
+| `org.nasdanika.sdk.runtime.models.react` | The React model and `ReactGenerator`, a TypeScript generator that also writes components, hooks, contexts and JSX
+| `org.nasdanika.sdk.runtime.models.react.bootstrap` | React Bootstrap's components, for layout, content, navigation, overlays and forms
+| `org.nasdanika.sdk.runtime.models.react.flow` | React Flow, `@xyflow/react` 12: flows of nodes and edges, the canvas and its plugins, hooks, and `LayeredLayout`, a simple layout to start from
+|===
+
+=== Adding the models
+
+The runtime's models have a bill of materials, `org.nasdanika.sdk.runtime.models:bom`, which manages their versions.
+Import it in `dependencyManagement`, and depend on what you use, without versions:
+
+[source,xml,subs="attributes+"]
+----
+<dependency>
+    <groupId>{group-id}</groupId>
+    <artifactId>model</artifactId>
+</dependency>
+<dependency>
+    <groupId>{group-id}</groupId>
+    <artifactId>bootstrap</artifactId>
+</dependency>
+----
+
+The React model brings the TypeScript model and the runtime's HTML model; React Bootstrap brings the runtime's HTML Bootstrap model too.
+
+.The module declaration of the TypeScript model
+[source,java]
+----
+include::{runtime-root}/models/typescript/model/src/main/java/module-info.java[tag=module,indent=0]
+----
+
+The TypeScript model requires the runtime's core model, for documentation and markers, and its volume module: the generator writes to any volume of text.
+
+.The module declaration of the React model
+[source,java]
+----
+include::{runtime-root}/models/react/model/src/main/java/module-info.java[tag=module,indent=0]
+----
+
+=== What the build does
+
+The Xcore definitions are `typescript.xcore`, `react.xcore`, the five packages of React Bootstrap, and `flow.xcore`.
+Maven generates the Java sources into `src-gen` with the Xtext Maven plugin.
+The generators and `LayeredLayout` are hand-written.
+Nothing in the build runs Node.js; compiling generated TypeScript with `tsc` is a separate, optional step (<<building-this-book>>).

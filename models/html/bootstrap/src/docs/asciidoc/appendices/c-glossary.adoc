@@ -1,0 +1,21 @@
+[appendix]
+[#glossary]
+== Glossary
+
+Breakpoint::
+A minimum width of the screen at which a responsive class applies: `sm`, `md`, `lg`, `xl`, `xxl`.
+
+Bootswatch::
+A collection of free themes for Bootstrap, of which this book's look, Zephyr, is one.
+
+Import map::
+A JSON map in a page from bare module specifiers to URLs, which lets a browser load ES modules by package name.
+
+Library element::
+An element of the HTML model whose class is written from annotations: a component of a library built on HTML.
+
+Structure::
+The object that tells the generator what a model element is in HTML: `HtmlStructure`, or a subclass for a library.
+
+Void element::
+An HTML element without content and without an end tag, such as `img` or `input`.

@@ -1,0 +1,52 @@
+// Defaults for previewing this file on its own; index.adoc and the Maven build set these
+ifndef::booktests[:booktests: ../../../test/java/org/nasdanika/sdk/runtime/models/react/tests]
+ifndef::imagesdir[:imagesdir: ../../../test/resources/org/nasdanika/sdk/runtime/models/react/tests/book]
+
+[#applications]
+== Applications
+
+An application generated from these models is three kinds of files: a page, ES modules, and data.
+
+* The page is a document of the runtime's HTML model, with an import map that resolves bare specifiers such as `react` and `react-bootstrap` to a CDN, esm.sh, and a module script that mounts the root component. The import map is the only place the CDN is named.
+* The modules are written by `ReactGenerator`, as plain JavaScript with `createElement` calls, so the browser runs them as they are.
+* The data is JSON, fetched by the components.
+
+=== Static or served
+
+The files can be written to a directory, which any static host serves, and React makes the application dynamic with no JVM behind it.
+ES modules do not load from `file:` URLs, so even on a laptop the files need an HTTP server, such as the JDK's `jwebserver`.
+
+The same files can be served from the JVM, by the runtime's HTTP handlers, with the data computed for each request.
+The page and the modules use relative URLs, so they are the same bytes in both modes: a preview is the deployment.
+
+The tests of the React model generate four applications this way, from Java, with no npm and no build step:
+
+* a documentation viewer, with a navigation tree, Markdown content, search and Bootswatch themes;
+* an interactive table of the running JVM's modules, with filtering, sorting and a choice of columns;
+* a table of the running JVM's properties;
+* a diagram of module dependencies in React Flow, which the user rearranges, highlights and edits.
+
+They are written to `target/react`.
+
+=== Walking through an application
+
+A generated application is checked the way a user checks it: in a browser.
+The runtime's `playwright` module drives one with Playwright for Java, against a server of its `harness` module, and the whole session is recorded as one trace of the runtime's telemetry model:
+
+.A walk-through of the JVM properties table (`JvmPropertiesWalkthroughTests.java`)
+[source,java]
+----
+include::{booktests}/JvmPropertiesWalkthroughTests.java[tag=walkthrough,indent=0]
+----
+<1> A server with the application's routes: the page, the module and the data. Each request is a span.
+<2> The step waits for the table to render the data.
+
+Each step runs in a span, with screenshots before and after it recorded as log records with the images' paths.
+Every request the browser sends to the server carries the step's span, so the server's spans for the page, the module and the data are children of the step that caused them.
+The test checks exactly that, and the screenshot after the first step is this book's figure:
+
+.The JVM properties table, generated from Java models, served, and opened in Chrome by a test
+image::jvm-properties.png[The JVM properties table,pdfwidth=90%,width=700]
+
+A recorded walk-through is a user guide and a demo video in waiting: steps, pictures, and what the server did, produced again with every build.
+The walk-through needs a browser and access to esm.sh, and is skipped without them.

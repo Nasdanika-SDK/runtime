@@ -1,0 +1,34 @@
+[#presentations-as-data]
+== Presentations as data
+
+Decks are where enterprise knowledge goes to stop being data.
+The architecture that governs a program, the migration plan, the comparison of vendors, the operating model: each exists as a file on a shared drive, authoritative and opaque.
+Nothing can ask which systems a deck mentions, whether the three decks describing the same platform agree, or which of them still refer to a component that was retired last year.
+The format is not the obstacle; the absence of a model is.
+
+=== The problem of N by N
+
+Formats of presentations are far apart.
+PowerPoint has its own units, placeholders and DrawingML; Visio has masters, stencils and shape data; PlantUML has no coordinates at all; PDF cannot be edited; Draw.io has style strings.
+Converters between pairs of them are written by different people, lose different things, and cannot be audited, because the state in the middle is a parse tree that exists for a few milliseconds.
+
+With a model in the middle, N formats need N loaders and N generators, not N times N converters.
+And the middle is a real EMF resource: saved as XMI, JSON or YAML, compared, queried, and inspected when a conversion goes wrong.
+
+=== Two goals
+
+*Generation that does not depend on a format.*
+Produce a deck once, from a template, from a mapping or from a language model, and emit PowerPoint for the meeting, PDF for the archive, Draw.io for the wiki, a web page for the site.
+
+*Interchange.*
+PlantUML to Draw.io or PowerPoint, and the case enterprises have, at scale, right now: Visio to Draw.io.
+
+=== Fidelity is not the goal
+
+That is worth stating plainly, because it is the question every tool of conversion is judged by, and usually the wrong one.
+A Visio drawing converted through the model will not be identical to the pixel in Draw.io, and a generated deck will not look like the one a designer would have made.
+What is preserved is what carries meaning: structure, text, topology, geometry, identity, documentation, and what each shape depicts.
+What is dropped is what a different tool would have rendered differently anyway.
+
+The wager is that a team moving ten thousand Visio drawings cares about the ten thousand, not about the drop shadow on shape 14, and that a deck whose contents can be queried, compared and regenerated is worth more than a deck that is beautiful and inert.
+Teams that need fidelity to the pixel should keep the tool that produced the pixels; this model is for when the picture has to become data first.

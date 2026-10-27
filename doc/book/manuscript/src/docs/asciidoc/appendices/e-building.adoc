@@ -15,9 +15,10 @@ doc/                       documentation parent, never deployed
                            capability, telemetry, recording, volume, cli, dsl, meta,
                            jvm, web, ui
     manuscript/
-      src/docs/asciidoc/   book.adoc, front matter, chapters, appendices, images
+      src/docs/asciidoc/   book.adoc, front matter, chapters, appendices, back matter, images
       src/docs/themes/     the PDF theme
       src/cover/           the cover generator
+  zephyr/                  the PDF theme and the stylesheets of the Zephyr Books
 ----
 
 The documentation parent sets `maven.deploy.skip`, so nothing under `doc` is deployed, as with test modules.
@@ -44,11 +45,12 @@ mvn verify -Dbook.media=prepress       # PDF for print: URLs after links, recto 
 
 The build produces three editions, named after the runtime version:
 
-* *PDF*, at the trim size of the EMF book, 7 by 9.25 inches, with a theme that extends Asciidoctor PDF's default: Noto Serif for text, Noto Sans for headings, and M+ 1mn for code.
+* *PDF*, at 189 by 246 mm (7.44 by 9.69 inches), a standard trim size for print on demand, with a theme that extends Asciidoctor PDF's default: Noto Serif for text, Noto Sans for headings, and M+ 1mn for code.
 * *EPUB*, for readers.
-* *HTML*, one page with every image embedded. It is the edition to give an assistant: one file with the whole book, every term and every rule in it.
+* *HTML*, one page with every image embedded: the whole book in one file, every term and every rule in it. Its markup, most of it the highlighting of listings, makes the file nearly three times the size of its text, so an assistant working in the repository is better served by the AsciiDoc sources and the examples, read in the parts it needs (<<built-with-ai>>).
 
 Diagrams are PlantUML, rendered by Asciidoctor Diagram with PlantUML's own layout engine, so no Graphviz installation is needed.
+The exception is the figure of <<diagrams>>, an SVG file that its example generates and checks.
 
 === Conventions of the manuscript
 
@@ -76,3 +78,14 @@ The book is published on Leanpub as a "Bring Your Own Book" title: Leanpub does 
 The minimum price is zero with a suggested price, so the book is free and readers can choose to pay.
 The text and figures are licensed under CC BY 4.0 and the examples under EPL-2.0, as the colophon states; the legal code of CC BY 4.0 is in `doc/book/manuscript/LICENSE`.
 A release of the book follows a release of the runtime, and has its version.
+The Zephyr Books with readers beyond the runtime are Leanpub titles too, released with each release of the runtime and offered with this book in a bundle (<<zephyr-books>>).
+
+=== Building a Zephyr Book
+
+A Nasdanika Zephyr Book (<<zephyr-books>>) is built with the same tool chain, in the module it documents.
+A module has one when it has `src/docs/asciidoc/index.adoc`: that file activates a profile in the runtime's parent POM, so a module opts in without a change to its own POM.
+Its listings are tagged regions of the module's tests and test resources, included as this book includes its examples, and the conventions above hold, warnings that fail the build included.
+
+The profile renders two editions in the Zephyr look, a PDF with a theme of its own and a single HTML page with Bootswatch's Zephyr stylesheet, both from `doc/zephyr`.
+It attaches them to the module's artifact with the classifier `book`, and the module's test sources with the classifier `test-sources`.
+The release build leaves the editor's notes out, as it does for this book, because what is published to Maven Central cannot be withdrawn.

@@ -22,8 +22,9 @@ Read the book in order; part two assumes part one.
 
 === A book that stands on its own
 
-This book is one of the Nasdanika Zephyr Books: in-depth technical manuals, one per module of the Nasdanika SDK Runtime, in the manner of IBM Redbooks.
-The runtime has a book of its own, _Nasdanika SDK Runtime: More Structure with Less Effort_, which is the overview: why the runtime exists, its principles and its modules.
+This book is one of the Nasdanika Zephyr Books: in-depth technical manuals, one per module of the Nasdanika SDK Runtime, or per small group of modules used together, in the manner of IBM Redbooks.
+It covers two: `drawio`, the API, and `drawio-playwright`, which renders diagrams in a browser.
+The runtime has a book of its own, _Nasdanika SDK Runtime: More Structure with Less Effort_, which is the overview: why the runtime exists, its principles and its modules; its chapter "Diagrams" introduces these modules among the runtime's other diagram modules.
 You do not need to read it first.
 Where the two books touch, this one repeats what you need, so that someone who has never heard of the runtime and only wants to read their diagrams from Java can start and finish here.
 Where the runtime goes further than this module, the last part says so and points to it.
@@ -52,6 +53,6 @@ ifdef::editor-notes[]
 ====
 Editor's notes like this one record inconsistencies between the module and its documentation found while writing. They are shown in builds for the author and left out of published editions (`-Dzephyr.editor-notes=false`, set by the `central` profile).
 
-The SDK book's preface describes this book as covering "diagrams as resources in a resource set, and the mapping of diagram elements to model elements". The migrated module has neither: the EMF resource factory, the Ecore model of Draw.io documents and semantic mapping were left out of the salvage, along with graph processing and SpEL. This book describes them as planned (<<looking-ahead>>). Align the SDK book's preface, <<looking-ahead>> and the SDK book's module reference before the edition is published.
+The continuum figure (<<continuum>>) still draws "Diagram as a model" as planned. Since 2026-10-25 the runtime's Draw.io model loads diagrams into resource sets as models and the diagram model holds semantic elements; only mapping by properties is planned. Redraw the point as partly built when the figure is next edited in Draw.io.
 ====
 endif::[]

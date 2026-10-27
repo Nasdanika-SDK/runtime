@@ -1,0 +1,48 @@
+[preface]
+== Preface
+
+This book is about presentations as data: a deck, the slides in it, the shapes on them, the text inside the shapes, the connectors between them, the masters the slides inherit from, and the speaker notes that nothing can query today, as an EMF model.
+The model stands on the runtime's diagram model and makes one decision that everything else follows from: a slide is a diagram.
+
+The first part of the book is the why: why decks should be data, what follows from a slide being a diagram, what the model leaves out on purpose, and where it stands among the tools for presentations.
+The second part is the how, for Java developers: a deck built in Java, saved, loaded, and asked for its words and its topology.
+The third says what comes next: loaders and generators for the formats decks live in.
+
+This edition is the model alone.
+Loading a deck from PowerPoint, Visio or Draw.io, and writing one, are [.planned]#PLANNED#.
+
+=== Who this book is for
+
+*Architects and technical writers* whose systems are described in decks, and who want those decks to be queried, compared and regenerated, not opened one by one.
+
+*Developers* who generate presentations from models, or who move a library of drawings from one format to another.
+
+=== A book that stands on its own
+
+This book is one of the Nasdanika Zephyr Books: in-depth manuals, one per module of the Nasdanika SDK Runtime, in the manner of IBM Redbooks.
+_Diagram Model_, the book of the model this one stands on, is close to it; you do not need it, or any other book of the series, to read this one: where the books touch, this one repeats what you need.
+
+The series is named after the Bootswatch theme it is styled with, Zephyr, and has nothing to do with the Zephyr real-time operating system or with SmartBear's Zephyr test management.
+
+=== What you need
+
+* *A JDK for Java 25* and *Maven 3.9.16 or later*.
+* The model's Java module is `org.nasdanika.sdk.runtime.models.presentation`, its Maven coordinates are `{group-id}:{artifact-id}:{runtime-version}`, and its namespace URI is `{nsuri}`.
+* Some familiarity with EMF helps in part two: an EMF model is a set of Java interfaces generated from a metamodel, with containment, references, reflection and persistence for free.
+
+=== Conventions
+
+* *Every listing is included from a test* of the module and compiled and run when the book is built. Callouts, such as <1>, explain the lines they mark.
+* *Status labels* mark what this edition does not have yet: [.planned]#PLANNED# for designed but not built, [.sketch]#SKETCH# for partly built.
+* *Voice.* I write in the first person.
+
+ifdef::editor-notes[]
+[IMPORTANT,caption="Editor's note"]
+====
+Editor's notes record inconsistencies between the model and its documentation found while writing. They are shown in builds for the author and left out of published editions.
+
+This book replaces the model's readme, `models/presentation/model/doc/readme.md`, which is deleted. The readme described the model in Nasdanika's model collection: a model tower with floors (C4, architecture, threat, work, governance, seal, IAM, role, nxcore), sibling models for Visio, PowerPoint, PlantUML, ODP, PDF and Sprotty, `tags` and `properties` on diagram elements, the Markdown model, and a figure, `presentation.drawio`, that is not in the module. The runtime's diagram elements have the core model's `attributes` instead of `tags` and `properties`; Visio, PowerPoint and Excel models were postponed on 2026-10-25, and the roadmap puts the office formats on schema models. This book describes the model as it is, and the rest as planned.
+
+The comment on `ImageShape.location` in the Xcore has a character that is not UTF-8, probably an em dash saved in another encoding.
+====
+endif::[]

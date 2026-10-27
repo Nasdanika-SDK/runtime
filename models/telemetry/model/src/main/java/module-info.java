@@ -4,6 +4,7 @@ import org.nasdanika.sdk.runtime.models.telemetry.util.MetricsEPackageProvider;
 import org.nasdanika.sdk.runtime.models.telemetry.util.TelemetryEPackageProvider;
 import org.nasdanika.sdk.runtime.models.telemetry.util.TracesEPackageProvider;
 
+// tag::module[]
 module org.nasdanika.sdk.runtime.models.telemetry {
 	
 	exports org.nasdanika.sdk.runtime.models.telemetry;
@@ -35,3 +36,4 @@ module org.nasdanika.sdk.runtime.models.telemetry {
 		TracesEPackageProvider;
 	
 }
+// end::module[]

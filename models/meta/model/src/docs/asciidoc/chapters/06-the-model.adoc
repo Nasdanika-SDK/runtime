@@ -1,0 +1,78 @@
+[#the-model]
+== The model
+
+[cols="1,3",options="header"]
+|===
+| Area | Classifiers
+| Base | `ModelElement`, on the core model's `NamedElement`, and `Annotation`
+| Structure | `Package`, `Classifier`, `Class`, `DataType`, `Enum`, `EnumLiteral`
+| Members | `TypedElement`, `Feature`, `Attribute`, `Reference`, `Operation`, `Parameter`
+| Types | `TypeParameter`, `TypeReference`, `ClassifierReference`, `TypeParameterReference`, `PrimitiveTypeReference`, `UnionTypeReference`, `IntersectionTypeReference`, `WildcardTypeReference`, `OpaqueTypeReference`, `PrimitiveKind`
+| Instances | `Object`, `IncomingReference`
+|===
+
+The model is metacircular: a `Package` containing classes describes `Package` and `Class`, so a runtime can bootstrap from Meta alone and needs no foreign metamodel.
+
+=== Base
+
+Meta's `ModelElement` extends the core model's `NamedElement`, so every element has an `id`, a `name`, documentation as structure, markers, `uris` and an `icon` (<<documentation>>).
+It contains `annotations`.
+
+An `Annotation` has a `source`, a URI that names its owner, such as `urn:org.nasdanika` or the schema an element was loaded from, and `details`, a map of strings.
+
+=== Structure
+
+A `Package` is a namespace of classifiers, and the unit of publication: one package becomes one Maven artifact or one npm package.
+It has a `namespace` URI, its identity and what references resolve against, a short `prefix`, a `version`, and `classifiers`.
+
+A `Classifier` is abstract and contains `typeParameters`, so that a data type may be parameterized too.
+
+A `Class` is a type with features: what Ecore calls an `EClass`, what Java calls a class or an interface, and what JSON Schema calls an object schema.
+It has `abstract`, `superTypes` as type references, because a supertype may be parameterized, `features` and `operations`.
+
+A `DataType` is a scalar type with a name of its own: `Instant`, `Duration`, `EmailAddress`.
+Its `representation` is how it crosses the wire and what a projection emits, an `Instant` is a string; its `sourceType`, such as `java.time.Instant`, is provenance only.
+
+An `Enum` contains `literals`. An `EnumLiteral` has a serialized `value`, the name when unset, and an `ordinal`.
+
+=== Members
+
+A `TypedElement` has a `type`, a type reference, and a multiplicity: `lowerBound`, 0 for optional, and `upperBound`, 1 for single-valued and -1 for unbounded, with `ordered` and `unique`.
+
+A `Feature` is state.
+`derived` means computed, not stored: a projection emits it as read-only or omits it.
+`readonly` is the positive form of Ecore's `changeable`, and `defaultValue` is verbatim, in the serialized form of the type.
+
+An `Attribute` has `identifying`: it identifies its instance, and a reference may cite it.
+That is how a Domain-Driven Design entity is told from a value object.
+
+A `Reference` has `containment`, which separates the edges of a tree from the edges of a graph, an `opposite` for the other end of a bidirectional reference, and `keys`: the attributes that identify a target within the containing list.
+
+An `Operation` is a signature of behavior, carried for fidelity when loading from Java or Ecore and rendered as documentation.
+It has `typeParameters`, `parameters` and `exceptions`; a `Parameter` may be `variadic` and has a `defaultValue`.
+
+=== Types
+
+A type reference stands in a type position.
+The set is small on purpose: enough to write a declaration, with an escape hatch.
+
+[cols="2,5",options="header"]
+|===
+| Class | What it references
+| `ClassifierReference` | A classifier: `target` within a model, or `namespace` and `classifierName` for one in a package the model does not contain, with `typeArguments`
+| `TypeParameterReference` | A type parameter, by `target` or `parameterName`
+| `PrimitiveTypeReference` | A `PrimitiveKind`
+| `UnionTypeReference` | One of several `types`: JSON Schema's `oneOf`, an XSD choice, a TypeScript union
+| `IntersectionTypeReference` | All of several `types`; several bounds of a type parameter are one of these
+| `WildcardTypeReference` | `?`, `? extends T` or `? super T`, as a type argument only
+| `OpaqueTypeReference` | Verbatim `text` for what no class covers, such as conditional and mapped types, with the `references` it names, so that opaque text does not defeat import management
+|===
+
+`PrimitiveKind` is a vocabulary of serialization, not of a language: `STRING`, `NUMBER`, `BOOLEAN`, `BIGINT`, `DATE`, `TIME`, `DATE_TIME`, `DURATION`, `BINARY`, `ANY`, `NULL` and `VOID`.
+`NUMBER` covers every numeric width, because JSON has one number and TypeScript has one number.
+
+A projection without wildcards emits the bound that is set: the upper bound for `? extends T`, the lower bound for `? super T`, and the widest type it has for a bare `?`, `unknown` in TypeScript.
+
+=== Instances
+
+`Object` and `IncomingReference` are the reflective instances of Meta classes, the subject of <<reflective-instances>>.

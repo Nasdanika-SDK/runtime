@@ -1,0 +1,23 @@
+[#telemetry-of-transfers]
+== Telemetry of transfers
+
+Moving bytes is work, and it is reported to the OpenTelemetry instance of the unit of work, the one that the runtime's `Telemetry.current()` returns:
+
+[cols="2,5",options="header"]
+|===
+| Span | When
+| `Content.writeTo` | Content pushed to a stream, with the byte count, unless the content is in memory
+| `Content.pipe` | Content produced by a writer and read as a stream: from the first read to the end of the writer. The writer runs in it, so the spans the writer starts are its children
+| `GET` (client) | Content at an HTTP URI, from the request to the close of the body, with the attributes of the HTTP semantic conventions and the trace context in the request headers
+| `Content.read` | Content at another URI, from opening to closing
+| `URIHandler.read`, `URIHandler.write` | A stream opened through an instrumented URI handler, from opening to closing
+| `<method> <route>` (server) | A request handled through `TelemetryHandler` (<<serving>>)
+|===
+
+All of them emit progress log records at most once a second while bytes move, so a long download shows in a live view of the telemetry while it happens.
+
+Crossing to the writer's virtual thread carries the OpenTelemetry instance and the parent span along, so the spans of a writer that saves a resource are children of the transfer that caused them.
+
+The URL recorded on a client span has no user info and no query string, which may carry credentials.
+
+With no OpenTelemetry instance current, the spans go to the no-op instance and cost nothing, so code that moves bytes is instrumented once and runs the same in a unit of work that records and one that does not.

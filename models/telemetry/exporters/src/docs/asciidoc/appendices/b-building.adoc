@@ -1,0 +1,20 @@
+[appendix]
+[#building-this-book]
+== Building this book
+
+This book is AsciiDoc in `models/telemetry/exporters/src/docs/asciidoc`, built with the exporters after their tests have passed:
+
+[source,text]
+----
+mvn -pl models/telemetry/exporters -am verify                          # the exporters, their tests and this book
+mvn -pl models/telemetry/exporters verify -Dzephyr.editor-notes=false  # without editor's notes
+mvn -pl models/telemetry/exporters verify -Dasciidoctor.skip=true      # without the book
+----
+
+The PDF and the single-page HTML are written to `target/book` and attached to the exporters' artifact with the classifier `book`; the test sources are attached with the classifier `test-sources`.
+The look comes from the runtime's `doc/zephyr` directory, shared by all the Nasdanika Zephyr Books.
+
+Listings are tagged regions of the tests in `src/test/java/org/nasdanika/sdk/runtime/models/telemetry/exporters/book`, and of the module declaration.
+A listing line holds at most 96 characters, and a warning fails the build.
+
+The trace in <<reading-back>> is `curate.txt` in `src/test/resources/org/nasdanika/sdk/runtime/models/telemetry/exporters/book`, which `TelemetryBookTests` compares with what the reader prints. A change to the unit of work, or to the runtime's instrumentation, changes it; run the tests, review the difference, and update the file.

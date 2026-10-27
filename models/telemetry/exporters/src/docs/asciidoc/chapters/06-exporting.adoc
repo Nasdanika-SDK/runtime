@@ -1,0 +1,58 @@
+// Defaults for previewing this file on its own; index.adoc and the Maven build set these
+ifndef::booktests[:booktests: ../../../test/java/org/nasdanika/sdk/runtime/models/telemetry/exporters/book]
+
+[#exporting]
+== Exporting from the SDK
+
+The exporters are OpenTelemetry SDK exporters, plugged into the SDK like any other:
+
+[cols="2,5",options="header"]
+|===
+| Class | Exports
+| `ModelSpanExporter` | Spans to `TracesData`. It is also the sink of recorded model changes
+| `ModelLogRecordExporter` | Log records to `LogsData`, or into the spans they were emitted in
+| `ModelMetricExporter` | Metrics to `MetricsData`
+| `TelemetryConverter` | The SDK's data to the model, field by field as the OTLP exporters convert it: ids as lowercase hexadecimal, times as nanoseconds since the UNIX epoch
+|===
+
+=== An SDK that exports to models
+
+.An SDK with the model exporters (`Recorder.java`)
+[source,java]
+----
+include::{booktests}/Recorder.java[tag=sdk,indent=0]
+----
+<1> The log record exporter is given the span exporter, so that log records emitted in exported spans are added to those spans; log records emitted outside any span go to the logs resource.
+<2> The W3C propagators let the unit of work continue a trace started in another process, and work it starts in another process continue it.
+
+=== To a resource, or to a consumer
+
+Each exporter works in one of two modes.
+
+*To an EMF resource.*
+All exports go to one data root in the resource, grouped as in OTLP by resource and instrumentation scope; exporting to a loaded resource appends to it.
+The resource is saved on `flush()` and `shutdown()`.
+The save runs outside the current OpenTelemetry instance, so saving telemetry is not itself traced.
+
+*To a consumer.*
+Each export is a new data root, handed to the consumer:
+
+.Exporting to a consumer (`TelemetryBookTests.java`)
+[source,java]
+----
+include::{booktests}/TelemetryBookTests.java[tag=consumer,indent=0]
+----
+<1> Spans exported in one batch are not nested by the exporter; `resolveParents` nests those whose parents are in the batch.
+<2> Closing the SDK exports what is pending.
+
+=== What the exporters do on the way
+
+The span exporter nests spans in their parents and resolves span references before it saves.
+A parent usually ends after its children, so a child is exported first and moved into its parent when the parent arrives.
+
+The log record exporter, given the span exporter, adds a log record emitted in a sampled span to that span, waiting for the span to be exported if necessary.
+Log records without a span go to the logs, and so do log records whose span was never exported, when the exporters shut down.
+
+A metric exporter with a periodic reader accumulates a metric per collection: a time series of cumulative points, by default.
+
+The SDK owns the exporters, and the exporters own the telemetry resources: closing the SDK exports what is pending and saves them.

@@ -1,0 +1,51 @@
+[appendix]
+[#building-this-book]
+== Building this book
+
+This book is AsciiDoc in `models/react/model/src/docs/asciidoc`, built with the React model after its tests have passed:
+
+[source,text]
+----
+mvn -pl models/react/model -am verify                          # the models, their tests and this book
+mvn -pl models/react/model verify -Dzephyr.editor-notes=false  # without editor's notes
+mvn -pl models/react/model verify -Dasciidoctor.skip=true      # without the book
+----
+
+The PDF and the single-page HTML are written to `target/book` and attached to the React model's artifact with the classifier `book`; the test sources are attached with the classifier `test-sources`.
+The look comes from the runtime's `doc/zephyr` directory, shared by all the Nasdanika Zephyr Books.
+
+Listings are tagged regions of the tests of four modules: the React model's in `src/test/java/org/nasdanika/sdk/runtime/models/react/tests`, the TypeScript model's book test in `models/typescript/model`, and the generator tests of `models/react/bootstrap` and `models/react/flow`, and of the module declarations.
+A listing line holds at most 96 characters, and a warning fails the build.
+Build the TypeScript, React Bootstrap and React Flow models before the book, so that their tests have checked what it includes: `-am` builds the TypeScript model; add `-pl models/react/bootstrap,models/react/flow` for the others.
+
+=== Generated code
+
+The generated code after each listing is a file that a test compares with what the generator writes: `src/test/resources/expected` in the React and React Flow models, and `src/test/resources/org/nasdanika/sdk/runtime/models/typescript/tests/book` in the TypeScript model.
+The tests also write what they generated to `target/expected-actual`, or `target/book-actual` in the TypeScript model; to change an expectation, review the difference, and copy the actual file over the expected one.
+
+=== Compiling the generated TypeScript
+
+`BankTests` in the TypeScript model generates a package that uses every construct of the model into `models/typescript/model/target/bank`.
+The Maven build does not depend on Node.js; compiling the package is a separate step:
+
+[source,text]
+----
+cd models/typescript/model/target/bank
+npm install
+npx tsc --noEmit --verbatimModuleSyntax --isolatedModules
+npm run build
+----
+
+The test wipes only the generated `src` directory, so an `npm install` survives the next test run, but not `mvn clean` of the TypeScript model.
+
+ifdef::editor-notes[]
+[IMPORTANT,caption="Editor's note"]
+====
+The React model's POM configures the clean plugin to leave `target/bank` alone, with a comment about `BankTests` and `node_modules`; `BankTests` is in the TypeScript model, whose POM has no such configuration. Move the configuration to the TypeScript model's POM, or remove it.
+====
+endif::[]
+
+=== The figure
+
+The figure, `jvm-properties.png` in `src/test/resources/org/nasdanika/sdk/runtime/models/react/tests/book`, is the screenshot that `JvmPropertiesWalkthroughTests` writes to `target/react/jvm-properties-walkthrough/001-open-the-jvm-properties-after.png`, copied.
+To change it, run the test, check that the screenshot shows nothing private, and copy it again.

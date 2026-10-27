@@ -1,0 +1,28 @@
+[#content-not-streams]
+== Content, not streams
+
+A file's state is a `Content`: a re-readable source of bytes, in the spirit of Guava's `ByteSource` and of the JDK HTTP client's `BodyPublishers.ofInputStream(Supplier)`.
+
+An `InputStream` is one-shot and its ownership is unclear: who closes it, and what if two consumers need the bytes?
+A content can be read more than once, for a hash, then for a write, then by each subscriber, and it owns nothing until it is opened.
+
+=== Three rules
+
+* *Getting content does no I/O.* Opening it does. Asking a volume for the content of a path that does not exist succeeds; opening it fails.
+* *Assigning content does not move bytes.* Bytes move when a consumer reads the content: a commit, an HTTP response, a hash. An I/O failure surfaces when the bytes move, not at assignment.
+* *Consumers push when they can.* They call `writeTo(out)` for a response, a file, a digest or an upload; `openStream()` only when an input stream is required; and `publisher()` for the JDK HTTP client.
+
+=== Content produced by a writer
+
+Much content is produced by code that writes to an output stream: saving a resource, generating a page, encoding text.
+Turning such code into an input stream is the classic problem of the pipe, and the JDK's `PipedInputStream` is a poor answer: it detects a dead writer or reader from thread liveness, and has a buffer of one kilobyte.
+
+A content produced by a writer runs the writer on the consumer's own stream when the consumer pushes, with no pipe and no thread, as JAX-RS's `StreamingOutput` does.
+Only a consumer that insists on pulling gets a pipe, a lazy one on a virtual thread.
+So copying a model from one volume to another serializes it straight into the target's stream, and nothing is serialized if nothing reads it.
+
+=== The hash
+
+A content and an entry may know their hash without reading: a content hash, or a Git blob id.
+It is the most valuable piece of metadata a volume can report.
+It gives HTTP ETags and conditional requests, suppression of writes that change nothing, incremental copies, and caches of blobs, and it is what lets file systems that react to their own changes converge (<<looking-ahead>>).

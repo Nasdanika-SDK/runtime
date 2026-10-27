@@ -1,0 +1,74 @@
+[#the-model]
+== The model
+
+Every element of the model extends `JvmElement`, which extends the core model's `NamedElement`.
+So every element has an `id`, a `name`, documentation, markers that record where it came from, and `uris`.
+The root, `JavaVirtualMachine`, extends the core model's `ModelElement`: it has no name of its own.
+
+=== JavaVirtualMachine
+
+One JVM, described:
+
+`live`:: True when the model was populated from a running VM, false for a scan of class files. Whether anything was observed running matters enough to be in the data, not inferred.
+`vmName`, `vmVersion`, `vmVendor`:: The `java.vm.name`, `java.vm.version` and `java.vm.vendor` properties, when known.
+`specificationVersion`:: The Java SE specification version, such as `25`.
+`modules`, `layers`, `classLoaders`:: Containments. Modules are contained here, not in their layers (<<spine>>).
+
+=== Layer and ClassLoader
+
+A `Layer` is a module layer, with `boot` true for the boot layer, its `parents` and its `modules`.
+Most applications have one layer, the boot layer, and the interesting case is the one that does not: layers are the only standard way to run two versions of a module in one JVM, which makes "which version is this code seeing" answerable where a class path makes it guesswork.
+
+A `ClassLoader` has the binary name of its own class in `loaderTypeName`, its `parent`, and its `unnamedModule`.
+Loaders are orthogonal to layers: a loader may serve modules in several layers, and every loader has exactly one unnamed module, holding what it loaded from the class path.
+
+=== Module and its directives
+
+A `Module` has `named`, false for an unnamed module, the raw `version` string of its descriptor, `modifiers` (`OPEN`, `AUTOMATIC`, `SYNTHETIC`, `MANDATED`), and `mainClassName`.
+It contains its `packages` and its directives:
+
+[cols="1,4",options="header"]
+|===
+| Class | Directive
+| `Requires` | `requires`, with `modifiers` (`TRANSITIVE`, `STATIC`, `SYNTHETIC`, `MANDATED`), the `compiledVersion`, and the required `module` when it is in the model. The name is authoritative; the reference is resolved when it can be.
+| `Exports` | `exports`, of a `package`, to `targets` and `targetNames`; empty targets mean an export to everyone
+| `Opens` | `opens`, the same shape as `Exports`. It is a separate class because the difference, deep reflective access instead of access at compile time, is the whole point of the directive
+| `Provides` | `provides`, with the `serviceName` and the `providerNames`, and references to the `service` and `providers` types
+|===
+
+`uses` lists the binary names of the service interfaces the module uses.
+
+Two references carry the reason the model is worth having.
+`requires` is what the module declared; `reads` is what resolution gave it, taken from the configuration, not from the descriptor.
+The difference between the two is the first question to ask of a snapshot (<<a-snapshot>>).
+`layer` and `classLoader` say where the module lives.
+
+=== Package and Type
+
+A `Package` has the dotted package name as its `name`, empty for the unnamed package, and contains its `types`.
+
+A `Type` is a class, an interface, an enum, a record, an annotation, a primitive or an array, told apart by `kind`.
+It is one class, not a hierarchy, as in reflection, where `isPrimitive` and `isArray` are questions asked of `Class`; that keeps the naming uniform, since `int` and `int[]` have binary names like everything else.
+
+`binaryName`, `descriptor`, `signature`:: The identity-bearing name, such as `java.util.Map$Entry`; the descriptor, such as `Ljava/util/Map$Entry;`; and the generic signature from the class file, unset when the type declares nothing generic.
+`access`:: `PUBLIC`, `PROTECTED`, `PACKAGE` or `PRIVATE`.
+`abstract`, `final`, `synthetic`, `sealed`:: Flags, as booleans.
+`classFileVersion`:: The major version of the class file, such as 69 for Java 25, or -1 when unknown, which includes primitives and arrays. Two bytes of the header that nothing aggregates, and the basis of a report about an estate that nobody has.
+`methods`, `fields`:: Containments.
+`superType`, `interfaces`, `componentType`, `module`:: References. `componentType` is set for arrays; `module` is a convenience, since the package is the container.
+
+=== Members
+
+`Member` is the abstract base of methods and fields, with `access`, `static`, `final`, `synthetic`, the `descriptor`, and the generic `signature`, unset when the descriptor says everything.
+
+A `Method` is a method, a constructor (`<init>`) or a static initializer (`<clinit>`).
+It has the flags `abstract`, `synchronized`, `native`, `bridge`, `varargs` and `default`, the `returnDescriptor`, its `parameters`, its `returnType`, and its declared exceptions as `thrownTypeNames` and `thrownTypes`.
+
+A `Field` has the flags `transient`, `volatile` and `enumConstant`, its `type`, and its `constantValue`.
+The constant value is API, not detail: javac copies a constant's value into every class that reads it, so client code carries the value it was compiled against, and changing it is a break that no comparison of descriptors shows.
+The text is the value as the class file stores it, read with the field's descriptor: booleans, bytes, characters, shorts and integers as decimal integers, since all five are stored as `int`; floats and doubles as `Float.toString` and `Double.toString` write them; strings with Java escapes, so that the value survives XML.
+Reflection cannot provide it: a static final field initialized with a constant and one initialized in a static initializer look the same through `java.lang.reflect`.
+It comes from the class file, which a live loader can read too.
+
+A `Parameter` has its `index`, its `descriptor`, `final`, `synthetic`, `mandated` for parameters the compiler generated, and its `type`.
+The `name` is present only when the class was compiled with `-parameters`, so the position is the reliable identity.

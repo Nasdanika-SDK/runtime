@@ -1,0 +1,30 @@
+[#what-meta-leaves-out]
+== What Meta leaves out
+
+The rule is that what a class-based type system cannot express is not a class in Meta.
+That keeps Meta at about twenty classifiers, against Ecore's fifty-three, of which a loader at run time uses a few:
+
+* *No `volatile`, `transient`, `unsettable` or `resolveProxies`*: implementation concerns of EMF with no meaning in a browser.
+* *No feature maps, no factories, no algebra of generic types.* Unions, intersections and wildcards are carried, so that a Java or TypeScript signature can be written down without loss, but nothing computes subtyping or substitution with them.
+* *No subpackages*, which neither TypeScript modules nor npm packages need. A loader flattens them and records the original path.
+* *No interface flag.* Whether a class becomes an interface, a type alias or a class is the projection's decision, not a property of the model.
+
+=== Annotations, the bargain Ecore makes
+
+Everything else arrives through an `Annotation`, an `OpaqueTypeReference` or a model that extends Meta.
+An annotation is keyed by a source URI that names its owner, the bargain Ecore's `EAnnotation` makes, so two loaders never collide.
+Loaders record what they cannot map instead of dropping it, so a round trip to the source stays possible even though Meta is a projection of it.
+
+=== Specializations per target
+
+A projection sometimes needs to say something the neutral model should not carry.
+A Java projection adds a package name and a superclass; a persistence projection adds a table name; a TypeScript projection adds nothing at all.
+Those live in models that extend Meta, such as a `JavaClass` that extends `Class`, when they are structural enough to deserve types, and in annotations when they are not.
+The neutral model stays neutral either way, which is what lets one vocabulary serve many projections.
+
+=== Why the JVM is not built on Meta
+
+The runtime's JVM model is the test of the rule.
+Bridge methods, synthetic accessors, access flags, and overloads that differ only in erased parameter types are realities of the JVM that Meta will not grow to hold.
+So the JVM model does not extend Meta; it projects to it [.planned]#PLANNED#.
+A published language is a target of projections, not a base class.

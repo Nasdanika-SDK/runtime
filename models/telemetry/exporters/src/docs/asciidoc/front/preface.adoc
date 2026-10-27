@@ -1,0 +1,46 @@
+[preface]
+== Preface
+
+This book is about OpenTelemetry signals as EMF models: traces, log records and metrics, kept next to the models they describe, in the same formats and the same repositories, instead of being shipped to a backend and forgotten on its schedule.
+It covers two modules of the Nasdanika SDK Runtime: the telemetry model, and the exporters that fill it from the OpenTelemetry SDK.
+
+The first part of the book is the why: why some telemetry is worth keeping forever, what turns a stream of records into a graph, and where the model stands among the tools of observability.
+The second part is the how, for Java developers: an SDK that exports to models, a unit of work that records its changes to a model in its spans, the trace read back, and the same in one object.
+The third says what comes next.
+
+=== Who this book is for
+
+*Developers and architects* who need to explain, months or years later, what a command, a release, a migration or an agent did, and to what.
+
+*Builders of agents and tools* who want the work of an agent to be reviewable and reversible: a trace whose spans are the agent's steps, with the changes each step made.
+
+=== A book that stands on its own
+
+This book is one of the Nasdanika Zephyr Books: in-depth manuals, one per module of the Nasdanika SDK Runtime, in the manner of IBM Redbooks.
+It covers the telemetry model and its exporters together, because they are used together: the exporters are a module of their own only to keep the OpenTelemetry SDK out of the model.
+You do not need any other book of the series, or the Nasdanika SDK Runtime book, to read this one: where the books touch, this one repeats what you need.
+
+The series is named after the Bootswatch theme it is styled with, Zephyr, and has nothing to do with the Zephyr real-time operating system or with SmartBear's Zephyr test management.
+
+=== What you need
+
+* *A JDK for Java 25* and *Maven 3.9.16 or later*.
+* The model's Java module is `org.nasdanika.sdk.runtime.models.telemetry`, with the Maven coordinates `{group-id}:model:{runtime-version}`. The exporters' module is `org.nasdanika.sdk.runtime.models.telemetry.exporters`, with the coordinates `{group-id}:{artifact-id}:{runtime-version}`.
+* Some familiarity with OpenTelemetry: tracers, spans, loggers, meters, and the SDK that exports them.
+* Some familiarity with EMF helps: an EMF model is a set of Java interfaces generated from a metamodel, with containment, references, reflection, persistence and change recording for free.
+
+=== Conventions
+
+* *Every listing is included from a test* of the exporters and compiled and run when the book is built. Callouts, such as <1>, explain the lines they mark.
+* *Output is checked.* The trace printed in <<reading-back>> is a file that the test compares with what the reader prints.
+* *Status labels* mark what this edition does not have yet: [.planned]#PLANNED# for designed but not built, [.sketch]#SKETCH# for partly built.
+* *Voice.* I write in the first person.
+
+ifdef::editor-notes[]
+[IMPORTANT,caption="Editor's note"]
+====
+Editor's notes record inconsistencies between the model and its documentation found while writing. They are shown in builds for the author and left out of published editions.
+
+This book replaces the readmes of the model and the exporters, `models/telemetry/model/doc/readme.md` and `models/telemetry/exporters/doc/readme.md`, which are deleted. The model's POM was named "Nasdanika SDK Runtime File Model"; it is "Nasdanika SDK Runtime Telemetry Model" now.
+====
+endif::[]

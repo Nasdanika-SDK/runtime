@@ -1,0 +1,24 @@
+[appendix]
+[#glossary]
+== Glossary
+
+Connector::
+A line between two shapes, or their ports: a connection of the diagram model.
+
+Deck::
+A presentation: an ordered set of slides with their masters.
+
+Master::
+A slide whose shapes appear on the slides that use it, such as a corporate template.
+
+Notes::
+The text for the speaker of a slide, not shown when presenting; here also a carrier of annotations.
+
+Point::
+A unit of length of 1/72 of an inch, the unit of the model's geometry.
+
+Run::
+A piece of text with one formatting, within a paragraph.
+
+Semantic element::
+An object of another model that a diagram element depicts, such as the system a box on a slide stands for.

@@ -1,0 +1,30 @@
+[#files-everywhere]
+== Files everywhere
+
+Models live in files, and files live in more places than a disk: a zip, a Git repository reached over a REST API, an in-memory sandbox for a test, a remote system with a file-shaped API.
+Code that loads and saves models should not care which.
+
+The opposite direction is just as useful.
+A model, a running JVM or an issue tracker presented as files can be read by everything that reads files: a browser, a mounted drive in Finder or Explorer, a Markdown viewer, `grep`, and an agent with file tools.
+Every tool that understands files then understands the model, at the level of detail the presentation chooses, without knowing that EMF exists.
+
+=== One abstraction for both directions
+
+The runtime has one small abstraction for both, the volume:
+
+* *Storing.* A resource set loads and saves models through a volume, so moving models from a working tree to an in-memory volume, an overlay or a remote system changes one handler, not the models and not the references between them.
+* *Presenting.* A volume can compute its files from anything: the glossary of this book's examples, the modules of a running JVM, a resource set.
+* *Serving.* Anything presented as a volume is served over HTTP to browsers and over WebDAV to anything that mounts drives.
+
+=== A URI is what, a path is where
+
+The separation that makes this work is between identity and location.
+A model's URI is what the model is, and stays the same wherever the model is stored.
+A path in a volume is where its bytes happen to be.
+The module's EMF URI handler maps one to the other (<<models-in-volumes>>), and nothing else needs to know.
+
+=== Agents read files
+
+An agent's most dependable tools are file tools: list, read, search, write.
+A system presented as files is a system an agent can explore without a bespoke integration, with links between files as the relations between elements.
+A volume over a model is therefore also an interface for agents, and the cheapest one to build.

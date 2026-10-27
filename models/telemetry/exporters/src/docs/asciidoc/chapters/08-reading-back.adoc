@@ -1,0 +1,29 @@
+// Defaults for previewing this file on its own; index.adoc and the Maven build set these
+ifndef::booktests[:booktests: ../../../test/java/org/nasdanika/sdk/runtime/models/telemetry/exporters/book]
+ifndef::bookresources[:bookresources: ../../../test/resources/org/nasdanika/sdk/runtime/models/telemetry/exporters/book]
+
+[#reading-back]
+== Reading telemetry back
+
+Recorded telemetry is a model, so reading it is ordinary EMF:
+
+.Reading traces and their changes (`TraceReader.java`)
+[source,java]
+----
+include::{booktests}/TraceReader.java[tag=read,indent=0]
+----
+<1> The library's package, so that the copies of created objects in the change descriptions load as libraries and books, and the proxies of changed objects resolve to the saved model.
+<2> The change description is a feature of the span. Its object changes are keyed by the changed objects.
+
+For the unit of work of <<recording-changes>>, it prints:
+
+.The trace of the unit of work
+[source,text]
+----
+include::{bookresources}/curate.txt[]
+----
+
+The runtime's own spans, from another instrumentation scope, appear in the tree by their parent ids: the configuration of the models' resource set and the saves of the shelf happened inside "Curate the shelf" and "Correct the year", and the tree says so.
+The configuration of the telemetry resource set is not there, because it happened before the instance was made current.
+
+Because the trace is a model, the same questions can be asked in a query language instead of a loop [.planned]#PLANNED#.

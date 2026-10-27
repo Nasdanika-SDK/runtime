@@ -1,0 +1,39 @@
+[appendix]
+[#reference]
+== Reference
+
+=== Packages
+
+[cols="2,3",options="header"]
+|===
+| Package | Namespace URI
+| `org.nasdanika.sdk.runtime.models.html` | `{nsuri-html}`
+| `org.nasdanika.sdk.runtime.models.html.bootstrap` | `{nsuri}`
+| `...bootstrap.forms` | `{nsuri}/forms`
+| `...bootstrap.components.content` | `{nsuri}/components/content`
+| `...bootstrap.components.navigation` | `{nsuri}/components/navigation`
+| `...bootstrap.components.overlays` | `{nsuri}/components/overlays`
+|===
+
+=== Bootstrap classes
+
+[cols="1,4",options="header"]
+|===
+| Package | Classes
+| core | `BootstrapDocument`, `Container`, `Row`, `Col`, `ColumnSize`, `RowColumns`, `Stack`, `Ratio`, `Image`, `Figure`, `FigureImage`, `FigureCaption`
+| forms | `Form`, `FormGroup`, `FormLabel`, `FormControl`, `FormTextArea`, `FormSelect`, `FormCheck`, `FormRange`, `FormText`, `FormFeedback`, `FloatingLabel`, `InputGroup`, `InputGroupText`
+| content | `Alert`, `AlertHeading`, `AlertLink`, `Badge`, `Button`, `ButtonGroup`, `ButtonToolbar`, `CloseButton`, `Card` and its parts, `CardGroup`, `ListGroup`, `ListGroupItem`, `Table`, `ProgressBar`, `Spinner`, `Placeholder`, `PlaceholderGroup`, `PlaceholderButton`, `Accordion` and its parts, `Carousel`, `CarouselItem`, `CarouselCaption`
+| navigation | `Nav`, `NavItem`, `NavLink`, `NavDropdown`, `Navbar`, `NavbarBrand`, `NavbarToggle`, `NavbarCollapse`, `NavbarText`, `Tabs`, `Tab`, `Breadcrumb`, `BreadcrumbItem`, `Pagination` and its items, `Dropdown`, `DropdownToggle`, `DropdownMenu`, `DropdownItem`, `DropdownHeader`, `DropdownDivider`, `DropdownItemText`, `DropdownButton`, `SplitButton`
+| overlays | `Toggle`, `Modal` and its parts, `Offcanvas` and its parts, `Toast`, `ToastHeader`, `ToastBody`, `ToastContainer`, `Tooltip`, `Popover`, `OverlayTrigger`
+|===
+
+=== Java classes
+
+[cols="2,5",options="header"]
+|===
+| Class | What it is for
+| `html.generator.Generator` | Writes a node as HTML. `setIndent(null)` writes on one line
+| `html.generator.HtmlStructure` | Maps the HTML model to tags, attributes and children
+| `bootstrap.generator.BootstrapStructure` | Maps the Bootstrap model, expanding components into HTML. `generate(node)` writes a node; `stylesheet(theme, ...)` and `javaScript(...)` give the URLs of the CDN
+| `bootstrap.builders.NavigationTree` | Builds a navigation tree of `details` and `summary`
+|===

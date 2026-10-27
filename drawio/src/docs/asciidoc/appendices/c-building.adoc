@@ -16,7 +16,7 @@ mvn -pl drawio verify -Dzephyr.editor-notes=false    # without editor's notes, f
 mvn -pl drawio verify -Dasciidoctor.skip=true        # the module without the book
 ----
 
-The build writes three editions into `drawio/target/book`, named after the module and its version: a PDF at 7.5 by 9.25 inches, a single HTML page with every image embedded, and an EPUB.
+The build writes three editions into `drawio/target/book`, named after the module and its version: a PDF at 189 by 246 mm (7.44 by 9.69 inches), a single HTML page with every image embedded, and an EPUB.
 The PDF and the HTML are attached to the module's artifact with the classifier `book`, and the module's test sources with the classifier `test-sources`, so the code behind every listing is published with the book.
 
 A module of the runtime has a Nasdanika Zephyr Book when it has `src/docs/asciidoc/index.adoc`.

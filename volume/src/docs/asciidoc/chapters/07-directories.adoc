@@ -1,0 +1,37 @@
+// Defaults for previewing this file on its own; index.adoc and the Maven build set these
+ifndef::booktests[:booktests: ../../../test/java/org/nasdanika/sdk/runtime/volume/book]
+
+[#directories]
+== Directories and adapters
+
+=== A volume over a directory
+
+`Volume.of(path)` is a writable volume over a directory of any NIO file system: the default one, a zip file system, an in-memory one.
+
+* It validates paths, so that they cannot escape the root.
+* It probes the file system for case sensitivity, instead of guessing it from the operating system.
+* It keeps the semantics of a file system: writing into a missing directory fails, and so does deleting a directory that is not empty.
+
+.A volume over a directory (`VolumeBookTests.java`)
+[source,java]
+----
+include::{booktests}/VolumeBookTests.java[tag=directory,indent=0]
+----
+<1> The directory does not exist yet. A volume does not create directories behind its user's back; the EMF handler of <<models-in-volumes>> creates them on purpose.
+<2> Atomic on file systems that support it.
+<3> Paths are validated at the boundary.
+
+=== Adapters
+
+`adapt(readMapper, writeMapper)` turns a volume of one kind of content into a volume of another.
+It is how the runtime's TypeScript generator writes text, without converting it to bytes itself:
+
+.A text volume over a directory (`VolumeBookTests.java`)
+[source,java]
+----
+include::{booktests}/VolumeBookTests.java[tag=text-volume,indent=0]
+----
+<1> Reading maps bytes to text. The mapping runs when content is asked for, so a text volume reads eagerly.
+<2> Writing maps text to bytes, encoded when the target volume reads the content.
+
+`Volume.of(genericVolume)` goes the other way, and views a `GenericVolume<Content>` as a `Volume`.

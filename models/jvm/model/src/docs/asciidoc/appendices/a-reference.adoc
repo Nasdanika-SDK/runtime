@@ -1,0 +1,47 @@
+[appendix]
+[#reference]
+== Reference
+
+=== Classes
+
+[cols="2,5",options="header"]
+|===
+| Class | What it is
+| `JvmElement` | Abstract base of every element but the root; a core model `NamedElement`
+| `JavaVirtualMachine` | The root: one JVM, live or scanned
+| `Layer` | A module layer
+| `ClassLoader` | A class loader, with its unnamed module
+| `Module` | A named or unnamed module, its directives, and the modules it reads
+| `Requires`, `Exports`, `Opens`, `Provides` | The directives of a module
+| `Package` | A package, containing its types
+| `Type` | A class, interface, enum, record, annotation, primitive or array
+| `Member` | Abstract base of methods and fields
+| `Method` | A method, a constructor (`<init>`) or a static initializer (`<clinit>`)
+| `Field` | A field, with its constant value
+| `Parameter` | A parameter, identified by its index
+|===
+
+=== Enumerations
+
+[cols="2,5",options="header"]
+|===
+| Enumeration | Literals
+| `ModuleModifier` | `OPEN`, `AUTOMATIC`, `SYNTHETIC`, `MANDATED`
+| `RequiresModifier` | `TRANSITIVE`, `STATIC`, `SYNTHETIC`, `MANDATED`
+| `DirectiveModifier` | `SYNTHETIC`, `MANDATED`
+| `TypeKind` | `CLASS`, `INTERFACE`, `ENUM`, `RECORD`, `ANNOTATION`, `PRIMITIVE`, `ARRAY`
+| `AccessLevel` | `PUBLIC`, `PROTECTED`, `PACKAGE`, `PRIVATE`
+|===
+
+=== Identity
+
+[cols="1,3,3",options="header"]
+|===
+| Element | URI | Example
+| Module | `jvm:module/<module name>` | `jvm:module/java.base`
+| Package | `jvm:package/<binary package name>` | `jvm:package/java.util`
+| Type | `jvm:type/<binary name>` | `jvm:type/java.util.Map$Entry`
+| Method | `jvm:method/<owner binary name>#<name><descriptor>` | `jvm:method/java.util.List#get(I)Ljava/lang/Object;`
+| Field | `jvm:field/<owner binary name>#<name>:<descriptor>` | `jvm:field/java.lang.Integer#MAX_VALUE:I`
+| Parameter | `jvm:parameter/<owner method>#<index>` | `jvm:parameter/java.util.List#get(I)Ljava/lang/Object;#0`
+|===

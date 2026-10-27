@@ -1,0 +1,42 @@
+[appendix]
+[#reference]
+== Reference
+
+=== Java types
+
+[cols="2,5",options="header"]
+|===
+| Type | What it is for
+| `GenericVolume<C>` | The SPI, with the type of content as a parameter, its `Entry`, its capabilities, and `adapt`
+| `Volume` | A volume of bytes. `Volume.of(path)` is a writable volume over a directory; `Volume.of(genericVolume)` views a volume of `Content` as a `Volume`
+| `Volume.Writable` | The `Writable` capability for bytes
+| `Content` | A re-readable source of bytes, and its factories
+| `emf.VolumeURIHandler` | Stores EMF resources in a volume, below a base URI
+| `http.VolumeHttpHandler` | Serves a volume read-only over HTTP
+| `http.WebDavHandler` | Serves a volume as a read-only WebDAV share
+| `http.TelemetryHandler` | Makes each request a unit of work with a server span; `filter(openTelemetry)` as a context filter
+| `http.MediaTypes` | Media types from file extensions
+|===
+
+=== Paths
+
+[cols="2,3",options="header"]
+|===
+| Path | Valid
+| `.` | The root
+| `terms/volume.md` | Yes
+| `/terms`, `terms/` | No: no leading or trailing slash
+| `a//b`, `./a`, `a/../b` | No: no empty, `.` or `..` segments
+|===
+
+=== Capabilities
+
+[cols="2,5",options="header"]
+|===
+| Capability | Methods
+| `Writable` | `write(path, content)`, `delete(path)`, `move(from, to)`, `createDirectory(path)`, `atomicMove()`, `adapt(mapper)`
+| `Watchable` | `changes()`: a `Flow.Publisher<ChangeBatch>`
+| `Transactional` | `begin()`: a `Transaction` with `commit(message)`, `rollback()` and `close()`, which rolls back unless committed
+| `Searchable` | `glob(pattern)`, `grep(regex, glob)`: matches with a path, a line and its text
+| `Linked` | `readLink(path)`
+|===

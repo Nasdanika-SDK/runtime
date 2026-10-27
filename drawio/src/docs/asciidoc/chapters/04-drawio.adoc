@@ -58,7 +58,7 @@ Two notes for your own diagrams:
 === The module
 
 The module is a salvage of the Draw.io API that Nasdanika core has had for years.
-It keeps the API for reading, navigating, changing and writing documents, and leaves out what tied it to the rest of core: graph processing, the Ecore model of Draw.io documents, and Spring Expression Language (<<migrating>>).
+It keeps the API for reading, navigating, changing and writing documents, and leaves out what tied it to the rest of core: graph processing, the Ecore model of Draw.io documents, which the runtime has rebuilt as a module of its own, and Spring Expression Language (<<migrating>>).
 
 It is small, and it depends on little: the JDK's XML and image APIs, four small libraries for JSON, HTML, text and encoding, and the runtime's `common` module, which brings EMF's core libraries and the OpenTelemetry API.
 You can use it without the rest of the runtime.

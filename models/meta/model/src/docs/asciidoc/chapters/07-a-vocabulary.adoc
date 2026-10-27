@@ -1,0 +1,43 @@
+// Defaults for previewing this file on its own; index.adoc and the Maven build set these
+ifndef::booktests[:booktests: ../../../test/java/org/nasdanika/sdk/runtime/models/meta/tests/book]
+
+[#a-vocabulary]
+== A vocabulary
+
+The example of this book is the vocabulary of a library: people, books and the formats books are published in.
+It is built in Java, with three small builders.
+
+=== Builders
+
+.Builders (`Vocabulary.java`)
+[source,java]
+----
+include::{booktests}/Vocabulary.java[tag=builders,indent=0]
+----
+<1> Documentation is the core model's structure, not a string attribute of Meta.
+<2> The attribute identifies its instance, as the identity of an entity in Domain-Driven Design.
+<3> The type is a reference to a primitive kind, which is how a value crosses the wire.
+<4> Many-valued.
+
+=== The vocabulary
+
+.The library's vocabulary (`Vocabulary.java`)
+[source,java]
+----
+include::{booktests}/Vocabulary.java[tag=vocabulary,indent=0]
+----
+<1> What a source expressed and Meta does not: here, the table a harvester found the books in.
+
+=== Saving and loading
+
+A vocabulary is a model, so it is saved, versioned, compared and reviewed like any other:
+
+.Saving and loading a vocabulary (`MetaBookTests.java`)
+[source,java]
+----
+include::{booktests}/MetaBookTests.java[tag=save,indent=0]
+----
+<1> A file in a repository. A change to what a term means is a pull request whose diff shows which features moved.
+
+The resource set of the listing registers the XMI factory and the Meta package by hand.
+In an application on the runtime, `NasdanikaResourceSet.createAndConfigure()` does both from the module path, and adds YAML and JSON when the runtime's `emf-json` module is there.

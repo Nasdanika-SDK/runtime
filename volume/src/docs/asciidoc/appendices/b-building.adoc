@@ -1,0 +1,20 @@
+[appendix]
+[#building-this-book]
+== Building this book
+
+This book is AsciiDoc in `volume/src/docs/asciidoc`, built with the module after its tests have passed:
+
+[source,text]
+----
+mvn -pl volume -am verify                          # the module, its tests and this book
+mvn -pl volume verify -Dzephyr.editor-notes=false  # without editor's notes
+mvn -pl volume verify -Dasciidoctor.skip=true      # without the book
+----
+
+The PDF and the single-page HTML are written to `target/book` and attached to the module's artifact with the classifier `book`; the test sources are attached with the classifier `test-sources`.
+The look comes from the runtime's `doc/zephyr` directory, shared by all the Nasdanika Zephyr Books.
+
+Listings are tagged regions of the tests in `src/test/java/org/nasdanika/sdk/runtime/volume/book`, and of the module declaration.
+A listing line holds at most 96 characters, and a warning fails the build.
+
+The tests also have two main classes to try the module by hand: `book.Serve`, which serves the glossary for a browser and a WebDAV mount, and `http.JvmVolumeServer`, which serves the running JVM's modules the same way.

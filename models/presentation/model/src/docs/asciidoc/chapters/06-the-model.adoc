@@ -1,0 +1,60 @@
+[#the-model]
+== The model
+
+[cols="1,4",options="header"]
+|===
+| Area | Classes
+| Deck | `Presentation`, a diagram: `width` and `height` in points, `slides` and `masterSlides`
+| Slides | `Slide`, a diagram: `master`, `hidden`, `notes`; `MasterSlide`, a slide; `Notes`, with `text`
+| Shapes | `Shape`, an abstract diagram node: `order`, `rotation`, `flipHorizontal`, `flipVertical`; `GroupShape`, `ImageShape`, `MediaShape`
+| Text | `TextShape`, with `paragraphs`; `Paragraph`, with `runs`, `indentLevel` and `alignment`; `TextRun`, with `text`, `fontFamily`, `fontSize`, `bold`, `italic`, `underline`, `color` and `hyperlink`
+| Tables | `TableShape`, with `rows`; `Row`, with `cells` and a `height`; `Cell`, with `paragraphs`, `columnSpan` and `rowSpan`
+| Connectors | `ConnectorShape`, a diagram connection: `source`, `target`, `waypoints`
+|===
+
+=== What comes from the diagram model
+
+Every element of a deck but the text, the tables' rows and cells, and the notes is a diagram element, so it has:
+
+* `id` and `name`, documentation, markers that record where it came from, an `icon` and `uris`, from the runtime's core model;
+* `attributes`, a map of strings, for what a format carries and the model does not;
+* `semanticElements`, the objects of other models that it depicts;
+* `children`, the elements it contains, keyed by `id`.
+
+A shape has `bounds`, relative to its parent, and `ports`; connectable elements know their `incomingConnections` and `outgoingConnections`, kept in step with the connections' `source` and `target`.
+
+=== Presentation
+
+A `Presentation` is a diagram whose children are its slides and masters.
+`slides` and `masterSlides` are derived from `children`: the children that are slides, and the children that are masters.
+They are views, and changes to them write through to `children`.
+
+ifdef::editor-notes[]
+[IMPORTANT,caption="Editor's note"]
+====
+`slides` is every `Slide` among the children, masters included, since `MasterSlide` extends `Slide`; a TODO in the Xcore says to exclude masters. Until it does, code that wants the slides that are presented filters masters out, as <<a-deck>> does, and `PresentationBookTests.slidesIncludeMasters` records the behavior.
+====
+endif::[]
+
+=== Slide and MasterSlide
+
+A `Slide` has its `master`, `hidden` for slides kept but not presented, and `notes`.
+Its shapes and connectors are its children.
+A `MasterSlide` is a slide, whose shapes appear on the slides that use it.
+
+=== Shapes
+
+`Shape` is abstract.
+`order` is the order of drawing, `rotation` is in degrees, and the flips are booleans.
+A `GroupShape` groups the shapes that are its children; an `ImageShape` and a `MediaShape` have a `location`, a URI resolved against the resource or the name of an embedded part, and a `contentType`.
+
+=== Text and tables
+
+A `TextShape` contains paragraphs; a `Paragraph` contains runs, with an `indentLevel` for bullets and an `alignment`.
+A `TextRun` is text with the same formatting: `fontFamily`, `fontSize` in points, `bold`, `italic`, `underline`, a `color` as `#RRGGBB`, and a `hyperlink`, which is what makes a generated deck navigable.
+
+A `TableShape` contains rows of cells, and a `Cell` contains paragraphs, as a text shape does, and spans columns and rows.
+
+=== Connectors
+
+A `ConnectorShape` is a diagram connection, with a `source` and a `target`, which can be shapes or their ports, and `waypoints` that keep its route.

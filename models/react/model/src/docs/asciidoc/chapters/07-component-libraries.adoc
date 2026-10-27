@@ -1,0 +1,54 @@
+// Defaults for previewing this file on its own; index.adoc and the Maven build set these
+ifndef::flowtests[:flowtests: ../../../../../flow/src/test/java/org/nasdanika/sdk/runtime/models/react/flow/tests]
+ifndef::flowresources[:flowresources: ../../../../../flow/src/test/resources/expected]
+ifndef::rbtests[:rbtests: ../../../../../bootstrap/src/test/java/org/nasdanika/sdk/runtime/models/react/bootstrap/tests]
+
+[#component-libraries]
+== Component libraries
+
+A component of a library, such as a React Bootstrap card or the React Flow canvas, is a class of a model annotated with its component's name and module: a `LibraryComponent`.
+The generator renders its features as props, reflectively:
+
+* attributes as values;
+* containments of JSX as children;
+* value objects as object literals;
+* enumeration literals as values, or as members of an enumeration the library exports.
+
+Expressions, event handlers and children that are computed are JSX attributes and children of the library component, as for any JSX element.
+A component library is therefore annotated Xcore, with no generator code, which is how the React Bootstrap and React Flow models are written.
+
+=== React Bootstrap
+
+The React Bootstrap model describes the components of React Bootstrap 2.10, for Bootstrap 5.3, in five packages: layout and the shared vocabulary, content, navigation, overlays, and forms.
+Like the HTML Bootstrap model, it describes what a component means: a container fluid until a breakpoint, a column 4 wide with an offset of 2 from the medium breakpoint.
+
+.A grid in React Bootstrap (`BootstrapGeneratorTests.java`, in the React Bootstrap model)
+[source,java]
+----
+include::{rbtests}/BootstrapGeneratorTests.java[tag=grid,indent=0]
+----
+
+The components are imported from `react-bootstrap` because their classes say so, and responsive values become React Bootstrap's props: `md={{ span: 4, offset: 2 }}`.
+
+Bootstrap thus appears twice in the runtime, for two ways of delivering a page: the HTML Bootstrap model for pages written as HTML, and the React Bootstrap model for interactive applications.
+
+=== React Flow
+
+The React Flow model describes `@xyflow/react` 12: a flow of nodes and edges, the `ReactFlow` component with its background, controls, minimap and panels, the hooks that hold nodes and edges in state, and the building blocks of custom nodes.
+
+.An editable flow (`FlowGeneratorTests.java`, in the React Flow model)
+[source,java]
+----
+include::{flowtests}/FlowGeneratorTests.java[tag=controlled,indent=0]
+----
+
+.`controlled.tsx`
+[source,tsx]
+----
+include::{flowresources}/controlled.tsx[]
+----
+
+The initial nodes and edges are object literals from model objects, the type of the connection line and the marker are members of the library's enumerations, and `addEdge`, used in opaque text, is imported because the expression's references name it.
+
+`LayeredLayout` places the nodes of a flow in layers: a node without outgoing edges in the first, and any other node one layer above the highest node it points to, so for dependencies the dependents are on top.
+It is readable, not good, on purpose: a layout to start from, which a user rearranges, or a layout library replaces.

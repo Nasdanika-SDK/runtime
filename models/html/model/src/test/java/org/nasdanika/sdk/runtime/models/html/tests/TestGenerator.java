@@ -106,6 +106,7 @@ public class TestGenerator {
 
 	@Test
 	public void testDocument() {
+		// tag::document[]
 		Document document = FACTORY.createDocument();
 		document.setLang("en");
 
@@ -177,10 +178,12 @@ public class TestGenerator {
 				    </div>
 				  </body>
 				</html>""");
+		// end::document[]
 	}
 
 	@Test
 	public void testAttributesAndEscaping() {
+		// tag::escaping[]
 		Div div = FACTORY.createDiv();
 		div.getAttributes().put("data-title", "\"quoted\" & <tagged>");
 		div.getAttributes().put("hidden", null);
@@ -224,6 +227,7 @@ public class TestGenerator {
 				+ "<select name=\"color\"><option value=\"r\" selected>Red &amp; Rose</option></select>"
 				+ "<script>document.write('<\\/script>');</script>"
 				+ "</div>");
+		// end::escaping[]
 	}
 
 	@Test

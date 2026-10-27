@@ -5,6 +5,7 @@ import org.nasdanika.sdk.runtime.models.html.bootstrap.services.FormsEPackagePro
 import org.nasdanika.sdk.runtime.models.html.bootstrap.services.NavigationEPackageProvider;
 import org.nasdanika.sdk.runtime.models.html.bootstrap.services.OverlaysEPackageProvider;
 
+// tag::module[]
 module org.nasdanika.sdk.runtime.models.html.bootstrap {
 	
 	exports org.nasdanika.sdk.runtime.models.html.bootstrap;
@@ -40,3 +41,4 @@ module org.nasdanika.sdk.runtime.models.html.bootstrap {
 		OverlaysEPackageProvider;
 	
 }
+// end::module[]

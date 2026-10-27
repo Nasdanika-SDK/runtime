@@ -1,0 +1,43 @@
+[#spine]
+== A spine, not a picture
+
+The JVM model is a spine, not a complete picture of a JVM, and that is the design.
+Information about source, bytecode and run time attaches to its elements instead of restating them:
+
+* a model of Java source adds positions, comments and the type text of the source;
+* a model of bytecode adds instructions and constant pools;
+* the runtime's telemetry model and coverage reports add measurements;
+
+and all of them point at the same elements.
+
+=== What is in, and what is out
+
+[cols="1,4",options="header"]
+|===
+| | What
+| In | Layers, class loaders, modules and their directives, packages, types, methods, fields, parameters, resolved readability, access flags, class file versions
+| Generics as data | The class file's `Signature` attribute, verbatim, on types and members (<<identity>>)
+| Out | Source positions, instructions, constant pools, annotations
+| Projected, not extended | Meta, the runtime's language-neutral type system
+|===
+
+Annotations are the most likely first addition [.planned]#PLANNED#.
+They are among the most valuable things to query in a JVM estate, "every deprecated method", "every type with a given framework annotation", and they are an increment that disturbs nothing else.
+
+=== Why the JVM model does not extend Meta
+
+The runtime's Meta model covers packages, classes, features and operations, loads from Java among other formats, and is deliberately not a superset of any of its sources: whatever does not fit is dropped or carried in an annotation.
+That is a published language, and a published language is a target of projections, not a base class.
+
+The test is concrete.
+Bridge methods, synthetic accessors, access flags and overloads that differ only in erased parameter types are realities of the JVM that Meta will not grow to hold.
+Extending Meta would shape a model whose whole value is fidelity to the JVM's naming by one that is deliberately lossy about it.
+So the JVM model sits on the runtime's core model, and projects to Meta [.planned]#PLANNED#, which gives anyone comparing a Java type with an Ecore class or a JSON Schema the route they expect.
+
+=== Three decisions
+
+Three decisions are worth knowing before reading the classes:
+
+* *Modules are contained by the root, not by a layer.* A named module belongs to a layer and an unnamed module to a class loader, and one containment cannot express both, so layers and loaders reference modules.
+* *Constructors are methods.* In the JVM a constructor is a method named `<init>` and a static initializer is `<clinit>`; descriptors tell overloads apart, and the naming works the same way for all three. Reflection separates constructors from methods, bytecode does not, and the model follows bytecode because that is where its identity comes from.
+* *Access flags are booleans, not a packed integer.* A query language without bitwise operators could not ask about an integer of flags. Choices that exclude each other, such as the access level and the kind of a type, are enumerations.

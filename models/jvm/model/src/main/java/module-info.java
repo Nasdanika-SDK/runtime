@@ -1,6 +1,7 @@
 import org.eclipse.emf.ecore.EPackage;
 import org.nasdanika.sdk.runtime.models.jvm.services.JvmEPackageProvider;
 
+// tag::module[]
 module org.nasdanika.sdk.runtime.models.jvm {
 	
 	exports org.nasdanika.sdk.runtime.models.jvm;
@@ -12,3 +13,4 @@ module org.nasdanika.sdk.runtime.models.jvm {
 	provides EPackage with JvmEPackageProvider;
 	
 }
+// end::module[]

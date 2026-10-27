@@ -1,0 +1,92 @@
+// Defaults for previewing this file on its own; index.adoc and the Maven build set these
+ifndef::booktests[:booktests: ../../../test/java/org/nasdanika/sdk/runtime/models/jvm/tests/book]
+
+[#a-snapshot]
+== A snapshot of a running JVM
+
+The runtime's live loader is [.planned]#PLANNED#.
+A minimal one fits in a page, and shows the shape; it is in this book's tests, as `Snapshot`.
+
+=== Modules and readability
+
+.A snapshot of a module layer (`Snapshot.java`)
+[source,java]
+----
+include::{booktests}/Snapshot.java[tag=snapshot,indent=0]
+----
+<1> Observed in a running VM, not scanned from jars.
+<2> What each module declares, from its descriptor.
+<3> The JVM's own naming, as the identity of the element.
+<4> A required module that was not resolved stays unresolved: the declaration is kept, with no target.
+<5> What resolution made of the declarations: the modules each module reads.
+
+=== Saving and loading
+
+A snapshot is a model, so it is saved as evidence of what ran, next to the build or the release it describes.
+The listing saves it as XMI with EMF alone; with the runtime's `common` module on the module path, `NasdanikaResourceSet.createAndConfigure()` picks the format from the extension instead, YAML and JSON among them.
+
+.Saving a snapshot (`SnapshotTests.java`)
+[source,java]
+----
+include::{booktests}/SnapshotTests.java[tag=save,indent=0]
+----
+<1> A file per snapshot. The modules of the boot layer of a test run are a few dozen, and the file is small.
+
+Loading it back needs the package registered, or a resource set configured from the module path, which registers it as a service:
+
+.Loading a snapshot
+[source,java]
+----
+include::{booktests}/SnapshotTests.java[tag=load,indent=0]
+----
+<1> The namespace URI in the file resolves to the generated package.
+
+=== Asking a question
+
+The question is ordinary code over the model:
+
+.Modules that read what they never required (`Snapshot.java`)
+[source,java]
+----
+include::{booktests}/Snapshot.java[tag=question,indent=0]
+----
+
+[source,java]
+----
+include::{booktests}/SnapshotTests.java[tag=ask,indent=0]
+----
+
+For the boot layer of this module's own tests, the answer for the model is:
+
+[cols="2,3",options="header"]
+|===
+| Module | Reads without requiring
+| `org.nasdanika.sdk.runtime.models.jvm` | `org.eclipse.emf.common`, `org.eclipse.emf.ecore`
+|===
+
+That is `requires transitive` at work: the JVM model requires the core model, and the core model requires EMF transitively.
+In a larger assembly the answer gets more interesting.
+EMF and many other libraries are automatic modules, jars without a module descriptor, and the module system gives a module that reads one automatic module readability of all of them.
+In the assembly of an example in the Nasdanika SDK Runtime book, the core model, which requires only EMF and `java.scripting`, reads OpenTelemetry and a JSON library for exactly that reason.
+No build file says so, and a snapshot shows it in the first query anyone runs.
+
+=== Types and methods, named the JVM's way
+
+Types and members are named by binary names and descriptors, which reflection and `java.lang.invoke` compute:
+
+.A type and its public methods (`Snapshot.java`)
+[source,java]
+----
+include::{booktests}/Snapshot.java[tag=type,indent=0]
+----
+<1> `Class.getName()` is the binary name: `java.util.Map$Entry` for a nested type, `[I` for an array of `int`.
+<2> The method descriptor: parameter types in parentheses, then the return type.
+
+And the identities are the ones every other tool uses:
+
+.Identity (`SnapshotTests.java`)
+[source,java]
+----
+include::{booktests}/SnapshotTests.java[tag=identity,indent=0]
+----
+<1> Erased: `List.get` returns `Object` in the descriptor, whatever the element type.

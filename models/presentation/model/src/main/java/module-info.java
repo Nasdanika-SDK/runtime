@@ -1,6 +1,7 @@
 import org.eclipse.emf.ecore.EPackage;
 import org.nasdanika.sdk.runtime.models.presentation.services.PresentationEPackageProvider;
 
+// tag::module[]
 module org.nasdanika.sdk.runtime.models.presentation {
 	
 	exports org.nasdanika.sdk.runtime.models.presentation;
@@ -13,3 +14,4 @@ module org.nasdanika.sdk.runtime.models.presentation {
 	provides EPackage with PresentationEPackageProvider;
 	
 }
+// end::module[]

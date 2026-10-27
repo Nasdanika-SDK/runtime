@@ -25,8 +25,9 @@ The value of a shared core grows with the number of models that extend it:
   recording where an element, or a change, came from.
 
 A model gets all of it by extending `NamedElement`, as the
-[Meta](../../meta/model/doc/readme.md), [JVM](../../jvm/model/doc/readme.md) and
-[TypeScript](../../typescript/model/doc/readme.md) models of the runtime do. The HTML model takes
+[Meta](../../meta/model/src/docs/asciidoc/index.adoc), [JVM](../../jvm/model/src/docs/asciidoc/index.adoc)
+and [TypeScript](../../react/model/src/docs/asciidoc/index.adoc) models of the runtime do (each
+documented in a Nasdanika Zephyr Book). The HTML model takes
 only what it needs: its elements are `Marked`.
 
 ## The element hierarchy

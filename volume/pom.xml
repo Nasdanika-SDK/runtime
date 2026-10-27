@@ -10,6 +10,12 @@
 	<artifactId>volume</artifactId>
 	<packaging>jar</packaging>
 	<name>Nasdanika SDK Runtime Volume SPI</name>
+	<description>
+		Volumes and content: a small SPI for trees of files wherever they live, a re-readable
+		abstraction of bytes, an EMF URI handler that stores models in volumes, and handlers that
+		serve volumes over HTTP and WebDAV with telemetry. Its Nasdanika Zephyr Book, "Volumes and
+		Content", is built from src/docs/asciidoc with listings from the tests.
+	</description>
 
 	<dependencyManagement>
 		<dependencies>
@@ -28,6 +34,17 @@
 			<groupId>${project.groupId}</groupId>
 			<artifactId>common</artifactId>
 			<version>${project.version}</version>
+		</dependency>
+		<!-- The Zephyr Book's trace across client and server, exported in memory -->
+		<dependency>
+			<groupId>io.opentelemetry</groupId>
+			<artifactId>opentelemetry-sdk</artifactId>
+			<scope>test</scope>
+		</dependency>
+		<dependency>
+			<groupId>io.opentelemetry</groupId>
+			<artifactId>opentelemetry-sdk-testing</artifactId>
+			<scope>test</scope>
 		</dependency>
 	</dependencies>
 </project>

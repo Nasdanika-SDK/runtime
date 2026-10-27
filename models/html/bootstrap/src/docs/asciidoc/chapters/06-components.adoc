@@ -1,0 +1,84 @@
+// Defaults for previewing this file on its own; index.adoc and the Maven build set these
+ifndef::booktests[:booktests: ../../../test/java/org/nasdanika/sdk/runtime/models/html/bootstrap/tests]
+ifndef::bookresources[:bookresources: ../../../test/resources/expected]
+
+[#components]
+== Components
+
+The components are in four packages: content, navigation and overlays under `components`, and forms.
+
+=== Content
+
+Alerts, badges, buttons and their groups and toolbars, cards, list groups, tables, progress bars, spinners, placeholders, accordions and carousels:
+
+.Content components (`BootstrapGeneratorTests.java`)
+[source,java]
+----
+include::{booktests}/BootstrapGeneratorTests.java[tag=content,indent=0]
+----
+
+[source,html]
+----
+include::{bookresources}/content.html[]
+----
+
+The card's parts are features, not children in a particular order: the header, the image with its position, the bodies with their titles, texts and links.
+The structure writes them in Bootstrap's order.
+The accordion's items get ids from their position, and the buttons of their headers point at them.
+
+=== Forms
+
+Forms, groups of controls with labels, controls, selects, checks and switches, ranges, floating labels, input groups, and feedback for validation:
+
+.A form (`BootstrapGeneratorTests.java`)
+[source,java]
+----
+include::{booktests}/BootstrapGeneratorTests.java[tag=forms,indent=0]
+----
+
+[source,html]
+----
+include::{bookresources}/forms.html[]
+----
+
+A group's `controlId` becomes the control's `id` and the label's `for`, so they cannot disagree.
+
+=== Navigation
+
+Navs and their links and dropdowns, navbars with a brand, a toggle and a collapse, tabs, breadcrumbs, pagination, dropdowns and split buttons:
+
+.Navigation components (`BootstrapGeneratorTests.java`)
+[source,java]
+----
+include::{booktests}/BootstrapGeneratorTests.java[tag=navigation,indent=0]
+----
+
+[source,html]
+----
+include::{bookresources}/navigation.html[]
+----
+
+Tabs are a list of tabs, each with a title and a pane; the structure writes the buttons and the panes, and connects them by ids.
+
+=== Overlays
+
+Modals, offcanvases, toasts, and tooltips and popovers on the elements they decorate:
+
+.Overlays (`BootstrapGeneratorTests.java`)
+[source,java]
+----
+include::{booktests}/BootstrapGeneratorTests.java[tag=overlays,indent=0]
+----
+
+[source,html]
+----
+include::{bookresources}/overlays.html[]
+----
+
+A `Toggle` refers to the modal it opens, and the structure writes the button's `data-bs-toggle`, `data-bs-target` and `aria-controls` from the reference.
+An `OverlayTrigger` wraps its target in a `span` that carries the tooltip or popover, which works for disabled buttons too.
+
+=== The demo site
+
+The module's `BootstrapDemoTests` generates a static site from the model: a page per package, showing every component, and a gallery of the same showcase in every Bootstrap and Bootswatch theme.
+It is written to `target/html-bootstrap/site`; browse it with the JDK's `jwebserver -d target/html-bootstrap/site`.

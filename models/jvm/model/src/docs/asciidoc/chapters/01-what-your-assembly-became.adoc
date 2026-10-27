@@ -1,0 +1,38 @@
+[#assembly]
+== What your assembly became
+
+A running Java virtual machine knows a great deal about itself.
+`ModuleLayer.boot()` gives the module graph, `Configuration` reports what resolution actually produced, and reflection has exposed types and members since Java 1.1.
+The information was never the problem.
+Getting an answer meant writing a program, so only questions worth a program were ever asked, and that is a small set.
+
+A typed model of the JVM, saved and queried, lowers the cost of a question to the cost of asking it.
+And because the model is data, the answer can be kept: next to the build that produced the JVM, in the same repository, compared with last month's.
+
+=== Declared is not running
+
+There is a gap between what a build declares and what runs, and nothing reports it.
+A dependency tree describes what could be on the path, test scope, optional dependencies and libraries that nothing ever loads included.
+The resolved module graph is shorter and truer.
+
+Its clearest instance is readability: modules that read something they never required.
+Usually that is correct and by design:
+
+* `requires transitive` propagates readability: a module that requires the JVM model reads the core model and EMF too.
+* Service binding pulls providers into the resolved graph that no dependency declaration mentions.
+* A module that reads one automatic module, a jar without a module descriptor, reads all of them.
+
+All three are properties of resolution, not of the build, so they are absent from every POM and every bill of materials by construction, and no dependency tool can report them.
+A snapshot of the resolved graph is what your assembly became.
+
+=== Code on the class path is visible too
+
+Code on the class path lives in a class loader's unnamed module.
+The unnamed module is a value, with packages and types in it, not an absence.
+So the model is as useful for an application that has never heard of the module system as for one that is modular throughout.
+
+=== The missing view
+
+Logs, metrics, traces and profiles describe behavior over time.
+None of them describes composition: which modules, which versions, which class file versions, which packages opened to whom.
+A model of the JVM is that view, and it is the one the others have been missing, because a span, a profile sample and a coverage line all point into it (<<identity>>).

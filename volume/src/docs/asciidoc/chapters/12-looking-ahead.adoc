@@ -1,0 +1,37 @@
+[#looking-ahead]
+== Looking ahead
+
+The volume is the bottom layer of a larger design.
+
+=== More volumes
+
+[.planned]#PLANNED#
+
+* *An in-memory volume*, for tests and sandboxes. The module's tests have one, `MemoryVolume`, which may become public.
+* *An overlay*, which keeps writes in memory over a read-only base until commit.
+* *A Git volume*, whose commit is a Git commit, locally or over the GitHub and GitLab APIs without a clone.
+* *A model volume*, which presents a resource set as folders, files and links.
+* *Volumes over systems*: the JVM, then trackers such as Azure DevOps, with caching and polling.
+
+=== The file model
+
+[.sketch]#SKETCH#
+
+Files and directories as an Xcore model over volumes, in the runtime's `models/file`: `File`, `Directory`, `TextFile` and types specialized by content type, with operations such as `view`, `replace` and `insert` that are also an agent's file tools.
+Views decode content on get and encode it lazily on set, so two views of one file cannot diverge.
+The model and its generated code are in the runtime; its behavior is being attached.
+
+=== More surfaces
+
+[.planned]#PLANNED#
+
+* *Writable WebDAV*, behind the `Writable` capability, so that editing a mounted model is editing the model.
+* *VS Code*, through its `FileSystemProvider` API, which consumes the change batches of a `Watchable` volume directly.
+* *FUSE*, for a native mount on Linux and macOS.
+
+=== A file system that reacts
+
+[.planned]#PLANNED#
+
+Processors, deterministic or agentic, react to file changes and change files in turn until nothing changes, and then one commit records the run.
+The hash in every entry is what lets such loops converge: a write that changes nothing is suppressed, and so is the reaction to it.

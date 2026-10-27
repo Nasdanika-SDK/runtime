@@ -1,0 +1,21 @@
+[#small-on-purpose]
+== Small on purpose
+
+There are no animations, transitions, themes, gradient fills, SmartArt, bevels or timings of slides in this model, and there will not be.
+
+There are two reasons.
+Those things do not survive conversion anyway: a PowerPoint morph transition has no equivalent in Visio or PlantUML, so modeling it neutrally is modeling a fiction.
+And a small model is what makes generation tractable: a template author, a mapping or a language model can hold fifteen classes in view and produce something structurally valid, which is not true of the formats themselves.
+
+What is rich and specific to a format belongs in a model of that format, such as the runtime's Draw.io model, and in attributes for everything else.
+
+=== A contract for generators
+
+A small typed model is a far better contract for a language model than the XML of a format: it fits in a prompt, its meaning is documented, and the output can be validated before anything is drawn.
+Is it structurally sound?
+Does every shape depict an element that exists in an approved model?
+Does any slide refer to a retired system?
+
+The loop becomes: model in, model out, validate, then render to whatever format the audience wants.
+Review happens on a comparison of models, not by clicking through slides.
+The distinction is between generating a deck and generating a model that a deck is one rendering of, and the second can be checked before anybody sees it.

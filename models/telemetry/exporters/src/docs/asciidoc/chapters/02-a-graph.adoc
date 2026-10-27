@@ -1,0 +1,21 @@
+[#a-graph]
+== Faithful to OpenTelemetry, navigable as a graph
+
+The model follows OpenTelemetry's own data model, the OpenTelemetry Protocol, OTLP, so that nothing is lost on the way in.
+Its classes are OTLP's messages, with OTLP's names and documentation: `TracesData`, `ResourceSpans`, `ScopeSpans`, `Span`, and so on for logs and metrics.
+Identifiers are lowercase hexadecimal, as the OTLP exporters write them, and times are nanoseconds since the UNIX epoch.
+
+On top of OTLP, the model adds what makes telemetry a graph instead of a stream of records:
+
+* *Spans nest.* A span contains its children within an instrumentation scope, so a trace reads as a tree. Across scopes, spans reference their parent by id.
+* *Log records live in their spans.* A log record emitted in a span is contained by the span, not stored in a separate stream to be joined later.
+* *Changes live in their spans.* A span contains the description of the model changes recorded while it was current.
+* *References resolve.* Span links and the change classes reference spans as objects, not only by id, and every span knows what references it. An exemplar references the span that produced a measurement.
+
+Spans are keyed by trace and span id, so their URIs are stable and readable.
+
+=== Why a model and not a format
+
+A trace saved as a model is something you load, navigate, query, compare and commit.
+It uses the formats every model of the runtime uses: YAML and JSON to read, XMI to interchange, EMF's binary format for size.
+And a change to a model, recorded in the span that made it, refers to the changed object by its URI, so it resolves to the model wherever the model is saved.

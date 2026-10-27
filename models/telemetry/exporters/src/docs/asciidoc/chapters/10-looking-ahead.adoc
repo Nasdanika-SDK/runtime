@@ -1,0 +1,25 @@
+[#looking-ahead]
+== Looking ahead
+
+Everything in this chapter is [.planned]#PLANNED#.
+
+=== Queries
+
+Questions about traces asked in a query language, not in Java loops: every change to an element during a period, the spans of an agent's run that changed a given model, the slowest steps of the releases of a quarter.
+
+=== Replay
+
+Spans carry timing and nesting, so an execution can be played back over a diagram of the system that ran it, with model changes appearing where they happened.
+
+=== Attributes that resolve
+
+Attributes of the semantic conventions, such as a code function or a URL, resolved to the model elements they name and recorded as markers.
+A span whose code attributes name a method resolves to that method in a model of the JVM, because both use the JVM's own names.
+
+=== Live views
+
+The telemetry of a running unit of work, watched live over server-sent events, and the same views over a recording after the fact.
+
+=== Higher floors
+
+Spans as work, resources as actors, metrics as entries of accounting: models of work, roles and accounting will connect to telemetry on their own floors, so that this model stays faithful to OpenTelemetry.

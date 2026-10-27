@@ -1,6 +1,7 @@
 import org.eclipse.emf.ecore.EPackage;
 import org.nasdanika.sdk.runtime.models.meta.services.MetaEPackageProvider;
 
+// tag::module[]
 module org.nasdanika.sdk.runtime.models.meta {
 	
 	exports org.nasdanika.sdk.runtime.models.meta;
@@ -12,3 +13,4 @@ module org.nasdanika.sdk.runtime.models.meta {
 	provides EPackage with MetaEPackageProvider;
 	
 }
+// end::module[]

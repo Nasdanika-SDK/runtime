@@ -1,0 +1,63 @@
+// Defaults for previewing this file on its own; index.adoc and the Maven build set these
+ifndef::booktests[:booktests: ../../../test/java/org/nasdanika/sdk/runtime/models/meta/tests/book]
+ifndef::bookresources[:bookresources: ../../../test/resources/org/nasdanika/sdk/runtime/models/meta/tests/book]
+
+[#projections]
+== Projections
+
+A vocabulary is worth writing down once because of what is projected from it.
+The runtime's projections are [.planned]#PLANNED#; the tests of this book sketch two of them, to show the idea.
+
+=== A glossary, for people
+
+The first projection is for people: a glossary that cannot drift from the types, because both come from one source.
+
+.A glossary projection (`Projections.java`)
+[source,java]
+----
+include::{booktests}/Projections.java[tag=glossary,indent=0]
+----
+
+For the library's vocabulary, it writes this Markdown, which the test compares with a reviewed file:
+
+.The glossary of the library
+[source,markdown]
+----
+include::{bookresources}/library.md[]
+----
+
+=== A dynamic Ecore package, for tools
+
+The second projection is for tools: a dynamic Ecore package, so that every EMF tool works on a vocabulary without generated Java.
+
+.An Ecore projection (`Projections.java`)
+[source,java]
+----
+include::{booktests}/Projections.java[tag=ecore,indent=0]
+----
+
+EMF then creates, validates and saves instances of the vocabulary's classes:
+
+.Instances of a projected vocabulary (`MetaBookTests.java`)
+[source,java]
+----
+include::{booktests}/MetaBookTests.java[tag=instances,indent=0]
+----
+<1> An instance of a class that has no Java class.
+<2> The package is registered with the resource set, so its instances can be saved and loaded.
+
+The identifying attribute becomes the instance's EMF ID, so references to a book in a file are by its ISBN.
+
+The Ecore projection is the quiet one and possibly the most useful: a vocabulary captured in a spreadsheet can be validated, compared, diagrammed and serialized by tools that already exist.
+It is also the conformance test of Meta, since a vocabulary projected to Ecore and back must come back the same, and the production path for models written in Meta that need Java.
+
+=== What a projection decides
+
+A projection decides what the neutral model leaves open:
+
+* whether a `Class` becomes an interface, a type alias or a class;
+* how a `DataType` is represented, from its `representation`;
+* what to do with what the target cannot say: wildcards, unions in Java, operations in a data schema;
+* which annotations it reads, by their source.
+
+The model stays the same for every projection, which is what lets one vocabulary serve many.

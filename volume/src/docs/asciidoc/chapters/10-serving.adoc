@@ -1,0 +1,90 @@
+// Defaults for previewing this file on its own; index.adoc and the Maven build set these
+ifndef::booktests[:booktests: ../../../test/java/org/nasdanika/sdk/runtime/volume/book]
+
+[#serving]
+== Serving over HTTP and WebDAV
+
+Anything presented as a volume can be served: to a browser over HTTP, and to anything that mounts drives over WebDAV.
+A model becomes a folder in Finder or Explorer, a preview of a generated site is one URL away, and an agent reads a running system with the file tools it already has.
+
+The module serves volumes with the HTTP server the JDK has shipped for years, `com.sun.net.httpserver` in the module `jdk.httpserver`.
+With virtual threads it is enough for local tools, previews and agents, with no servlet container and no framework.
+
+=== The handlers
+
+`VolumeHttpHandler` serves a volume read-only, in the manner of the JDK's `SimpleFileServer`:
+
+* Files are sent with a media type from their extension, a `Last-Modified` header from the entry, and an ETag from the entry's hash. A conditional request whose `If-None-Match` matches gets a `304`.
+* Directories are generated HTML listings. A directory requested without a trailing slash is redirected to it, so relative links in pages and listings resolve.
+* The request path below the context path is the volume path. Paths with empty, `.` or `..` segments are refused.
+* `GET` and `HEAD` are served; other methods get a `405`.
+
+`WebDavHandler` extends it into a read-only WebDAV (RFC 4918) share of class 1:
+
+* `OPTIONS` answers `DAV: 1` and the allowed methods.
+* `PROPFIND` answers a `207 Multi-Status` with the resource type, display name, content length, content type, ETag and modification time, as far as the volume knows them. `Depth: infinity` is answered as `1`, so that a client cannot make the server walk a large volume.
+* `GET` and `HEAD` work as in `VolumeHttpHandler`, listings included, so the share also browses in a web browser.
+* Methods that write or lock get a `405`.
+
+That is enough to mount a share in macOS Finder ("Connect to Server"), on Windows (`net use`), on Linux (davfs2) or with rclone, and to read it with any tool.
+
+=== Serving a volume
+
+.Serving a volume (`Serve.java`)
+[source,java]
+----
+include::{booktests}/Serve.java[tag=serve,indent=0]
+----
+<1> A virtual thread per request. Handlers block, and blocking is cheap.
+<2> Browsers read the glossary at `/glossary/`. Each request is a unit of work with a server span.
+<3> WebDAV clients mount the same volume at `/dav/`.
+
+The server binds to the loopback address.
+The handlers do not authenticate, so serving beyond the local machine needs what the JDK server provides for it, an `HttpsServer` and an `Authenticator` on the context, or a proxy in front.
+`Serve`, a main class in the tests, prints the two URLs and serves until Enter is pressed.
+
+=== Reading over HTTP
+
+On the client side, content at a URL is a `Content` like any other:
+
+.Content at a URL (`VolumeBookTests.java`)
+[source,java]
+----
+include::{booktests}/VolumeBookTests.java[tag=fetch,indent=0]
+----
+<1> Nothing is requested until the content is opened, and every open requests it again.
+
+A WebDAV listing is a `PROPFIND` request, which the JDK HTTP client sends like any other method:
+
+.Listing a directory over WebDAV (`VolumeBookTests.java`)
+[source,java]
+----
+include::{booktests}/VolumeBookTests.java[tag=propfind,indent=0]
+----
+<1> Multi-Status: a response per member of the directory.
+
+=== One trace across client and server
+
+`TelemetryHandler` wraps a handler, or `TelemetryHandler.filter(openTelemetry)` is added as a filter of a context, and makes each request a unit of work:
+
+* The trace context is extracted from the request headers with the propagators of the OpenTelemetry instance, so the client's span is the parent of the server's.
+* The server span is named `<method> <route>`, the route being the context path, and carries the attributes of the HTTP semantic conventions: method, route, path, scheme, server and client address, protocol version, user agent, response status and response body size.
+* The instance and the span are current while the wrapped handler runs, so whatever it does, content transfers, resource loads, its own log records, reports to the request.
+* A failure of the handler is recorded on the span. If no response was sent yet, the client gets a `500`; if one was, the connection is dropped instead of completing a response that would look successful.
+* A failure or a `5xx` sets the error status. A `4xx` is the client's error, not the server's, and leaves the status unset.
+
+On the client side, `Content.of(uri)` starts a client span and propagates its context in the request headers.
+Together they make one trace:
+
+.A trace that crosses HTTP (`VolumeBookTests.java`)
+[source,java]
+----
+include::{booktests}/VolumeBookTests.java[tag=trace,indent=0]
+----
+<1> W3C trace context propagation, on both sides: the client injects, the server extracts.
+<2> The server's instance. In a real deployment it is another process with its own instance; here both share one, so the test can see both spans.
+<3> The client's unit of work. Opening the content is a `GET` client span.
+<4> The server span is a child of the client span, in the same trace.
+
+In a test, the setup above is the same every time: a server, an executor, a filter on every context, a client that propagates.
+The runtime's `harness` module packages it in one method, `Harness.inServer`, and its Zephyr Book, _Harness_, covers it.

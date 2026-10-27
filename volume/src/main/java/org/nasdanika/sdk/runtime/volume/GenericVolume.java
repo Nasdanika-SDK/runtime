@@ -179,6 +179,9 @@ public interface GenericVolume<C> {
 			@SuppressWarnings("unchecked")
 			@Override
 			public <U> Optional<U> capability(Class<U> type) {
+				if (writeMapper == null && Writable.class.isAssignableFrom(type)) {
+					return Optional.empty();					
+				}
 				return GenericVolume.this.capability(type).map(c -> {
 					if (c instanceof Writable writable) {
 						return type.cast(writable.adapt(writeMapper));

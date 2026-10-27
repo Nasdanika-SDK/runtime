@@ -1,0 +1,64 @@
+[#reflective-instances]
+== Instances whose type is a reference
+
+`Object` is the reflective instance of a Meta class: no generated interface, no implementation class, no factory.
+It knows its type by reference, and answers about itself through a dozen operations:
+
+[cols="2,5",options="header"]
+|===
+| Operation | What it answers or does
+| `getIdentities()` | Its identities: none for a value object, one or more for an entity
+| `getContainer()`, `getContainmentFeature()` | Where it is contained
+| `get(feature)`, `get(feature, from, count)` | A value, or a range of a many-valued feature without the rest
+| `set`, `add`, `remove`, `unset` | Changes. `unset` restores the unset state, which is not the same as setting a default
+| `size(feature)` | How many values a feature holds: zero for unset
+| `invoke(operation, arguments)` | Calls an operation, implemented elsewhere
+| `getIncomingReferences(references)`, with a range | Who references it, through which references, at which positions
+| `getIncomingReferenceCount(references)` | How many, or -1 when it cannot be known here
+| `isResolved()` | False when it stands for an object that has not been loaded
+|===
+
+An agent gets an interaction surface that can be taught in a paragraph, not a package.
+
+=== The rule that keeps it small
+
+An operation belongs to `Object` only if a consumer cannot compute it from the others and the type without loading data it did not ask for.
+Contents are derivable from the type's containment references and `get`, so there is no operation for contents.
+`size` and the ranged `get` pass the rule, because they answer without fetching every value, and the ranged `get` is what makes a large model usable over a network.
+`isResolved` is the one concession: references cross resources by URI, and something has to represent "not here yet".
+
+=== Classified later
+
+Because the type is a reference, an object can exist before it is classified, and be classified later.
+That is the shape elicitation has: a thing is named before anyone knows what kind of thing it is, refinement proceeds by dividing, an agent proposes a classification and a person corrects it.
+Before classification, values wait in annotations; classification promotes what fits into features and leaves the rest where it was.
+
+[cols="2,3,5",options="header"]
+|===
+| Change | Example | Safety
+| Specialization, to a subtype | `Person` to `Author` | Safe: every feature in scope stays in scope
+| Generalization, to a supertype | `Author` to `Person` | Loses a distinction
+| Reclassification, to an unrelated type | `Person` to `Publisher` | Arbitrary: names may coincide while meanings do not
+|===
+
+Values are never silently dropped.
+A value whose feature falls out of scope moves to an annotation, keeping its feature name and the type that declared it, so a wrong classification can be undone.
+Identity does not come from an identifying attribute, so it survives retyping.
+
+=== What it makes possible
+
+* A vocabulary as a model whose terms are classes and whose permitted values are instances, serving a generated glossary for people and a lookup tool for an agent from one source.
+* A user interface over anything Meta describes, with no generated code.
+* Queries over instances and their types in one statement, because the type is an edge like any other.
+
+=== Status
+
+The operations of `Object` are declared and have no implementation [.sketch]#SKETCH#.
+The obvious implementation is dynamic EMF behind the interface, through the Ecore projection of <<projections>>: EMF provides resources, serialization, change recording and proxy resolution, and callers see a dozen operations instead of thirty.
+
+ifdef::editor-notes[]
+[IMPORTANT,caption="Editor's note"]
+====
+The comments on `Object` in the Xcore speak of an intrinsic `id`, of "six operations", and of a marker recording who classified an object. `Object` has no `id` feature, but `getIdentities()`; it has more than a dozen operations; and it extends nothing, so it has no markers. Decide whether `Object` should extend the core model's `Marked`, or `ModelElement`, and update the comments.
+====
+endif::[]

@@ -1,0 +1,35 @@
+// Defaults for previewing this file on its own; index.adoc and the Maven build set these
+ifndef::booktests[:booktests: ../../../test/java/org/nasdanika/sdk/runtime/volume/book]
+
+[#a-volume]
+== A volume of one's own
+
+Here is a complete read-only volume: a glossary presented as Markdown files, an index and a page per term, linked to each other.
+It is built from a map of terms to definitions, and computes its files once; a volume over a larger source would compute them when asked.
+
+.A glossary as files (`GlossaryVolume.java`)
+[source,java]
+----
+include::{booktests}/GlossaryVolume.java[tag=glossary,indent=0]
+----
+
+Reading it is reading files:
+
+.Reading a volume (`VolumeBookTests.java`)
+[source,java]
+----
+include::{booktests}/VolumeBookTests.java[tag=read,indent=0]
+----
+<1> The hash is known without reading the file. The HTTP handler turns it into an ETag.
+<2> Asking for the content of a missing file succeeds. Opening it fails.
+
+A Markdown viewer renders the glossary as a small site, and an agent with file tools navigates it by following links.
+<<serving>> serves the same volume to browsers and to WebDAV clients.
+
+=== A running JVM as files
+
+The module's tests have a larger example, `JvmModuleVolume`: the modules of a module layer, one file per module, grouped into directories by the segments of their names as a Maven repository groups artifacts, so that `java.base` is `java/base.html`.
+Each page lists what the module requires, exports and provides, with links to the pages of the modules it requires.
+It renders HTML for browsers, or Markdown for agents reading a mounted share, and computes each page on first use, so that sizes and hashes are known.
+
+`JvmVolumeServer`, a main class in the tests, serves the running JVM's own modules both ways, for a browser and for a WebDAV mount.

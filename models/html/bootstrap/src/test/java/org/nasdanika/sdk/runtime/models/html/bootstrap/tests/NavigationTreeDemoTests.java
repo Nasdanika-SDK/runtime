@@ -262,6 +262,7 @@ public class NavigationTreeDemoTests {
 	 */
 	@Test
 	public void testBuilder() {
+		// tag::tree[]
 		NavigationTree tree = new NavigationTree("Family");
 		NavigationTree.Item family = tree.add("Family");
 		NavigationTree.Item members = family.add("Members").open();
@@ -277,6 +278,7 @@ public class NavigationTreeDemoTests {
 		html = BootstrapStructure.generate(tree.build());
 		assertTrue(html.contains("nav-tree-collapsed"), html);
 		assertTrue(!html.contains("Rex"), html);
+		// end::tree[]
 	}
 
 }

@@ -1,6 +1,7 @@
 import org.eclipse.emf.ecore.EPackage;
 import org.nasdanika.sdk.runtime.models.react.services.ReactEPackageProvider;
 
+// tag::module[]
 module org.nasdanika.sdk.runtime.models.react {
 	
 	exports org.nasdanika.sdk.runtime.models.react;
@@ -16,3 +17,4 @@ module org.nasdanika.sdk.runtime.models.react {
 	provides EPackage with ReactEPackageProvider;
 	
 }
+// end::module[]

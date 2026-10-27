@@ -1,0 +1,26 @@
+[colophon]
+== Colophon
+
+*HTML and Bootstrap Models: A Nasdanika Zephyr Book*
+
+Edition {revnumber}, built on {revdate}.
+
+This edition describes two models of the Nasdanika SDK Runtime {runtime-version}: the HTML model, Maven coordinates `{group-id}:model:{runtime-version}`, namespace URI `{nsuri-html}`, and the Bootstrap model, `{group-id}:{artifact-id}:{runtime-version}`, namespace URI `{nsuri}` and the URIs of its `forms` and `components` packages under it.
+Every listing in it is included from the tests of the two modules, which are compiled and run when the book is built, and every block of generated HTML is a file that a test compares with what the generator writes.
+
+Copyright (C) 2026 Pavel Vlasov.
+
+The text of this book is licensed under the https://creativecommons.org/licenses/by/4.0/[Creative Commons Attribution 4.0 International License] (CC BY 4.0).
+You may share and adapt it for any purpose, commercial purposes included, provided you give appropriate credit, provide a link to the license, and indicate if you made changes.
+A suggested credit: "Pavel Vlasov, _HTML and Bootstrap Models: A Nasdanika Zephyr Book_, licensed under CC BY 4.0", with a link to {runtime-repo}.
+
+The code is licensed under the Eclipse Public License 2.0, the license of the runtime.
+In addition, you may use the code of this book's listings in your own programs and documentation without asking for permission and without attribution.
+
+Neither license covers the Nasdanika name or logo: CC BY 4.0 grants no trademark rights.
+
+Bootstrap is released by its authors under the MIT License; Bootswatch is by Thomas Park, under the MIT License. HTML is a specification of the WHATWG. Eclipse and EMF are trademarks of the Eclipse Foundation. Java is a trademark of Oracle and its affiliates. React is a trademark of Meta Platforms. Other names may be trademarks of their owners. Their use here identifies the technologies the models relate to and implies no endorsement.
+
+The source of this book and the Bootstrap model's tests are at {runtime-repo}, in `models/html/bootstrap`; the HTML model is in `models/html/model`.
+
+Typeset with Asciidoctor PDF in Noto Sans and M+ 1mn, in the look of the Nasdanika Zephyr Books, which is itself Bootswatch's Zephyr theme.

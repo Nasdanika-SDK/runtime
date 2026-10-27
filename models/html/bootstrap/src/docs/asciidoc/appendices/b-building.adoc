@@ -1,0 +1,21 @@
+[appendix]
+[#building-this-book]
+== Building this book
+
+This book is AsciiDoc in `models/html/bootstrap/src/docs/asciidoc`, built with the Bootstrap model after its tests have passed:
+
+[source,text]
+----
+mvn -pl models/html/bootstrap -am verify                          # the model, its tests and this book
+mvn -pl models/html/bootstrap verify -Dzephyr.editor-notes=false  # without editor's notes
+mvn -pl models/html/bootstrap verify -Dasciidoctor.skip=true      # without the book
+----
+
+The PDF and the single-page HTML are written to `target/book` and attached to the Bootstrap model's artifact with the classifier `book`; the test sources are attached with the classifier `test-sources`.
+The look comes from the runtime's `doc/zephyr` directory, shared by all the Nasdanika Zephyr Books.
+
+Listings are tagged regions of the tests in `src/test/java/org/nasdanika/sdk/runtime/models/html/bootstrap/tests`, of the HTML model's tests in `models/html/model/src/test/java/org/nasdanika/sdk/runtime/models/html/tests`, and of the module declarations.
+A listing line holds at most 96 characters, and a warning fails the build.
+
+The HTML after each Bootstrap listing is a file in `src/test/resources/expected`, which the test compares with what the generator writes.
+The test also writes what it generated to `target/expected-actual`; to change an expectation, review the difference between the two files, and copy the actual one over the expected one.

@@ -54,10 +54,17 @@ public class BootstrapGeneratorTests {
 
 	@Test
 	public void testGrid() {
+		// tag::grid[]
 		var container = with(CORE.createContainer(), c -> c.setFluidUntil(Breakpoint.MD));
 		var row = with(CORE.createRow(), r -> {
-			r.getColumnsPerRow().add(with(CORE.createRowColumns(), rc -> { rc.setBreakpoint(Breakpoint.XS); rc.setCount(1); }));
-			r.getColumnsPerRow().add(with(CORE.createRowColumns(), rc -> { rc.setBreakpoint(Breakpoint.MD); rc.setCount(3); }));
+			r.getColumnsPerRow().add(with(CORE.createRowColumns(), rc -> {
+				rc.setBreakpoint(Breakpoint.XS);
+				rc.setCount(1);
+			}));
+			r.getColumnsPerRow().add(with(CORE.createRowColumns(), rc -> {
+				rc.setBreakpoint(Breakpoint.MD);
+				rc.setCount(3);
+			}));
 			r.getClasses().addAll(List.of("g-3", "mb-3"));
 		});
 		container.getRows().add(row);
@@ -67,7 +74,10 @@ public class BootstrapGeneratorTests {
 			c.getChildren().add(Bootstrap.text("First"));
 		}));
 		row.getColumns().add(with(CORE.createCol(), c -> {
-			c.getSizes().add(with(CORE.createColumnSize(), s -> { s.setBreakpoint(Breakpoint.MD); s.setAuto(true); }));
+			c.getSizes().add(with(CORE.createColumnSize(), s -> {
+				s.setBreakpoint(Breakpoint.MD);
+				s.setAuto(true);
+			}));
 			c.getStyle().put("min-height", "4rem");
 			c.getChildren().add(with(CORE.createStack(), s -> {
 				s.setDirection(Direction.HORIZONTAL);
@@ -92,6 +102,7 @@ public class BootstrapGeneratorTests {
 				  );
 				}
 				""", generate(container, true));
+		// end::grid[]
 	}
 
 	@Test

@@ -1,0 +1,35 @@
+[#meaning-not-markup]
+== Meaning, not markup
+
+Bootstrap is markup with conventions: a modal is a `div` with the class `modal`, containing a `div` with `modal-dialog`, containing a `div` with `modal-content`, with a header, a title whose id the modal's `aria-labelledby` names, a close button with `data-bs-dismiss`, and a button somewhere else whose `data-bs-target` names the modal's id.
+Getting all of that right by hand, every time, is what makes Bootstrap pages fragile.
+
+The Bootstrap model describes what a component means, not its markup.
+A modal has a header with a title and a close button, a body, a size, and whether it is centered and scrollable.
+A toggle opens it, by reference.
+
+=== Expanded when written
+
+How meaning becomes elements, classes, ARIA and data attributes, and the ids that Bootstrap's JavaScript connects, is the business of `BootstrapStructure`.
+It is the one place that knows Bootstrap's markup, so the pages it writes are consistent, and a change to how a component is written is a change in one place.
+
+Components that are one element are described by annotations on their classes in the model: the tag, the classes every element of the class has, and patterns that turn features into classes, `btn-{}` for the variant of a button.
+Components that are more than one element, modals, accordions, dropdowns, form checks, are expanded to plain HTML by `BootstrapStructure`.
+Components that refer to each other by id get ids generated from their position in the model when they have none of their own.
+
+=== One model, two renderings
+
+`BootstrapStructure` is used by the HTML generator for static pages, and by the React generator of the runtime's React model for components: a Bootstrap element is an intrinsic of JSX there, rendered by the same structure.
+One model of a page renders both ways, as a static page and inside an interactive application, and means the same markup in both.
+
+=== Static and interactive
+
+Bootstrap appears twice in the runtime, for two ways of delivering a page.
+The Bootstrap model of this book is for pages written as HTML, static or served, where Bootstrap's own JavaScript does the little that is interactive: dropdowns, modals, tooltips.
+The React Bootstrap model, in the React modules, describes the components of the React Bootstrap library for applications.
+Both model the meaning of a component, a modal with a title and a size, not its markup.
+
+=== Themes
+
+Bootswatch themes are a value of a document: one enumeration literal, from `bootstrap` for Bootstrap's own look to `zephyr`, the look of this book.
+A page model does not change with its theme, so the same site can be generated in all of them, as the module's demo does.

@@ -11,6 +11,18 @@
     <artifactId>model</artifactId>
     <packaging>jar</packaging>
     <name>Nasdanika SDK Runtime React Model</name>
+    <description>
+        React components, hooks, contexts and JSX as a model on the runtime's TypeScript model,
+        and a generator that writes JSX or createElement calls with managed imports: browser
+        applications generated from Java with no npm and no build step. The Nasdanika Zephyr Book
+        of the TypeScript, React, React Bootstrap and React Flow models, "TypeScript and React
+        Models", is built from src/docs/asciidoc with listings from their tests.
+    </description>
+
+    <properties>
+        <!-- The Zephyr Book's file name: the book covers the TypeScript and React models -->
+        <zephyr.book.name>typescript-react-${project.version}-book</zephyr.book.name>
+    </properties>
 
     <build>
         <plugins>

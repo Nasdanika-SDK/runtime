@@ -1,0 +1,38 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<svg xmlns="http://www.w3.org/2000/svg" font-family="Noto Sans, Helvetica, Arial, sans-serif" font-size="12" width="399" height="292" viewBox="0 0 399 292">
+  <defs>
+    <marker id="arrow" viewBox="0 0 10 10" refX="10" refY="5" markerWidth="8" markerHeight="8" orient="auto">
+      <path fill="none" stroke="#333333" d="M 0 0 L 10 5 L 0 10"/>
+    </marker>
+  </defs>
+  <g>
+    <title>1985, Harold Abelson, Gerald Jay Sussman</title>
+    <rect fill="#dae8fc" stroke="#6c8ebf" x="22.0" y="190.0" width="367.0" height="36.0" rx="6.0"/>
+    <text text-anchor="middle" x="205.5" y="212">Structure and Interpretation of Computer Programs</text>
+  </g>
+  <g>
+    <title>1968, Donald Knuth</title>
+    <rect fill="#dae8fc" stroke="#6c8ebf" x="85.0" y="246.0" width="241.0" height="36.0" rx="6.0"/>
+    <text text-anchor="middle" x="205.5" y="268">The Art of Computer Programming</text>
+  </g>
+  <g>
+    <title>1994, Erich Gamma, Richard Helm, Ralph Johnson, John Vlissides</title>
+    <rect fill="#dae8fc" stroke="#6c8ebf" x="141.0" y="134.0" width="129.0" height="36.0" rx="6.0"/>
+    <text text-anchor="middle" x="205.5" y="156">Design Patterns</text>
+  </g>
+  <g>
+    <title>2003, Eric Evans</title>
+    <rect fill="#dae8fc" stroke="#6c8ebf" x="195.0" y="78.0" width="164.0" height="36.0" rx="6.0"/>
+    <text text-anchor="middle" x="277" y="100">Domain-Driven Design</text>
+  </g>
+  <g>
+    <title>2008, Dave Steinberg, Frank Budinsky, Marcelo Paternostro, Ed Merks</title>
+    <rect fill="#dae8fc" stroke="#6c8ebf" x="103.7" y="22.0" width="241.0" height="36.0" rx="6.0"/>
+    <text text-anchor="middle" x="224.2" y="44">EMF: Eclipse Modeling Framework</text>
+  </g>
+  <polyline fill="none" stroke="#333333" marker-end="url(#arrow)" points="205.5,226 205.5,246"/>
+  <polyline fill="none" stroke="#333333" marker-end="url(#arrow)" points="205.5,170 205.5,190"/>
+  <polyline fill="none" stroke="#333333" marker-end="url(#arrow)" points="277,114 277,124 227,124 227,134"/>
+  <polyline fill="none" stroke="#333333" marker-end="url(#arrow)" points="184,58 184,134"/>
+  <polyline fill="none" stroke="#333333" marker-end="url(#arrow)" points="264.3,58 264.3,68 277,68 277,78"/>
+</svg>

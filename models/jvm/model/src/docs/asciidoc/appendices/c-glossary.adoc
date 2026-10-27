@@ -1,0 +1,27 @@
+[appendix]
+[#glossary]
+== Glossary
+
+Automatic module::
+A jar without a module descriptor on the module path. Its name comes from `Automatic-Module-Name` in its manifest, or from the file name. A module that reads one automatic module reads all of them.
+
+Binary name::
+The name of a type as the JVM knows it: `java.util.Map$Entry` for a nested type, `[I` for an array of `int`.
+
+Class file version::
+The major version in a class file's header, such as 69 for Java 25.
+
+Descriptor::
+The JVM's erased form of a type, `Ljava/lang/String;`, or of a method's parameters and return type, `(I)Ljava/lang/Object;`.
+
+Layer::
+A module layer: a set of resolved modules and the class loaders that serve them. The boot layer is the first.
+
+Readability::
+The relation "module A can see the public types of the packages that module B exports to it", computed by resolution from `requires`, `requires transitive`, service binding and automatic modules.
+
+Signature::
+The class file attribute that records generic types, such as `<T:Ljava/lang/Object;>(TT;)Ljava/util/Optional<TT;>;`. Data, not identity.
+
+Unnamed module::
+The module of everything a class loader loads from the class path. Every class loader has one.

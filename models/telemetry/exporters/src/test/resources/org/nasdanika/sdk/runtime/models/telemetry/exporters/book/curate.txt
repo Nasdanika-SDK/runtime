@@ -1,0 +1,9 @@
+Curate the shelf
+  * created Library 'A Modeler's Shelf'
+  ResourceSetContributor.configure
+  URIHandler.write
+  Resource.save
+  Correct the year
+    * Book 'Domain-Driven Design'.year = 2004
+    URIHandler.write
+    Resource.save

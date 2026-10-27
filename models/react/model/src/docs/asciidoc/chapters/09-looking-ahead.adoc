@@ -1,0 +1,38 @@
+[#looking-ahead]
+== Looking ahead
+
+Everything in this chapter is [.planned]#PLANNED#.
+
+=== A UI model, drawn
+
+A model of user interfaces that does not depend on a framework, drawn in Draw.io with a library of Bootstrap shapes: one drawing, several renderers.
+Its concepts map onto the React model in a transformation, not by inheritance, because React is a technology of rendering, and a drawn interface should not take React's shape while it is being drawn.
+
+=== The polymorphic UI
+
+A browser application that renders any model, and live telemetry, from the runtime's HTTP server: views chosen by the class of the element they show and the format asked for, generated with these models.
+
+=== Vocabularies as npm packages
+
+Transformations into the TypeScript model from EMF packages and from vocabularies of the runtime's Meta model, with type information at run time, published as npm packages with their data (<<javascript-as-bytecode>>).
+
+ifdef::editor-notes[]
+[IMPORTANT,caption="Editor's note"]
+====
+The module `models/typescript/ecore`, which generates TypeScript packages from EMF packages, is commented out of the build and still uses the previous generation's package `org.nasdanika.models.typescript.ecore` and module `org.nasdanika.common`.
+====
+endif::[]
+
+=== One source, many audiences
+
+Generated output often has to vary by coordinate: jurisdiction, language, tier, audience.
+Which elements apply where belongs to the source model, and the request to generate for a coordinate to the transformation; only the receipt belongs to the TypeScript model: a `Module` will record the coordinate that produced it, next to its markers.
+Generic packages are the published default, and variants are generated on demand for consumers who exist.
+
+=== Vendored modules
+
+React and the libraries copied into the application's files, with the import map pointing at the copies, for offline use and closed networks.
+
+=== Documentation for npm users
+
+Generated documentation of packages for people who use npm: what the modules are for, shown in TypeScript, with EMF mentioned rarely.

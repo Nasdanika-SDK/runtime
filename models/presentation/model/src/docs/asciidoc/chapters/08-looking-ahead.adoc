@@ -1,0 +1,45 @@
+[#looking-ahead]
+== Looking ahead
+
+Everything in this chapter is [.planned]#PLANNED#.
+
+=== Loaders and generators
+
+Each format is a loader and a generator over this model, not a model with ambitions of its own:
+
+* *Draw.io*, through the runtime's Draw.io model, which already reads and writes Draw.io documents: a page per slide.
+* *PowerPoint and Visio*, on models of their schemas, PresentationML and DrawingML, and VSDX, rather than on a library of the format; postponed on 2026-10-25.
+* *PlantUML*, as an input: diagrams written as text, arriving as editable shapes.
+* *PDF*, for the archive, and *web pages*, for sites, generated with the runtime's HTML and SVG models.
+
+=== The notes convention
+
+A YAML or JSON block in the notes read on load into attributes and what a slide depicts, and written back on save (<<a-slide-is-a-diagram>>).
+
+=== Applications
+
+*Visio to Draw.io.*
+Enterprises hold large estates of Visio drawings: networks, processes, floor plans, flows of data, maps of integration, accumulated over decades and locked behind licenses that most of the people who need to read them do not have.
+Through this model the migration is a batch job: load the drawings, keep shape data as attributes and what shapes depict, emit Draw.io, review the result as a comparison of models, and publish the estate as a site that can be searched.
+What arrives on the other side is the first time the estate can be queried.
+
+*One generator, many renderings.*
+A quarterly architecture review generated from a model of the architecture comes out as PowerPoint for the meeting, PDF for the record, Draw.io for the wiki, and a page for the portal: one model, four renderings, and no divergence between them.
+
+*Mining the estate of decks.*
+The decks an organization already has document its systems, programs, vendors and intentions.
+Load them, extract shapes, text and connectors, and mine them into models of the architecture or the work.
+Even the shallow result is useful: what is mentioned, how often, by whom, and where the descriptions disagree.
+
+*Presentations as documentation sites.*
+Every slide a page, every shape an anchor, notes as the content of the page, connectors as links, and markers pointing back to the file.
+
+*One deck, many audiences.*
+The board version, the engineering version, the client version, the version without the numbers: audience becomes a decision of rendering over one model.
+
+*Review, comparison and merge.*
+A comparison of models answers "what changed in this deck" with added slides and connections that point elsewhere, which makes a deck reviewable in a pull request.
+A merge of three versions, the previous generation as the base, the fresh generation and the deck a person edited, keeps a generated deck alive past its second run.
+
+*Layout.*
+With bounds, ports, waypoints and topology in a neutral model, ELK lays out the contents of a slide, as it lays out diagrams, which is what makes a generated deck readable instead of a grid of boxes.

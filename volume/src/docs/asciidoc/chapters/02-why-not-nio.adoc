@@ -1,0 +1,25 @@
+[#why-not-nio]
+== Why not NIO
+
+The JDK has a file system abstraction, `java.nio.file`, and it is a pleasure to consume.
+It is expensive to implement.
+A `FileSystemProvider` needs a `Path` class with `resolve`, `relativize`, `normalize` and `toUri`, channels, attribute views, a registry of providers keyed by URI scheme, and care wherever the paths of two file systems meet.
+
+The runtime implements file systems often: over models, over Git, over REST APIs, as overlays.
+So it owns a small interface for implementing them, and uses NIO for consuming: any NIO file system, the default one, a zip or an in-memory one, becomes a volume through one adapter (<<directories>>).
+
+=== Prior art
+
+This is where prior art converged:
+
+* *Go's `io/fs`* is almost the same design: an interface of a few methods, string paths with strict rules, and optional interfaces discovered by type assertion.
+* *Python's fsspec* has string paths and dozens of backends, from local files to cloud storage.
+* *Hadoop's `FileSystem`, Apache Commons VFS and Eclipse EFS* made the same decision in Java: a file system interface of their own, with NIO or `java.io` as one backend among many.
+
+Commons VFS is also the reminder to keep the core small.
+A volume has five methods; everything else is an optional capability.
+
+=== Strings, not Path
+
+A path in a volume is a string, validated once at the boundary, with Go's rules: slash-separated, relative to the root, with no leading or trailing slash and no empty, `.` or `..` segments; the root is `.`.
+There is no `Path` class to implement, and URIs appear only at the edges, where a volume meets EMF or HTTP.

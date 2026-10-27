@@ -1,0 +1,22 @@
+[#looking-ahead]
+== Looking ahead
+
+Everything in this chapter is [.planned]#PLANNED#.
+
+=== Documents
+
+A document model as a pivot: structure in the model, text in a named format.
+Markdown comes in through a ported model of its syntax, and documents go out as AsciiDoc, and as Bootstrap pages through the models of this book.
+
+=== Documentation sites for models
+
+A page per element of any model built on the runtime's core model: its documentation, its neighbors, links to where it came from, and a diagram of its neighborhood, generated as SVG, with every shape a link.
+The navigation trees of <<navigation-trees>> are their side panels.
+
+=== Pages that work offline
+
+The stylesheets and scripts of Bootstrap, Bootswatch and Bootstrap Icons copied into the site, with the pages pointing at the copies, for offline use and closed networks.
+
+=== The polymorphic UI
+
+Views chosen by the class of the element they show and the format asked for, assembled into pages and applications, static with this book's models and interactive with React's.

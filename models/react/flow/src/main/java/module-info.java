@@ -1,6 +1,7 @@
 import org.eclipse.emf.ecore.EPackage;
 import org.nasdanika.sdk.runtime.models.react.flow.services.FlowEPackageProvider;
 
+// tag::module[]
 module org.nasdanika.sdk.runtime.models.react.flow {
 
 	exports org.nasdanika.sdk.runtime.models.react.flow;
@@ -13,3 +14,4 @@ module org.nasdanika.sdk.runtime.models.react.flow {
 	provides EPackage with FlowEPackageProvider;
 
 }
+// end::module[]

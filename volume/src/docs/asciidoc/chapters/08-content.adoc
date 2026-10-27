@@ -1,0 +1,52 @@
+// Defaults for previewing this file on its own; index.adoc and the Maven build set these
+ifndef::booktests[:booktests: ../../../test/java/org/nasdanika/sdk/runtime/volume/book]
+
+[#content]
+== Content
+
+`Content` has one abstract method, `openStream()`, so a lambda is a content, as the glossary's missing files are.
+Its default methods give the rest: `writeTo(out)`, which pulls and copies unless the content can push; `length()` and `hash()`, empty unless known; `repeatable()`; and `publisher()`, a `Flow.Publisher` of byte buffers for the JDK HTTP client's `BodyPublishers.fromPublisher`.
+
+=== Factories
+
+[cols="2,5",options="header"]
+|===
+| Factory | Content
+| `Content.of(bytes)` | In memory, copied, with a known length
+| `Content.of(text, charset)` | Text, encoded when read
+| `Content.of(supplier)` | From a stream supplier, called on every open
+| `Content.of(uri)` | At a URI, requested on every open: HTTP and HTTPS through the JDK HTTP client, other schemes through `URL`. A 404 is a `NoSuchFileException`
+| `Content.once(stream)` | A stream someone handed over. Not repeatable
+| `Content.ofWriter(writer)` | Produced by a closure that writes to an output stream, when the content is read
+| `Content.empty()` | No bytes
+|===
+
+.Content (`VolumeBookTests.java`)
+[source,java]
+----
+include::{booktests}/VolumeBookTests.java[tag=content,indent=0]
+----
+<1> In memory: the length is known without reading.
+<2> Creating content produced by a writer runs nothing.
+<3> Pushing runs the writer on the consumer's stream.
+<4> Pulling runs it again, through a pipe. Each read is a run.
+<5> A consumer that needs to read a one-shot content twice buffers it first.
+
+=== Content produced by a writer
+
+`Content.ofWriter` turns a closure that writes to an output stream into content without running it:
+
+* `writeTo(out)` runs the writer on the consumer's stream, with no pipe and no thread.
+* `openStream()` returns a lazy pipe. The writer starts on a virtual thread at the first read, and writes bounded chunks into a queue that the reader drains. A failure of the writer is rethrown to the reader, and a reader that closes early cancels the writer.
+* Each read runs the writer again, so the content is repeatable as long as the writer is. `ofWriter(writer, false)` declares a writer that is not.
+
+Copying a model to another volume takes three lines, and the model is serialized straight into the target's stream:
+
+.A model as content (`Models.java`)
+[source,java]
+----
+include::{booktests}/Models.java[tag=content,indent=0]
+----
+<1> Nothing is serialized here. The content is a promise to save the resource when it is read.
+<2> Writing is a capability: a read-only volume refuses it by not having it.
+<3> The volume reads the content, which runs the save on the volume's own stream.

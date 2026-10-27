@@ -11,6 +11,17 @@
     <artifactId>model</artifactId>
     <packaging>jar</packaging>
     <name>Nasdanika SDK Runtime JVM Model</name>
+    <description>
+        A model of what a Java virtual machine can name: layers, class loaders, modules, packages,
+        types, methods, fields and parameters, identified by binary names and descriptors. Its
+        Nasdanika Zephyr Book, "JVM Model", is built from src/docs/asciidoc with listings from the
+        tests, among them a snapshot of the running module layer.
+    </description>
+
+    <properties>
+        <!-- The Zephyr Book's file name: the artifactId, model, says too little -->
+        <zephyr.book.name>jvm-model-${project.version}-book</zephyr.book.name>
+    </properties>
 
     <build>
         <plugins>
@@ -41,5 +52,11 @@
             <groupId>org.eclipse.emf</groupId>
             <artifactId>org.eclipse.emf.ecore.xcore.lib</artifactId>
         </dependency>
+		<!-- The Zephyr Book saves a snapshot as XMI -->
+		<dependency>
+		    <groupId>org.eclipse.emf</groupId>
+		    <artifactId>org.eclipse.emf.ecore.xmi</artifactId>
+		    <scope>test</scope>
+		</dependency>
     </dependencies>
 </project>

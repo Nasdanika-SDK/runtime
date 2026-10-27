@@ -1,0 +1,47 @@
+[preface]
+== Preface
+
+This book is about two small abstractions of the Nasdanika SDK Runtime.
+A volume is a tree of files and directories behind five methods, wherever the files live: on a disk, in a zip, in memory, in a remote system with a file-shaped API, or nowhere at all, computed from a model or a running JVM.
+A content is the bytes of a file, as a source that can be read more than once and does nothing until it is read.
+
+Around them, the module has what makes them useful: a volume over any NIO directory, adapters between kinds of content, an EMF URI handler that stores models in volumes, and handlers that serve volumes over HTTP and WebDAV, each request in one trace with its client.
+
+The first part of the book is the why: files as the meeting point of models, people and agents, why the runtime does not implement NIO's file system providers, and why bytes are content and not streams.
+The second part is the how, for Java developers.
+The third says what comes next.
+
+=== Who this book is for
+
+*Java developers* who store models or generated files somewhere other than a working directory, or who want a model, a data set or a running system to be readable as files: by a browser, a mounted drive, or an agent with file tools.
+
+*Writers of backends* for remote systems with file-shaped APIs, who want to implement a file system in an afternoon.
+
+=== A book that stands on its own
+
+This book is one of the Nasdanika Zephyr Books: in-depth manuals, one per module of the Nasdanika SDK Runtime, in the manner of IBM Redbooks.
+_Harness_, the book of the module that wraps the server of this one for tests, is close to it.
+You do not need it, or any other book of the series, or the Nasdanika SDK Runtime book, to read this one: where the books touch, this one repeats what you need.
+
+The series is named after the Bootswatch theme it is styled with, Zephyr, and has nothing to do with the Zephyr real-time operating system or with SmartBear's Zephyr test management.
+
+=== What you need
+
+* *A JDK for Java 25* and *Maven 3.9.16 or later*.
+* The module is `org.nasdanika.sdk.runtime.volume`, with the Maven coordinates `{group-id}:{artifact-id}:{runtime-version}`.
+* For <<models-in-volumes>>, some familiarity with EMF's resources and URIs; for <<serving>> and <<telemetry-of-transfers>>, with HTTP and OpenTelemetry.
+
+=== Conventions
+
+* *Every listing is included from a test* of the module and compiled and run when the book is built. Callouts, such as <1>, explain the lines they mark.
+* *Status labels* mark what this edition does not have yet: [.available]#AVAILABLE# for what is built, where a table mixes the two, [.planned]#PLANNED# for designed but not built, [.sketch]#SKETCH# for partly built.
+* *Voice.* I write in the first person.
+
+ifdef::editor-notes[]
+[IMPORTANT,caption="Editor's note"]
+====
+Editor's notes record inconsistencies between the module and its documentation found while writing. They are shown in builds for the author and left out of published editions.
+
+The module had no readme. Its documentation was the chapters "Volumes and content" and "Serving over HTTP and WebDAV" of the Nasdanika SDK Runtime book, whose examples use the book's library model; this book has its own example, a glossary, so that its tests need only the module.
+====
+endif::[]

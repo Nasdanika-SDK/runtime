@@ -1,3 +1,4 @@
+// tag::module[]
 module org.nasdanika.sdk.runtime.models.telemetry.exporters {
 
 	exports org.nasdanika.sdk.runtime.models.telemetry.exporters;
@@ -13,3 +14,4 @@ module org.nasdanika.sdk.runtime.models.telemetry.exporters {
 	requires transitive io.opentelemetry.sdk.metrics;
 
 }
+// end::module[]

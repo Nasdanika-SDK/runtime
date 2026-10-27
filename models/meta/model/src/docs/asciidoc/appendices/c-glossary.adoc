@@ -1,0 +1,30 @@
+[appendix]
+[#glossary]
+== Glossary
+
+Annotation::
+Details keyed by the URI of their owner, carrying what a source expressed and Meta does not.
+
+Bounded context::
+In Domain-Driven Design, a boundary within which a model and its words have one meaning.
+
+Flattening::
+A transformation of a package into one whose classes declare everything they inherit.
+
+Harvester::
+A loader that reads a vocabulary from where it is already written down, such as a database schema or an XML Schema.
+
+Identifying attribute::
+An attribute whose value identifies an instance, and which references may cite.
+
+Metacircular::
+Able to describe itself: Meta's package of classes can be written in Meta.
+
+Projection::
+A transformation of a vocabulary into a form a consumer needs: a glossary, an Ecore package, TypeScript, a JSON Schema.
+
+Published language::
+In Domain-Driven Design, a documented, shared vocabulary that bounded contexts translate into and out of.
+
+Vocabulary::
+A Meta package: the terms of a domain, their definitions, types and relations.

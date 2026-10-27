@@ -1,0 +1,54 @@
+// Defaults for previewing this file on its own; index.adoc and the Maven build set these
+ifndef::booktests[:booktests: ../../../test/java/org/nasdanika/sdk/runtime/models/telemetry/exporters/book]
+
+[#recording-changes]
+== Recording changes
+
+Change recording is EMF's, extended so that recorded changes know their spans.
+`Changes.record(target, body)` records the changes the body makes to a resource set, a resource or an object, and hands the description to the sink that is current in the OpenTelemetry context.
+The span exporter is such a sink: it puts each description into the span it was recorded in.
+
+=== The model that changes
+
+The unit of work of this chapter curates a library.
+The library is a small dynamic EMF package, built in the test so that the book needs no generated model of its own: a `Library` with a `name` and `books`, and a `Book` with a `name` and a `year`.
+Any EMF model records the same way.
+
+=== A unit of work
+
+.A unit of work whose telemetry and changes are saved as models (`Recorder.java`)
+[source,java]
+----
+include::{booktests}/Recorder.java[tag=record,indent=0]
+----
+<1> The telemetry resources live in a resource set of their own, created before the instance is made current, so that saving them at shutdown is not itself traced.
+<2> The SDK is the unit of work's instance. Everything below reports to it.
+<3> The span exporter becomes the sink of recorded changes for the unit of work.
+<4> Creating the library and saving it is recorded in the current span, "Curate the shelf".
+<5> Correcting the year is recorded in its own span, so the change lands there.
+<6> Closing the SDK exports what is pending and saves `traces.xml`, `logs.xml` and `metrics.xml`.
+
+=== What is stored
+
+EMF's change recorder produces a description that undoes the changes.
+The runtime stores one that describes them forward, detached from the model:
+
+* Objects added in the body are copied into the description, as objects to attach.
+* Objects removed in the body, and not added back, are moved into the description, so their state when they were removed is kept for audit.
+* Other objects are referenced by proxies with their URIs, so the description can be saved in a resource of another resource set, and resolves to the model wherever the model is saved.
+
+The description, its feature changes and its resource changes reference the spans that were current when they were created: the description the span current at the start of the recording, a feature change the span in which the feature of the object was first changed.
+
+=== When nothing is recorded
+
+Nothing is recorded without a current sink, or outside a sampled span.
+The same code runs unchanged in a unit of work that does not record, and costs nothing there.
+
+ifdef::editor-notes[]
+[IMPORTANT,caption="Editor's note"]
+====
+`Recording` (<<recording>>) does not make its span exporter the sink of recorded changes, and does not expose it, so a unit of work that records changes builds the SDK by hand, as this chapter does. Consider making `Recording.makeCurrent()` also make `Changes` current, or adding a getter for the span exporter.
+
+Writing this book found a defect in the exporters: when the telemetry packages were first initialized on an export thread of the SDK, such as the batch span processor's, their initialization failed with a `NullPointerException`, because EMF's global package registry delegates by the thread's context class loader and those threads have none, and the classes stayed broken for the life of the JVM. `Recording` and the launcher did not see it, because they configure a resource set first. It is fixed: `AbstractModelExporter` initializes the packages when it is loaded. `TelemetryBookTests.consumer`, run on its own, is its test.
+====
+endif::[]

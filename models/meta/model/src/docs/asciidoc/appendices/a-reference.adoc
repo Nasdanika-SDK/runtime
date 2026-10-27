@@ -1,0 +1,41 @@
+[appendix]
+[#reference]
+== Reference
+
+=== Classifiers
+
+[cols="2,5",options="header"]
+|===
+| Classifier | What it is
+| `ModelElement` | Abstract base of Meta's elements, on the core model's `NamedElement`; contains annotations
+| `Annotation` | Details keyed by a source URI
+| `Package` | A namespace of classifiers with a namespace URI, a prefix and a version; the unit of publication
+| `Classifier` | Abstract base of classes, data types and enumerations; contains type parameters
+| `Class` | A type with features and operations, possibly abstract, with supertypes
+| `DataType` | A named scalar type, with its representation and source type
+| `Enum`, `EnumLiteral` | An enumeration and its literals, with serialized values and ordinals
+| `TypedElement` | Abstract: a type and a multiplicity
+| `Feature` | Abstract: state, possibly derived or read-only, with a default value
+| `Attribute` | A feature of a primitive or data type, possibly identifying
+| `Reference` | A feature of a class type: containment, opposite and keys
+| `Operation`, `Parameter` | A signature of behavior, and its parameters
+| `TypeParameter` | A type parameter with a bound and a default
+| `TypeReference` and its subclasses | A type in a type position (<<the-model>>)
+| `Object` | The reflective instance of a class; operations declared, not implemented
+| `IncomingReference` | Who references an object, through what, and where
+|===
+
+=== Primitive kinds
+
+`STRING`, `NUMBER`, `BOOLEAN`, `BIGINT`, `DATE`, `TIME`, `DATE_TIME`, `DURATION`, `BINARY`, `ANY`, `NULL`, `VOID`.
+
+=== Multiplicity
+
+[cols="2,2,3",options="header"]
+|===
+| `lowerBound` | `upperBound` | Meaning
+| 0 | 1 | Optional, single-valued: the default
+| 1 | 1 | Required
+| 0 | -1 | Any number
+| 1 | -1 | At least one
+|===

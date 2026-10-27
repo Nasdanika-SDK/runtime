@@ -1,0 +1,35 @@
+[#federated]
+== Federated by design
+
+There is no server and no central repository.
+A vocabulary is files in Git, or an artifact published to Maven Central or npm, and packages reference each other by namespace URI.
+A team owns its vocabulary and refers to another team's without coordinating a release, and gets what a catalog cannot give:
+
+* *Branching.* A proposed change to a term, reviewed as a pull request, with a diff that shows which features moved.
+* *History.* The same history the code has, with the same tools.
+* *Ownership at the edges.* Nobody administers the whole graph.
+* *Immutable snapshots.* What a term meant last year is an install, not an investigation.
+
+=== Directly on the core model
+
+Meta sits directly on the runtime's core model, and on nothing else.
+What it needs from below is identity, documentation as structure and markers.
+That is deliberate: Meta is the foundation of every package generated from it, and a browser application should not drag a governance model in to render a list of customers, nor an agent pay for vocabulary it does not use in its context window on every call.
+Richer variants extend Meta, not the other way around.
+
+=== The landscape
+
+[cols="2,3,4",options="header"]
+|===
+| Camp | Examples | What it leaves undone
+| Industry data models | Licensed enterprise data models | Content you license, not a vocabulary you own; thousands of entities
+| Standards | schema.org, FHIR, FIBO, ISO 20022 | Good content, delivered as OWL files, PDFs and spreadsheets with little tooling. Sources for Meta, not rivals
+| Data catalogs | Collibra, Alation, Atlan | Organized around where data lives; the meaning stays thin, and the graph is central and rented
+| Semantic layers | dbt, Cube, LookML | Analytics only: metrics, dimensions and joins, with no ownership or lifecycle
+| Ontology platforms | Palantir Foundry | Has the whole thing and keeps it: the ontology does not leave the platform
+| Modeling tools | Sparx EA, erwin, MagicDraw | The desktop era, weak federation, and the output is a document
+| The actual incumbent | Spreadsheets and wiki tables | Drift within weeks, cannot be queried, and are invisible to an agent
+|===
+
+What is different here is not the part about classes and features, which everybody has.
+It is the combination: composition with the other models of the runtime, federation without a server, documentation as structure, and portability, a vocabulary reaching a browser and an agent's context as a typed package, without a JVM and without a platform.

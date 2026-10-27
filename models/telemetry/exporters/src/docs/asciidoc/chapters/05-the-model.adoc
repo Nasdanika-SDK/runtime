@@ -1,0 +1,53 @@
+[#the-model]
+== The model
+
+The model is four EMF packages, one per part of OTLP:
+
+[cols="1,4",options="header"]
+|===
+| Package | Contents
+| `telemetry` | `Resource`, the entity that produced the signals; `InstrumentationScope`; and typed attribute values, `KeyValue` and `AnyValue`
+| `traces` | `TracesData`, `ResourceSpans`, `ScopeSpans`, `Span`, `SpanEvent`, `SpanLink`, `SpanStatus`, `SpanReference`, and the change recording classes `ChangeDescription`, `FeatureChange` and `ResourceChange`
+| `logs` | `LogsData`, `ResourceLogs`, `ScopeLogs`, `LogRecord`, `SeverityNumber`
+| `metrics` | `MetricsData`, `ResourceMetrics`, `ScopeMetrics`, the metrics `Gauge`, `Sum`, `Histogram`, `ExponentialHistogram` and `Summary`, their data points, and `Exemplar`
+|===
+
+The namespace URIs are `{nsuri}`, `{nsuri}/traces`, `{nsuri}/logs` and `{nsuri}/metrics`.
+
+=== The shape of OTLP
+
+Every signal has the same three levels of grouping, as in OTLP:
+
+* a data root, `TracesData`, `LogsData` or `MetricsData`;
+* a group per resource, the entity that produced the signals, with its attributes, such as `service.name`;
+* a group per instrumentation scope, the library that emitted them, with its name and version;
+
+and then the spans, log records or metrics.
+
+Attributes are `KeyValue` pairs whose values are `AnyValue`: a string, a boolean, an integer, a double, bytes, an array of values, or a list of key-value pairs, as in OTLP.
+
+=== Span
+
+A `Span` has OTLP's fields: `traceId`, `spanId`, `traceState`, `parentSpanId`, `name`, `kind`, `startTimeUnixNano` and `endTimeUnixNano`, `attributes`, `events`, `links`, `status` and `flags`, with the counts of what was dropped.
+
+The model adds four features:
+
+`children`:: The spans whose parent it is, within the same instrumentation scope, keyed by span id.
+`logRecords`:: The log records emitted while it was current.
+`changeDescription`:: The changes to models recorded while it was current (<<recording-changes>>).
+`referrers`:: The span references that point at it: links, exemplars, and change descriptions and their changes. The opposite of `SpanReference.span`.
+
+`SpanReference` is a trace and span id with a resolved `span`.
+`SpanLink` is a span reference with attributes, as in OTLP.
+
+=== Changes
+
+`ChangeDescription`, `FeatureChange` and `ResourceChange` extend the classes of EMF's change model, and are span references: each knows the span in which it was recorded.
+A `ChangeDescription` also contains `removedObjects`, the objects removed in the recorded work, as they were when they were removed.
+
+=== Logs and metrics
+
+A `LogRecord` has OTLP's fields: times, `severityNumber` and `severityText`, the `body` as an `AnyValue`, `attributes`, an `eventName`, and the trace and span ids it was correlated with.
+
+Metrics are `Gauge`, `Sum`, `Histogram`, `ExponentialHistogram` and `Summary`, with their data points, as in OTLP.
+An `Exemplar`, a sample measurement with its trace context, references the span that produced it.

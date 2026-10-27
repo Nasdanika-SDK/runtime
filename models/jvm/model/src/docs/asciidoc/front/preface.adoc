@@ -1,0 +1,44 @@
+[preface]
+== Preface
+
+This book is about a model of the Java virtual machine: its layers, class loaders, modules, packages, types, methods, fields and parameters, as an EMF model that can be saved, compared, queried and published like any other.
+Its point is that a running JVM already knows what it is made of, and almost nobody asks it.
+
+The first part of the book is the why: the gap between what a build declares and what runs, the naming that lets everything about a JVM join on one key, and what the model deliberately leaves to others.
+The second part is the how, for Java developers, and ends with a snapshot of a running module layer that is saved, loaded back and asked which modules read what they never required.
+The third says what comes next: the loaders, and what they make possible.
+
+=== Who this book is for
+
+*Java developers and architects* who want to know what an application became after resolution, not what its build files say, and who want to keep that answer.
+
+*Builders of tools* for coverage, profiling, tracing and documentation, who need a key that their outputs and everyone else's share.
+
+=== A book that stands on its own
+
+This book is one of the Nasdanika Zephyr Books: in-depth manuals, one per module of the Nasdanika SDK Runtime, in the manner of IBM Redbooks.
+You do not need any other book of the series, or the Nasdanika SDK Runtime book, to read this one: where the books touch, this one repeats what you need.
+
+The series is named after the Bootswatch theme it is styled with, Zephyr, and has nothing to do with the Zephyr real-time operating system or with SmartBear's Zephyr test management.
+
+=== What you need
+
+* *A JDK for Java 25* and *Maven 3.9.16 or later*.
+* The model's Java module is `org.nasdanika.sdk.runtime.models.jvm`, its Maven coordinates are `{group-id}:{artifact-id}:{runtime-version}`, and its namespace URI is `{nsuri}`.
+* Some familiarity with EMF helps in part two: an EMF model is a set of Java interfaces generated from a metamodel, with containment, references, reflection and persistence for free.
+* Some familiarity with the Java module system helps too: modules, `requires`, `exports`, `opens`, `provides` and `uses`.
+
+=== Conventions
+
+* *Every listing is included from a test* of the module and compiled and run when the book is built. Callouts, such as <1>, explain the lines they mark.
+* *Status labels* mark what this edition does not have yet: [.planned]#PLANNED# for designed but not built, [.sketch]#SKETCH# for partly built.
+* *Voice.* I write in the first person.
+
+ifdef::editor-notes[]
+[IMPORTANT,caption="Editor's note"]
+====
+Editor's notes record inconsistencies between the model and its documentation found while writing. They are shown in builds for the author and left out of published editions.
+
+This book replaces the model's readme, `models/jvm/model/doc/readme.md`, which is deleted. The readme said that "the Nasdanika SDK Runtime book shows a minimal live loader of modules in a page of code"; this book has its own, in its tests. The comment on `JvmElement` in the Xcore still says "NxCore identity"; the runtime's name is the core model.
+====
+endif::[]

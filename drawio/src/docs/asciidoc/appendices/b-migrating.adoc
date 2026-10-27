@@ -36,10 +36,14 @@ In core, `Element`, `Node` and `Connection` extend the interfaces of Nasdanika's
 In the runtime, the elements extend nothing outside the module (<<looking-ahead>>).
 
 *The Ecore model of Draw.io documents.*
-Core's `drawio.model` module and `Document.toModelDocument()`, with bi-directional references between elements and tags as objects, are not in the runtime, and neither is the loading of a document from that model.
+Core's `drawio.model` module and `Document.toModelDocument()` are not in this module.
+The runtime has a Draw.io model of its own, in `models/drawio`, built on its diagram and presentation models, with tags as objects and connections navigable from both ends.
+A document becomes a model by loading the `.drawio` file, or a PNG or SVG image with the document in it, into a resource set, not by converting a `Document` (<<looking-ahead>>).
+Its classes are named after the diagram model's, `Document`, `Page`, `Layer`, `Node` and `Connection`, not `DrawioDocument` and the like as in core.
 
 *Semantic mapping.*
-Core's mapping module, which maps diagram elements to the objects of Ecore models, depends on both of the above (<<looking-ahead>>).
+Core's mapping module, which maps diagram elements to the objects of Ecore models by their properties, is not in the runtime.
+The runtime's diagram model has the place for the result, the semantic elements of an element, and mapping by properties is planned (<<looking-ahead>>).
 
 *Spring Expression Language.*
 The `$spel:` magic property, `data:spel,` links and the SpEL evaluation context are gone, together with the dependency on Spring.
@@ -47,9 +51,10 @@ The `$spel:` magic property, `data:spel,` links and the SpEL evaluation context 
 
 *Layout.*
 `Util.layout` and `Util.forceLayout`, which laid out nodes with JGraphT, are gone with their dependency.
-In the runtime, layout belongs to the diagram model, with Eclipse ELK (<<looking-ahead>>).
+In the runtime, layout belongs to the diagram model, with Eclipse ELK, in `models/diagram/elk`, which lays out the pages of the Draw.io model (<<looking-ahead>>).
 
 *The capability factories* that registered Draw.io as a resource type and as processor factories with core's capability loader.
+The Draw.io model registers the resource type now, with every resource set of the runtime.
 
 === Dependencies
 

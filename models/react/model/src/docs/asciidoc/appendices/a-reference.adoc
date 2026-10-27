@@ -1,0 +1,37 @@
+[appendix]
+[#reference]
+== Reference
+
+=== Packages
+
+[cols="2,3",options="header"]
+|===
+| Package | Namespace URI
+| `org.nasdanika.sdk.runtime.models.typescript` | `{nsuri-ts}`
+| `org.nasdanika.sdk.runtime.models.react` | `{nsuri}`
+| `org.nasdanika.sdk.runtime.models.react.bootstrap` and its `forms` and `components` packages | `{nsuri}/bootstrap` and under it
+| `org.nasdanika.sdk.runtime.models.react.flow` | `{nsuri}/flow`
+|===
+
+=== Enumerations of the TypeScript model
+
+[cols="2,5",options="header"]
+|===
+| Enumeration | What it says
+| `ImportKind` | Named, default or namespace import
+| `PrimitiveType` | `string`, `number`, `boolean`, `bigint`, `void` and the other primitive types
+| `LiteralKind` | The kind of a literal type
+| `VariableKind` | `const`, `let` or `var`
+| `Visibility` | `public`, `protected` or `private`
+| `AccessorKind` | `get` or `set`
+|===
+
+=== Java classes
+
+[cols="2,5",options="header"]
+|===
+| Class | What it is for
+| `typescript.generator.Generator` | Writes a package, with `package.json` and `tsconfig.json`, or a module, with managed imports, to a volume of text or to a string
+| `react.generator.ReactGenerator` | A TypeScript generator that also writes components, hooks, contexts and JSX, as JSX in a `TsxModule` and as `createElement` calls elsewhere. `new ReactGenerator(structure)` renders HTML intrinsics with an HTML structure, such as `BootstrapStructure`
+| `react.flow.layout.LayeredLayout` | A simple layered layout of a flow
+|===

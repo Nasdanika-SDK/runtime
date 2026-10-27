@@ -1,0 +1,43 @@
+// Defaults for previewing this file on its own; index.adoc and the Maven build set these
+ifndef::runtime-root[:runtime-root: ../../../../../../..]
+
+[#getting-started]
+== Getting started
+
+The model is an EMF model, defined in Xcore and generated into Java when the runtime is built.
+
+=== Adding the model
+
+The runtime's models have a bill of materials, `org.nasdanika.sdk.runtime.models:bom`, which manages their versions.
+Import it in `dependencyManagement`, and depend on the model without a version:
+
+[source,xml,subs="attributes+"]
+----
+<dependency>
+    <groupId>{group-id}</groupId>
+    <artifactId>{artifact-id}</artifactId>
+</dependency>
+----
+
+The model is a named Java module:
+
+.The module declaration of the JVM model
+[source,java]
+----
+include::{runtime-root}/models/jvm/model/src/main/java/module-info.java[tag=module,indent=0]
+----
+
+It requires the runtime's core model transitively, which brings EMF with it, and provides its `EPackage` as a service, so a resource set configured from the module path knows the model.
+
+=== Names that clash
+
+The model's classes have the JVM's names: `Module`, `Package`, `Type`, `Method`, `Field`, `ClassLoader`.
+`Module`, `Package` and `ClassLoader` are also in `java.lang`, which every Java file imports.
+An explicit import of the model's class wins over `java.lang` in that file; the JDK's class is then written with its package, `java.lang.Module`, as in the listings of this book.
+
+=== What the build does
+
+The Xcore definition is in `src/main/resources/org/nasdanika/sdk/runtime/models/jvm/jvm.xcore`.
+Maven generates the Java sources into `src-gen` with the Xtext Maven plugin.
+The generated API is in three packages: the interfaces in `org.nasdanika.sdk.runtime.models.jvm`, their implementations in `impl`, and the switch and adapter factory in `util`.
+The package provider is hand-written, in `services`.

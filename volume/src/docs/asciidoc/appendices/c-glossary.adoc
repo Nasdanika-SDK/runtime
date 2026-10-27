@@ -1,0 +1,27 @@
+[appendix]
+[#glossary]
+== Glossary
+
+Capability::
+An optional ability of a volume, such as writing, found by asking for it.
+
+Content::
+A re-readable source of bytes: getting it does no I/O, and nothing moves until it is read.
+
+Entry::
+What a volume knows about a path without reading it: its kind, size, hash and modification time.
+
+ETag::
+An HTTP header that identifies a version of a resource, here the entry's hash, so that a client can ask for a resource only if it changed.
+
+Path::
+A slash-separated string relative to the root of a volume, with Go's rules; the root is `.`.
+
+Unit of work::
+What a span and its children cover: here, a request handled by the server, or a transfer of content.
+
+Volume::
+A tree of files and directories behind five methods, wherever the files live, or computed from something else.
+
+WebDAV::
+An extension of HTTP, RFC 4918, for reading and writing files over HTTP, which operating systems mount as drives.

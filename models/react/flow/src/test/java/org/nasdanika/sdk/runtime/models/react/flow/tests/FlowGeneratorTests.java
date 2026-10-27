@@ -79,6 +79,7 @@ public class FlowGeneratorTests {
 
 	@Test
 	public void testControlled() {
+		// tag::controlled[]
 		var a = node("a", "A", 0, 0);
 		var b = node("b", "B", 200, 0);
 		ComponentDeclaration component = with(REACT.createComponentDeclaration(), c -> {
@@ -92,14 +93,20 @@ public class FlowGeneratorTests {
 				h.getBindings().addAll(java.util.List.of("edges", "setEdges", "onEdgesChange"));
 				h.getInitialEdges().add(with(edge(a, b), e -> e.setEdgeType(EdgeType.SMOOTH_STEP)));
 			}));
-			var onConnect = callback("onConnect", "connection => setEdges(current => addEdge(connection, current))", "setEdges");
+			var onConnect = callback(
+					"onConnect",
+					"connection => setEdges(current => addEdge(connection, current))",
+					"setEdges");
 			onConnect.getExpression().getReferences().add(external("addEdge", XYFLOW));
 			c.getHooks().add(onConnect);
 			c.setRender(attributes(
 					with(FLOW.createReactFlow(), f -> {
 						f.setColorMode(ColorMode.DARK);
 						f.setConnectionLineType(ConnectionLineType.SMOOTH_STEP);
-						f.setDefaultEdgeOptions(with(FLOW.createEdgeOptions(), o -> { o.setAnimated(true); o.setMarkerEnd(FLOW.createEdgeMarker()); }));
+						f.setDefaultEdgeOptions(with(FLOW.createEdgeOptions(), o -> {
+							o.setAnimated(true);
+							o.setMarkerEnd(FLOW.createEdgeMarker());
+						}));
 						f.getDeleteKeyCode().addAll(java.util.List.of("Backspace", "Delete"));
 					}),
 					attribute("nodes", "nodes"),
@@ -109,6 +116,7 @@ public class FlowGeneratorTests {
 					event("onConnect", "onConnect")));
 		});
 		Expected.assertMatches("controlled.tsx", generate(module(component)));
+		// end::controlled[]
 	}
 
 	@Test

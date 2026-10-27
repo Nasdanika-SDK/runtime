@@ -1,0 +1,27 @@
+[colophon]
+== Colophon
+
+*TypeScript and React Models: A Nasdanika Zephyr Book*
+
+Edition {revnumber}, built on {revdate}.
+
+This edition describes four models of the Nasdanika SDK Runtime {runtime-version}: the TypeScript model, Maven coordinates `org.nasdanika.sdk.runtime.models.typescript:model:{runtime-version}`, namespace URI `{nsuri-ts}`; the React model, `{group-id}:{artifact-id}:{runtime-version}`, namespace URI `{nsuri}`; and the React Bootstrap and React Flow models, `{group-id}:bootstrap` and `{group-id}:flow`.
+Every listing in it is included from the tests of those modules, which are compiled and run when the book is built, and every block of generated code is a file that a test compares with what the generator writes.
+Its figure is a screenshot that a test took of a generated application in a browser.
+
+Copyright (C) 2026 Pavel Vlasov.
+
+The text and figures of this book are licensed under the https://creativecommons.org/licenses/by/4.0/[Creative Commons Attribution 4.0 International License] (CC BY 4.0).
+You may share and adapt them for any purpose, commercial purposes included, provided you give appropriate credit, provide a link to the license, and indicate if you made changes.
+A suggested credit: "Pavel Vlasov, _TypeScript and React Models: A Nasdanika Zephyr Book_, licensed under CC BY 4.0", with a link to {runtime-repo}.
+
+The code is licensed under the Eclipse Public License 2.0, the license of the runtime.
+In addition, you may use the code of this book's listings in your own programs and documentation without asking for permission and without attribution.
+
+Neither license covers the Nasdanika name or logo: CC BY 4.0 grants no trademark rights.
+
+TypeScript is a trademark of Microsoft Corporation. React is a trademark of Meta Platforms. React Flow is by xyflow. Bootstrap is released by its authors under the MIT License. Node.js is a trademark of the OpenJS Foundation. Eclipse and EMF are trademarks of the Eclipse Foundation. Java is a trademark of Oracle and its affiliates. Other names may be trademarks of their owners. Their use here identifies the technologies the models relate to and implies no endorsement.
+
+The source of this book and the React model's tests are at {runtime-repo}, in `models/react/model`; the TypeScript model is in `models/typescript/model`, and the React Bootstrap and React Flow models are in `models/react/bootstrap` and `models/react/flow`.
+
+Typeset with Asciidoctor PDF in Noto Sans and M+ 1mn, in the look of the Nasdanika Zephyr Books.

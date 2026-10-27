@@ -1,0 +1,85 @@
+= HTML and Bootstrap Models: A Nasdanika Zephyr Book
+Pavel Vlasov
+:doctype: book
+:description: Web pages as models: HTML as an EMF model with a generator that writes it, and Bootstrap 5 with Bootswatch themes as a model of what components mean, expanded to HTML for static pages and used in React components.
+:keywords: HTML, Bootstrap, Bootswatch, EMF, Xcore, code generation, static sites, navigation, Nasdanika
+:lang: en
+:sectnums:
+:sectnumlevels: 2
+:partnums:
+:chapter-signifier: Chapter
+:part-signifier: Part
+:appendix-caption: Appendix
+:toc:
+:toclevels: 2
+:title-page:
+:listing-caption: Listing
+:figure-caption: Figure
+:table-caption: Table
+:source-language: java
+:tabsize: 4
+:hide-uri-scheme:
+:runtime-repo: https://github.com/Nasdanika-SDK/runtime
+:runtime-site: https://runtime.sdk.nasdanika.org
+:medium: https://medium.com/nasdanika
+:nsuri: https://runtime.sdk.nasdanika.org/models/html/bootstrap
+:nsuri-html: https://runtime.sdk.nasdanika.org/models/html
+// Defaults for previews in an editor; the Maven build sets these
+ifndef::testdir[:testdir: ../../test/java]
+ifndef::testresourcesdir[:testresourcesdir: ../../test/resources]
+ifndef::runtime-root[:runtime-root: ../../../../../..]
+ifndef::runtime-version[:runtime-version: 2026.10.0]
+ifndef::group-id[:group-id: org.nasdanika.sdk.runtime.models.html]
+ifndef::artifact-id[:artifact-id: bootstrap]
+:booktests: {testdir}/org/nasdanika/sdk/runtime/models/html/bootstrap/tests
+:bookresources: {testresourcesdir}/expected
+:htmltests: {runtime-root}/models/html/model/src/test/java/org/nasdanika/sdk/runtime/models/html/tests
+
+include::front/colophon.adoc[]
+
+include::front/preface.adoc[]
+
+[#why]
+= The Why
+
+[partintro]
+Why pages should be models before they are text, and why Bootstrap should be modeled by what its components mean. No code is needed to read this part.
+
+include::chapters/01-pages-are-models.adoc[]
+
+include::chapters/02-meaning-not-markup.adoc[]
+
+[#how]
+= The How
+
+[partintro]
+The two models in Java: adding them to a project, HTML and its generator, Bootstrap documents, themes and layout, components, and navigation trees for sites.
+
+include::chapters/03-getting-started.adoc[]
+
+include::chapters/04-the-html-model.adoc[]
+
+include::chapters/05-documents-and-layout.adoc[]
+
+include::chapters/06-components.adoc[]
+
+include::chapters/07-navigation.adoc[]
+
+[#ahead]
+= Looking Ahead
+
+[partintro]
+Documents, documentation sites for models, and pages that work offline.
+
+include::chapters/08-looking-ahead.adoc[]
+
+include::appendices/a-reference.adoc[]
+
+include::appendices/b-building.adoc[]
+
+include::appendices/c-glossary.adoc[]
+
+ifdef::backend-pdf[]
+[index]
+== Index
+endif::[]

@@ -1,6 +1,7 @@
 import org.eclipse.emf.ecore.EPackage;
 import org.nasdanika.sdk.runtime.models.typescript.services.TypescriptEPackageProvider;
 
+// tag::module[]
 module org.nasdanika.sdk.runtime.models.typescript {
 	
 	exports org.nasdanika.sdk.runtime.models.typescript;
@@ -14,3 +15,4 @@ module org.nasdanika.sdk.runtime.models.typescript {
 	provides EPackage with TypescriptEPackageProvider;
 	
 }
+// end::module[]

@@ -51,6 +51,14 @@
 		</dependency>
 		<dependency>
 			<groupId>org.nasdanika.sdk.runtime</groupId>
+			<artifactId>harness</artifactId>
+		</dependency>
+		<dependency>
+			<groupId>org.nasdanika.sdk.runtime</groupId>
+			<artifactId>playwright</artifactId>
+		</dependency>
+		<dependency>
+			<groupId>org.nasdanika.sdk.runtime</groupId>
 			<artifactId>groovy</artifactId>
 		</dependency>
 		<dependency>

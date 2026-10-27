@@ -1,0 +1,64 @@
+// Defaults for previewing this file on its own; index.adoc and the Maven build set these
+ifndef::booktests[:booktests: ../../../test/java/org/nasdanika/sdk/runtime/models/html/bootstrap/tests]
+ifndef::bookresources[:bookresources: ../../../test/resources/expected]
+
+[#documents-and-layout]
+== Documents, themes and layout
+
+The listings of this chapter and the next build models with a small helper of the tests, `Bootstrap`: its constants are the factories of the five packages and of HTML (`CORE`, `CONTENT`, `NAVIGATION`, `OVERLAYS`, `FORMS`, `HTML`), and `with(object, configurator)` configures a new object where it is created.
+Each listing ends by comparing what `BootstrapStructure.generate` writes with a file, shown after it.
+
+=== The vocabulary
+
+The core package has the words the components share:
+
+[cols="1,3",options="header"]
+|===
+| Enumeration | Literals
+| `Variant` | The theme colors: `primary`, `secondary`, `success`, `danger`, `warning`, `info`, `light`, `dark`
+| `ButtonVariant` | The variants and `link`, and their outline forms, such as `outline-primary`
+| `Size` | `sm`, `lg`
+| `Breakpoint` | `xs`, `sm`, `md`, `lg`, `xl`, `xxl`
+| `ColorMode` | `light`, `dark`: `data-bs-theme` of a document or an element
+| `Theme` | `bootstrap` and the Bootswatch themes, from `brite` to `zephyr`
+|===
+
+Every Bootstrap element extends `BootstrapElement`, a library element, so it also has HTML's `id`, `classes`, `style` and `attributes`; classes set by hand are added to those the element contributes.
+
+=== A document with a theme
+
+A `BootstrapDocument` is an HTML document with a `theme` and a `colorMode`.
+The generator adds the theme's stylesheet, Bootstrap's script, and the initialization of tooltips and popovers:
+
+.A themed document (`BootstrapGeneratorTests.java`)
+[source,java]
+----
+include::{booktests}/BootstrapGeneratorTests.java[tag=document,indent=0]
+----
+
+[source,html]
+----
+include::{bookresources}/document.html[]
+----
+
+The stylesheet and the script come from jsDelivr, at pinned versions of Bootstrap and Bootswatch.
+
+=== The grid
+
+`Container`, `Row` and `Col` are Bootstrap's grid; `Stack` is a vertical or horizontal stack with a gap.
+Sizes, offsets and the number of columns per row are values per breakpoint, which the structure turns into Bootstrap's responsive classes:
+
+.A responsive grid (`BootstrapGeneratorTests.java`)
+[source,java]
+----
+include::{booktests}/BootstrapGeneratorTests.java[tag=grid,indent=0]
+----
+
+[source,html]
+----
+include::{bookresources}/grid.html[]
+----
+
+A container that is fluid until a breakpoint is `container-md`; a column 12 wide on the smallest screens and 4 wide with an offset of 2 from the medium breakpoint is `col-12 col-md-4 offset-md-2`.
+
+The core package also has `Ratio`, for content with an aspect ratio, `Image`, with its responsive and thumbnail forms, and `Figure`, with its image and caption.

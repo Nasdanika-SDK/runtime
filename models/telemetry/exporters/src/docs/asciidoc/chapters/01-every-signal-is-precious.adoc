@@ -1,0 +1,37 @@
+[#precious]
+== Every signal is precious
+
+This model uses telemetry the opposite way from the mainstream.
+Mainstream observability collects enormous volumes cheaply, samples them, keeps them for days or weeks, and routinely drowns in its own signals.
+Here collection is deliberate and retention is indefinite: every signal is precious, and its price is paid knowingly, in exchange for being able to explain, years later, what happened.
+
+=== What a model can say that a log line cannot
+
+"Somebody changed the year of a book" is a log line.
+"In the course of the work named 'Correct the year', the attribute `year` of the book 'Domain-Driven Design' changed to 2004" is structure: the work, the object and the attribute are elements you can navigate to, and the record is stored next to the model, in Git.
+
+Storage and compute are cheap at this scale.
+What is expensive is not being able to answer, two years later, who did what to what, and why it looks the way it does.
+
+=== Operational and strategic
+
+Operational telemetry answers "is it healthy right now".
+This model answers "who did what to what, and why".
+The two are complementary, and the same instrumented code feeds both: one exporter streams to an operational backend, sampled and forgotten; the other writes to the model, and it is kept.
+
+=== Choosing what to keep
+
+The discipline that keeps this affordable is choosing what is a unit of work worth keeping.
+A command that changes models, a release, an agent run, a migration: yes.
+Every request a server handles: no; that is operational telemetry, and it belongs in an operational backend, from the same instrumentation.
+
+Counted, it is cheap.
+A command line run, an agent session or a build step produces hundreds to thousands of spans, which compress to kilobytes.
+Strategic telemetry is not the firehose; it is the record of work that mattered, and it costs less than the meeting held to reconstruct it.
+
+=== What it is for
+
+* *Audit and compliance.* Every change to an element during an audit period, who made it, and in the course of what work, is a query instead of an archaeology project.
+* *Agents.* An agent's run is a trace whose spans are its tool calls, and the changes it made to models are in the spans that made them. Reviewing an agent's work means reading that trace, and reverting it means applying the changes in reverse.
+* *Evidence.* Telemetry kept with the build or the release it describes is evidence of what ran. The runtime's command line launcher saves the telemetry of every launch as models, in a directory per launch.
+* *Teaching.* Trace versus span versus metric is easier to show than to define. A small trace, saved as a model, can be browsed, diagrammed and walked through element by element.

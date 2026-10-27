@@ -27,17 +27,26 @@ Its natural foundation is the runtime's capability framework, which finds and cr
 Diagram elements mapped to the objects of a typed model, so that a diagram is one of the sources of a model alongside spreadsheets, scripts and code.
 In Nasdanika core, semantic mapping does this: element properties name the classes and features of an Ecore metamodel, and a diagram loaded into a resource set is a model.
 
-The runtime takes a different road there.
-Its models are EMF models, defined in Xcore and loaded through its resource set, and its Groovy DSL can already read other resources while it builds a model.
-Two pieces will join them to this module: a resource factory that loads Draw.io files and PNG images as resources, and a mapping from elements to model objects, driven by element properties as in core, or written as a Groovy script over the API of this book.
+The runtime takes a different road there, and the first part of it is built, in modules beside this one [.available]#AVAILABLE#:
+
+* *The Draw.io model*, `models/drawio`, is an EMF model of Draw.io documents. A `.drawio` file, or a PNG or SVG image that Draw.io exported with the diagram in it, loads into any resource set of the runtime as a model, through a resource factory that the module contributes, and saves back. It reads and writes with the API of this book. Its Zephyr Book is _Draw.io Model_.
+* *The diagram model*, `models/diagram`, which the Draw.io model extends, gives every element semantic elements: references to the objects of other models that the element depicts. Its Zephyr Book, _Diagram Model_, maps the figure of its own metamodel, drawn in Draw.io, to that metamodel and checks one against the other.
+
+What remains [.planned]#PLANNED# is the mapping itself without code: element properties that name classes and features, as in core, so that a diagram loaded into a resource set is a model of the domain and not only of the diagram.
+Until then, a mapping is a few lines of Java over the diagram model, or a Groovy script: the runtime's Groovy DSL can read a Draw.io resource while it builds a model.
 
 === One diagram model, many pictures
 
-The runtime will have a diagram model of its own: nodes, connections, containment and labels, independent of any editor.
-Draw.io documents map to it, and so will PowerPoint slides and diagrams generated from the runtime's models, such as module graphs of a running JVM.
-The diagram model is laid out once, with Eclipse ELK, and rendered with React Flow where a diagram should be interactive or generated, or with Draw.io's own viewer where a hand-drawn diagram should look exactly as drawn.
+Most of this is built [.available]#AVAILABLE#.
+The runtime's diagram model holds what notations have in common: nodes, ports, connections, layers, nesting and labels, independent of any editor.
+A Draw.io document is one: its pages are slides of the presentation model, and slides are diagrams.
 
-The same path makes diagrams scenes of narrated videos: a diagram on screen, with elements highlighted as a narration mentions them, regenerated when the diagram changes.
+* *Layout*, with Eclipse ELK, is written once for the diagram model, in `models/diagram/elk`, and lays out Draw.io pages because they are diagrams. The _Draw.io Model_ book generates a diagram of the modules of a running JVM, lays it out with ELK and renders it with Draw.io's viewer (<<rendering>>).
+* *Rendering* goes to React Flow, where a diagram should be interactive, to Draw.io's own viewer, where a diagram should look exactly as drawn, and to SVG, through the runtime's SVG model, where it should be vector graphics in a document. The Zephyr Books _Diagram Layout with ELK_ and _SVG Model_ show them.
+
+[.planned]#PLANNED#: routes in from other notations. The presentation model, for slides, is a sketch, and models of Visio, PowerPoint and Excel files are postponed.
+
+The same path makes diagrams scenes of narrated videos: a diagram on screen, with elements highlighted as a narration mentions them, regenerated when the diagram changes [.planned]#PLANNED#.
 
 === Rendering generated diagrams
 

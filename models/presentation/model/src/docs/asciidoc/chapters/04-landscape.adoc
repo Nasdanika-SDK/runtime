@@ -1,0 +1,29 @@
+[#landscape]
+== The landscape
+
+*Libraries of formats*: Apache POI, the Open XML SDK, python-pptx, Aspose.Slides, the ODF Toolkit, PDFBox.
+These are the sources, not the rivals: loaders and generators are built on libraries like them, or on models of the formats' schemas.
+Each gives a tree of objects shaped like its format: excellent for writing one file, of no use as a place to keep an estate of presentations, and with no notion of the element a shape stands for.
+
+*Services of conversion and office suites without a screen*: CloudConvert, GroupDocs, LibreOffice's `--convert-to`, the exporters of Visio, the import of Visio files into Draw.io.
+They are the pragmatic incumbent for interchange.
+They are pairwise, one-way and opaque: there is nothing in the middle to inspect, correct, validate, enrich or version, so a conversion that loses shape data loses it silently.
+And what they lose first is usually what mattered, Visio shape data, Draw.io properties, notes, because it is invisible in the output.
+
+*Decks as code*: Reveal.js, Marp, Slidev, remark, LaTeX Beamer, Quarto, Pandoc.
+They are text first, versioned, and good at producing HTML or PDF from Markdown.
+The source is the artifact, with no graph of objects to query and no stable identity of a shape, and the output is terminal: a business audience asks for a deck it can edit.
+They make good input formats for a model.
+
+*Diagrams as code*: PlantUML, Mermaid, D2, Graphviz, the Structurizr DSL.
+Sources, not competitors.
+The interesting direction is the one they cannot take themselves: a PlantUML sequence diagram arriving in a deck as editable shapes and connectors, not as an embedded picture.
+
+*Software as a service and generators of decks with AI*: Canva, Pitch, Gamma, Copilot in PowerPoint, Google Slides with Gemini.
+The fastest way to get a deck, and they produce no data: nothing to validate the result against, no comparison of this quarter's deck with the last beyond reading both, and no path from the deck to any other tool.
+
+*Standards.*
+The OMG has a Diagram Definition specification and interchange packages per notation; there is nothing for presentations.
+The deck, the most widely produced structured visual artifact in the enterprise, has never had a model for interchange.
+
+*The actual competitor*: a deck on a shared drive, a library of Visio drawings that one retiring architect can read, and a slide rebuilt by hand every time the audience changes.

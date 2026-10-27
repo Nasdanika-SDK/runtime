@@ -5,13 +5,14 @@
 Every module of the runtime has version {runtime-version}.
 Import the BOM, `org.nasdanika.sdk.runtime:bom`, and leave versions out of the dependencies (<<getting-started>>).
 For each module: its directory in the repository, its Maven coordinates, its Java module name, and what it contains.
+A module with a Nasdanika Zephyr Book says so; the book is on the module's page and attached to its artifact with the classifier `book` (<<zephyr-books>>).
 
 === Runtime modules
 
 `common`::
 Maven `org.nasdanika.sdk.runtime:common` +
 Module `org.nasdanika.sdk.runtime.common` +
-`NasdanikaResourceSet` and resource set contributors (<<models>>); `Types`, `TypeToken`, `Adaptable` and `Adapters` (<<generic-types>>); `Flows`, `Pump`, `Transformer` and `ReflectiveFactory` (<<flows>>); the capability framework (<<capabilities>>); `Telemetry`, the publishing OpenTelemetry and the instrumented URI handler (<<telemetry>>, <<watching>>).
+`NasdanikaResourceSet` and resource set contributors (<<models>>); `Types`, `TypeToken`, `Adaptable` and `Adapters` (<<generic-types>>); `Flows`, `Pump`, `Transformer` and `ReflectiveFactory` (<<flows>>); the capability framework (<<capabilities>>); `Telemetry`, the publishing OpenTelemetry and the instrumented URI handler (<<telemetry>>, <<watching>>); `DerivedSubsetEList`, a modifiable view of the elements of one many-valued feature that belong to a derived subset of it, such as the slides among a presentation's children. Its Zephyr Book is _Matching and Wiring_.
 
 `emf-json`::
 Maven `org.nasdanika.sdk.runtime:emf-json` +
@@ -21,12 +22,32 @@ JSON and YAML resources for EMF, selected by extension (<<models>>).
 `volume`::
 Maven `org.nasdanika.sdk.runtime:volume` +
 Module `org.nasdanika.sdk.runtime.volume` +
-The volume SPI, `Content`, `Volume.of(Path)`, `VolumeURIHandler` (<<volumes>>), and the HTTP, WebDAV and telemetry handlers (<<serving>>).
+The volume SPI, `Content`, `Volume.of(Path)`, `VolumeURIHandler` (<<volumes>>), and the HTTP, WebDAV and telemetry handlers (<<serving>>). Its Zephyr Book is _Volumes and Content_.
+
+`harness`::
+Maven `org.nasdanika.sdk.runtime:harness` +
+Module `org.nasdanika.sdk.runtime.harness` +
+`Harness.inServer`: an HTTP server that is up while code runs against it, with the code's requests and the server's work in one trace (<<serving>>). Its Zephyr Book is _Harness_.
+
+`playwright`::
+Maven `org.nasdanika.sdk.runtime:playwright` +
+Module `org.nasdanika.sdk.runtime.playwright` +
+`Browsing.inBrowser`: browser sessions with Playwright against a harness server, steps as spans and screenshots as log records in them, and an optional video of the session with each step's offset into it (<<web>>). Its Zephyr Book is _Walk-throughs with Playwright_.
+
+`drawio`::
+Maven `org.nasdanika.sdk.runtime:drawio` +
+Module `org.nasdanika.sdk.runtime.drawio` +
+Draw.io documents in Java: pages, layers, nodes and connections, properties and placeholders, selectors, links across pages and documents, styles, and diagrams embedded in PNG images (<<diagrams>>). Its Zephyr Book is _Draw.io_.
+
+`drawio-playwright`::
+Maven `org.nasdanika.sdk.runtime:drawio-playwright` +
+Module `org.nasdanika.sdk.runtime.drawio.playwright` +
+`Rendering` and `Viewer`: Draw.io pages rendered with Draw.io's own viewer in a browser driven by Playwright, as PNG and SVG images with the page embedded, after a program has clicked their shapes, and as videos of pages shown in sequence (<<diagrams>>). A module of its own so that `drawio` stays light; it is documented in the _Draw.io_ Zephyr Book.
 
 `groovy`::
 Maven `org.nasdanika.sdk.runtime:groovy` +
 Module `org.nasdanika.sdk.runtime.groovy` +
-The Groovy DSL for any metamodel, its Ecore binding and the Groovy resource factory (<<groovy-dsl>>).
+The Groovy DSL for any metamodel, its Ecore binding and the Groovy resource factory (<<groovy-dsl>>). Its Zephyr Book is _Groovy DSL_.
 
 `picocli`::
 Maven `org.nasdanika.sdk.runtime:picocli` +
@@ -36,7 +57,7 @@ Picocli, bundled until a picocli release includes the runtime's contributions (<
 `cli`::
 Maven `org.nasdanika.sdk.runtime:cli` +
 Module `org.nasdanika.sdk.runtime.cli` +
-`CommandBase`, `CommandGroup`, the command and mix-in factories, `@Parent`, `@SubCommand`, `ExecutionSupplier` and `WiringExecutionStrategy`; the root, `save`, `ecore`, `shell` and `launcher` commands; resource set and properties mix-ins (<<commands>>, <<wiring>>).
+`CommandBase`, `CommandGroup`, the command and mix-in factories, `@Parent`, `@SubCommand`, `ExecutionSupplier` and `WiringExecutionStrategy`; the root, `save`, `ecore`, `shell` and `launcher` commands; resource set and properties mix-ins (<<commands>>, <<wiring>>). Its Zephyr Book is _Declarative Command Lines_.
 
 `cli-launcher`::
 Maven `org.nasdanika.sdk.runtime:cli-launcher` +
@@ -50,7 +71,8 @@ The dependency-free bootstrap that relaunches a distribution from any directory 
 
 `bom`, `all`::
 Maven `org.nasdanika.sdk.runtime:bom` and `org.nasdanika.sdk.runtime:all`, both POMs +
-The bill of materials of the runtime and its dependencies, and an aggregate of every runtime module for assemblies.
+The bill of materials of the runtime and its dependencies, and an aggregate of the runtime's modules and models for assemblies, which the launcher's distributions are built from (<<distributions>>).
+The models have a bill of materials and an aggregate of their own, `org.nasdanika.sdk.runtime.models:bom` and `org.nasdanika.sdk.runtime.models:all`, which these two import and include.
 
 === Models
 
@@ -59,17 +81,17 @@ The models follow the identity rule of <<principles>>: the nsURI is `https://run
 `models/core`::
 Maven `org.nasdanika.sdk.runtime.models:core` +
 Module `org.nasdanika.sdk.runtime.models.core` +
-Packages `models/core` and `models/core/kind`. Identity, documentation, provenance and evaluators (<<core-model>>).
+Packages `models/core` and `models/core/kind`. Identity, documentation, provenance, attributes and evaluators (<<core-model>>).
 
 `models/telemetry/model`::
 Maven `org.nasdanika.sdk.runtime.models.telemetry:model` +
 Module `org.nasdanika.sdk.runtime.models.telemetry` +
-Packages `models/telemetry`, `models/telemetry/traces`, `models/telemetry/logs` and `models/telemetry/metrics`, with change recording (<<telemetry-model>>).
+Packages `models/telemetry`, `models/telemetry/traces`, `models/telemetry/logs` and `models/telemetry/metrics`, with change recording (<<telemetry-model>>). It is documented in the _Telemetry Model_ Zephyr Book, with its exporters.
 
 `models/telemetry/exporters`::
 Maven `org.nasdanika.sdk.runtime.models.telemetry:exporters` +
 Module `org.nasdanika.sdk.runtime.models.telemetry.exporters` +
-OpenTelemetry SDK exporters that write spans, log records and metrics into telemetry models (<<telemetry-model>>).
+OpenTelemetry SDK exporters that write spans, log records and metrics into telemetry models, and `Recording`, an SDK that records a unit of work to them (<<telemetry-model>>). Its Zephyr Book is _Telemetry Model_.
 
 `models/file/model`::
 Maven `org.nasdanika.sdk.runtime.models.file:model` +
@@ -79,34 +101,59 @@ Package `models/file`. Files and directories as a model over volumes [.sketch]#S
 `models/meta/model`::
 Maven `org.nasdanika.sdk.runtime.models.meta:model` +
 Module `org.nasdanika.sdk.runtime.models.meta` +
-Package `models/meta`. The language-neutral type system (<<meta>>).
+Package `models/meta`. The language-neutral type system (<<meta>>). Its Zephyr Book is _Meta Model_.
 
 `models/jvm/model`::
 Maven `org.nasdanika.sdk.runtime.models.jvm:model` +
 Module `org.nasdanika.sdk.runtime.models.jvm` +
-Package `models/jvm`. What a JVM can name (<<jvm>>).
+Package `models/jvm`. What a JVM can name (<<jvm>>). Its Zephyr Book is _JVM Model_.
 
 `models/html/model`::
 Maven `org.nasdanika.sdk.runtime.models.html:model` +
 Module `org.nasdanika.sdk.runtime.models.html` +
-Package `models/html`, with the HTML generator (<<web>>).
+Package `models/html`, with the HTML generator (<<web>>). It is documented in the _HTML and Bootstrap Models_ Zephyr Book.
 
 `models/html/bootstrap`::
 Maven `org.nasdanika.sdk.runtime.models.html:bootstrap` +
 Module `org.nasdanika.sdk.runtime.models.html.bootstrap` +
-Packages `models/html/bootstrap`, `.../forms` and `.../components/content`, `navigation` and `overlays`, with `BootstrapStructure` and `NavigationTree` (<<web>>).
+Packages `models/html/bootstrap`, `.../forms` and `.../components/content`, `navigation` and `overlays`, with `BootstrapStructure` and `NavigationTree` (<<web>>). Its Zephyr Book is _HTML and Bootstrap Models_.
 
 `models/typescript/model`::
 Maven `org.nasdanika.sdk.runtime.models.typescript:model` +
 Module `org.nasdanika.sdk.runtime.models.typescript` +
-Package `models/typescript`, with the generator and its import management (<<web>>).
+Package `models/typescript`, with the generator and its import management (<<web>>). It is documented in the _TypeScript and React Models_ Zephyr Book.
 
 `models/react/model`, `models/react/bootstrap`, `models/react/flow`::
 Maven `org.nasdanika.sdk.runtime.models.react:model`, `:bootstrap` and `:flow` +
 Modules `org.nasdanika.sdk.runtime.models.react` +
 `org.nasdanika.sdk.runtime.models.react.bootstrap` +
 `org.nasdanika.sdk.runtime.models.react.flow` +
-React components, hooks and JSX with `ReactGenerator`; Bootstrap in React; React Flow with a layered layout (<<web>>).
+React components, hooks and JSX with `ReactGenerator`; Bootstrap in React; React Flow with a layered layout (<<web>>). Their Zephyr Book is _TypeScript and React Models_, in `models/react/model`.
+
+`models/diagram/model`::
+Maven `org.nasdanika.sdk.runtime.models.diagram:model` +
+Module `org.nasdanika.sdk.runtime.models.diagram` +
+Package `models/diagram`. What diagram notations have in common: diagrams, nodes with bounds and ports, connections with waypoints, layers, nesting, attributes, and the elements of other models a shape depicts (<<diagrams>>). Its Zephyr Book is _Diagram Model_.
+
+`models/diagram/elk`::
+Maven `org.nasdanika.sdk.runtime.models.diagram:elk` +
+Module `org.nasdanika.sdk.runtime.models.diagram.elk` +
+Layout of the diagram model with the Eclipse Layout Kernel: layered, tree, force and radial algorithms, in spans (<<diagrams>>). Its Zephyr Book is _Diagram Layout with ELK_.
+
+`models/presentation/model`::
+Maven `org.nasdanika.sdk.runtime.models.presentation:model` +
+Module `org.nasdanika.sdk.runtime.models.presentation` +
+Package `models/presentation`. Decks and slides on the diagram model: a presentation is a diagram of slides, and a slide is a diagram of shapes, text, images, tables and connectors [.sketch]#SKETCH# (<<diagrams>>). Its Zephyr Book is _Presentation Model_.
+
+`models/drawio/model`::
+Maven `org.nasdanika.sdk.runtime.models.drawio:model` +
+Module `org.nasdanika.sdk.runtime.models.drawio` +
+Package `models/drawio`. Draw.io documents as a model on the presentation and diagram models, loaded from and saved to `.drawio` files and the PNG and SVG images Draw.io exports, through a resource factory contributed to every resource set (<<diagrams>>). Its Zephyr Book is _Draw.io Model_.
+
+`models/svg/model`::
+Maven `org.nasdanika.sdk.runtime.models.svg:model` +
+Module `org.nasdanika.sdk.runtime.models.svg` +
+A subset of SVG as a model, with SVG's own namespace URI, `http://www.w3.org/2000/svg`, so that a resource of it is an SVG file: the elements and presentation attributes generated diagrams need, written and read by EMF (<<diagrams>>). Its Zephyr Book is _SVG Model_.
 
 === Book examples
 

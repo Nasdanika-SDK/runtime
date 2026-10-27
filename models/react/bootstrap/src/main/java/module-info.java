@@ -5,6 +5,7 @@ import org.nasdanika.sdk.runtime.models.react.bootstrap.services.FormsEPackagePr
 import org.nasdanika.sdk.runtime.models.react.bootstrap.services.NavigationEPackageProvider;
 import org.nasdanika.sdk.runtime.models.react.bootstrap.services.OverlaysEPackageProvider;
 
+// tag::module[]
 module org.nasdanika.sdk.runtime.models.react.bootstrap {
 	
 	exports org.nasdanika.sdk.runtime.models.react.bootstrap;
@@ -41,3 +42,4 @@ module org.nasdanika.sdk.runtime.models.react.bootstrap {
 		OverlaysEPackageProvider;
 	
 }
+// end::module[]

@@ -11,6 +11,18 @@
     <artifactId>model</artifactId>
     <packaging>jar</packaging>
     <name>Nasdanika SDK Runtime Meta Model</name>
+    <description>
+        Meta, a language-neutral type system: packages, classes, features, operations and the type
+        references between them, on the runtime's core model, written down once and projected to
+        whatever consumers need. Its Nasdanika Zephyr Book, "Meta Model", is built from
+        src/docs/asciidoc with listings from the tests, among them a vocabulary projected to a
+        glossary and to Ecore.
+    </description>
+
+    <properties>
+        <!-- The Zephyr Book's file name: the artifactId, model, says too little -->
+        <zephyr.book.name>meta-model-${project.version}-book</zephyr.book.name>
+    </properties>
 
     <build>
         <plugins>
@@ -41,5 +53,11 @@
             <groupId>org.eclipse.emf</groupId>
             <artifactId>org.eclipse.emf.ecore.xcore.lib</artifactId>
         </dependency>
+		<!-- The Zephyr Book saves vocabularies and instances as XMI -->
+		<dependency>
+		    <groupId>org.eclipse.emf</groupId>
+		    <artifactId>org.eclipse.emf.ecore.xmi</artifactId>
+		    <scope>test</scope>
+		</dependency>
     </dependencies>
 </project>

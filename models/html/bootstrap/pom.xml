@@ -11,6 +11,18 @@
     <artifactId>bootstrap</artifactId>
     <packaging>jar</packaging>
     <name>Nasdanika SDK Runtime HTML Bootstrap Model</name>
+    <description>
+        Bootstrap 5 and Bootswatch as a model on the runtime's HTML model: documents with themes,
+        layout, and components for content, navigation, overlays and forms, described by what they
+        mean and expanded to HTML by BootstrapStructure. The Nasdanika Zephyr Book of the HTML and
+        Bootstrap models, "HTML and Bootstrap Models", is built from src/docs/asciidoc with
+        listings from the tests of both.
+    </description>
+
+    <properties>
+        <!-- The Zephyr Book's file name: the book covers the HTML model and this one -->
+        <zephyr.book.name>html-bootstrap-${project.version}-book</zephyr.book.name>
+    </properties>
     <dependencies>
 		<dependency>
 		    <groupId>${project.groupId}</groupId>

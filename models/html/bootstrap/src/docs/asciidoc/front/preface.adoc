@@ -1,0 +1,46 @@
+[preface]
+== Preface
+
+This book is about web pages as models: HTML as an EMF model, with a generator that writes it, and Bootstrap 5, with the Bootswatch themes, as a model of what its components mean, expanded to HTML when a page is written.
+Its point is that a page generated from a model should itself be a model before it is text: checked, traced to its sources, and transformed, and only then written.
+
+The first part of the book is the why: what goes wrong when pages are generated as strings, and why Bootstrap is modeled by the meaning of its components and not by their markup.
+The second part is the how, for Java developers: the HTML model and its generator, Bootstrap documents and themes, the grid, the components for content, forms, navigation and overlays, and navigation trees for the side panels of sites.
+The third says what comes next.
+
+=== Who this book is for
+
+*Java developers* who generate documentation sites, reports and pages from models or data, and want them correct, themed and navigable without a template language or a Node.js build.
+
+*Writers of tools* who need the pages they produce to be checked and traced like the rest of their output.
+
+=== A book that stands on its own
+
+This book is one of the Nasdanika Zephyr Books: in-depth manuals, one per module of the Nasdanika SDK Runtime, in the manner of IBM Redbooks.
+It covers two modules, the HTML model and the Bootstrap model, because the second is built on the first and they are used together.
+_TypeScript and React Models_ is close to it: the same Bootstrap model renders in React components.
+You do not need that book, or any other book of the series, to read this one: where the books touch, this one repeats what you need.
+
+The series is named after the Bootswatch theme it is styled with, Zephyr, and has nothing to do with the Zephyr real-time operating system or with SmartBear's Zephyr test management.
+
+=== What you need
+
+* *A JDK for Java 25* and *Maven 3.9.16 or later*.
+* The HTML model's Java module is `org.nasdanika.sdk.runtime.models.html`, with the Maven coordinates `{group-id}:model:{runtime-version}`. The Bootstrap model's module is `org.nasdanika.sdk.runtime.models.html.bootstrap`, with the coordinates `{group-id}:{artifact-id}:{runtime-version}`.
+* Some familiarity with HTML and Bootstrap. Some familiarity with EMF helps: an EMF model is a set of Java interfaces generated from a metamodel, with containment, references, reflection and persistence for free.
+
+=== Conventions
+
+* *Every listing is included from a test* of the two modules and compiled and run when the book is built. Callouts, such as <1>, explain the lines they mark.
+* *Generated HTML is checked.* Each block of HTML a Bootstrap listing produces is a file in the module's tests, compared with what the generator writes.
+* *Status labels* mark what this edition does not have yet: [.planned]#PLANNED# for designed but not built, [.sketch]#SKETCH# for partly built.
+* *Voice.* I write in the first person.
+
+ifdef::editor-notes[]
+[IMPORTANT,caption="Editor's note"]
+====
+Editor's notes record inconsistencies between the models and their documentation found while writing. They are shown in builds for the author and left out of published editions.
+
+The HTML and Bootstrap models had no readmes; this book is their first documentation beyond the comments in their Xcore and the chapter "From models to the web" of the Nasdanika SDK Runtime book. The listings of `BootstrapGeneratorTests` were reformatted for the book, from lambdas on one line to blocks, with the same output.
+====
+endif::[]

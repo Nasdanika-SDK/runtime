@@ -1,0 +1,34 @@
+[#pages-are-models]
+== Pages are models
+
+A model that the people who own it cannot read is a private notation.
+The web is where they read, so pages are a generation target: documentation of models, reports, sites, galleries.
+
+Generating HTML by concatenating strings is easy to start and hard to keep correct: escaping, nesting, the order of attributes, the one closing tag that went missing.
+Templates are better, and still text: a template does not know that it is producing a table, and nothing can ask it.
+
+The runtime's generators build a model of the page and let a generator write the text.
+
+=== What a model of a page gives
+
+*Correctness by construction.*
+Text is escaped when it is written, attributes are quoted, void elements have no end tag, and the end tags are where the model's containment says.
+A `<script>` with `</script>` in its content does not end early.
+
+*Checks before writing.*
+A page model can be checked before it is written, by a test or by an agent: does every image have alternative text, does every link resolve, does every page of a site have the navigation panel.
+
+*Provenance.*
+Every node of the HTML model is `Marked`: it can carry markers that point to the elements of the source model it was generated from, so a cell of a generated table can say which feature of which element it shows.
+
+*Transformation.*
+A page model can be transformed after it is built: a navigation panel added to every page of a site after the pages were generated, a theme changed, a section moved.
+
+*Output that is the same everywhere.*
+The generator writes the same characters on every machine, so generated pages can be compared in a review and committed.
+
+=== No template language, no Node.js
+
+Pages are built in Java, with Java's types, refactoring and tests, and written by a generator that has no dependencies beyond EMF.
+Nothing runs on Node.js, and nothing is downloaded at build time.
+Pages that use Bootstrap load its stylesheet and script from a CDN, jsDelivr, by default.

@@ -1,0 +1,35 @@
+[appendix]
+[#reference]
+== Reference
+
+[cols="2,2,4",options="header"]
+|===
+| Class | Extends | Features
+| `Presentation` | diagram `Diagram` | `width`, `height`, `slides` (derived), `masterSlides` (derived)
+| `Slide` | diagram `Diagram` | `master`, `hidden`, `notes`
+| `MasterSlide` | `Slide` |
+| `Notes` | | `text`
+| `Shape` (abstract) | diagram `Node` | `order`, `rotation`, `flipHorizontal`, `flipVertical`
+| `GroupShape` | `Shape` |
+| `TextShape` | `Shape` | `paragraphs`
+| `Paragraph` | | `runs`, `indentLevel`, `alignment`
+| `TextRun` | | `text`, `fontFamily`, `fontSize`, `bold`, `italic`, `underline`, `color`, `hyperlink`
+| `ImageShape` | `Shape` | `location`, `contentType`
+| `MediaShape` | `Shape` | `location`, `contentType`
+| `TableShape` | `Shape` | `rows`
+| `Row` | | `cells`, `height`
+| `Cell` | | `paragraphs`, `columnSpan`, `rowSpan`
+| `ConnectorShape` | diagram `Connection` |
+|===
+
+=== From the diagram model
+
+[cols="2,4",options="header"]
+|===
+| Class | Features
+| `DiagramElement` | `semanticElements`, `children`; and from the core model `id`, `name`, documentation, markers, `icon`, `uris`, `attributes`
+| `Connectable` | `incomingConnections`, `outgoingConnections`
+| `Node` | `bounds`, `ports`
+| `Connection` | `source`, `target`, `waypoints`
+| `Point`, `Bounds` | `x`, `y`; `width`, `height`
+|===

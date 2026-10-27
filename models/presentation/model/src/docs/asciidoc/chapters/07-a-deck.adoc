@@ -1,0 +1,66 @@
+// Defaults for previewing this file on its own; index.adoc and the Maven build set these
+ifndef::booktests[:booktests: ../../../test/java/org/nasdanika/sdk/runtime/models/presentation/tests/book]
+
+[#a-deck]
+== A deck
+
+The deck of this chapter is a quarterly review of an architecture: a corporate master with a footer, a slide with two shapes and a connector between them, with notes, and a hidden backup slide with a table.
+
+=== Building
+
+Text shapes are built with a small helper:
+
+.Text shapes (`Deck.java`)
+[source,java]
+----
+include::{booktests}/Deck.java[tag=text,indent=0]
+----
+<1> Bounds come from the diagram model: a position relative to the parent, and a size, in points.
+<2> A paragraph of runs. Each run has its own formatting.
+
+.The deck (`Deck.java`)
+[source,java]
+----
+include::{booktests}/Deck.java[tag=deck,indent=0]
+----
+<1> The size of a slide, in points: 16 by 9.
+<2> Masters and slides are the children of the presentation.
+<3> A connector is a diagram connection. Setting its source adds it to the shape's outgoing connections.
+<4> Speaker notes.
+<5> Kept, not presented.
+
+=== Saving and loading
+
+A deck is a model, so it is saved and loaded like any other, here as XMI:
+
+.Saving and loading a deck (`PresentationBookTests.java`)
+[source,java]
+----
+include::{booktests}/PresentationBookTests.java[tag=save,indent=0]
+----
+<1> A resource set configured from the module path. With the runtime's `emf-json` module there, `review.yml` would be YAML.
+
+=== Every word of the deck
+
+Text is a tree, so extracting the words of what is presented is a walk:
+
+.The words of the presented slides (`PresentationBookTests.java`)
+[source,java]
+----
+include::{booktests}/PresentationBookTests.java[tag=words,indent=0]
+----
+<1> Masters are slides too: in this edition `slides` includes them.
+<2> The backup slide, with its table, is not presented.
+
+The same walk, writing runs back, translates a deck or changes its font.
+
+=== Topology
+
+Connectors are connections, so a slide has topology to navigate:
+
+.What the web application connects to (`PresentationBookTests.java`)
+[source,java]
+----
+include::{booktests}/PresentationBookTests.java[tag=topology,indent=0]
+----
+<1> The diagram model keeps both ends: a shape knows its outgoing and incoming connections.

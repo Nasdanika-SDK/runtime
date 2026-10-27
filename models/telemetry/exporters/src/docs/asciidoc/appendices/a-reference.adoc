@@ -1,0 +1,49 @@
+[appendix]
+[#reference]
+== Reference
+
+=== Packages
+
+[cols="1,3",options="header"]
+|===
+| Package | Namespace URI
+| `org.nasdanika.sdk.runtime.models.telemetry` | `{nsuri}`
+| `org.nasdanika.sdk.runtime.models.telemetry.traces` | `{nsuri}/traces`
+| `org.nasdanika.sdk.runtime.models.telemetry.logs` | `{nsuri}/logs`
+| `org.nasdanika.sdk.runtime.models.telemetry.metrics` | `{nsuri}/metrics`
+|===
+
+=== Java classes
+
+[cols="2,5",options="header"]
+|===
+| Class | What it is for
+
+| `traces.Changes`
+| `record(target, body)` records the changes the body makes to a resource set, a resource or an object, and hands the description to the current sink. `makeCurrent(sink)` and `with(context, sink)` set the sink; `sink()` returns it.
+
+| `exporters.ModelSpanExporter`
+| Exports spans to `TracesData`, in a resource or to a consumer; nests spans and resolves span references; is a sink of recorded changes. `resolveParents(data)` nests the spans of a batch.
+
+| `exporters.ModelLogRecordExporter`
+| Exports log records to `LogsData`, or, given a span exporter, into the spans they were emitted in.
+
+| `exporters.ModelMetricExporter`
+| Exports metrics to `MetricsData`.
+
+| `exporters.TelemetryConverter`
+| Converts the SDK's data to the model.
+
+| `exporters.Recording`
+| An SDK with the three exporters, recording to three resources saved on `close()`.
+|===
+
+=== Formats
+
+[cols="1,3",options="header"]
+|===
+| Extension | Format
+| `yml`, `json` | YAML and JSON, with the runtime's `emf-json` module
+| `xml`, `xmi` and any other | XMI, the default of a resource set configured by the runtime
+| `ebin`, `egz` | EMF's binary format, and the same compressed
+|===

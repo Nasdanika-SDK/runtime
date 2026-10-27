@@ -1,0 +1,94 @@
+= TypeScript and React Models: A Nasdanika Zephyr Book
+Pavel Vlasov
+:doctype: book
+:description: Browser applications generated from Java: TypeScript's declaration surface and React's components, hooks and JSX as EMF models, with generators that manage imports and write code a browser runs with no npm and no build step.
+:keywords: TypeScript, React, JSX, React Bootstrap, React Flow, code generation, import management, EMF, Xcore, Playwright, Nasdanika
+:lang: en
+:sectnums:
+:sectnumlevels: 2
+:partnums:
+:chapter-signifier: Chapter
+:part-signifier: Part
+:appendix-caption: Appendix
+:toc:
+:toclevels: 2
+:title-page:
+:listing-caption: Listing
+:figure-caption: Figure
+:table-caption: Table
+:source-language: java
+:tabsize: 4
+:hide-uri-scheme:
+:runtime-repo: https://github.com/Nasdanika-SDK/runtime
+:runtime-site: https://runtime.sdk.nasdanika.org
+:medium: https://medium.com/nasdanika
+:nsuri: https://runtime.sdk.nasdanika.org/models/react
+:nsuri-ts: https://runtime.sdk.nasdanika.org/models/typescript
+// Defaults for previews in an editor; the Maven build sets these
+ifndef::testdir[:testdir: ../../test/java]
+ifndef::testresourcesdir[:testresourcesdir: ../../test/resources]
+ifndef::runtime-root[:runtime-root: ../../../../../..]
+ifndef::runtime-version[:runtime-version: 2026.10.0]
+ifndef::group-id[:group-id: org.nasdanika.sdk.runtime.models.react]
+ifndef::artifact-id[:artifact-id: model]
+:booktests: {testdir}/org/nasdanika/sdk/runtime/models/react/tests
+:bookresources: {testresourcesdir}/expected
+:tstests: {runtime-root}/models/typescript/model/src/test/java/org/nasdanika/sdk/runtime/models/typescript/tests/book
+:tsresources: {runtime-root}/models/typescript/model/src/test/resources/org/nasdanika/sdk/runtime/models/typescript/tests/book
+:flowtests: {runtime-root}/models/react/flow/src/test/java/org/nasdanika/sdk/runtime/models/react/flow/tests
+:flowresources: {runtime-root}/models/react/flow/src/test/resources/expected
+:rbtests: {runtime-root}/models/react/bootstrap/src/test/java/org/nasdanika/sdk/runtime/models/react/bootstrap/tests
+:imagesdir: {testresourcesdir}/org/nasdanika/sdk/runtime/models/react/tests/book
+// The EPUB converter resolves images relative to this directory and packs them by that path
+ifdef::zephyr-epub[:imagesdir: ../../test/resources/org/nasdanika/sdk/runtime/models/react/tests/book]
+
+include::front/colophon.adoc[]
+
+include::front/preface.adoc[]
+
+[#why]
+= The Why
+
+[partintro]
+Why browser applications should be generated from Java through models, why a model and not a template, and where the models stop. No code is needed to read this part.
+
+include::chapters/01-javascript-as-bytecode.adoc[]
+
+include::chapters/02-why-a-model.adoc[]
+
+include::chapters/03-scope.adoc[]
+
+[#how]
+= The How
+
+[partintro]
+The models in Java: adding them to a project, TypeScript and its import management, React components with hooks and JSX in two syntaxes, component libraries as annotated models, and applications that are served, static, and walked through in a browser.
+
+include::chapters/04-getting-started.adoc[]
+
+include::chapters/05-the-typescript-model.adoc[]
+
+include::chapters/06-the-react-model.adoc[]
+
+include::chapters/07-component-libraries.adoc[]
+
+include::chapters/08-applications.adoc[]
+
+[#ahead]
+= Looking Ahead
+
+[partintro]
+Interfaces drawn once and rendered many ways, a user interface for any model, and vocabularies as npm packages.
+
+include::chapters/09-looking-ahead.adoc[]
+
+include::appendices/a-reference.adoc[]
+
+include::appendices/b-building.adoc[]
+
+include::appendices/c-glossary.adoc[]
+
+ifdef::backend-pdf[]
+[index]
+== Index
+endif::[]

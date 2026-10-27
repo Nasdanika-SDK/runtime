@@ -1,0 +1,31 @@
+// Defaults for previewing this file on its own; index.adoc and the Maven build set these
+ifndef::booktests[:booktests: ../../../test/java/org/nasdanika/sdk/runtime/models/html/bootstrap/tests]
+
+[#navigation-trees]
+== Navigation trees
+
+Documentation sites of models need navigation that works for people, crawlers and agents alike.
+`NavigationTree`, in the Bootstrap module's `builders` package, builds a side panel as nested lists of `details` and `summary` elements, which work without JavaScript, so crawlers and agents read the tree as plain links.
+
+* Branches on the path to the current item are open, and the current item is marked with `+aria-current="page"+`.
+* A click on a label follows its link; a click on the chevron opens or closes the branch.
+* Items have optional links and icons: CSS classes, such as `bi bi-filetype-java` from Bootstrap Icons, with a different icon for an open branch if wanted.
+* The tree's styles use Bootstrap's CSS variables, so it follows the theme and the color mode.
+
+.A tree, and a local tree (`NavigationTreeDemoTests.java`)
+[source,java]
+----
+include::{booktests}/NavigationTreeDemoTests.java[tag=tree,indent=0]
+----
+
+The tree needs `NavigationTree.stylesheet()` in the head, and `iconsStylesheet()` for Bootstrap Icons.
+
+=== Large models
+
+A page of a model with thousands of elements cannot carry the whole tree.
+A local tree, `local(true)`, writes the branches off the path to the current item as links without their children, so each page stays small and the tree is still complete when followed.
+
+=== The demo
+
+`NavigationTreeDemoTests.testTree` builds a site of the module's own sources: a page per file and directory, each with the tree, the current file open, and the file's content.
+It is written to `target/html-bootstrap/site/tree`, next to the demo site of <<components>>, and shows the tree on a few hundred pages.

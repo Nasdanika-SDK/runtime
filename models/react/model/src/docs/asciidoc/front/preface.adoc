@@ -1,0 +1,48 @@
+[preface]
+== Preface
+
+This book is about browser applications generated from Java.
+It covers four models of the Nasdanika SDK Runtime: TypeScript's declaration surface, React's components, hooks and JSX on top of it, and two libraries of React components, React Bootstrap and React Flow, as annotated models.
+Their generators write code that a browser runs as it is: no npm, no Node.js and no build step, and still applications, because React provides the dynamic behavior.
+
+The first part of the book is the why: JavaScript as another bytecode, why code is generated through models and not templates, and where the models stop on purpose.
+The second part is the how, for Java developers: import management in TypeScript, a React component in two syntaxes, component libraries, and applications that are served, written as static sites, and walked through in a browser.
+The third says what comes next.
+
+=== Who this book is for
+
+*Java developers* who need a browser application, a viewer of their models or data, a table, a diagram, a dashboard, and want to build it with Java's tools.
+
+*Writers of generators* who emit TypeScript or React from models, and want the imports, the provenance and the structure that a template loses.
+
+=== A book that stands on its own
+
+This book is one of the Nasdanika Zephyr Books: in-depth manuals, one per module of the Nasdanika SDK Runtime, in the manner of IBM Redbooks.
+It covers four modules, because they are used together: React builds on TypeScript, and the libraries on React.
+_HTML and Bootstrap Models_ is close to it: HTML elements and the Bootstrap model appear in JSX here.
+You do not need that book, or any other book of the series, to read this one: where the books touch, this one repeats what you need.
+
+The series is named after the Bootswatch theme it is styled with, Zephyr, and has nothing to do with the Zephyr real-time operating system or with SmartBear's Zephyr test management.
+
+=== What you need
+
+* *A JDK for Java 25* and *Maven 3.9.16 or later*.
+* The modules are `org.nasdanika.sdk.runtime.models.typescript`, `org.nasdanika.sdk.runtime.models.react`, `org.nasdanika.sdk.runtime.models.react.bootstrap` and `org.nasdanika.sdk.runtime.models.react.flow`.
+* Some familiarity with TypeScript and React. Some familiarity with EMF helps: an EMF model is a set of Java interfaces generated from a metamodel, with containment, references, reflection and persistence for free.
+* For the walk-through of <<applications>>, Chrome, or Playwright's Chromium, and access to the internet.
+
+=== Conventions
+
+* *Every listing is included from a test* and compiled and run when the book is built. Callouts, such as <1>, explain the lines they mark.
+* *Generated code is checked.* Each block of generated TypeScript, JSX or JavaScript is a file in the tests, compared with what the generator writes.
+* *Status labels* mark what this edition does not have yet: [.planned]#PLANNED# for designed but not built, [.sketch]#SKETCH# for partly built.
+* *Voice.* I write in the first person.
+
+ifdef::editor-notes[]
+[IMPORTANT,caption="Editor's note"]
+====
+Editor's notes record inconsistencies between the models and their documentation found while writing. They are shown in builds for the author and left out of published editions.
+
+This book replaces the readmes of the TypeScript and React models, `models/typescript/model/doc/readme.md`, `models/typescript/README.md` and `models/react/model/doc/readme.md`, which are deleted. The readmes referred to figures, `typescript.drawio` and `react.drawio`, which are in the modules and are not in this book. For the book, the expected outputs of `ReactGeneratorTests` moved from text blocks to files in `src/test/resources/expected`, and long lines of the tagged tests were wrapped; the output is the same. The Javadoc of `JvmPropertiesTableTests` says the React model has no emitter yet; `ReactGenerator` is that emitter.
+====
+endif::[]

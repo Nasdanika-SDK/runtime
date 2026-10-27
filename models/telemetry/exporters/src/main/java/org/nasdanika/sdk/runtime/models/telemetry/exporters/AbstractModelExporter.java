@@ -10,6 +10,10 @@ import java.util.function.Consumer;
 
 import org.eclipse.emf.ecore.EObject;
 import org.eclipse.emf.ecore.resource.Resource;
+import org.nasdanika.sdk.runtime.models.telemetry.TelemetryPackage;
+import org.nasdanika.sdk.runtime.models.telemetry.logs.LogsPackage;
+import org.nasdanika.sdk.runtime.models.telemetry.metrics.MetricsPackage;
+import org.nasdanika.sdk.runtime.models.telemetry.traces.TracesPackage;
 
 import io.opentelemetry.context.Context;
 import io.opentelemetry.context.Scope;
@@ -39,6 +43,16 @@ import io.opentelemetry.sdk.common.InstrumentationScopeInfo;
  * @param <S> Scope group type
  */
 public abstract class AbstractModelExporter<T, D extends EObject, R extends EObject, S extends EObject> {
+
+	static {
+		// Initializes the telemetry packages on the thread that creates an exporter. EMF's global
+		// package registry delegates by the thread's context class loader, and the SDK's export
+		// threads have none: a package first initialized there fails, and stays broken.
+		Objects.requireNonNull(TelemetryPackage.eINSTANCE);
+		Objects.requireNonNull(TracesPackage.eINSTANCE);
+		Objects.requireNonNull(LogsPackage.eINSTANCE);
+		Objects.requireNonNull(MetricsPackage.eINSTANCE);
+	}
 
 	private final Object lock;
 	private final Consumer<? super D> consumer;

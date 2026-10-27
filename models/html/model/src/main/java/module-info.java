@@ -1,6 +1,7 @@
 import org.eclipse.emf.ecore.EPackage;
 import org.nasdanika.sdk.runtime.models.html.services.HtmlEPackageProvider;
 
+// tag::module[]
 module org.nasdanika.sdk.runtime.models.html {
 
 	exports org.nasdanika.sdk.runtime.models.html;
@@ -13,3 +14,4 @@ module org.nasdanika.sdk.runtime.models.html {
 	provides EPackage with HtmlEPackageProvider;
 
 }
+// end::module[]

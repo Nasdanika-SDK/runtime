@@ -1,0 +1,33 @@
+[appendix]
+[#glossary]
+== Glossary
+
+Bare specifier::
+A module specifier that is a package name, such as `react`, resolved by an import map in a browser or by `node_modules` in Node.js.
+
+ES module::
+A JavaScript module with `import` and `export`, which browsers load natively.
+
+esm.sh::
+A CDN that serves npm packages as ES modules.
+
+Import map::
+A JSON map in a page from bare specifiers to URLs.
+
+Intrinsic::
+A JSX element that is an HTML element, such as `<div>`, as opposed to a component.
+
+JSX::
+The syntax of React for elements in JavaScript and TypeScript, compiled to `createElement` calls or to the automatic runtime.
+
+Library component::
+A component of a library, such as React Bootstrap's, modeled as an annotated class whose features are rendered as props.
+
+NodeNext::
+TypeScript's module resolution for Node.js's ES modules, under which a relative specifier carries the `.js` extension.
+
+Type-only import::
+`import type`, erased when compiled: for names used only in type positions.
+
+Walk-through::
+A recorded session of a browser driven through an application, step by step, with screenshots and the server's spans.

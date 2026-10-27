@@ -14,9 +14,9 @@ import java.util.jar.JarFile;
 import javax.imageio.ImageIO;
 
 /**
- * Generates the front cover of the book: 2100 by 2775 pixels, 7 by 9.25 inches at 300 dpi, the trim
- * size of the PDF. The fonts are Noto Sans, read from the Asciidoctor PDF jar (SIL Open Font
- * License), so the cover uses the same family as the headings.
+ * Generates the front cover of the book: 2232 by 2906 pixels, 189 by 246 mm (7.44 by 9.69 inches) at
+ * 300 dpi, the trim size of the PDF and of the printed editions. The fonts are Noto Sans, read from the Asciidoctor PDF
+ * jar (SIL Open Font License), so the cover uses the same family as the headings.
  *
  * <pre>
  * java Cover.java &lt;asciidoctorj-pdf jar&gt; &lt;logo&gt; &lt;output png&gt;
@@ -33,8 +33,8 @@ import javax.imageio.ImageIO;
  */
 public class Cover {
 
-	static final int WIDTH = 2100;
-	static final int HEIGHT = 2775;
+	static final int WIDTH = 2232;
+	static final int HEIGHT = 2906;
 
 	static final Color DEEP = new Color(0x0F, 0x4C, 0x6E);
 	static final Color BLUE = new Color(0x1B, 0x8E, 0xC6);
@@ -66,7 +66,7 @@ public class Cover {
 		g.setColor(Color.WHITE);
 		g.fillRect(0, 0, WIDTH, HEIGHT);
 		g.setColor(WASH);
-		g.fillRect(0, 0, WIDTH, 1520);
+		g.fillRect(0, 0, WIDTH, 1592);
 		g.setColor(DEEP);
 		g.fillRect(0, HEIGHT - 260, WIDTH, 260);
 		g.setColor(BLUE);
@@ -75,7 +75,7 @@ public class Cover {
 		// The logo, in a thin circle of the brand blue
 		int diameter = 1060;
 		int x = (WIDTH - diameter) / 2;
-		int y = 230;
+		int y = 241;
 		g.setColor(Color.WHITE);
 		g.fill(new Ellipse2D.Double(x - 30, y - 30, diameter + 60, diameter + 60));
 		g.setClip(new Ellipse2D.Double(x + 3, y + 3, diameter - 6, diameter - 6)); // The JPEG is square, the logo is round
@@ -85,12 +85,12 @@ public class Cover {
 		g.setStroke(new BasicStroke(10));
 		g.draw(new Ellipse2D.Double(x - 30, y - 30, diameter + 60, diameter + 60));
 
-		center(g, bold.deriveFont(150f), DEEP, "Nasdanika SDK Runtime", 1760);
-		center(g, regular.deriveFont(84f), BLUE, "More Structure with Less Effort", 1900);
+		center(g, bold.deriveFont(150f), DEEP, "Nasdanika SDK Runtime", 1843);
+		center(g, regular.deriveFont(84f), BLUE, "More Structure with Less Effort", 1990);
 		g.setColor(BLUE);
-		g.fillRect(WIDTH / 2 - 160, 1975, 320, 8);
-		center(g, regular.deriveFont(60f), MUTED, "Models, capabilities and telemetry on the JDK", 2100);
-		center(g, bold.deriveFont(84f), INK, "Pavel Vlasov", 2380);
+		g.fillRect(WIDTH / 2 - 160, 2068, 320, 8);
+		center(g, regular.deriveFont(60f), MUTED, "Models, capabilities and telemetry on the JDK", 2199);
+		center(g, bold.deriveFont(84f), INK, "Pavel Vlasov", 2492);
 		center(g, regular.deriveFont(52f), Color.WHITE, "nasdanika.com", HEIGHT - 110);
 
 		g.dispose();

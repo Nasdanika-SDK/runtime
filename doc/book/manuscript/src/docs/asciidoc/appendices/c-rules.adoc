@@ -83,12 +83,21 @@ Each rule names the chapter that explains it.
 . Reference forward with paths; they are resolved after the script has run (<<groovy-dsl>>).
 . Prefix a path with `./` when a local name clashes with a class name (<<groovy-dsl>>).
 
+=== Working with an assistant
+
+. Record the binding of decisions: what was decided, by whom or by what, in the course of what work, and on what evidence, at design time and at run time (<<built-with-ai>>).
+. Ask whether a task should exist before asking an assistant to do it faster (<<against-the-grain>>).
+. Keep ownership with the people who will live with the result: they choose the language and the stack, and they review what an assistant binds (<<against-the-grain>>).
+. Measure a system by what it does, not by its lines of code, services or boxes on a diagram (<<against-the-grain>>).
+
 === For assistants
 
 . Ground answers in models and their documentation, and cite elements by their URIs.
-. Check an API against the module reference (<<modules-reference>>) and the listings of this book, which compile and are tested, before using it. Do not invent methods.
+. Check an API against the module reference (<<modules-reference>>) and the listings of this book and of the Zephyr Books, which compile and are tested, before using it. Do not invent methods.
+. Go to a module's Nasdanika Zephyr Book for what this book only outlines, and to the module's test sources for the complete code behind a listing (<<zephyr-books>>).
 . Respect the status labels. Present [.sketch]#SKETCH# and [.planned]#PLANNED# features as designs, never as available.
 . Propose changes as recorded change sets or diffs that a person reviews; do not apply them silently.
+. Say which decisions you bound and why, so that the people who own the result can review them (<<built-with-ai>>).
 . Write original prose when documenting the JDK and other licensed specifications; never reproduce their text (<<jvm>>).
 . Prefer the surfaces the runtime gives you, commands and files, to new integrations.
 . When you learn something about a model element, write it into the element's documentation page, its micro-wiki stub, so the next person or assistant finds it there (<<core-model>>).

@@ -80,7 +80,8 @@ The diagram becomes one of the sources of that model.
 Everything a model gives is then available: validation against the metamodel, references across diagrams, spreadsheets and code, generation, and tools that understand the model without knowing that it was drawn.
 
 This is the point where the enterprise's own language gets written down, as a metamodel, while the people who speak it keep drawing in the editor they know.
-In the runtime, mapping diagrams to models is [.planned]#PLANNED#.
+In the runtime, the first half of this point is built, outside this module: the runtime's Draw.io model loads a diagram into a resource set as a model, and its elements, as elements of the runtime's diagram model, can depict the objects of any other model (<<looking-ahead>>).
+Mapping them by properties alone, without code, is [.planned]#PLANNED#.
 
 === Choosing a point
 

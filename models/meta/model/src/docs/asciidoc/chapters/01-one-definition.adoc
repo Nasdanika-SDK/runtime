@@ -1,0 +1,36 @@
+[#one-definition]
+== One definition, many spellings
+
+A class with named, typed, possibly multi-valued features is one of the most stable ideas in computing, and every ecosystem spells it its own way: Ecore, Java, XML Schema, JSON Schema, a database schema, TypeScript, a table on a wiki page, a spreadsheet.
+The differences are real and small, and most of them are about the host language, not about the domain.
+
+The cost is not the spelling.
+It is that one definition, of a customer, an order or a service, lives in many formats at once and nothing relates them: a DDL script, a JSON Schema, a partner's XSD, a Java class, a wiki table and a few spreadsheets.
+Each is a projection of a domain model that was never written down.
+Meta is the place to write it down once, and project.
+
+=== A published language
+
+In the terms of Domain-Driven Design, Meta is a https://martinfowler.com/bliki/PublishedLanguage.html[Published Language]: a documented, shared vocabulary that bounded contexts translate into and out of.
+It adds the part that was out of reach when the term was coined: the vocabulary is machine-checkable, because the types and the documentation are generated from it.
+
+It is deliberately not a superset of any of its sources.
+Whatever does not fit is dropped by design or carried in an annotation, and the loaders decide which (<<what-meta-leaves-out>>).
+
+=== Publishing is the deliverable
+
+A model that cannot be read by the people who own the vocabulary is a private notation.
+A vocabulary published as a site, with a page per element, its documentation, its neighbors and a diagram of its neighborhood, is a glossary that cannot drift from the types, because both come from one source.
+That is what a business stakeholder opens, and nobody has to hear the word "metamodel".
+
+=== Agents need structure
+
+An assistant reasoning over an organization's systems has to know what a customer is, what an account is, and how they relate.
+Today that context is assembled by hand, per project, from whatever prose can be found.
+An agent given a declared, versioned, owned vocabulary answers from it and cites it; an agent given a DDL script and a wiki export infers, and inference is not a chain of custody.
+
+=== The incumbent is a spreadsheet
+
+The competitor is not another modeling tool.
+It is a spreadsheet and a wiki table, which win because they are free, everyone can use them, and they never ask anyone to adopt anything.
+Meta treats them as inputs, not as enemies: the vocabulary is captured where it already lives, and projected from there [.planned]#PLANNED#.

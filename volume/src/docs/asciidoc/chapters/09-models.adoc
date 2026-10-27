@@ -1,0 +1,43 @@
+// Defaults for previewing this file on its own; index.adoc and the Maven build set these
+ifndef::booktests[:booktests: ../../../test/java/org/nasdanika/sdk/runtime/volume/book]
+
+[#models-in-volumes]
+== Models in volumes
+
+`VolumeURIHandler` bridges EMF onto a volume: URIs below a base URI are paths in the volume, so a resource set loads and saves resources through the volume's reads and writes.
+The model of this chapter is an Ecore package with a class per term of the glossary, so that the book needs no model of its own; any EMF model is stored the same way.
+
+.A resource set over a volume (`Models.java`)
+[source,java]
+----
+include::{booktests}/Models.java[tag=uri-handler,indent=0]
+----
+<1> URIs below `glossary://models/` are paths in the volume. The handler goes first, before EMF's default handlers.
+<2> A resource set configured by the runtime has every handler instrumented, but this one was added later, so it is wrapped too. Reads and writes become `URIHandler.read` and `URIHandler.write` spans.
+<3> `glossary://models/2026/glossary.ecore` is the path `2026/glossary.ecore`.
+<4> The bytes are buffered and written as one content when the stream is closed, so a failed save writes nothing. Missing parent directories are created first.
+
+.Saving and loading through a volume (`VolumeBookTests.java`)
+[source,java]
+----
+include::{booktests}/VolumeBookTests.java[tag=models-in-volume,indent=0]
+----
+<1> A writable volume over a temporary directory.
+<2> The resource's URI is `glossary://models/2026/glossary.ecore`, whatever the directory is.
+<3> The handler created the missing directory `2026` before writing.
+
+=== How URIs map to paths
+
+* The URI `<base>a/b%20c.xmi` is the path `a/b c.xmi`: the part below the base, split into segments, each decoded. The base itself is the root.
+* A query and a fragment are ignored, so the URI of an object maps to the path of its resource.
+* URIs whose decoded path has empty, `.` or `..` segments, or an encoded slash, are not handled.
+* A base without a trailing separator gets one, so `glossary://models` and `glossary://models/` are the same base.
+
+=== What the handler does
+
+* *Reading* opens the path's content. A missing path is a `NoSuchFileException`.
+* *Writing* needs the `Writable` capability, and is otherwise refused as read-only.
+* *Attributes* come from `stat`: the time stamp, the length, whether a path is a directory, whether it is read-only, which it is without the `Writable` capability, and the hash, as the attribute `hash`. Setting attributes is ignored, as by EMF's default handler.
+
+The model never mentions where it is stored.
+Moving models from a working tree to an in-memory volume, a Git overlay, or a volume over a remote system changes one handler, not the models and not the references between them.

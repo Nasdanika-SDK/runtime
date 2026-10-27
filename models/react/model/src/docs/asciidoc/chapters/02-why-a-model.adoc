@@ -1,0 +1,40 @@
+[#why-a-model]
+== Why a model, not a template
+
+Emitting TypeScript declarations from a model with a template is two hundred lines and a day's work.
+If that were the only consumer, a template would win.
+Four things carry the models instead.
+
+=== Import management
+
+This is the reason the TypeScript model exists.
+A generator has to get all of this right, for every reference, every time:
+
+* *Named, default and namespace imports*: three statements with three rules for local names.
+* *`import type` or a value import*, which decides whether the import is erased when compiled. Get it wrong across generated packages, and a cycle between packages stops compiling, or a package that needed only another's types drags in its run time.
+* *Relative or bare specifiers*: a file in this package, or a dependency that must appear in `package.json`.
+* *The rule of `NodeNext`*, under which a relative specifier of an ES module has a `.js` extension even in `.ts` source.
+* *Names that collide*: two types named `Account` from two modules, one of which must be aliased.
+
+Generators written by hand get this wrong repeatedly.
+In the model, a module's imports are computed when it is generated, from the type references reachable in it: a reference points at its declaration, and the generator walks from the declaration to its module and package, and decides the specifier and whether the import can be type-only.
+Imports written by hand remain for what the generator cannot see: imports for side effects, and types used only inside opaque text.
+
+React adds components used inside JSX to the problem: a `<Badge>` in a render function is an import too.
+The React model's JSX elements reference their components, so their imports are computed the same way.
+
+=== Many consumers, not one
+
+Models to TypeScript is the first consumer, not the only one.
+The React model extends the TypeScript model, and tool definitions and their schemas for agents are TypeScript too.
+So the TypeScript model is built as a good general target, not one shaped like EMF.
+
+=== A transformation between models
+
+A source model becomes a TypeScript or React model and then text, instead of becoming text directly.
+The result in the middle is a graph of objects that can be validated, queried, compared and reported on before a character is written.
+
+=== Generated code is marked
+
+Every element of the TypeScript model is a `NamedElement` of the runtime's core model, so every module, declaration and member can carry markers back to the source elements it came from, and documentation, which the generator writes as JSDoc.
+A constant in a browser bundle can still answer which spreadsheet cell or which database column produced it.

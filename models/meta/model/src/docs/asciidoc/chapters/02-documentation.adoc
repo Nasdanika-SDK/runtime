@@ -1,0 +1,37 @@
+[#documentation]
+== Documentation as structure
+
+Most formats carry documentation as one string, and some do better.
+The claim worth making is narrower than "nobody supports documentation":
+
+[cols="1,3",options="header"]
+|===
+| Source | Documentation it carries
+| Ecore | One string, in a GenModel annotation detail
+| Java | Nothing reflective: Javadoc lives in source comments, not in the type model
+| JDBC | `REMARKS`, one string per table or column, often empty
+| JSON Schema | A `title` and a `description`
+| Protocol Buffers | Source comments, and only when descriptors are built to keep them
+| XML Schema | `xs:annotation/xs:documentation`: repeatable, tagged with a language, markup permitted
+| OpenAPI | `description` in CommonMark, and `externalDocs`
+| OWL and RDFS | `rdfs:comment`, `skos:definition`, extensible and tagged with a language
+| *Meta*, through the core model | `documentation`, `docFormat`, `docRef`, `docContents`, `docSections`
+|===
+
+XML Schema, OpenAPI and OWL do respectably.
+None of them treats documentation as structure.
+A string cannot be divided into sections, cannot point to a document that lives elsewhere, and cannot declare its own format.
+
+Every Meta element is an element of the runtime's core model, so its documentation can do all three:
+
+* `documentation` is text, in the format `docFormat` names, such as Markdown;
+* `docRef` points to a document elsewhere;
+* `docContents` and `docSections` structure it, so a glossary entry can have a definition, examples and notes for implementers as separate sections.
+
+=== Where each element came from
+
+Core model elements also have markers: where an element came from, a file and a position, or a Git repository, branch and commit.
+For a vocabulary, markers are the provenance story: this class from that sheet of that spreadsheet, at that commit; this feature from that element of that schema.
+When two sources disagree about what a term means, the model shows both, and where each came from.
+
+Elements also have `uris`, alternative identifiers that let vocabularies maintained apart be assembled into one, and an `icon`.

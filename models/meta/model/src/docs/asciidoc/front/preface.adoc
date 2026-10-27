@@ -1,0 +1,43 @@
+[preface]
+== Preface
+
+This book is about Meta, the language-neutral type system of the Nasdanika SDK Runtime: a micro-model of typed domain models, with packages, classes, features, operations and the type references between them, in about twenty classifiers.
+A vocabulary is written down once in Meta, with its documentation as structure, and projected to whatever its consumers need: a glossary for people, a dynamic Ecore package for tools, TypeScript for browsers, JSON Schema for the tools of agents.
+
+The first part of the book is the why: why one definition should not live in many formats, why documentation should be structure, what Meta leaves out on purpose, and why there is no server.
+The second part is the how, for Java developers: a vocabulary of a library, built in Java, saved, and projected to a glossary and to Ecore.
+The third says what comes next: a text syntax, harvesters and projections, flattening, and vocabularies that vary by where they apply.
+
+=== Who this book is for
+
+*Architects and modelers* who keep a domain's vocabulary, today in spreadsheets, wiki tables and schemas that disagree, and want it in one place with the types and the documentation generated from it.
+
+*Developers* who write projections: from a vocabulary to code, schemas, documentation, or the context of an agent.
+
+=== A book that stands on its own
+
+This book is one of the Nasdanika Zephyr Books: in-depth manuals, one per module of the Nasdanika SDK Runtime, in the manner of IBM Redbooks.
+You do not need any other book of the series, or the Nasdanika SDK Runtime book, to read this one: where the books touch, this one repeats what you need.
+
+The series is named after the Bootswatch theme it is styled with, Zephyr, and has nothing to do with the Zephyr real-time operating system or with SmartBear's Zephyr test management.
+
+=== What you need
+
+* *A JDK for Java 25* and *Maven 3.9.16 or later*.
+* The model's Java module is `org.nasdanika.sdk.runtime.models.meta`, its Maven coordinates are `{group-id}:{artifact-id}:{runtime-version}`, and its namespace URI is `{nsuri}`.
+* Some familiarity with EMF helps in part two: an EMF model is a set of Java interfaces generated from a metamodel, with containment, references, reflection and persistence for free. Meta is itself an EMF model, and one of its projections is to Ecore, EMF's metamodel.
+
+=== Conventions
+
+* *Every listing is included from a test* of the module and compiled and run when the book is built. Callouts, such as <1>, explain the lines they mark.
+* *Status labels* mark what this edition does not have yet: [.planned]#PLANNED# for designed but not built, [.sketch]#SKETCH# for partly built.
+* *Voice.* I write in the first person.
+
+ifdef::editor-notes[]
+[IMPORTANT,caption="Editor's note"]
+====
+Editor's notes record inconsistencies between the model and its documentation found while writing. They are shown in builds for the author and left out of published editions.
+
+This book replaces the model's readme, `models/meta/model/doc/readme.md`, which is deleted. The readme placed Meta in a model tower with floors and an occupancy model; the runtime has neither yet, and this book describes what it has, with the rest as planned. The Xcore's comments still say "nxcore" for the core model.
+====
+endif::[]

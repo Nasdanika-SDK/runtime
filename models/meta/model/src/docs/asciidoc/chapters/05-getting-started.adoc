@@ -1,0 +1,45 @@
+// Defaults for previewing this file on its own; index.adoc and the Maven build set these
+ifndef::runtime-root[:runtime-root: ../../../../../../..]
+
+[#getting-started]
+== Getting started
+
+Meta is an EMF model, defined in Xcore and generated into Java when the runtime is built.
+
+=== Adding the model
+
+The runtime's models have a bill of materials, `org.nasdanika.sdk.runtime.models:bom`, which manages their versions.
+Import it in `dependencyManagement`, and depend on the model without a version:
+
+[source,xml,subs="attributes+"]
+----
+<dependency>
+    <groupId>{group-id}</groupId>
+    <artifactId>{artifact-id}</artifactId>
+</dependency>
+----
+
+The model is a named Java module:
+
+.The module declaration of the Meta model
+[source,java]
+----
+include::{runtime-root}/models/meta/model/src/main/java/module-info.java[tag=module,indent=0]
+----
+
+It requires the runtime's core model transitively, which brings EMF with it, and provides its `EPackage` as a service.
+A resource set created with the runtime's `NasdanikaResourceSet.createAndConfigure()`, in the `common` module, finds the package on the module path and loads and saves vocabularies in every format the runtime supports: YAML and JSON with the runtime's `emf-json` module, XMI, and EMF's binary format.
+The listings of this book use EMF alone, with XMI.
+
+=== Names that clash
+
+Meta's classes have the names of the concepts they model: `Package`, `Class`, `Enum`, `Object`.
+`Package`, `Class`, `Enum` and `Object` are also in `java.lang`, which every Java file imports.
+An explicit import of Meta's class wins over `java.lang` in that file, as in the listings of this book, and the JDK's class is then written with its package.
+
+=== What the build does
+
+The Xcore definition is in `src/main/resources/org/nasdanika/sdk/runtime/models/meta/meta.xcore`.
+Maven generates the Java sources into `src-gen` with the Xtext Maven plugin.
+The generated API is in three packages: the interfaces in `org.nasdanika.sdk.runtime.models.meta`, their implementations in `impl`, and the switch and adapter factory in `util`.
+The package provider is hand-written, in `services`.

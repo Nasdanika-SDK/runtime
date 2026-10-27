@@ -1,0 +1,43 @@
+// Defaults for previewing this file on its own; index.adoc and the Maven build set these
+ifndef::runtime-root[:runtime-root: ../../../../../../..]
+
+[#getting-started]
+== Getting started
+
+The model is an EMF model, defined in Xcore and generated into Java when the runtime is built.
+
+=== Adding the model
+
+The runtime's models have a bill of materials, `org.nasdanika.sdk.runtime.models:bom`, which manages their versions.
+Import it in `dependencyManagement`, and depend on the model without a version:
+
+[source,xml,subs="attributes+"]
+----
+<dependency>
+    <groupId>{group-id}</groupId>
+    <artifactId>{artifact-id}</artifactId>
+</dependency>
+----
+
+The model is a named Java module:
+
+.The module declaration of the presentation model
+[source,java]
+----
+include::{runtime-root}/models/presentation/model/src/main/java/module-info.java[tag=module,indent=0]
+----
+
+It requires the runtime's diagram model transitively, which brings the core model and EMF, and the runtime's `common` module, whose derived lists implement `slides` and `masterSlides`.
+It provides its `EPackage` as a service, so a resource set created with `NasdanikaResourceSet.createAndConfigure()` loads and saves decks in every format the runtime supports.
+
+=== Names that clash
+
+`Paragraph` is also the name of a class of the runtime's HTML model, and `Shape`, `Row` and `Cell` are common names.
+A file that uses both models imports one of them by its full name.
+
+=== What the build does
+
+The Xcore definition is in `src/main/resources/org/nasdanika/sdk/runtime/models/presentation/presentation.xcore`.
+Maven generates the Java sources into `src-gen` with the Xtext Maven plugin.
+The generated API is in three packages: the interfaces in `org.nasdanika.sdk.runtime.models.presentation`, their implementations in `impl`, and the switch and adapter factory in `util`.
+The package provider is hand-written, in `services`.

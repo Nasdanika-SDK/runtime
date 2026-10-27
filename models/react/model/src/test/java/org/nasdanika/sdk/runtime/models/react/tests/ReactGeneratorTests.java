@@ -61,18 +61,23 @@ public class ReactGeneratorTests {
 		badgeModule.setPath("components/badge");
 		tsPackage.getModules().add(badgeModule);
 
+		// tag::badge[]
 		ComponentDeclaration badge = REACT.createComponentDeclaration();
 		badge.setName("Badge");
 		badge.setExported(true);
 		badge.getParameters().add(Jsx.parameter("props"));
-		badge.setRender(Jsx.children(Jsx.tag("span", Jsx.literal("className", "badge")), Jsx.expression("props.name")));
+		badge.setRender(Jsx.children(
+				Jsx.tag("span", Jsx.literal("className", "badge")),
+				Jsx.expression("props.name")));
 		badgeModule.getDeclarations().add(badge);
+		// end::badge[]
 
 		Module module = tsx ? REACT.createTsxModule() : TS.createModule();
 		module.setName("users");
 		module.setPath("users");
 		tsPackage.getModules().add(module);
 
+		// tag::context[]
 		ContextDeclaration themeContext = REACT.createContextDeclaration();
 		themeContext.setName("ThemeContext");
 		themeContext.setExported(true);
@@ -81,6 +86,7 @@ public class ReactGeneratorTests {
 		}
 		themeContext.setDefaultValue(Jsx.code("\"light\""));
 		module.getDeclarations().add(themeContext);
+		// end::context[]
 
 		ComponentDeclaration userList = REACT.createComponentDeclaration();
 		userList.setName("UserList");
@@ -104,6 +110,7 @@ public class ReactGeneratorTests {
 			userList.getParameters().add(Jsx.parameter("props"));
 		}
 
+		// tag::hooks[]
 		StateHook filter = Jsx.state("filter", "setFilter", "\"\"");
 		if (tsx) {
 			filter.setStateType(primitive(PrimitiveType.STRING));
@@ -121,7 +128,9 @@ public class ReactGeneratorTests {
 		visible.getDependencies().add(Jsx.code("props.users"));
 		visible.getDependencies().add(Jsx.code("filter"));
 		userList.getHooks().add(visible);
+		// end::hooks[]
 
+		// tag::render[]
 		Div root = HTML.createDiv();
 		root.getClasses().add("user-list");
 		root.getStyle().put("margin-top", "1rem");
@@ -137,7 +146,10 @@ public class ReactGeneratorTests {
 		input.setValue("ignored, value is controlled");
 
 		ListItem item = HTML.createListItem();
-		Jsx.contents(item, Jsx.content(Jsx.element(Jsx.reference(badge), Jsx.attribute("name", "user.name"))), Jsx.htmlText(" & friends"));
+		Jsx.contents(
+				item,
+				Jsx.content(Jsx.element(Jsx.reference(badge), Jsx.attribute("name", "user.name"))),
+				Jsx.htmlText(" & friends"));
 
 		Paragraph empty = HTML.createParagraph();
 		Jsx.contents(empty, Jsx.htmlText("No users"));
@@ -150,10 +162,16 @@ public class ReactGeneratorTests {
 				Jsx.children(
 						Jsx.intrinsic(root, Jsx.attribute("data-theme", "theme")),
 						Jsx.intrinsic(label),
-						Jsx.intrinsic(input, Jsx.attribute("value", "filter"), Jsx.event("onChange", "event => setFilter(event.target.value)")),
-						Jsx.children(Jsx.intrinsic(HTML.createUnorderedList()), Jsx.iterator("visible", "user", "user.id", Jsx.intrinsic(item))),
+						Jsx.intrinsic(
+								input,
+								Jsx.attribute("value", "filter"),
+								Jsx.event("onChange", "event => setFilter(event.target.value)")),
+						Jsx.children(
+								Jsx.intrinsic(HTML.createUnorderedList()),
+								Jsx.iterator("visible", "user", "user.id", Jsx.intrinsic(item))),
 						Jsx.conditional("visible.length === 0", Jsx.intrinsic(empty), null))));
 		module.getDeclarations().add(userList);
+		// end::render[]
 
 		// A render prop style function returning JSX
 		FunctionDeclaration renderName = TS.createFunctionDeclaration();
@@ -192,53 +210,9 @@ public class ReactGeneratorTests {
 		Files.writeString(out.getParent().resolve("users.tsx"), users);
 		Files.writeString(out.resolve("badge.tsx"), badge);
 
-		assertEquals("""
-				import { Badge } from "./components/badge.js";
-				import { createContext, memo, useState, useContext, useMemo } from "react";
+		Expected.assertMatches("users.tsx", users);
 
-				export const ThemeContext = createContext<string>("light");
-
-				export interface UserListProps {
-				  users: { id: number; name: string }[];
-				}
-
-				/**
-				 * Users, filtered by name.
-				 */
-				export const UserList = memo(function UserList(props: UserListProps) {
-				  const [filter, setFilter] = useState<string>("");
-				  const theme = useContext(ThemeContext);
-				  const visible = useMemo(() => (props.users.filter(user => user.name.includes(filter))), [props.users, filter]);
-				  return (
-				    <ThemeContext.Provider value={theme}>
-				      <div className="user-list" data-theme={theme} style={{ marginTop: "1rem" }}>
-				        <label htmlFor="filter">Filter: </label>
-				        <input
-				          id="filter"
-				          type="text"
-				          value={filter}
-				          onChange={event => setFilter(event.target.value)}
-				        />
-				        <ul>
-				          {visible.map(user => <li key={user.id}><Badge name={user.name} />{" & friends"}</li>)}
-				        </ul>
-				        {(visible.length === 0) && <p>No users</p>}
-				      </div>
-				    </ThemeContext.Provider>
-				  );
-				});
-
-				function renderName(name) {
-				  const upper = name.toUpperCase();
-				  return <b>{upper}</b>;
-				}
-				""", users);
-
-		assertEquals("""
-				export function Badge(props) {
-				  return <span className="badge">{props.name}</span>;
-				}
-				""", badge);
+		Expected.assertMatches("badge.tsx", badge);
 	}
 
 	/**
@@ -255,52 +229,9 @@ public class ReactGeneratorTests {
 		Files.writeString(out.getParent().resolve("users.js"), users);
 		Files.writeString(out.resolve("badge.js"), badge);
 
-		assertEquals("""
-				import { Badge } from "./components/badge.js";
-				import { createContext, memo, useState, useContext, useMemo, createElement } from "react";
+		Expected.assertMatches("users.js", users);
 
-				export const ThemeContext = createContext("light");
-
-				/**
-				 * Users, filtered by name.
-				 */
-				export const UserList = memo(function UserList(props) {
-				  const [filter, setFilter] = useState("");
-				  const theme = useContext(ThemeContext);
-				  const visible = useMemo(() => (props.users.filter(user => user.name.includes(filter))), [props.users, filter]);
-				  return createElement(ThemeContext.Provider, { value: theme },
-				    createElement("div", {
-				      className: "user-list",
-				      "data-theme": theme,
-				      style: { marginTop: "1rem" }
-				    },
-				      createElement("label", { htmlFor: "filter" }, "Filter: "),
-				      createElement("input", {
-				        id: "filter",
-				        type: "text",
-				        value: filter,
-				        onChange: event => setFilter(event.target.value)
-				      }),
-				      createElement("ul", null,
-				        visible.map(user => createElement("li", { key: user.id },
-				          createElement(Badge, { name: user.name }),
-				          " & friends"))),
-				      (visible.length === 0) && createElement("p", null, "No users")));
-				});
-
-				function renderName(name) {
-				  const upper = name.toUpperCase();
-				  return createElement("b", null, upper);
-				}
-				""", users);
-
-		assertEquals("""
-				import { createElement } from "react";
-
-				export function Badge(props) {
-				  return createElement("span", { className: "badge" }, props.name);
-				}
-				""", badge);
+		Expected.assertMatches("badge.js", badge);
 	}
 
 	/**

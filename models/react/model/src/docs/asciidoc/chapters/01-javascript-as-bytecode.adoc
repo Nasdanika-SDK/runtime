@@ -1,0 +1,42 @@
+[#javascript-as-bytecode]
+== JavaScript as another bytecode
+
+A React application is usually a Node.js project: a package manifest, hundreds of packages in `node_modules`, a bundler and a build.
+None of it is needed to run React in a browser.
+Browsers load ES modules natively, an import map in the page resolves bare specifiers such as `react` to URLs, and a CDN such as esm.sh serves npm packages as ES modules.
+What remains is the application's own code, and the runtime generates that from models.
+
+So a Java developer builds a browser application with Java's APIs and models, with no npm, no Node.js and no build step, and with little knowledge of how React works.
+What runs in the browser can be deployed as static files with no JVM behind it, and still be an application.
+
+=== Not a new idea
+
+With the TypeScript and React models, JavaScript is a target of generation: the format a machine executes, written by a tool from a source people work in, as bytecode is written by a compiler.
+Google Web Toolkit compiled Java to JavaScript in 2006, and J2CL, TeaVM, Kotlin/JS and Scala.js do it today.
+The runtime's route is different, generation from models into readable modules, not compilation of Java code, but the destination is the same: people work on the JVM, and the browser gets JavaScript.
+
+=== A question of direction
+
+On the JVM, with these generators, a team can do most of what it would do with Node.js to build and serve a browser application: generate modules and pages, serve them, test them in a browser, and deploy them as static files.
+Not all of it: bundlers, React rendered on the server, and the tool chain of linters and component test runners run on Node.js, and only some of them run on the JVM.
+The other direction works as text, since a Node.js program can write Java source as easily as Java writes JavaScript.
+What it cannot do is be the JVM: load EMF, JDBC drivers and the rest of the enterprise ecosystem into its own process.
+The JVM can generate and host most of a browser application; Node.js can generate Java but cannot host what Java runs on.
+
+=== Data as a versioned module
+
+Applications are one output; data is the other.
+Models published as Maven artifacts need a JVM to be used.
+The TypeScript model is how the same models, and the data loaded into them, reach consumers that have no JVM and never will: browsers, Node.js tooling and React applications.
+
+The payload is not a REST endpoint or a JSON document fetched at run time.
+It is an npm package, and that choice carries most of the value [.planned]#PLANNED#:
+
+* *Types and data ship together.* One generation emits the interfaces and the data that satisfies them, so `tsc` checks every access against the schema the data actually has.
+* *Versions are snapshots.* `2026.9.0` is the data as of that release, immutable and installable next to the one before it, so "how far has this drifted" is a comparison of two packages.
+* *Distribution is a solved problem.* Registries, scopes, integrity hashes, lockfiles and mirrors exist and are operated by people whose job that is.
+* *No back end.* An application that imports its reference data has no API to stand up and no reason for anything to leave the machine.
+* *Provenance survives the trip.* Every generated element can carry markers back to what it was generated from.
+
+In the browser, the stance is viewer and analyzer first.
+Authoring stays with the sources.

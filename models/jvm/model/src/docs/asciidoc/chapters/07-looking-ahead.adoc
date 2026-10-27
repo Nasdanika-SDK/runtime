@@ -1,0 +1,51 @@
+[#looking-ahead]
+== Looking ahead
+
+Everything in this chapter is [.planned]#PLANNED#.
+
+=== A live loader
+
+A live loader comes first, before any scanner of jars.
+It is smaller, with no traversal of jars and no decision about multi-release jars, and it produces a real graph to ask questions of: it walks the boot layer and its parents, reads each module descriptor, takes readability from the configuration, and reflects over loaded types.
+Where reflection does not reach, as for a field's constant value, it reads the loaded type's own class file through the JDK's class file API, final since Java 24, with no dependency.
+
+=== A scanner of class files
+
+A build-time scanner follows, and adds what a running VM cannot show: types that were never loaded.
+It populates the same model, and handles two things deliberately:
+
+* *Multi-release jars*, recording which release it modeled.
+* *Automatic modules*, whose names come from `Automatic-Module-Name` or the file name, not from a descriptor.
+
+Loaders produce large models: a moderate application yields thousands of types and tens of thousands of members.
+That makes the model a useful stress case for anything that queries it, and a better corpus for a query engine than anything written by hand: realistic size, deep containment, heavy cross-referencing, and many instances of few classes.
+
+=== Annotations, and the projection to Meta
+
+Annotations are the most likely first addition to the model (<<spine>>).
+The projection to Meta gives anyone comparing a Java type with an Ecore class or a JSON Schema the route they expect, and parses generic signatures into type structure on the way.
+
+=== Applications
+
+*Ask a running process what it is.* Logs, metrics, traces and profiles describe behavior; a model of the JVM describes composition.
+
+*Deployed versus running.* The difference between the dependency tree and the resolved graph, computed rather than argued.
+
+*Reports that are expensive today.* Which class file versions are present, which modules are automatic, which packages are opened for deep reflection and to whom.
+
+*Version questions with an answer.* With layers, which version of a module a given piece of code actually reads.
+
+*A join point for telemetry.* Because identity is the JVM's own, a stack trace, a JFR event, a profiler's hot list and an OpenTelemetry span resolve to model elements without a mapping. Static analysis cannot see reflective calls, and the run time cannot see what was never exercised, so the union is a call graph with evidence rather than inference.
+
+*Coverage that knows what runs.* With a live loader recording what was loaded and coverage attached from builds, two lists appear that a coverage tool alone cannot produce: covered but never loaded, which is tests for code that does not run, and loaded but not covered, which is the real list of risks.
+
+*The JVM as files.* A snapshot presented as a volume of the runtime and served over HTTP or WebDAV is a running system that an agent reads with the file tools it already has.
+
+=== Documentation, and a licensing constraint
+
+Documentation of the model's elements is meant to be generated, and a constraint applies to every element.
+The Java SE specifications are under Oracle's terms, and OpenJDK's Javadoc is under the GPL version 2 with the Classpath Exception; neither permits publishing derived text under the runtime's license.
+
+That does not block generated documentation, because concepts are not copyrightable and expression is.
+It does mean that an assistant asked to describe `requires transitive` may reproduce Javadoc it remembers.
+Generated documentation must be original prose, never pasted, and checked for verbatim overlap with the official text before it is published.

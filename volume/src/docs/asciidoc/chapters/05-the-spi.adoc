@@ -1,0 +1,45 @@
+[#the-spi]
+== The volume SPI
+
+`GenericVolume<C>` is the SPI, with the type of content as a parameter; `Volume` is the flavor whose content is bytes, `Content`.
+A volume has five methods:
+
+[cols="2,5",options="header"]
+|===
+| Method | Contract
+| `stat(path)` | The entry at a path, or empty when nothing is there
+| `list(directory)` | The children of a directory, in a stable order. Blocking, which is fine on virtual threads
+| `content(path)` | The content at a path, lazily: no I/O happens until it is opened, and opening the content of a missing path throws `NoSuchFileException`
+| `caseSensitive()` | Declared, because some clients ignore case: Windows Explorer over WebDAV, macOS by default
+| `capability(type)` | An optional capability, or empty
+|===
+
+=== Entries
+
+An `Entry` is a record of a path, a kind, `FILE`, `DIRECTORY` or `LINK`, a size, a hash and a modification time.
+The size is -1 when unknown, and for directories; the hash and the time are null when unknown.
+
+A volume that knows its hashes cheaply should report them (<<content-not-streams>>).
+A volume served over WebDAV should know the sizes of its files, because clients need them to read files reliably.
+
+=== Capabilities
+
+Everything beyond reading is optional, and discovered by asking for it:
+
+[cols="2,5,2",options="header"]
+|===
+| Capability | Adds | Status
+| `Writable` | `write(path, content)`, `delete`, `move`, atomic where the backend supports it and `atomicMove()` says so, and `createDirectory` | [.available]#AVAILABLE#
+| `Watchable` | `changes()`, a `Flow.Publisher` of change batches: how a backend reports changes underneath it | [.sketch]#SKETCH#
+| `Transactional` | `begin()`, then `commit(message)` or `rollback()` on the transaction | [.sketch]#SKETCH#
+| `Searchable` | `glob(pattern)` and `grep(regex, glob)`, pushed down to a backend that can do better than a walk | [.sketch]#SKETCH#
+| `Linked` | `readLink(path)`: in a model presented as files, references that are not containment are links | [.sketch]#SKETCH#
+|===
+
+The interfaces of all five are in the module.
+"Available" means that a volume of the runtime implements the capability; the others are declared so that the volumes to come, and the code that will use them, agree on their shape.
+
+A change batch has a sequence number, changes and an origin; a change is a `CREATE`, `MODIFY`, `DELETE` or `MOVE` of a path, or `RESYNC`, alone in a batch, which tells a subscriber that fell behind to scan again.
+
+A read-only volume implements the core and answers empty to every capability.
+A volume over a Git repository will implement the core, `Writable`, `Transactional` and `Watchable`, and nothing forces it to implement the rest.

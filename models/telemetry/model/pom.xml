@@ -10,7 +10,7 @@
 	</parent>
 	<artifactId>model</artifactId>
 	<packaging>jar</packaging>
-	<name>Nasdanika SDK Runtime File Model</name>
+	<name>Nasdanika SDK Runtime Telemetry Model</name>
 
 	<build>
 		<plugins>

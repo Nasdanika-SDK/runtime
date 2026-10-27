@@ -47,5 +47,6 @@
 		<module>jvm</module>
 		<module>web</module>
 		<module>ui</module>
+		<module>diagram</module>
 	</modules>
 </project>

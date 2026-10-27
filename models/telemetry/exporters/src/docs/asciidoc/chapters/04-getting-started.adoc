@@ -1,0 +1,60 @@
+// Defaults for previewing this file on its own; index.adoc and the Maven build set these
+ifndef::runtime-root[:runtime-root: ../../../../../../..]
+
+[#getting-started]
+== Getting started
+
+=== Two modules, and why
+
+Instrumented code, the runtime's included, depends on the OpenTelemetry API only.
+The SDK is needed in one place: the assembly that runs a unit of work and decides where its telemetry goes.
+The exporters depend on the SDK, so they live in a module of their own, and the telemetry model and everything instrumented stay free of it.
+
+[cols="2,3",options="header"]
+|===
+| Module | Who needs it
+| `org.nasdanika.sdk.runtime.models.telemetry` | Code that reads, writes or records into telemetry models; it depends on EMF and the OpenTelemetry API
+| `org.nasdanika.sdk.runtime.models.telemetry.exporters` | The assembly that runs a unit of work; it depends on the model, the runtime's `common` module and the OpenTelemetry SDK
+|===
+
+=== Adding the exporters
+
+The runtime's bill of materials, `org.nasdanika.sdk.runtime:bom`, manages the versions of the runtime's modules, of its models, and of their dependencies, OpenTelemetry among them.
+Import it in `dependencyManagement`, and depend on the exporters, which bring the model, and on the SDK, without versions:
+
+[source,xml,subs="attributes+"]
+----
+<dependency>
+    <groupId>{group-id}</groupId>
+    <artifactId>{artifact-id}</artifactId>
+</dependency>
+<dependency>
+    <groupId>io.opentelemetry</groupId>
+    <artifactId>opentelemetry-sdk</artifactId>
+</dependency>
+----
+
+For telemetry in YAML or JSON, add the runtime's `org.nasdanika.sdk.runtime:emf-json`; XMI and EMF's binary format need nothing more.
+
+The modules are named Java modules:
+
+.The module declaration of the telemetry model
+[source,java]
+----
+include::{runtime-root}/models/telemetry/model/src/main/java/module-info.java[tag=module,indent=0]
+----
+
+The model provides its four packages as services, so a resource set created with the runtime's `NasdanikaResourceSet.createAndConfigure()` loads telemetry in any format the runtime reads.
+
+.The module declaration of the exporters
+[source,java]
+----
+include::{runtime-root}/models/telemetry/exporters/src/main/java/module-info.java[tag=module,indent=0]
+----
+
+=== What the build does
+
+The model is defined in Xcore, in `models/telemetry/model/src/main/resources/org/nasdanika/sdk/runtime/models/telemetry`: `telemetry.xcore`, `traces.xcore`, `logs.xcore` and `metrics.xcore`.
+Maven generates the Java sources into `src-gen` with the Xtext Maven plugin.
+The change recording classes extend those of EMF's change model, which the build reads from a copy in `src/main/xcore-deps`, because the standalone Xcore builder cannot resolve the original's relative references inside a jar.
+`Changes`, which records changes, is hand-written, in the `traces` package.

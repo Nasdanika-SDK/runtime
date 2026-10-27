@@ -1,0 +1,31 @@
+[#scope]
+== Where the models stop
+
+=== The declaration surface, not the type algebra
+
+Modeling all of TypeScript would take several hundred classes and would still trail a language that adds features to its type system every quarter.
+The TypeScript model covers what a generator needs to write a declaration, about thirty classes, and stops, with three escape hatches:
+
+* `OpaqueTypeReference`: conditional types, mapped types, template literal types, `keyof` and `typeof` constructions.
+* `OpaqueMember`: index signatures, call signatures, sets of overloads, awkward decorators.
+* `CodeBlock`: the bodies of functions and methods, initializers, default values.
+
+All three have a `references` list, and that detail makes them safe: opaque text still declares the named types used in it, so an opaque block does not defeat import management.
+
+=== What React leaves opaque
+
+Hook semantics, suspense, transitions, server components, error boundaries and routing are not modeled.
+They arrive as `OpaqueHook` and `OpaqueJsx`, with `references`, which keeps the React model at about thirty classes instead of chasing a framework that moves every quarter.
+
+=== Write only
+
+There is no loader, and probably never will be.
+Parsing TypeScript means the TypeScript compiler API, which is TypeScript, not Java, and a second-rate parser in Java for a language this size is not worth starting.
+If reverse engineering is ever wanted, it belongs on the TypeScript side, emitting the model as JSON.
+The omission is a decision, not a gap.
+
+=== Ownership through markers
+
+The models sit on the runtime's core model and need nothing from models of architecture, ownership or governance.
+Ownership arrives through markers, not supertypes: a generated module points at the source elements it was generated from, and those are owned and governed.
+Making every JSX attribute an owned object would attach ownership to the artifact instead of to its cause.

@@ -1,0 +1,80 @@
+// Defaults for previewing this file on its own; index.adoc and the Maven build set these
+ifndef::htmltests[:htmltests: ../../../../../model/src/test/java/org/nasdanika/sdk/runtime/models/html/tests]
+
+[#the-html-model]
+== The HTML model
+
+=== Nodes and elements
+
+Everything that can be placed into an element is a `Node`, and every node is `Marked`, with markers to the elements of a source model it came from.
+
+[cols="2,5",options="header"]
+|===
+| Node | What it writes
+| `Text` | Text, escaped
+| `Markup` | HTML, verbatim, without escaping: an escape hatch for content the model does not cover, such as the output of a Markdown renderer
+| `Comment` | An HTML comment
+| `NodeReference` | Another node, contained elsewhere: the same fragment in several places
+| `Element` | An element
+|===
+
+An `Element` has an `id`, `classes`, a `style` map from properties to values, and `attributes`: a map for the attributes the element's class does not model, `data-*` and `aria-*` among them, where a null value is a boolean attribute.
+
+Elements with content implement `Container`, whose `contents` are nodes.
+The model does not encode the rules of HTML's content model, such as no `div` in a `p`, in its types.
+
+The model has a class per element that pages commonly need, with that element's attributes as features: documents, sections and headings, paragraphs and phrasing, links and images, lists, tables, and forms.
+`GenericElement` and `GenericVoidElement` write any other tag, custom elements included.
+
+=== The document
+
+A `Document` is the `html` element preceded by the doctype, with `lang`, a `head` and a `body`.
+The `Head` has a `charset`, `utf-8` by default and written first, a `title`, a `base`, `metas`, `links`, `stylesheets`, an `importMap`, and `scripts`.
+A `Stylesheet` with an `href` is a `link`; with `content`, a `style` element.
+A `Script` has `src`, `content` and `module`.
+
+.A document (`TestGenerator.java`, in the HTML model)
+[source,java]
+----
+include::{htmltests}/TestGenerator.java[tag=document,indent=0]
+----
+
+The generator indents block elements and keeps mixed content on one line, as the paragraph with the bold "World" shows.
+`setIndent(null)` writes everything on one line.
+
+=== Attributes and escaping
+
+Attributes of an element's class are written when they are set: strings and numbers as `name="value"`, booleans as a bare attribute when true, and not at all when false.
+
+.Attributes and escaping (`TestGenerator.java`)
+[source,java]
+----
+include::{htmltests}/TestGenerator.java[tag=escaping,indent=0]
+----
+
+The `data-title` value is escaped for an attribute, the option's text for content, and the script's content so that `</script>` in it does not end the element.
+
+=== Import maps
+
+An `ImportMap` in the head maps bare module specifiers, such as `react`, to URLs, globally and in scopes for prefixes of URLs, and is written as a `script` of type `importmap` before the scripts that need it.
+That is how a page runs ES modules from a CDN with no bundler; the runtime's React model generates applications that way.
+
+=== The generator and the structure
+
+`Generator` writes a node, a document or a fragment, to a string or an `Appendable`.
+It asks an `HtmlStructure` what a model element is in HTML: its tag name, whether it is void, its classes, attributes and children.
+`HtmlStructure` reads the model reflectively, with two hints on features in the annotation `urn:org.nasdanika:html`: `attribute` for an HTML name that differs from the feature's name, such as `http-equiv`, and `logical` for features that are not attributes, such as a heading's level.
+
+Subclasses of `HtmlStructure` add what a library built on HTML needs.
+`BootstrapStructure` is one; the next two chapters use it.
+
+=== Library elements
+
+`LibraryElement` is the base of the elements of a library built on HTML, Bootstrap's among them.
+Its classes are written from annotations, looked up on the class and then its supertypes:
+
+* `tag`, the tag name, and `classes`, the classes every element of the class has;
+* on a feature, a pattern of classes, `btn-{}`, in which the value replaces `{}`, or, for a boolean, a class that is there when it is true;
+* `child`, for a string feature written as a text child.
+
+A library's model is therefore annotated Xcore, with code only for what annotations cannot say.
