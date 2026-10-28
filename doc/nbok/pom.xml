@@ -1,0 +1,33 @@
+<project xmlns="http://maven.apache.org/POM/4.0.0" xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
+	xsi:schemaLocation="http://maven.apache.org/POM/4.0.0 http://maven.apache.org/xsd/maven-4.0.0.xsd">
+	<modelVersion>4.0.0</modelVersion>
+	<parent>
+		<artifactId>parent</artifactId>
+		<groupId>org.nasdanika.sdk.runtime.doc</groupId>
+		<version>2026.10.0</version>
+		<relativePath>..</relativePath>
+	</parent>
+	<artifactId>nbok</artifactId>
+	<name>Nasdanika Body of Knowledge</name>
+	<description>
+		What every book of the Nasdanika Body of Knowledge shares, under nbok/ in the jar: the NBOK
+		appendix, word for word in every book. The runtime's books include it from doc/nbok; books in
+		other repositories unpack the jar of the runtime release they are built with.
+	</description>
+	<properties>
+		<!-- Unlike the rest of doc, this is consumed outside the runtime -->
+		<maven.deploy.skip>false</maven.deploy.skip>
+	</properties>
+	<build>
+		<resources>
+			<resource>
+				<directory>${project.basedir}</directory>
+				<targetPath>nbok</targetPath>
+				<includes>
+					<include>*.adoc</include>
+					<include>README.md</include>
+				</includes>
+			</resource>
+		</resources>
+	</build>
+</project>

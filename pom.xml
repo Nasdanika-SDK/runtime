@@ -535,6 +535,7 @@
 								<idseparator>-</idseparator>
 								<xrefstyle>short</xrefstyle>
 								<experimental>true</experimental>
+								<doi>10.5281/zenodo.23740338</doi>
 							</attributes>
 						</configuration>
 						<executions>

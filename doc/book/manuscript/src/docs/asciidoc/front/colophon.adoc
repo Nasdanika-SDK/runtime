@@ -3,7 +3,7 @@
 
 *Nasdanika SDK Runtime: More Structure with Less Effort*
 
-Edition {revnumber}, built on {revdate}.
+Edition {revnumber}, built on {revdate}. DOI: {doi}.
 
 This edition describes Nasdanika SDK Runtime {runtime-version}. Every code listing in it is included from an example module that is compiled and tested against that version of the runtime when the book is built.
 
@@ -18,7 +18,7 @@ In addition, you may use the code of this book's listings in your own programs a
 
 Neither license covers the Nasdanika name or logo: CC BY 4.0 grants no trademark rights.
 
-Eclipse, EMF and Xtext are trademarks of the Eclipse Foundation. Java and OpenJDK are trademarks or registered trademarks of Oracle and its affiliates. OpenTelemetry is a project of the Cloud Native Computing Foundation. Other names may be trademarks of their owners. Their use here identifies the technologies the runtime builds on and implies no endorsement.
+Eclipse, EMF and Xtext are trademarks of the Eclipse Foundation. Java and OpenJDK are trademarks or registered trademarks of Oracle and its affiliates. IBM and Redbooks are trademarks of International Business Machines Corporation. OpenTelemetry is a project of the Cloud Native Computing Foundation. Other names may be trademarks of their owners. Their use here identifies the technologies the runtime builds on and implies no endorsement.
 
 The source of this book, its examples, and the runtime it describes are at {runtime-repo}.
 

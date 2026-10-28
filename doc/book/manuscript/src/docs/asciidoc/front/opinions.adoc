@@ -1,0 +1,58 @@
+[preface]
+[#where-the-opinions-come-from]
+== Where the opinions come from
+
+The runtime is opinionated, and you are entitled to know where its opinions come from.
+
+I trained as a physicist, with a master's degree in plasma physics.
+I was taught Fortran, and Quasic, a small interactive language for programming laboratory hardware.
+The rest I taught myself: Pascal, assembler and machine code, Basic, Object Pascal in Delphi, {cpp}, Java and JavaScript, and XML with XPath and XSLT.
+Between them they cover most of the distance from the machine to the model, and working with an assistant, as <<built-with-ai>> describes it, is one more level up.
+
+I learned to think in shapes and connections, and in signals moving along them, long before I learned UML.
+As a teenager I built electronic devices: amplifiers, radio receivers and my first computer.
+I read and drew schematics, and laid out my own printed circuit boards, by hand and later in OrCAD, and etched them with 
+ferric chloride and zapon varnish.
+As a physicist I designed scientific devices in AutoCAD, and a workshop built them as drawn.
+A schematic, a board layout and a CAD drawing are not illustrations: they are what the thing is made from.
+So ERwin for databases and UML for software came easily; they were drawings to build from too.
+
+Software gave me more drawings that run.
+I programmed Lego Mindstorms robots, first in the visual language that comes with the kit, where a program is blocks wired together, and then in Java with leJOS.
+A robot is event-driven by nature: it waits for a sensor to fire and reacts while its motors are still turning, and that shaped how I build software.
+At work I built integrations in TIBCO BusinessWorks, where a process is drawn as activities and transitions and deployed as drawn, and modeled business processes in TIBCO Business Studio.
+In all of them the drawing was the program, not a picture of it.
+The North Star of this runtime, work drawn as a graph and executed as drawn (<<vision>>), is the same idea once more.
+When I wrote about the executable graphs of earlier Nasdanika releases, the metaphor I reached for was a printed circuit board with processors soldered to it (https://medium.com/nasdanika/executable-computational-graphs-diagrams-1eeffc80976d[_Executable (computational) graphs & diagrams_], https://medium.com/nasdanika/concurrent-executable-diagrams-0cd3bac61e2b[_Concurrent Executable Diagrams_]).
+
+From 1989 to 1992 I was also trained as a platoon commander, in the military department of my university, and commissioned as a lieutenant in the reserve.
+Two things from that training stayed with me.
+One is maps: reading them, and drawing a plan of defense on one, another drawing to act from.
+The other is Article 17 of the _Combat Regulations of the Ground Forces_, Part III, for the platoon, the squad and the tank (Voenizdat, 1990), which was drilled into our heads.
+On receiving a combat mission, a platoon commander must:
+
+. understand the mission: the task of the company as well as the platoon's own, which targets on the platoon's front the senior commanders' weapons will engage, the tasks of the neighbors and how to coordinate with them, and the time to be ready;
+. assess the situation: the enemy, the platoon and the units attached to it, the neighbors, the terrain, the weather, the season and the time of day;
+. make a decision: how to accomplish the mission, the tasks of the squads and of the attached units, and how the platoon will be commanded;
+. reconnoiter the ground;
+. issue the combat order;
+. organize coordination, support and command, and prepare the people, weapons and equipment for combat;
+. check that the platoon is ready, and report it to the company commander at the set time.
+
+It works well beyond a platoon: I have explained it to my children, and they know my version of it by heart.
+I later recognized it in project management and in the TOGAF Architecture Development Method, and the loop of <<built-with-ai>> has the same shape.
+
+I taught myself from books, and in Khabarovsk, in the Far East of the Soviet Union and then of Russia, books about computers were scarce.
+A few bookstores had a few of them; on business trips to Moscow I found more.
+The first computer store I visited in the United States was a Micro Center, and I went straight to its books section, which held more computer books than I had ever seen in one place.
+A colleague who came with me was surprised: "Oh, you are still reading..."
+He had read his computer books in college and did not expect to need more.
+
+Scarcity leaves habits behind.
+Mine is to assume that I do not know enough yet and that somebody has done this before, and to find out who, and what they learned.
+That is the first step of every design in this runtime.
+
+Plenty of books did not mean plenty of fluency, though.
+When I came to the United States I assumed that every developer knew UML, and I was wrong.
+<<built-with-ai>> argues that fluency in modeling, and in technologies such as EMF, was scarce for twenty years and is not anymore.
+I take the end of a scarcity seriously, because I have watched one end already, in the aisles of a computer store.

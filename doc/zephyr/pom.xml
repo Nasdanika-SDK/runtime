@@ -1,0 +1,37 @@
+<project xmlns="http://maven.apache.org/POM/4.0.0" xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
+	xsi:schemaLocation="http://maven.apache.org/POM/4.0.0 http://maven.apache.org/xsd/maven-4.0.0.xsd">
+	<modelVersion>4.0.0</modelVersion>
+	<parent>
+		<artifactId>parent</artifactId>
+		<groupId>org.nasdanika.sdk.runtime.doc</groupId>
+		<version>2026.10.0</version>
+		<relativePath>..</relativePath>
+	</parent>
+	<artifactId>zephyr</artifactId>
+	<name>Nasdanika Zephyr Books Look</name>
+	<description>
+		The look of the Nasdanika Zephyr Books: the PDF theme, the HTML stylesheets and the logo, under
+		zephyr/ in the jar. The runtime's books use this directory directly; books in other
+		repositories, such as the field notes and the stories, unpack the jar of the runtime release
+		they are built with.
+	</description>
+	<properties>
+		<!-- Unlike the rest of doc, this is consumed outside the runtime -->
+		<maven.deploy.skip>false</maven.deploy.skip>
+	</properties>
+	<build>
+		<resources>
+			<!-- The files stay where the runtime's books find them, at doc/zephyr; tools/ is not shipped -->
+			<resource>
+				<directory>${project.basedir}</directory>
+				<targetPath>zephyr</targetPath>
+				<includes>
+					<include>css/**</include>
+					<include>themes/**</include>
+					<include>images/**</include>
+					<include>README.md</include>
+				</includes>
+			</resource>
+		</resources>
+	</build>
+</project>

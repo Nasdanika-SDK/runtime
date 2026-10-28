@@ -3,14 +3,14 @@
 
 The books that shaped how I build software have one thing in common: they are a body of knowledge you can read from the first page to the last.
 _EMF: Eclipse Modeling Framework_ explained not only how to generate code from a model, but why a model is worth having and what it buys you once you have one.
-_The C4 model for visualising software architecture_ took something every architect does badly, drawing boxes and lines, and gave it a vocabulary small enough to remember.
+_The C4 model for visualising software architecture_ gave boxes and lines a vocabulary small enough to remember, a stark contrast to no vocabulary at all or UML, BPMN and other complex notations, which are so huge that it is almost the same as having no vocabulary - the point at infinity.
 Neither is a reference manual. Both are arguments, made one chapter at a time, with enough "how" to make the "why" concrete.
 
 Two books about programming languages shaped how I build software too, from the side of the code.
 Bjarne Stroustrup's _The {cpp} Programming Language_, in its third and special editions, teaches its key features together with the design techniques they exist to support, gives its last part to design, and ends each chapter with numbered advice.
 Bruce Eckel's _Thinking in Java_ teaches a way of thinking rather than a syntax; Eckel put it on the web while he was writing it, gave its early editions away, and let what readers sent him shape the editions that followed.
 
-This book tries to do the same for the Nasdanika SDK Runtime.
+This book tries to do the same for the Nasdanika SDK Runtime - thinking in models and JVM (not just Java).
 
 The runtime is the part of the Nasdanika SDK you install first and build everything else on: models defined in Xcore and handled by EMF, a capability framework that finds what is needed by generic type, telemetry that is part of the code rather than bolted on, volumes that present anything as files, and a command line assembled from whatever modules happen to be present.
 It is influenced by EMF but has nothing to do with the Eclipse IDE.
@@ -26,6 +26,18 @@ The runtime is my answer to making structure cheap enough to keep. You do not ne
 
 *Java developers* who want an observable, testable foundation with few dependencies, and who are curious what modeling looks like when it does not require an IDE.
 
+*Researchers and R&D teams*, in a company, a lab or in the open, who need to try an idea before anyone will provision infrastructure for it.
+The runtime needs a JDK and nothing else: a solution built on it runs in one JVM, on a laptop, a single virtual machine or the free tier of a CI service, with no cluster, database server or message broker to set up and ask permission for.
+It also keeps the record a researcher wants: listings that are tested code, telemetry kept as a model next to the results (<<telemetry-model>>), and a snapshot of exactly which modules ran (<<jvm>>), so that an experiment can be repeated and its result explained.
+Academic research is mostly done in Python, and this book does not try to change that; it is for the research and development that happens where the JVM already is, or where one machine has to be enough.
+
+ifdef::editor-notes[]
+[IMPORTANT,caption="Editor's note"]
+====
+When releases are archived on Zenodo, add the concept DOI here and in the colophon, so that a result can cite the version of the runtime it ran on.
+====
+endif::[]
+
 *Collaborators.* If you want to contribute to Nasdanika, or build on it, this is the map. It says what exists today, what is a sketch, and what is planned.
 
 *Me.* "The faintest ink is better than the strongest memory." A design that is not written down is re-derived, slightly differently, every time it is needed.
@@ -34,18 +46,72 @@ The runtime is my answer to making structure cheap enough to keep. You do not ne
 
 === How this book is organized
 
-<<why>> explains the problem the runtime addresses, the principles it follows, how it is built with an AI assistant, and how its parts fit together.
+<<why>> explains the problem the runtime addresses, the principles it follows, how it is built with an AI assistant, why some organizations will resist it, and how its parts fit together.
 <<foundations>> covers the `common` module: models with EMF, generic types at run time, reactive flows on the JDK, and the capability framework.
 <<observability>> is about telemetry: how the runtime instruments itself, how to watch work while it runs, and how telemetry becomes a model.
 <<files>> introduces volumes, the runtime's file abstraction, and serving them over HTTP and WebDAV.
 <<command-line>> shows how commands are contributed by modules and wired by generic types.
-<<models-in-the-runtime>> tours the models that ship with the runtime: the Groovy DSL for authoring, the core model, Meta, the JVM model, the models that generate the web, and user interfaces assembled from views chosen by the class of what they show.
+<<models-in-the-runtime>> tours the models that ship with the runtime: the Groovy DSL for authoring, the core model, Meta, the JVM model, the models that generate the web, user interfaces assembled from views chosen by the class of what they show, and diagrams: drawn in Draw.io, laid out with ELK, and drawn as SVG.
 <<looking-ahead>> is the roadmap and the vision.
 The appendices are references: modules, telemetry names, rules of thumb, a glossary, and how this book is built.
 
 Like "Beyond Diagrams", this book is more a menu than a recipe book.
 Architects can read <<why>> and the first section of each later chapter, which says what a capability is for, and skip the listings.
 Developers should read the parts in order, because each builds on the previous one, and run the examples as they go.
+
+[#zephyr-books]
+=== The Nasdanika Zephyr Books
+
+This book is the why, the what and a high-level how of the runtime.
+It shows enough of each module to make its purpose concrete, and stops there.
+The depth is in the Nasdanika Zephyr Books: in-depth technical manuals, one per module, or per small group of modules that are used together, for the modules that need more than a chapter.
+If this book is the menu, the Zephyr Books are the recipes.
+
+The model is IBM Redbooks.
+They are technical guides written by practitioners, IBM specialists working with partners and customers, and they are free.
+They cover what a product is for, the scenarios it serves and, step by step, how to put it to work, which is more than a reference manual does.
+
+A Zephyr Book does the same for one module of the runtime.
+It goes deeper into the how: every form and option, the extension points, and the errors and how to read them.
+Where the module calls for it, it goes deeper into the why and the what as well, with the use cases the module was built for, which a chapter of this book can only name.
+It stands on its own: a reader who starts with a Zephyr Book does not need this one, so where the two touch, the Zephyr Book repeats what it needs. The chapter that introduces a module points to its Zephyr Book.
+
+These are available with this edition:
+
+* *Matching and Wiring*, for the `common` module of <<foundations>>. Its why is that most of software development is matching parts and checking that they fit, and that the runtime matches at run time on the generic declarations the compiler has checked, with the compiler's rules. Its how is a chapter per package: types, adaptation, capabilities, flows, resource sets and telemetry.
+* *Telemetry Model*, for the telemetry model of <<telemetry-model>>: traces, log records and metrics exported from the OpenTelemetry SDK as EMF models, kept next to the models they describe, with the changes a unit of work made to models recorded in the spans that made them.
+* *Volumes and Content*, for the `volume` module of <<volumes>> and <<serving>>: a small SPI for trees of files wherever they live and a re-readable abstraction of bytes, models stored in volumes through EMF, and anything presented as files served over HTTP and WebDAV, in one trace with its clients.
+* *Harness*, for the `harness` module of <<serving>>: an HTTP server that is up while code runs against it, the code's requests and the server's work in one trace, recorded as a model.
+* *Declarative Command Lines*, for the `cli` module of <<commands>> and <<wiring>>: command lines assembled from contributed picocli commands that find their parents and sub-commands by generic types, mix-ins, overriding, the runtime's commands and the launcher, and the pipelines the approach makes possible.
+* *Groovy DSL*, for the `groovy` module of <<groovy-dsl>>. The user's side is the language rule by rule: call forms, references and name resolution, loading other resources, prototypes, saving, diagnostics and telemetry. The developer's side is binding the DSL to a metamodel of your own, with handlers, capability factories and resolvers. Its use cases are models kept as scripts, models derived from diagrams and spreadsheets, and scripts that write themselves back when they are saved.
+* *Meta Model*, for Meta of <<meta>>: a language-neutral type system, a vocabulary written down once with documentation as structure, and projected to glossaries, Ecore, TypeScript and the tool schemas of agents.
+* *JVM Model*, for the JVM model of <<jvm>>: what a Java virtual machine can name, from layers and modules down to methods and parameters, identified the JVM's own way so that builds, coverage, profiles and traces join on it without a mapping.
+* *HTML and Bootstrap Models*, for the web models of <<web>>: HTML as an EMF model with a generator that writes it, and Bootstrap 5 with Bootswatch themes as a model of what components mean, expanded to HTML for static pages and used in React components.
+* *TypeScript and React Models*, for the web models of <<web>>: TypeScript's declaration surface and React's components, hooks and JSX as EMF models, with generators that manage imports and write code a browser runs with no npm and no build step.
+* *Walk-throughs with Playwright*, for the `playwright` module of <<web>>: browser sessions in the server's trace, with steps as spans, the server's work as their children, screenshots and narration recorded in the steps, and an optional video of the session that the trace explains.
+* *Diagram Model*, for the diagram model: diagrams as data, built, stored as YAML, converted from Draw.io and mapped to the models they depict. With the Draw.io Model book, it is the mapping of diagram elements to model elements that makes a diagram the source of a model.
+* *Diagram Layout with ELK*, for automatic layout of the diagram model with the Eclipse Layout Kernel, with diagrams of Ecore models generated, laid out and rendered with React Flow and Draw.io.
+* *Draw.io*, for the `drawio` and `drawio-playwright` modules of <<diagrams>>: diagrams that people draw and programs read. Its why is the visual communication continuum, from a picture to a diagram that is documentation, configuration or the source of a model. Its how is the Java API for Draw.io documents, pages, layers, nodes, connections, properties, links and styles, and rendering pages with Draw.io's own viewer as images and videos. Its diagrams are PNG images with the diagram embedded: a reader sees a picture, Draw.io opens the same file for editing, and the book's tests load it as the document the next listing works on.
+* *Draw.io Model*, for Draw.io documents as an EMF model on the diagram and presentation models: loaded into a resource set from `.drawio` files and exported images, read, changed, generated and saved, with a diagram of the running JVM generated, laid out with ELK and drawn by Draw.io's viewer.
+* *SVG Model*, for SVG as an EMF model: the subset of SVG that generated diagrams need, with a diagram laid out with ELK and written as SVG, every shape a link.
+* *Presentation Model*, for the presentation model of <<diagrams>>: decks, slides, masters, shapes, text, tables, connectors and speaker notes as an EMF model on the diagram model, because a slide is a diagram.
+
+The rule of this book holds for them.
+Every listing in a Zephyr Book is included from the module's own tests, and a warning fails the build, so a Zephyr Book that no longer matches its module does not build.
+
+Each Zephyr Book is on its module's page on the runtime site, {runtime-site}, as a PDF and as a single HTML page.
+It is also on Maven Central, attached to its module's artifact with the classifier `book`: `org.nasdanika.sdk.runtime:groovy:pdf:book:{runtime-version}` is the PDF of the Groovy DSL book, and `html` in place of `pdf` is its HTML.
+The test sources that the listings come from are attached the same way, with the classifier `test-sources`, so the whole test behind a listing is one download away.
+The Zephyr Books are also on Leanpub, in a bundle with this book. 
+Printed versions of this book and its Zephyr Book can be ordered on Lulu.
+An assistant can follow the same division as a person: this book to find a module and understand why it exists, its Zephyr Book for how to use it, and its test sources for the complete code.
+
+The name is borrowed, not invented.
+Redbooks are named after the color of their first covers.
+Nasdanika's color is blue, and a blue book is taken: by Kelley Blue Book for cars and, in programming, by the Smalltalk-80 "Blue Book" of 1983.
+So the books are named after the Bootswatch theme they are styled with, Zephyr, which is blue and is also the theme of the runtime's site.
+A name that describes a look promises nothing else, which is what a series name should do: a reader who has one Zephyr Book knows how the next one will look and how it will read.
+The books have nothing to do with the Zephyr real-time operating system, a project of the Linux Foundation.
 
 === Conventions
 
@@ -61,13 +127,6 @@ Status labels say how far along something is:
 [.available]#AVAILABLE# means it is in Nasdanika SDK Runtime {runtime-version} and the book shows it working;
 [.sketch]#SKETCH# means a model or an interface exists without the behavior around it;
 [.planned]#PLANNED# means it is designed, on the roadmap, and not built yet.
-
-ifdef::editor-notes[]
-[IMPORTANT,caption="Editor's note"]
-====
-Notes like this one are addressed to me, the author: open questions, inconsistencies found while writing, and decisions to make. They are shown in this draft and hidden in the published edition with `-Dbook.editor-notes=false`.
-====
-endif::[]
 
 === Versions
 

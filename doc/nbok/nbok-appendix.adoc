@@ -1,8 +1,8 @@
 // The Nasdanika Body of Knowledge: one appendix, word for word, in every book of it.
-// Books in the runtime's repository include it with
-//   include::{runtime-root}/doc/book/manuscript/src/docs/asciidoc/appendices/f-nbok.adoc[]
-// so it must not refer to anything one book has and another does not: no cross-references to
-// chapters, and only attributes it defines below when a book has not.
+// Books in the runtime's repository include it from doc/nbok; books in other repositories unpack the
+// artifact org.nasdanika.sdk.runtime.doc:nbok of the runtime release they are built with and
+// include nbok/nbok-appendix.adoc from it. So it must not refer to anything one book has and another
+// does not: no cross-references to chapters, and only attributes it defines below when a book has not.
 ifndef::runtime-repo[:runtime-repo: https://github.com/Nasdanika-SDK/runtime]
 ifndef::runtime-site[:runtime-site: https://runtime.sdk.nasdanika.org]
 
@@ -22,10 +22,11 @@ Its listings are regions of code that is compiled and tested before a book is re
 * *The SDK book*, _Nasdanika SDK Runtime: More Structure with Less Effort_: the overview, with the why, the key capabilities and the high-level how. Read it first.
 * *Nasdanika Zephyr Books*: one per module, or per small group of modules used together, each the detail for its modules, as user guide, developer guide and reference. Each stands on its own.
 * *Readmes*: one page on what a module is and why. A module with a Zephyr Book may have none.
-* *Stories* [.planned]#PLANNED#: one use case each, written as a Maven module whose code is the source of its listings, and collected each year as _Nasdanika Stories_.
+* *Nasdanika SDK Stories* [.planned]#PLANNED#: one use case each, related to the Nasdanika SDK in some shape or form, written as a Maven module whose code, if it has any, is the source of its listings, and collected each year.
 * *The International Banking System* [.planned]#PLANNED#: the practice of architecture as code, taught as a course on one example that grows with the platform. Inspired by the C4 Model "Internet Banking System".
+* *Nasdanika Field Notes*: short articles about the technologies and services Nasdanika is built and published with, such as EMF, each verified by a test where it can be, and recipes, such as publishing a book, collected in one book. Their tests use the third-party versions of the runtime's BOM, so every runtime release checks the runtime's assumptions about its dependencies. Unlike the rest of NBOK, they are about other projects' code, and useful without Nasdanika.
 
-A story is à la carte; the International Banking System is the course.
+A story is à la carte; the International Banking System is the course; a field note is about the ground they stand on.
 
 === How it is laid out
 
@@ -49,7 +50,8 @@ doc/                             documentation about the repository as a whole
 ----
 
 A module has a Zephyr Book when it has `src/docs/asciidoc/index.adoc`.
-A story [.planned]#PLANNED# is a module at `<year>/<topic>/`, with `story.adoc` beside its code, and `<year>/book/` builds the year's collection from the stories next to it.
+A story [.planned]#PLANNED# is a module at `<year>/<topic>/` in the `stories` repository, with `story.adoc` and `index.adoc` in `src/docs/asciidoc/` beside its code, and `<year>/book/` builds the year's collection from the stories next to it.
+A field note is a module at `<technology>/<topic>/` in the `field-notes` repository, with `article.adoc` and `index.adoc` in `src/docs/asciidoc/` beside its tests, and `book/` builds the collection.
 
 === How it is published
 
@@ -82,4 +84,4 @@ Two aids for assistants are planned [.planned]#PLANNED#: each book and story als
 * *Editor's notes*, the author's notes on what is still to be checked, are left out of published editions.
 * *Stories are built twice* [.planned]#PLANNED#: against the release each was published with, so that it reproduces, and against the next one, so that a story that no longer applies is marked before a reader finds out.
 
-The source of this appendix is `doc/book/manuscript/src/docs/asciidoc/appendices/f-nbok.adoc` in {runtime-repo}.
+The source of this appendix is `doc/nbok/nbok-appendix.adoc` in {runtime-repo}, published with each release as `org.nasdanika.sdk.runtime.doc:nbok`.

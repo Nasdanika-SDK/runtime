@@ -1,6 +1,8 @@
 # Nasdanika SDK Runtime book theme for Asciidoctor PDF.
 #
-# Trim size 7 x 9.25 inches, the size of the Addison-Wesley technical books such as the EMF book.
+# Trim size 189 x 246 mm (Crown Quarto), which KDP lists as 7.44 x 9.69 inches and Lulu as 7.44 x 9.68:
+# one size for both print on demand services, and the size of the printed editions. The margins
+# keep the text block 6 inches wide, the width a 96-character listing line needs.
 # Body in Noto Serif, headings in Noto Sans, code in M+ 1mn: all bundled with Asciidoctor PDF and
 # licensed under the SIL Open Font License, so the PDF can be distributed with the fonts embedded.
 #
@@ -25,10 +27,10 @@ brand:
   muted: 6B7780
   wash: F2F7FA
 page:
-  size: [7in, 9.25in]
-  margin: [0.7in, 0.75in, 0.7in, 0.75in]
-  margin_inner: 0.875in
-  margin_outer: 0.625in
+  size: [189mm, 246mm]
+  margin: [0.7in, 0.72in, 0.7in, 0.72in]
+  margin_inner: 0.845in
+  margin_outer: 0.595in
 base:
   font_family: Noto Serif
   font_color: $brand_ink
@@ -100,7 +102,9 @@ caption:
   font_color: $brand_muted
 code:
   font_family: M+ 1mn
-  font_size: 7.8
+  # 96 characters of M+ 1mn (half an em each) at 8.5 points, plus padding and borders, fill the
+  # 6-inch text block: the listing line width of the manuscript's conventions.
+  font_size: 8.5
   line_height: 1.2
   padding: [7, 9, 7, 9]
   background_color: $brand_wash
