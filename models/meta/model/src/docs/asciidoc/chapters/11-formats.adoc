@@ -1,0 +1,132 @@
+[#formats]
+== Formats
+
+A vocabulary is one model, and formats are how people put it in and get it out.
+The text syntax is the first format of this edition.
+The others below have been proven in Nasdanika's work outside the SDK, and will be migrated to the runtime as vocabularies need them [.planned]#PLANNED#.
+
+The rule that makes many formats affordable: every format reads into Meta and every output is projected from Meta.
+Nothing converts from one format to another directly, so a new input format works with every output there is, and a new output with every input.
+
+=== Authoring formats
+
+[cols="2,3,3",options="header"]
+|===
+| Format | Strengths | Weaknesses
+
+| *Meta text*, `.nmeta` (<<text-syntax>>)
+| Compact and precise: generics, unions and opposites have a notation. Diffs and merges well, so a change to a term is a reviewable pull request. Written back by `MetaWriter`, so it round-trips
+| A language to learn, if a small one. No picture: relationships are read, not seen
+
+| *Excel* (https://excel.models.nasdanika.org/[Excel model]) [.planned]#PLANNED#
+| Where vocabularies already live, and what everybody can edit. Sorting, filtering and bulk changes for free, and a row per attribute suits classes with many of them
+| A binary file: diffs and merges are poor. Structure by convention, so references, multiplicities and types need columns and checks. Conventions drift between sheets
+
+| *Draw.io*, a visual schema (https://nasdanika-demos.github.io/illustrations/visual-schema/index.html[demo]) [.planned]#PLANNED#
+| Classes as boxes and relationships as connections, so the shape of the domain is seen. The diagram is the source, not a picture of it, and it is what a workshop draws anyway
+| Attributes clutter boxes. Types and multiplicities are awkward to draw. Layout takes effort, and the XML of a diagram diffs noisily
+
+| *Markdown* (https://github.com/Nasdanika-Templates/markdown-ecore-doc[template]) [.planned]#PLANNED#
+| Prose first: definitions, examples and rationale read naturally. Renders on every Git host, and diffs well
+| Structure by headings and tables, which are easy to break. Tables of many attributes are unwieldy
+
+| *Java or Groovy*, construction in code (<<a-vocabulary>>)
+| Whatever a program can compute: harvesters and projections build vocabularies this way
+| A program that builds a vocabulary, not a vocabulary: nobody reviews it as one
+|===
+
+Vocabularies are also harvested from where they are already written down: Ecore, Java, XML Schema, JSON Schema and database metadata [.planned]#PLANNED#.
+Most of a domain model exists somewhere already, and asking people to type it again is how modeling efforts die.
+
+A team chooses its format per package.
+Imports resolve by namespace through the resource set, so a package written in the text syntax imports one kept in a spreadsheet the same way it imports `party.nmeta`: the URI map points the namespace to an `.xlsx` file instead.
+
+=== Hybrid authoring
+
+Formats can also share one package [.planned]#PLANNED#.
+Entities and relationships go on a diagram, as boxes and connections, where their shape is seen; attributes go in a spreadsheet or Markdown, where there is room for many; and descriptions go wherever prose is easiest to write.
+
+The diagram is the backbone, and the other files are found from it, in one of two ways:
+
+* *Implied*, from the identifier or the path of a diagram element. The attributes of a box `Customer` on the page `Retail` are the sheet `Customer` of a workbook next to the diagram, or the table in `Retail/Customer.md`.
+* *Explicit*, in a property of the diagram element, such as a workbook and a sheet, or a Markdown file, which wins over what is implied.
+
+Descriptions follow the same principle.
+An element's description is the text on the diagram, such as a tooltip; or a file at the element's path, found by trying extensions in order, `Retail/Customer.md`, then `.adoc`, then `.html`; or a file named in a property of the element.
+A description in a file becomes the element's `docRef` in the core model, a document resolved relative to the model and rendered in its format, so it is not copied into the model at all.
+
+For the bank, a hybrid package could look like this:
+
+[source,text]
+----
+bank/
+  bank.drawio              Product, Customer, Account, Transaction and Statement as boxes,
+                           holders and accounts as one connection
+  bank.xlsx                a sheet per class: one row per attribute, with type,
+                           multiplicity and definition
+  Account.md               the definition of an account, with examples
+  Account/balance.md       how a balance is computed, for the people who audit it
+----
+
+What a hybrid package must do is report what does not line up: a box without a sheet, a sheet without a box, and a property naming a file that is not there.
+Those are warnings with locations, as the text syntax reports them, and the markers of the elements say which file each part came from.
+
+=== Output formats
+
+[cols="2,3,3",options="header"]
+|===
+| Format | Strengths | Weaknesses
+
+| *AsciiDoc, then PDF* [.planned]#PLANNED#
+| A document with a version, pages and a table of contents, which can be sent, signed off, attached to a contract and archived. The same AsciiDoc also renders to HTML and EPUB, with the toolchain this book is built with
+| A snapshot: it does not change when the vocabulary does, so it needs the vocabulary's version on its cover. Not navigable the way a site is
+
+| *A documentation site* [.planned]#PLANNED#
+| A page per element, with its documentation, its neighbors and a diagram of its neighborhood. Searchable, linked and always current
+| Needs hosting. A site is not something a partner signs
+
+| *Markdown*, as the glossary of <<projections>>
+| Renders on every Git host and in wikis, and is compact enough for the context of an agent
+| Little control over layout. One file grows long
+
+| *Meta text* (<<text-syntax>>)
+| The canonical form: whatever a vocabulary came from, it can be reviewed and compared as text
+| For developers
+
+| *Ecore and Xcore*, *TypeScript*, *JSON Schema* (<<projections>>) [.planned]#PLANNED#
+| Types and schemas that cannot drift from the vocabulary: Ecore for EMF tools and generated Java, TypeScript for browsers, JSON Schema for validation and the tools of agents
+| For developers and agents, not for people reading about the business
+|===
+
+Diagrams are outputs too: a class and its neighbors, laid out and rendered with the runtime's diagram models, as a page of a site or a figure of a PDF.
+
+=== Who uses which
+
+[cols="2,3,3",options="header"]
+|===
+| Who | Authors in | Reads
+
+| Developers
+| Meta text: it is reviewed like code, next to the code
+| Meta text, generated types and schemas
+
+| Architects and modelers
+| Draw.io, with attributes in a spreadsheet or in Markdown
+| The documentation site and its diagrams
+
+| Business owners of the vocabulary, such as product managers and data stewards
+| Excel and Markdown, where the vocabulary often lives already
+| The documentation site, and PDF for sign-off
+
+| Partners, auditors and regulators
+| Nothing: they receive the vocabulary
+| PDF: a versioned document that can be attached to an agreement
+
+| Agents
+| Proposals for review, in Meta text or Markdown, for a person to accept
+| Markdown and JSON Schema in their context, and Meta text
+|===
+
+The columns differ for a reason.
+The people who know what the words mean are rarely the people who write them in a precise notation, and the people who need the vocabulary most, outside the organization, should never have to open an authoring tool at all.
+One model in the middle is what lets each of them use the format that suits them.

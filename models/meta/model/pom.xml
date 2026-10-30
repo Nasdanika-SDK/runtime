@@ -14,9 +14,10 @@
     <description>
         Meta, a language-neutral type system: packages, classes, features, operations and the type
         references between them, on the runtime's core model, written down once and projected to
-        whatever consumers need. Its Nasdanika Zephyr Book, "Meta Model", is built from
-        src/docs/asciidoc with listings from the tests, among them a vocabulary projected to a
-        glossary and to Ecore.
+        whatever consumers need. Vocabularies are loaded from and saved to a text syntax, .nmeta
+        files, parsed with the ANTLR runtime. Its Nasdanika Zephyr Book, "Meta Model", is built
+        from src/docs/asciidoc with listings from the tests, among them a bank's vocabulary written
+        in the text syntax and a library's projected to a glossary and to Ecore.
     </description>
 
     <properties>
@@ -29,6 +30,34 @@
             <plugin>
                 <groupId>org.eclipse.xtext</groupId>
                 <artifactId>xtext-maven-plugin</artifactId>
+            </plugin>
+            <!--
+                Generates the parser of the text syntax from src/main/grammar/Meta.g4 into src-gen,
+                next to the Xcore-generated sources and, like them, committed. The parse tree is
+                walked by hand in the resource package, so neither a listener nor a visitor is
+                generated. The package is not exported.
+            -->
+            <plugin>
+                <groupId>org.antlr</groupId>
+                <artifactId>antlr4-maven-plugin</artifactId>
+                <configuration>
+                    <sourceDirectory>${basedir}/src/main/grammar</sourceDirectory>
+                    <outputDirectory>${basedir}/src-gen/org/nasdanika/sdk/runtime/models/meta/parser</outputDirectory>
+                    <listener>false</listener>
+                    <visitor>false</visitor>
+                    <treatWarningsAsErrors>true</treatWarningsAsErrors>
+                    <arguments>
+                        <argument>-package</argument>
+                        <argument>org.nasdanika.sdk.runtime.models.meta.parser</argument>
+                    </arguments>
+                </configuration>
+                <executions>
+                    <execution>
+                        <goals>
+                            <goal>antlr4</goal>
+                        </goals>
+                    </execution>
+                </executions>
             </plugin>
             <plugin>
                 <groupId>org.codehaus.mojo</groupId>
@@ -45,6 +74,17 @@
 		    <groupId>org.eclipse.emf</groupId>
 		    <artifactId>org.eclipse.emf.ecore</artifactId>
 		</dependency> 		
+		<!-- The resource set contributor and the telemetry of .nmeta resources -->
+		<dependency>
+		    <groupId>org.nasdanika.sdk.runtime</groupId>
+		    <artifactId>common</artifactId>
+		    <version>${project.version}</version>
+		</dependency>
+		<!-- The parser of the text syntax -->
+		<dependency>
+		    <groupId>org.antlr</groupId>
+		    <artifactId>antlr4-runtime</artifactId>
+		</dependency>
         <dependency>
             <groupId>org.eclipse.xtext</groupId>
             <artifactId>org.eclipse.xtext.xbase.lib</artifactId>
@@ -53,11 +93,10 @@
             <groupId>org.eclipse.emf</groupId>
             <artifactId>org.eclipse.emf.ecore.xcore.lib</artifactId>
         </dependency>
-		<!-- The Zephyr Book saves vocabularies and instances as XMI -->
+		<!-- The Zephyr Book saves vocabularies and instances as XMI; common brings it to the module path -->
 		<dependency>
 		    <groupId>org.eclipse.emf</groupId>
 		    <artifactId>org.eclipse.emf.ecore.xmi</artifactId>
-		    <scope>test</scope>
 		</dependency>
     </dependencies>
 </project>

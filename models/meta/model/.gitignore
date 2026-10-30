@@ -1,1 +1,3 @@
 /target/
+# Output of the ANTLR extension for VS Code; Maven generates the parser into src-gen
+.antlr/

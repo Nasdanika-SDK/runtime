@@ -1,0 +1,25 @@
+/**
+ * The people and organizations the bank does business with.
+ * Owned by the party team and used by every other vocabulary of the bank.
+ */
+package party namespace "https://example.org/vocabulary/party" version "2026.10.0"
+
+/** A person or an organization: whoever can hold an account or sign a contract. */
+abstract class Party {
+    /** Identifies the party in every system of the bank. */
+    id string[1] partyId
+
+    /** The name as on the party's identity documents or registration. */
+    string[1] legalName
+}
+
+/** A natural person. */
+class Person extends Party {
+    date dateOfBirth
+}
+
+/** A company, a partnership, a trust or another legal entity. */
+class Organization extends Party {
+    /** The number the entity is registered under in its jurisdiction. */
+    string registrationNumber
+}

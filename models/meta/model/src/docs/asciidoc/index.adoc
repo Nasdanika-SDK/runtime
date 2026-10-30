@@ -1,8 +1,8 @@
 = Meta Model: A Nasdanika Zephyr Book
 Pavel Vlasov
 :doctype: book
-:description: Meta, a language-neutral type system: a vocabulary written down once, with documentation as structure, and projected to glossaries, Ecore, TypeScript and the tool schemas of agents.
-:keywords: Meta, type system, vocabulary, published language, Domain-Driven Design, EMF, Ecore, Xcore, projections, Nasdanika
+:description: Meta, a language-neutral type system: a vocabulary written down once, in a text syntax or in the formats people already use, with documentation as structure, and projected to glossaries, PDF, Ecore, TypeScript and the tool schemas of agents.
+:keywords: Meta, type system, vocabulary, business glossary, published language, Domain-Driven Design, EMF, Ecore, Xcore, ANTLR, text syntax, projections, variability, Nasdanika
 :lang: en
 :sectnums:
 :sectnumlevels: 2
@@ -56,7 +56,7 @@ include::chapters/04-federated.adoc[]
 = The How
 
 [partintro]
-Meta in Java: adding it to a project, its classes, a vocabulary built and saved, two projections of it, and instances whose type is a reference.
+Meta in Java: adding it to a project, its classes, a vocabulary built in Java, a bank's vocabulary written in the text syntax, two projections, and instances whose type is a reference.
 
 include::chapters/05-getting-started.adoc[]
 
@@ -64,17 +64,21 @@ include::chapters/06-the-model.adoc[]
 
 include::chapters/07-a-vocabulary.adoc[]
 
-include::chapters/08-projections.adoc[]
+include::chapters/08-text-syntax.adoc[]
 
-include::chapters/09-instances.adoc[]
+include::chapters/09-projections.adoc[]
+
+include::chapters/10-instances.adoc[]
 
 [#ahead]
 = Looking Ahead
 
 [partintro]
-A text syntax, the sources and targets of vocabularies, flattening, and vocabularies that vary by where they apply.
+The formats vocabularies are authored and published in, who each is for, flattening, variability and occupancy.
 
-include::chapters/10-looking-ahead.adoc[]
+include::chapters/11-formats.adoc[]
+
+include::chapters/12-looking-ahead.adoc[]
 
 include::appendices/a-reference.adoc[]
 

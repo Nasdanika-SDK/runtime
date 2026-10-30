@@ -107,6 +107,12 @@
 				<artifactId>json</artifactId>
 				<version>20260814</version>
 			</dependency>
+			<!-- The version of antlr4-maven-plugin in the parent's plugin management: generated parsers check it at run time -->
+			<dependency>
+				<groupId>org.antlr</groupId>
+				<artifactId>antlr4-runtime</artifactId>
+				<version>4.13.2</version>
+			</dependency>
 			<dependency>
 				<groupId>org.yaml</groupId>
 				<artifactId>snakeyaml</artifactId>

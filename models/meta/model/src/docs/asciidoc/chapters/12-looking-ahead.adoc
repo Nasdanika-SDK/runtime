@@ -1,0 +1,66 @@
+[#looking-ahead]
+== Looking ahead
+
+Formats come first, in <<formats>>.
+What follows are transformations of vocabularies, from Meta to Meta, and the dimensions a vocabulary varies in.
+
+=== Flattening
+
+Inheritance is how a model is authored.
+It is not always how it is consumed: a TypeScript interface, a JSON Schema for a tool call and a summary handed to an agent all read better as a flat class, with every inherited feature and operation inlined.
+
+Flattening is a transformation from Meta to Meta [.planned]#PLANNED#, not a trick inside each emitter: the input is a package, the output is a package whose classes declare everything they inherited, and every copied feature carries a marker back to the class that declared it.
+It is testable by comparison, reusable by every projection, and auditable.
+
+Flattening is also where composition stops being free:
+
+* Most encounters of the same name are not clashes. A feature reached twice through a diamond is one feature, and an operation declared again with the same signature is an override. Deduplicate by identity, not by name.
+* The same name with different declarations is a clash, resolved by renaming, deterministically: the most derived declaration keeps the name, and the rename is recorded on the feature.
+* Renaming happens in Meta, not downstream, because TypeScript refuses an interface that extends two interfaces declaring a member incompatibly, and a strict tool schema has no room for the composition that would otherwise carry it.
+
+What a cut must not do is erase distinctions: removing an ancestor's name is recoverable by widening the cut, while replacing a class by its ancestor removes a distinction nothing can recover.
+
+[#variability-and-occupancy]
+=== Variability
+
+One vocabulary rarely means the same thing everywhere.
+A bank in the United States and Canada has two currencies, several jurisdictions, French as a legal requirement for consumer contracts in Quebec and a customer's preference elsewhere, and state rules, such as California's privacy law, over federal ones.
+Jurisdiction, currency, language and legal entity do not line up: Canadian customers commonly hold accounts in US dollars, so currency is not jurisdiction.
+
+A fork per variant drifts within a release.
+Instead, classes, features and literals will be situated in coordinates, such as jurisdiction, language, time, product tier and audience [.planned]#PLANNED#.
+One vocabulary then carries its variants together, the elements that differ marked with where and when they apply, and generating for a coordinate emits what applies there and nothing else: a product line, not a fork.
+Two operations will do it, and they are different on purpose:
+
+* *Restriction* drops what does not apply to a region and keeps the vocabulary variable in every dimension it still spans. It is set restriction, so restricting to Ontario and then adding Quebec gives what restricting to both would.
+* *Specialization* resolves a vocabulary at a point, such as Quebec, in French, as of a date, into a smaller vocabulary for one audience: the glossary a Quebec branch prints, or the schema a provincial integration validates against.
+
+A resolved vocabulary records the point it was resolved at, so that a PDF says it is the Quebec French edition as of a date instead of merely being one, and can be compared with a sibling variant or resolved further.
+
+=== Occupancy
+
+Variability needs a way to say "this is true here, then, in that range" once, not five times: for jurisdictions, periods, versions, languages and product tiers alike.
+That is occupancy [.planned]#PLANNED#.
+An element occupies a region of a space of dimensions, the region being a union of boxes, each a point or a range per dimension, and a dimension that is not mentioned is unconstrained, not unknown.
+Time is one dimension among others, with the best tooling and no special treatment.
+
+The text syntax is ready for it.
+A facet attaches an occupancy to any element:
+
+[source,text]
+----
+/** In Quebec, consumer contracts are in French unless the customer asks otherwise. */
+@occupancy.Presence { jurisdiction: "CA-QC" }
+string contractLanguage = "fr"
+----
+
+The bank's vocabulary in <<text-syntax>> says exactly that today, and the reader records the facet as an annotation, with a warning that its type is not available.
+When the occupancy model is, the same text is checked against it, and restriction and specialization become transformations from Meta to Meta, testable by comparison like flattening.
+
+=== Kinds and types
+
+A type, a Meta class or an Xcore class, fixes structure: which features an element has.
+The runtime's core model is gaining kinds, which say what an element is for regardless of its type.
+Generated Meta documentation will explain the difference, and the kind model comes first [.planned]#PLANNED#.
+
+The bank's vocabulary already leans that way: a checking account product is an instance of `Product`, not a class, so a jurisdiction's variant of a product is data, not a change to the vocabulary.

@@ -34,3 +34,4 @@ An agent given a declared, versioned, owned vocabulary answers from it and cites
 The competitor is not another modeling tool.
 It is a spreadsheet and a wiki table, which win because they are free, everyone can use them, and they never ask anyone to adopt anything.
 Meta treats them as inputs, not as enemies: the vocabulary is captured where it already lives, and projected from there [.planned]#PLANNED#.
+Developers get a text syntax of their own, and everybody gets the outputs they read, down to a PDF for a partner (<<formats>>).

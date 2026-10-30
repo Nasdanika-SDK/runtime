@@ -68,8 +68,12 @@ public final class Projections {
 
 	private static String typeName(Feature feature) {
 		return switch (feature.getType()) {
-			case PrimitiveTypeReference primitive -> primitive.getKind().getLiteral().toLowerCase();
-			case ClassifierReference classifier -> classifier.getTarget().getName();
+			case PrimitiveTypeReference primitive -> primitive.getKind() == PrimitiveKind.DATE_TIME
+					? "dateTime"
+					: primitive.getKind().getLiteral().toLowerCase();
+			case ClassifierReference classifier -> classifier.getTarget() == null
+					? classifier.getClassifierName()
+					: classifier.getTarget().getName();
 			default -> "?";
 		};
 	}

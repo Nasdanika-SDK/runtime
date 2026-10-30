@@ -27,9 +27,11 @@ The model is a named Java module:
 include::{runtime-root}/models/meta/model/src/main/java/module-info.java[tag=module,indent=0]
 ----
 
-It requires the runtime's core model transitively, which brings EMF with it, and provides its `EPackage` as a service.
-A resource set created with the runtime's `NasdanikaResourceSet.createAndConfigure()`, in the `common` module, finds the package on the module path and loads and saves vocabularies in every format the runtime supports: YAML and JSON with the runtime's `emf-json` module, XMI, and EMF's binary format.
-The listings of this book use EMF alone, with XMI.
+It requires the runtime's core model and its `common` module transitively, which bring EMF and the OpenTelemetry API with them, and the ANTLR runtime, which parses the text syntax and is not part of the module's API.
+It provides two services: its `EPackage`, and a resource set contributor that registers the resource factory of the text syntax for the `nmeta` extension.
+
+A resource set created with the runtime's `NasdanikaResourceSet.createAndConfigure()`, in the `common` module, finds both on the module path and loads and saves vocabularies in every format the runtime supports: the text syntax, YAML and JSON with the runtime's `emf-json` module, XMI, and EMF's binary format.
+The listings of this book register what they use by hand, with EMF alone.
 
 === Names that clash
 
@@ -42,4 +44,7 @@ An explicit import of Meta's class wins over `java.lang` in that file, as in the
 The Xcore definition is in `src/main/resources/org/nasdanika/sdk/runtime/models/meta/meta.xcore`.
 Maven generates the Java sources into `src-gen` with the Xtext Maven plugin.
 The generated API is in three packages: the interfaces in `org.nasdanika.sdk.runtime.models.meta`, their implementations in `impl`, and the switch and adapter factory in `util`.
-The package provider is hand-written, in `services`.
+
+The grammar of the text syntax is in `src/main/grammar/Meta.g4`.
+The ANTLR Maven plugin generates its lexer and parser into `src-gen` as well, in the package `parser`, which is not exported: nothing outside the module sees a parse tree.
+The reader, the writer, the resource and its factory are hand-written, in `resource`, and so are the package provider and the resource set contributor, in `services`.

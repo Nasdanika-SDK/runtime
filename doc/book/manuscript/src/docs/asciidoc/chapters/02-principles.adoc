@@ -34,7 +34,7 @@ Occam's razor, applied to dependencies: a third-party library earns its place by
 | Concern | The usual choice | The runtime's choice
 | HTTP client | Netty, vendor SDKs | `java.net.http.HttpClient`
 | HTTP server | Netty, servlet containers | `com.sun.net.httpserver.HttpServer` on virtual threads
-| Asynchrony | Reactor `Mono` and `Flux` | Blocking code on virtual threads; `java.util.concurrent.Flow` where a stream really is a stream
+| Asynchrony | Reactor `Mono` and `Flux` | Blocking code on virtual threads; `java.util.concurrent.Flow` 
 | Ambient context | Thread locals, frameworks | `ScopedValue`, and the OpenTelemetry `Context`
 | JSON | Jackson data binding | org.json where JSON is a wire format; EMF JSON where it is a model format
 | Logging API | SLF4J and a backend | The OpenTelemetry Logs API, correlated with spans; where a log record goes is decided by whoever runs the unit of work
@@ -138,7 +138,7 @@ The telemetry exporters need the OpenTelemetry SDK, so they are a module of thei
 The size of a model has a budget, and the budget is attention.
 Code hides its implementation behind an interface; a model hides nothing, because its concepts are its interface.
 So a model should fit in the head of the team that maintains it, and its core concepts should fit in one diagram that a newcomer understands in a quarter of an hour.
-A model whose diagram outgrows a page is two models; a model whose diagram teaches nothing that a package name would not is a package that lost its way.
+A model whose diagram outgrows a page is two models.
 The same budget makes a model fit in the context of an AI assistant (<<built-with-ai>>).
 
 === One identity per module

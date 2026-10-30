@@ -8,11 +8,17 @@ Details keyed by the URI of their owner, carrying what a source expressed and Me
 Bounded context::
 In Domain-Driven Design, a boundary within which a model and its words have one meaning.
 
+Facet::
+Typed data about an element, which another model defines: a role, an owner, an occupancy. Written `@Type { property: value }` in the text syntax.
+
 Flattening::
 A transformation of a package into one whose classes declare everything they inherit.
 
 Harvester::
 A loader that reads a vocabulary from where it is already written down, such as a database schema or an XML Schema.
+
+Hybrid authoring::
+One vocabulary in several formats: entities and relationships on a diagram, attributes in a spreadsheet or Markdown, descriptions in files found from the diagram.
 
 Identifying attribute::
 An attribute whose value identifies an instance, and which references may cite.
@@ -20,11 +26,20 @@ An attribute whose value identifies an instance, and which references may cite.
 Metacircular::
 Able to describe itself: Meta's package of classes can be written in Meta.
 
+Occupancy::
+Where and when an element applies: a region of a space of dimensions, such as jurisdiction, time and language.
+
 Projection::
 A transformation of a vocabulary into a form a consumer needs: a glossary, an Ecore package, TypeScript, a JSON Schema.
 
 Published language::
 In Domain-Driven Design, a documented, shared vocabulary that bounded contexts translate into and out of.
+
+Text syntax::
+Meta's own notation, in `.nmeta` files: metamodels written the way Xcore writes Ecore models.
+
+Variability::
+How a vocabulary differs by jurisdiction, language, time or audience, carried in one vocabulary rather than in forks.
 
 Vocabulary::
 A Meta package: the terms of a domain, their definitions, types and relations.

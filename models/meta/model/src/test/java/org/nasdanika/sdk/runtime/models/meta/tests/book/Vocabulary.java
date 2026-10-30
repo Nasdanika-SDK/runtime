@@ -42,6 +42,7 @@ public final class Vocabulary {
 		for (String name: new String[] { "HARDCOVER", "PAPERBACK", "EBOOK" }) {
 			EnumLiteral literal = META.createEnumLiteral();
 			literal.setName(name);
+			literal.setOrdinal(format.getLiterals().size());
 			format.getLiterals().add(literal);
 		}
 		vocabulary.getClassifiers().add(format);

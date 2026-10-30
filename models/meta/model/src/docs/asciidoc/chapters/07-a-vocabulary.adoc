@@ -40,4 +40,7 @@ include::{booktests}/MetaBookTests.java[tag=save,indent=0]
 <1> A file in a repository. A change to what a term means is a pull request whose diff shows which features moved.
 
 The resource set of the listing registers the XMI factory and the Meta package by hand.
-In an application on the runtime, `NasdanikaResourceSet.createAndConfigure()` does both from the module path, and adds YAML and JSON when the runtime's `emf-json` module is there.
+In an application on the runtime, `NasdanikaResourceSet.createAndConfigure()` does both from the module path, registers the text syntax, and adds YAML and JSON when the runtime's `emf-json` module is there.
+
+Building a vocabulary in Java shows the model, and it is how a harvester or a projection builds one.
+It is not how a person should write one: the next chapter writes a bank's vocabulary in the text syntax, and writes this library as text too.

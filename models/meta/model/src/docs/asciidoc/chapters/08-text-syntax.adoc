@@ -1,0 +1,200 @@
+// Defaults for previewing this file on its own; index.adoc and the Maven build set these
+ifndef::booktests[:booktests: ../../../test/java/org/nasdanika/sdk/runtime/models/meta/tests/book]
+ifndef::bookresources[:bookresources: ../../../test/resources/org/nasdanika/sdk/runtime/models/meta/tests/book]
+
+[#text-syntax]
+== The text syntax
+
+A vocabulary built in Java is a program that builds a vocabulary.
+A vocabulary written in Meta's text syntax is the vocabulary itself: a file a developer reads top to bottom, diffs in a pull request, and edits in any editor.
+
+The syntax writes metamodels the way Xcore writes Ecore models.
+Files have the extension `.nmeta`, one file is one package, and they are parsed by the ANTLR runtime alone, with no Xtext and no Eclipse.
+The grammar, `src/main/grammar/Meta.g4`, documents every construct and how it maps to the model.
+
+The example of this chapter is the vocabulary of a bank: the products it sells, its customers, their accounts, the transactions posted to them and the statements that report them.
+It is the vocabulary an assistant over a bank's systems needs before it can answer a question about any of them, and a business glossary the bank's people can read.
+
+=== A package and its imports
+
+A file starts with its package:
+
+.The package of the bank (`bank.nmeta`)
+[source,text]
+----
+include::{bookresources}/bank.nmeta[tag=package]
+----
+
+* The package has a name, and its namespace URI is its identity: what other packages import, and what a reference to one of its classes resolves against. The prefix and the version are optional.
+* `import` names another package by its namespace, under an alias. `party.Party` is then the class `Party` of that package. A namespace is a name, not an address: nothing is fetched from it.
+* `annotation` declares an alias for an annotation source, so that `@Nasdanika(icon = "bi-box")` is an annotation with the source `urn:org.nasdanika` and a detail `icon`.
+* A documentation comment, `/** ... */`, is the Markdown documentation of the element that follows it. Other comments are ignored.
+
+=== Data types and enumerations
+
+.Data types and enumerations (`bank.nmeta`)
+[source,text]
+----
+include::{bookresources}/bank.nmeta[tag=types]
+----
+
+A data type has a name of its own and says how it crosses the wire: an `Amount` is a string, so that no projection turns money into a floating-point number.
+`wraps` records the type it stands for in a source language, as provenance.
+An enumeration's literals may have a serialized form, `as "credit-card"`, and an ordinal, `= 3`; without one, a literal's ordinal is one more than the previous literal's.
+
+=== Classes
+
+.Products and customers (`bank.nmeta`)
+[source,text]
+----
+include::{bookresources}/bank.nmeta[tags=product;customer]
+----
+
+.Accounts (`bank.nmeta`)
+[source,text]
+----
+include::{bookresources}/bank.nmeta[tag=account]
+----
+
+A feature is a type followed by a name, as in Xcore:
+
+* With `refers` or `contains` it is a reference, and `contains` makes the target part of this object: a statement belongs to its account, a product does not.
+* Otherwise it is an attribute, of a primitive kind, such as `string`, `date` and `dateTime`, or of a data type or enumeration.
+* `id` marks an attribute that identifies its instance, as the identity of an entity in Domain-Driven Design.
+* `opposite` pairs two references, `keys` names the attributes that identify a contained object within its list, and `= "fr"` is a default value.
+* `derived` and `readonly` say that a feature is computed rather than stored, and `op` declares the signature of an operation. Meta carries no bodies.
+
+The multiplicity follows the type:
+
+[cols="1,1,3",options="header"]
+|===
+| Written | Bounds | Meaning
+| `string name` | 0..1 | Optional, single-valued
+| `string[1] name` | 1..1 | Required
+| `string[?] name` | 0..1 | Optional, said explicitly
+| `Account[*] accounts`, `Account[] accounts` | 0..* | Any number
+| `Customer[+] holders` | 1..* | At least one
+| `string[2..5] names`, `string[2..*] names` | 2..5, 2..* | A range
+|===
+
+Types also combine.
+`string | number` is a union, `A & B` an intersection, `Repository<Account, string>` a class with type arguments, `? extends T` a wildcard, and text in backticks an opaque type, for what nothing else covers, such as TypeScript's `Record<string, unknown>`.
+They are rarely needed in a business vocabulary, and they are what lets a Java or TypeScript signature be written down without loss.
+
+=== Loading
+
+The resource factory of the text syntax is `MetaResourceFactory`.
+On the module path, the module's resource set contributor registers it for `.nmeta` files; this listing registers it by hand:
+
+.A resource set for vocabularies (`TextSyntaxTests.java`)
+[source,java]
+----
+include::{booktests}/TextSyntaxTests.java[tag=resource-set,indent=0]
+----
+<1> The text syntax.
+<2> The party vocabulary is owned by another team. The URI map says where its namespace is found here: a file next to this one, in a test.
+
+A vocabulary then loads like any other model:
+
+.Loading the bank's vocabulary (`TextSyntaxTests.java`)
+[source,java]
+----
+include::{booktests}/TextSyntaxTests.java[tag=load,indent=0]
+----
+<1> `party.Party` resolves to a class of another resource, loaded on demand from where the URI map says.
+<2> `Customer[+] holders`: at least one.
+<3> The occupancy facet's type is not available. That is a warning, not an error (<<facets>>).
+
+=== Federation
+
+The party vocabulary is a file of its own, and the bank's vocabulary does not care where it comes from:
+
+.The party vocabulary (`party.nmeta`)
+[source,text]
+----
+include::{bookresources}/party.nmeta[]
+----
+
+A type name is resolved against the type parameters in scope, then against the classifiers of the file, wherever in it they are declared.
+A name qualified with an alias, `party.Party`, becomes a classifier reference with the imported namespace and the class name.
+Its target is set when the package of that namespace is available: loaded in the resource set already, or loadable because the URI converter maps the namespace to a location.
+Otherwise the reference keeps the namespace and the name, and the package is read on its own, which is what lets a team publish its vocabulary without the vocabularies it refers to.
+
+[#facets]
+=== Facets
+
+An annotation is a bag of strings keyed by its source.
+A facet is typed: `@occupancy.Presence { jurisdiction: "CA-QC" }` says that the contract language of a customer applies in Quebec, with a class of the occupancy model as the type of what it says.
+Its value is an object literal, with strings, numbers, lists in `[ ]`, nested objects and names of enumeration literals and elements as values.
+
+A facet is checked against its type when the type is available: a property its class has no feature for is a warning.
+When the type is not available, as here, the facet is read without checking, and the warning says so.
+
+Until the core model has facets, a facet is recorded as an annotation [.sketch]#SKETCH#: its source is the URI of its type, the namespace and the class name joined with `#`, its name is the class name, and its properties are details.
+An object value is a nested annotation named after its property, and a list one whose source is `MetaReader.LIST`, with its items keyed by position.
+
+.A facet, as recorded (`TextSyntaxTests.java`)
+[source,java]
+----
+include::{booktests}/TextSyntaxTests.java[tag=facet,indent=0]
+----
+
+Roles, owners and occupancy are what facets are for: data about an element that another model defines and validates (<<variability-and-occupancy>>).
+
+=== Problems and provenance
+
+The reader collects what is wrong in the resource's `getErrors()` and `getWarnings()`, each with its file, line and column, and loading fails with the first error, as EMF's XML resources do:
+
+* A syntax error leaves the resource empty.
+* An unknown type, an unknown alias, or an opposite or a key that does not exist is an error, and the resource keeps what could be read, so that a caller catching the exception still sees it.
+* A facet whose type is not available, or a property its type does not have, is a warning.
+
+Every package, classifier, feature, operation, parameter and enum literal read from a file gets a core model marker with the file's URI and the `line:column` where its declaration starts.
+When a generated page or a projected schema says something surprising, the marker says which line of which file it came from.
+
+=== Saving
+
+A vocabulary read from text is a model, so it is saved in any format a resource set supports.
+References into a `.nmeta` file are by name, not by position, so they survive reordering the file:
+
+.Saving as XMI (`TextSyntaxTests.java`)
+[source,java]
+----
+include::{booktests}/TextSyntaxTests.java[tag=xmi,indent=0]
+----
+<1> The package moves to an XMI resource. Its references to the party vocabulary stay where they were.
+<2> A reference to the class `Party` of `party.nmeta`.
+
+The other direction is `MetaWriter`, which writes a package as text, and which the resource uses to save a `.nmeta` file.
+Here is the library of the previous chapter, built in Java:
+
+.Writing a vocabulary as text (`TextSyntaxTests.java`)
+[source,java]
+----
+include::{booktests}/TextSyntaxTests.java[tag=write,indent=0]
+----
+<1> The text, as a string.
+<2> The same text, as a file.
+
+.The library's vocabulary as text (`library.nmeta`)
+[source,text]
+----
+include::{bookresources}/library.nmeta[]
+----
+
+The text is canonical, not a copy of a source: comments other than documentation and the layout of the source are not kept, and the imports and annotation aliases are derived from the namespaces and sources the package uses.
+Reading what was written and writing it again gives the same text, which the tests check.
+That makes the text syntax a target as well as a source: a vocabulary harvested from a database or authored in a spreadsheet can be written as text, reviewed as text, and compared with last month's as text.
+
+=== The bank's glossary
+
+The glossary projection of the next chapter works on any package, wherever it came from.
+The bank's accounts, as the business reads them:
+
+.The accounts of the bank's glossary (`bank.md`)
+[source,markdown]
+----
+include::{bookresources}/bank.md[lines=50..62]
+----
+
+The file is generated from `bank.nmeta`, and the tests compare it with a reviewed copy.

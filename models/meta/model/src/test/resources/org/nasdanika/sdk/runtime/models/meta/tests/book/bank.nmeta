@@ -1,0 +1,141 @@
+// tag::package[]
+/**
+ * The words a bank uses with its customers, and what they mean here.
+ *
+ * Kept by the business and reviewed as a pull request, like the code it is generated into.
+ */
+package bank namespace "https://example.org/vocabulary/bank" prefix "bank" version "2026.10.0"
+
+import "https://example.org/vocabulary/party" as party
+import "https://runtime.sdk.nasdanika.org/models/occupancy" as occupancy
+annotation "urn:org.nasdanika" as Nasdanika
+// end::package[]
+
+// tag::types[]
+/** An ISO 4217 currency code, such as USD or CAD. */
+type CurrencyCode as string wraps java.util.Currency
+
+/** An amount in the currency of its account, a decimal string so that no cent is lost. */
+type Amount as string wraps java.math.BigDecimal
+
+/** The kind of product, which decides what an account can do. */
+enum ProductCategory {
+    CHECKING,
+    SAVINGS,
+    CREDIT_CARD as "credit-card"
+}
+
+/** Whether a transaction takes money out of an account or puts it in. */
+enum Direction {
+    DEBIT,
+    CREDIT
+}
+// end::types[]
+
+// tag::product[]
+/** What the bank sells: an offer with terms, under which accounts are opened. */
+@Nasdanika(icon = "bi-box")
+class Product {
+    /** Identifies the product in the catalog. */
+    id string[1] code
+
+    /** The name customers see, such as "Everyday Checking". */
+    string[1] name
+
+    /** What kind of product it is. */
+    ProductCategory[1] category
+
+    /** The currencies accounts of this product can be held in. */
+    CurrencyCode[+] currencies
+}
+// end::product[]
+
+// tag::customer[]
+/** A party the bank has a relationship with, through at least one account. */
+@Nasdanika(icon = "bi-person")
+class Customer {
+    /** Identifies the customer, and is printed on statements. */
+    id string[1] customerNumber
+
+    /** Who the customer is. Defined by the party vocabulary, not here. */
+    refers party.Party[1] party
+
+    /** When the relationship started. */
+    date since
+
+    /** The accounts the customer holds, alone or jointly. */
+    refers Account[*] accounts opposite holders
+
+    /** In Quebec, consumer contracts are in French unless the customer asks otherwise. */
+    @occupancy.Presence { jurisdiction: "CA-QC" }
+    string contractLanguage = "fr"
+}
+// end::customer[]
+
+// tag::account[]
+/** An arrangement under a product, in one currency, through which money moves. */
+@Nasdanika(icon = "bi-bank")
+class Account {
+    /** Identifies the account, and is printed on cheques and statements. */
+    id string[1] accountNumber
+
+    /** The product the account was opened under, which sets its terms. */
+    refers Product[1] product
+
+    /** The customers who own the account: one, or several for a joint account. */
+    refers Customer[+] holders opposite accounts
+
+    /** The currency the account is held in, one of its product's. */
+    CurrencyCode[1] currency
+
+    /** Every transaction posted to the account, addressed by its identifier. */
+    contains Transaction[*] transactions keys transactionId
+
+    /** The statements issued for the account, oldest first. */
+    contains Statement[*] statements
+
+    /** The sum of posted transactions, computed rather than stored. */
+    derived readonly Amount balance
+
+    /** The balance at the end of a day, from the transactions posted until then. */
+    op Amount balanceAt(date day)
+}
+// end::account[]
+
+// tag::transaction[]
+/** A movement of money posted to an account. */
+class Transaction {
+    /** Identifies the transaction within its account. */
+    id string[1] transactionId
+
+    /** When the transaction was posted, which may be after it was made. */
+    dateTime[1] postedAt
+
+    /** How much money moved, never negative: the direction says which way. */
+    Amount[1] amount
+
+    /** Whether the money left the account or came in. */
+    Direction[1] direction
+
+    /** What the customer sees on a statement, such as the merchant's name. */
+    string description
+}
+
+/** The record of an account over a period, as sent to its holders. */
+class Statement {
+    /** The first day the statement covers. */
+    date[1] periodStart
+
+    /** The last day the statement covers. */
+    date[1] periodEnd
+
+    /** The balance at the start of the first day. */
+    Amount[1] openingBalance
+
+    /** The balance at the end of the last day. */
+    Amount[1] closingBalance
+
+    /** The transactions posted in the period, in the order posted. */
+    refers Transaction[*] transactions
+}
+// end::transaction[]

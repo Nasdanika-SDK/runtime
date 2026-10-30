@@ -25,6 +25,29 @@
 | `IncomingReference` | Who references an object, through what, and where
 |===
 
+=== Text syntax
+
+[cols="3,4",options="header"]
+|===
+| Written | Read as
+| `package bank namespace "..." prefix "bank" version "..."` | `Package`, its name, namespace, prefix and version
+| `import "<namespace>" as party` | `party.Name` is a `ClassifierReference` with that namespace and classifier name
+| `annotation "<source>" as Nasdanika`, then `@Nasdanika(key = "value")` | `Annotation` with the source and details
+| `@occupancy.Presence { jurisdiction: "CA-QC" }` | A facet, recorded as an `Annotation` for now (<<facets>>)
+| `/** ... */` | The documentation of the element that follows, Markdown
+| `abstract class Name<T> extends A, B { ... }` | `Class`
+| `type Name as string wraps java.util.Currency` | `DataType`, its representation and source type
+| `enum Name { A, B as "b" = 3 }` | `Enum` and `EnumLiteral`s, their values and ordinals
+| `id string[1] code` | `Attribute`, identifying
+| `refers Product[1] product`, `contains Statement[*] statements` | `Reference`, containment for `contains`
+| `derived`, `readonly`, `unordered`, `unique` | The flags of a feature
+| `opposite holders`, `keys transactionId` | The opposite and keys of a reference
+| `= "fr"` | The default value
+| `op Amount balanceAt(date day, string... codes) throws E` | `Operation`, `Parameter`s, variadic, exceptions
+| `A \| B`, `A & B`, `Map<K, ? extends V>`, text in backticks | Union, intersection, type arguments and wildcards, opaque type
+| `^class` | A keyword used as a name
+|===
+
 === Primitive kinds
 
 `STRING`, `NUMBER`, `BOOLEAN`, `BIGINT`, `DATE`, `TIME`, `DATE_TIME`, `DURATION`, `BINARY`, `ANY`, `NULL`, `VOID`.

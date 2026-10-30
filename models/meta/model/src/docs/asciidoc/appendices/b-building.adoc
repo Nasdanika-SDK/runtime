@@ -17,4 +17,9 @@ The look comes from the runtime's `doc/zephyr` directory, shared by all the Nasd
 Listings are tagged regions of the tests in `src/test/java/org/nasdanika/sdk/runtime/models/meta/tests/book`, and of the module declaration.
 A listing line holds at most 96 characters, and a warning fails the build.
 
-The glossary in <<projections>> is `library.md` in `src/test/resources/org/nasdanika/sdk/runtime/models/meta/tests/book`, which `MetaBookTests` compares with what the projection writes. A change to the vocabulary or the projection changes it; run the tests, review the difference, and update the file.
+The glossary in <<projections>> is `library.md` in `src/test/resources/org/nasdanika/sdk/runtime/models/meta/tests/book`, which `MetaBookTests` compares with what the projection writes.
+Likewise, `TextSyntaxTests` compares the bank's glossary with `bank.md` and the library written as text with `library.nmeta`, in the same directory as `bank.nmeta` and `party.nmeta`.
+A change to a vocabulary, the projection or the writer changes them; run the tests, review the difference, and update the files.
+
+The parser of the text syntax is generated from `src/main/grammar/Meta.g4` into `src-gen` when the model is built, and committed with the Xcore-generated sources.
+A grammar warning fails the build.
