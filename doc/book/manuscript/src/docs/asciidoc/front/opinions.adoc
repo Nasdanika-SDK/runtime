@@ -55,12 +55,23 @@ Looking back, it is one path.
 As a child I spent hours with Lego, long before Mindstorms; a cousin of mine holds that it trains spatial thinking, and I agree.
 Then came schematics and circuit boards, maps and Command & Conquer.
 Now I play Go, which is older than chess and has far more possible games.
-At 2 dan the app on my phone beats me more often than I beat it; at 3 kyu it hardly ever does.
 At home we play Harmonies, a board game in which a landscape is built tile by tile.
-The Japanese have a word for a lifelong practice like this: _dō_, the way, as in judo, kendo and bushido.
+Chinese has a word for a lifelong practice like this, _dào_, the way, which Japanese reads as _dō_, as in judo, kendo and bushido.
 Mine is a way of seeing structure: things, the connections between them, and how they will change; modeling is where it led.
 
-In _Outliers_, Malcolm Gladwell tells how Bill Gates got time on a computer as a schoolboy, when almost nobody could, and spent every hour on it that he could find.
+The other way I have kept is a martial one, since about 1989.
+Wushu as a student, aikido in the 1990s, and after ten years without practice in the United States, Kenpo and Modern Arnis: I had taken my son to the classes, realized how much I had missed it, and joined the adult group, where the oldest student after me, past forty, was fifteen.
+Then came ninjutsu, and now Praying Mantis kung fu, tai chi, and the broadsword and the long sword.
+
+My teacher explains every technique he teaches and shows its applications.
+Some techniques are counter-intuitive at first and take as much effort of the mind as of the body, and once the application is understood, repeating a drill for the hundredth time is not boring: each repetition is an exercise in seeing what the technique is for.
+He also talks about small moves.
+A master wins with moves that a casual observer does not see: no more motion than the situation needs, and all of it to the point.
+That is efficiency and effectiveness together, more with less, and it is what I look for in software: a loop over an array instead of a database (<<against-the-grain>>), a few thousand lines of Xcore instead of hundreds of thousands of lines of Java (<<built-with-ai>>), the JDK before a library (<<principles>>).
+And he says that kung fu is "eating bitter", _chī kǔ_: hours of practice that nothing replaces, ten thousand of them, he says, to master the long sword.
+
+Ten thousand hours is also the number Malcolm Gladwell made famous.
+In _Outliers_ he tells how Bill Gates got time on a computer as a schoolboy, when almost nobody could, and spent every hour on it that he could find.
 Opportunity and hours, at the moment a technology is new.
 The PC was such a moment, and <<built-with-ai>> tells what my mother made of it.
 Assistants are another, and this book is what my hours with one have produced so far.

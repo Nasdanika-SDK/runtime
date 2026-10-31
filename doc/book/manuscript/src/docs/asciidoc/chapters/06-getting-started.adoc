@@ -227,6 +227,7 @@ They are built and tested with the runtime, before the book is rendered, so a li
 | `jvm` | <<jvm>>
 | `web` | <<web>>
 | `ui` | <<web>>, <<polymorphic-ui>>
+| `diagram` | <<diagrams>>
 |===
 
 To build and test one of them with what it depends on, from the runtime's root:

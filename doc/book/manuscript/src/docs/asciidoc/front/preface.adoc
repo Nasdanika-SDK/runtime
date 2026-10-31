@@ -59,6 +59,16 @@ Like "Beyond Diagrams", this book is more a menu than a recipe book.
 Architects can read <<why>> and the first section of each later chapter, which says what a capability is for, and skip the listings.
 Developers should read the parts in order, because each builds on the previous one, and run the examples as they go.
 
+In a martial art, techniques are learned one at a time and then put together in forms, as words are put together in sentences.
+Most chapters of this book teach techniques: a volume, a flow, a capability, a model.
+The examples that combine them, from the command followed end to end in <<at-a-glance>> to the stories of the Nasdanika Body of Knowledge (<<nbok>>), are forms.
+Both differ from the mainstream the way one school of kung fu differs from another.
+
+My kung fu teacher (<<where-the-opinions-come-from>>) says: "I teach you my kung fu so that it becomes your kung fu."
+Students differ, heavier or lighter, taller or shorter, and each practices what they are taught in the way that fits them.
+This book is offered the same way.
+Its techniques have worked for a practitioner working alone or in a small team; take the ones that fit, adapt them, and make them your own.
+
 [#zephyr-books]
 === The Nasdanika Zephyr Books
 

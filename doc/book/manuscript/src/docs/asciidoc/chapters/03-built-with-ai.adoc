@@ -67,6 +67,7 @@ Each writer in the family specialized in a field; my mother took the orders and 
 She never called it orchestration, but that is what it was: one who understands the request and knows who is good at what, and specialists who do the work.
 Multi-agent systems are built the same way today, and the part my mother played is the part that stays with people.
 
+[#one-level-up]
 === One level up
 
 Development with an assistant, as this chapter describes it, is the same activity as development without one, a level of abstraction higher: further to the left on the line from intent to operation (<<principles>>), closer to the why and the what than to the how.
@@ -132,6 +133,12 @@ and changes recorded in the spans that made them, so that what an agent did can 
 Understanding still matters; it moves.
 It moves from the mechanics of a framework, which the assistant carries, to the meaning of the model, which only the people who own the domain can judge.
 That is where the experienced engineer, the architect and the domain expert spend their time, and it is a better use of it.
+
+Fluency can be borrowed from an assistant; judgment cannot.
+Judgment grows the way any expertise does, by what psychologists call deliberate practice: practice aimed at what one cannot do yet, with feedback, and often with a teacher who explains (Ericsson, Krampe and Tesch-Römer, 1993).
+My kung fu teacher calls it eating bitter (<<where-the-opinions-come-from>>), and nobody can eat it for you.
+What an assistant changes is the price of the practice, not the need for it.
+Its feedback comes in minutes (<<one-level-up>>), and the hours it saves on the mechanics of a framework can go to practice at the level that matters: the model, and whether it is right.
 
 === Fall back to the keep
 
