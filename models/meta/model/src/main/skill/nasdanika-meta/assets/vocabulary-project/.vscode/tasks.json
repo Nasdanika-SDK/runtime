@@ -1,0 +1,27 @@
+{
+	"version": "2.0.0",
+	"tasks": [
+		{
+			"label": "Validate vocabulary",
+			"type": "shell",
+			"command": "mvn -q test",
+			"group": {
+				"kind": "test",
+				"isDefault": true
+			},
+			"problemMatcher": {
+				"owner": "nmeta",
+				"source": "nmeta",
+				"fileLocation": ["relative", "${workspaceFolder}"],
+				"pattern": {
+					"regexp": "^(.+\\.nmeta):(\\d+):(\\d+): (error|warning): (.*)$",
+					"file": 1,
+					"line": 2,
+					"column": 3,
+					"severity": 4,
+					"message": 5
+				}
+			}
+		}
+	]
+}

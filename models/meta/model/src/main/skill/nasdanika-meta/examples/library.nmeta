@@ -1,0 +1,33 @@
+/** The words a library uses, and what they mean here. */
+package library namespace "https://example.org/vocabulary/library" version "2026.10.0"
+
+annotation "https://example.org/catalog/schema" as Schema
+
+/** Someone who wrote, edited or translated a book. */
+class Person {
+    /** The name as printed on the title page. */
+    id string[1] name
+}
+
+/** How a book is published. */
+enum Format {
+    HARDCOVER,
+    PAPERBACK,
+    EBOOK
+}
+
+/** A published work, identified by its ISBN. */
+@Schema(table = "BOOKS")
+class Book {
+    /** International Standard Book Number, 13 digits. */
+    id string[1] isbn
+
+    /** The title as printed, subtitle excluded. */
+    string title
+
+    /** The date of the first edition. */
+    date published
+
+    /** The people credited as authors, in the order printed. */
+    refers Person[*] authors
+}

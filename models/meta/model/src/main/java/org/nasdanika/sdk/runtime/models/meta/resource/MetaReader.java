@@ -578,6 +578,10 @@ public class MetaReader {
 			} else {
 				result.setNamespace(namespace);
 				result.setTarget(imported(namespace, segments.getLast()));
+				// A package that is not available is not checked; one that is must have the classifier
+				if (result.getTarget() == null && isAvailable(namespace)) {
+					error(ctx, "Unknown type " + segments.getLast() + " in " + namespace);
+				}
 			}
 		} else {
 			error(ctx, "A type name is Name or alias.Name: " + ctx.qualifiedTypeName().getText());
@@ -614,6 +618,10 @@ public class MetaReader {
 			.computeIfAbsent(namespace, this::findPackage)
 			.flatMap(imported -> imported.getClassifiers().stream().filter(c -> name.equals(c.getName())).findFirst())
 			.orElse(null);
+	}
+
+	private boolean isAvailable(String namespace) {
+		return namespace.equals(pkg.getNamespace()) || importedPackages.computeIfAbsent(namespace, this::findPackage).isPresent();
 	}
 
 	/**
