@@ -6,14 +6,8 @@ image::headshot.jpg[Pavel Vlasov,width=178,pdfwidth=35%,align=center]
 I am Pavel Vlasov, the creator of Nasdanika and of the runtime this book describes.
 I have worked in information technology for more than thirty years, thirty of them in financial services, as a developer, an architect and an enterprise architect.
 
-I hold a master's degree in plasma physics.
-I am certified as a Java developer and as a Java architect, as a TOGAF Enterprise Architecture Practitioner, and as a Project Management Professional.
+I hold a master's degree in plasma physics from the Novosibirsk State University.
+I am certified as a Java developer and as a Java architect, and as a TOGAF Enterprise Architecture Practitioner.
 
 I write about models, architecture and AI-assisted development at {medium}.
-
-ifdef::editor-notes[]
-[IMPORTANT,caption="Editor's note"]
-====
-Confirm the facts on this page against your résumé: the years in information technology and in financial services (taken from the draft of your LinkedIn profile), the exact names and years of the Java certifications, the TOGAF and PMP credentials, and whether to name the university of the master's degree.
-====
-endif::[]
+My code is on {github}[GitHub], and I am on {linkedin}[LinkedIn].

@@ -1,0 +1,102 @@
+[preface]
+[#prior-art]
+== Prior art, first-hand
+
+The runtime is new; most of its ideas are not.
+I have built nearly every one of them at least once before, in large organizations, for a real problem and under harder constraints than the runtime has now: 32-bit address spaces, no assistant, and teammates who had never heard of EMF.
+This section is the record, so that you can judge the claims the book makes against what they come from.
+The organizations, the commercial products and the people are left unnamed; the problems, the numbers and what I built are as they were.
+
+=== Before EMF
+
+One of my first projects in the United States integrated a mainframe through a screen-integration product.
+It was meant to be used by mapping the input and output fields of every screen in its user interface and then writing Java against its API, one integration at a time.
+There were dozens of screens with hundreds of fields.
+Instead, I worked out the product's file formats and described the screens, and the flows between them, in XML.
+Then I wrote an interpreter for that XML: it received a request from the message bus, navigated the screens, entered and collected the data, and sent the result back, with XSLT for transformations and Java handlers for what XSLT could not do.
+The same XML generated an HTML view of every screen, which people who knew the mainframe could read without knowing the product.
+They and the developers wrote flows, and I tested and deployed them.
+It was an executable model, documentation as code and inner source, years before I had a name for any of them.
+
+At that time people could log in to application servers and change them by hand, and source control labeled files one at a time instead of committing a set of files together.
+Environments drifted apart: a logging library's jar had the same name on every server and a different size, timestamp and digest on many of them.
+I wrote a scanner that walked folders, and the archives inside them, computed a digest of every file and of every directory from the digests of its contents, and compared two scans as an HTML report.
+It was a Merkle tree; I learned the name some twenty years later.
+
+The team had also bought a commercial code-review tool.
+It was expensive and hard to use, and I was responsible for it.
+So I matched the part of it we used with an open source project of my own, Hammurapi.
+It parsed Java sources with an ANTLR grammar into a hand-made model of the language, with cross-references resolved down to method calls and bytecode consulted where it was available, and its inspectors navigated the model rather than matching patterns in the text.
+On a 32-bit JVM a large code base did not fit in memory, so the model was held with soft references.
+The reviews ran in the automated build, which checked the code delivered by outside contractors before anybody had to read it.
+
+Later, as the integration architect of a call-center modernization, I had to talk to a mainframe in a binary format that carried no metadata: two bytes of element identifier, two bytes of length, then the bytes of the value.
+The client code had to know what each identifier meant.
+There were about 250 message tables with 18,000 element types, and they changed every month.
+What we were given was XML generated from the mainframe's C header files: a metamodel of the mainframe, although nobody called it that.
+I wrote a generator that turned it into Java codecs streaming between the binary format and XML, and regenerated them when the tables changed.
+
+=== Models of what already exists
+
+My path with EMF started in 2008, in an R&D team.
+The first model was of decisions: which technology to use, and when, decided with a formal method by several experts (<<against-the-grain>> tells the rest of that story).
+
+The second kind of model I kept building was of things that already existed and that nobody could see whole.
+A customer-interaction framework drew processes as activities mapped to Java methods, with transitions between them and processes calling processes.
+After several years one project had about 800 of them, and nobody knew which were still used.
+I loaded them into a model, found the entry points in the configuration, resolved the references and reported the processes and the Java code that nothing reached.
+
+I have modeled the code base of a visual integration platform three times, in two organizations, over fifteen years.
+The first time the model generated documentation for the whole code base, with a diagram of every process, and ran automated reviews in the manner of Hammurapi.
+The second time it was an inventory, to estimate a modernization.
+The third time it was an engine that executed the processes from the model directly (https://docs.nasdanika.org/practices/legacy-modernization/direct-semantic-execution.html[_Direct semantic execution_]).
+
+In 2012 the task was a monolith: about fifteen thousand classes in a thousand packages and two and a half million lines of code, with two hundred packages in a single dependency cycle.
+On our diagrams those packages were drawn red, and we called it the black hole.
+A commercial dependency analyzer gave a first look and stopped there.
+We built an Ecore model of Java that went beyond reflection to call trees, field references and inheritance in both directions, populated it from bytecode with ASM, and browsed it in a web application with class and sequence diagrams generated by PlantUML; it held about two million objects.
+An instrumentation tool recorded call trees at run time, to catch what reflection hid from static analysis, and an Eclipse plug-in extracted into a new module only the code traceable from chosen entry points, down to the individual members of a class.
+It all ran on a 32-bit JVM.
+
+In the same R&D years I exposed a banking domain model as JavaScript APIs generated from an EMF model, because writing them by hand would have been slow and error-prone.
+The generated code loaded classes, data and templates on demand, worked synchronously or with promises, and measurably reduced network traffic compared to the approach then in use.
+
+=== Models of how work is done
+
+For a cloud migration, the software delivery process was a drawing of about a hundred activities.
+I built a diagram editor backed by a model of what is done, by whom, in which phase and with what resources, and migrated the drawing into it.
+For the same effort I built a generator of starter solutions.
+A developer filled out a form in the browser, the form was committed to a repository as YAML, and the commit started a build that generated the code, pushed it to the developer's repository, started its first build and wrote the identifiers of the cloud resources it created back into the YAML.
+It was a Git-driven workflow before I called it that.
+It also taught me a lesson that <<built-with-ai>> returns to: the generator's specifications were EMF models saved as XMI, and my teammates, who did not know EMF, edited them in a text editor.
+
+The developer-experience work that followed modeled the delivery process as journeys: directed graphs of activities, nested without limit, performed by roles using tools and consuming and producing deliverables, kept as YAML and Markdown in source control and generated into documentation with clickable diagrams.
+Next to it, documentation as code generated and federated the sites of more than sixty components from their own repositories.
+
+=== The organization as a model
+
+The largest model I have built joined three sources in a bank: the people directory, with tens of thousands of people and their reporting lines; the inventory of thousands of applications, with their owners, tiers and dependencies; and tens of thousands of source repositories, with their commits, files and Maven dependencies.
+Joining them was most of the work, because the same person had different identities in each.
+Once joined, the model answered questions that had needed a project each: who owns what technology, rolled up the reporting hierarchy; which organizations contribute to the same repositories; which languages the code is written in; and, from an organization-wide dependency graph, where code could be reused and which vulnerable libraries sit closest to the attack surface.
+
+=== What carried over
+
+None of these is the runtime.
+Each was built for one organization and one problem, on the platform of its day, and each ended when its project did.
+What they share is a shape, and the runtime is that shape built once, in the open, with the organization-specific parts left out.
+
+[cols="1,1",options="header"]
+|===
+| Built before | Where it is now
+| An executable XML model of mainframe screens and flows | Work drawn as a graph and executed as drawn, the North Star (<<vision>>)
+| HTML views generated from the screen model; documentation sites generated from sources | Documentation as code, the web models (<<web>>) and the Zephyr Books
+| Digests of directories computed from the digests of their contents | Snapshots of what ran (<<jvm>>)
+| Hammurapi's model of Java; the 2012 model loaded from bytecode | The JVM model (<<jvm>>)
+| Codecs generated from the mainframe's metadata | Models in Xcore and the code generated from them (<<models>>)
+| Processes and flows loaded from the files of the tools that drew them | Diagrams as sources of models (<<diagrams>>)
+| JavaScript APIs generated from a banking model | TypeScript and React generated from models (<<web>>)
+| Generator specifications in XMI, edited as text | Models kept as YAML and as Groovy scripts (<<groovy-dsl>>)
+| A form committed as YAML, and a build that delivered the result | An architecture method on Git (<<vision>>)
+| A model of decisions with criteria, experts and pairwise comparisons | Decisions bound and recorded before the code (<<built-with-ai>>)
+| One model of people, applications and repositories | Micro-models joined by identity, local and federated (<<principles>>)
+|===

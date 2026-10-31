@@ -11,8 +11,8 @@
 	<packaging>pom</packaging>
 	<name>Manuscript</name>
 	<description>
-		The book in AsciiDoc, rendered by Asciidoctor to PDF (7 by 9.25 inches, the trim size of the
-		EMF book), EPUB 3 and a single HTML page. Code listings are included from the examples by tag.
+		The book in AsciiDoc, rendered by Asciidoctor to PDF (189 by 246 mm, a standard trim size
+		for print on demand), EPUB 3 and a single HTML page. Code listings are included from the examples by tag.
 
 		Render:            mvn -pl doc/book/manuscript -am verify   (from the runtime root)
 		Skip rendering:    -Dasciidoctor.skip=true

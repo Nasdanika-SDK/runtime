@@ -1,0 +1,138 @@
+[#against-the-grain]
+== Against the grain
+
+The previous chapter is about how the runtime was built.
+This one is about the organizations it is built for, and why many of them will resist it.
+An assistant amplifies the way of working it is given: it makes a faster horse faster, and it lets people who never owned their code produce more of it.
+The sections below describe five patterns I have watched for years, with the names others have given them, and what the runtime does about each.
+
+=== Faster horses
+
+Steve Jobs liked to quote a line he credited to Henry Ford, although nobody has found it in anything Ford said or wrote: if he had asked his customers what they wanted, they would have said a faster horse.
+Developers given AI tools often ask for a faster horse.
+They speed up the tasks they know, such as boilerplate, mappings between formats and tests for code that should not exist, when the tasks themselves should be rethought.
+Modern trains do not have stokers with ergonomic shovels.
+They do not have stokers.
+
+A smaller count is not a weaker system either.
+In the third presidential debate of 2012, answering the charge that the Navy had fewer ships than in 1916, Barack Obama said: "Well, Governor, we also have fewer horses and bayonets, because the nature of our military's changed."
+Lines of code, services and boxes on a diagram count the stokers, not the train.
+The question to ask before giving a task to an assistant is not how to do it faster but whether it should be done at all; in this runtime the answer is often a model and a generator (<<models>>, <<web>>).
+
+=== Owning the result
+
+An assistant raises the stakes of ownership.
+Somebody has to see the big picture and own the why, the how and the assurance of what ships, and with an assistant that somebody did not type most of it.
+Owning what you did not type takes evidence: what changed, in the course of what work, at whose request, and how to undo it.
+That is one of the reasons the runtime keeps telemetry as a model and records changes down to single attributes, in the spans that made them (<<telemetry-model>>): "the assistant did something" becomes a list of changes to review and, if need be, to revert.
+
+Tools do not create ownership where the organization of work does not.
+For decades much of the industry has separated deciding from doing: the people who write the code are not the people who decide why it is written, and neither answers for how it runs.
+Teams measured by tickets closed and staffed by the hour learn to stay inside their tickets.
+Given AI tools, they produce more code, faster, that they do not understand and do not want to own.
+
+The same separation produces a pattern I have watched more than once.
+An architect with better AI tools than the team generates tens of thousands of lines in a language of their own choosing, with no regard for what the team knows or for what the organization uses for that kind of component: TypeScript, so that the user interface and the business logic share one code base, for a team of Spring developers in an organization that builds its server side in Java and Spring.
+There is a demo, a round of applause from the business,the code is handed over, and the architect moves on to the next team.
+The developers are left to work out what they now own, and to take the blame if it fails.
+The same pattern deploys a vector database for a similarity search over fifty vectors, which a loop over an array answers in microseconds.
+The database costs money and does nothing a loop would not, and the person who chose it does not pay for it; what they get is another box on a diagram and a line in the resume.
+
+These patterns have names, which is some comfort: it is not only me who sees them.
+Nassim Taleb calls what the architect lacks skin in the game: making decisions without bearing their consequences.
+Choosing a technology for how it looks on a résumé, or on a diagram, rather than for the problem has been defined and measured as résumé-driven development (Fritzsch and others, 2021).
+
+Where people do not contradict those above them, which students of culture call high power distance, an organization learns only what its leaders already believe.
+John Maxwell calls this the law of the lid: an organization rises no higher than the ability of the person who leads it (Maxwell, 1998).
+If the boss has mastered addition, whoever computes 1 + 2 + ... + 99 + 100 as n(n + 1) / 2 will be flogged.
+Legend has the young Carl Friedrich Gauss do exactly that in a Brunswick schoolroom in the 1780s, writing 5050 on his slate while his classmates were still adding, under a schoolmaster known for his cane; that schoolmaster, at least, recognized the answer.
+To my surprise, I have crossed paths with several people in the twenty-first century who epitomize the law.
+Nokia is a studied case: interviews with 76 of its managers and engineers found middle managers who feared their superiors and peers and kept bad news from the top, and top managers who, with a rosier view of the company's technology than the facts supported, underinvested in what came next (Vuori and Huy, 2016).
+Aviation met the problem in the cockpit and answered it with crew resource management, which trains first officers to challenge captains, and with checklists that ignore rank.
+The software equivalent is evidence anyone can query: a junior engineer who can point to the decision record and the trace does not have to contradict a superior.
+When intent and evidence are both models, assurance is a query instead of a meeting (<<principles>>).
+
+None of this is a failing of the tools, or of people who work the way they were taught to.
+It is what happens when the people who bind decisions are not the people who live with them.
+The runtime cannot reorganize a company, but it can keep the binding visible and keep ownership where it belongs.
+Decisions are recorded before the code, changes are recorded in the spans that made them, and generated code is the output of models the owning team works with: the web models of <<web>> let a team of Java developers own a React application as Java code and models, without a second code base in TypeScript.
+
+=== Stories are not source code
+
+This section is speculation, and I label it as such.
+
+Agile, as many large organizations practice it, works like a virtual machine.
+Stories are its instructions: small, uniform, prioritized, and executed by teams sprint after sprint.
+The machine compiles intent into running software, which is what an AI assistant does as well.
+What it does not keep is the source.
+Ron Jeffries described the card of a user story as "a token representing the requirement", with the requirement itself carried by conversation; in the machine, the card is all there is.
+The why, the vocabulary and the whole that the stories are parts of are in nobody's repository.
+
+Armies, which nobody accuses of loose hierarchy, settled this long ago.
+In the combat regulations I was trained on (<<where-the-opinions-come-from>>), the first duty of a platoon commander who receives a mission is to understand it: the task of the company as well as the platoon's own, the tasks of the neighbors and how to coordinate with them, and the time to be ready.
+The US Army asks the same of its platoon leaders, who must understand the situation and the commander's intent one and two levels above their own (Field Manual 3-21.8, 2007).
+A story card carries the platoon's task and leaves out the level above and the neighbors.
+
+That has always been the tension between architecture and agile as practiced: architecture is about the source, and the machine ships only bytecode.
+I am not alone in seeing the machine: Martin Fowler named it the Agile Industrial Complex, which imposes process on teams in the name of agility, and John Cutler described teams that crank out features without measuring their effect as a feature factory.
+
+AI assistance as this book describes it pulls toward the source: intent and models at the left end of the line (<<principles>>), compiled by an assistant and checked by the build.
+A machine built to turn stories into code competes with the assistant at what the assistant does best, and I expect the tension to grow.
+None of this is an argument against agility. The Agile Manifesto values individuals and interactions over processes and tools; much of what is practiced in its name inverts that.
+
+=== When a question becomes answerable
+
+Most of what I describe in <<prior-art>> made a question answerable that had not been: which processes are dead, which packages tie a monolith into a knot, who owns an application, on what grounds a technology was chosen.
+While a question cannot be answered, nobody is accountable for the answer.
+Once it can be, somebody is.
+An answer arrives with three costs that have little to do with the technology that produced it, and knowing them in advance saves disappointment.
+
+*It moves decisions.*
+In 2008 I built a model for choosing technologies with the Analytic Hierarchy Process: a hierarchy of criteria, several experts weighted by their expertise in each branch of it, alternatives compared in pairs, and the consistency of each expert computed.
+It worked, and it went no further, because using it would have changed who decides and how.
+That is an old pattern.
+Simple formal methods have been matching or beating unaided expert judgment since Paul Meehl reviewed the evidence in 1954, and experts have resisted them for as long; Kahneman, Sibony and Sunstein retell the history in _Noise_ (2021).
+Organizations also gather information they do not use, and use information to justify decisions already made (Feldman and March, 1981), and a formal procedure can be kept as a ceremony, apart from the work it describes (Meyer and Rowan, 1977).
+I have taken part in more than one technology evaluation whose result was known on the first day.
+
+*It shows what was not visible.*
+The metaphor I use is glasses.
+A nearsighted person complains that they cannot see well enough to do what needs to be done.
+Given glasses, they see every detail, and with it everything that needs doing, and they may well put the glasses away.
+Economists call it information avoidance: people avoid information that would oblige them to act, or that they expect to dislike, even when it is free (Golman, Hagmann and Loewenstein, 2017).
+
+*It changes the work.*
+Seeing more means more to fix, and generating what was written by hand removes work that people were hired, and teams were sized, to do.
+On one project there was a concern that we did not have enough people to build all the integration processes we needed in time.
+I proposed generating the starter processes from the same metadata that already generated our codecs; the answer was that the people were already allocated.
+Nobody was being unreasonable: a plan was in place, and in many organizations a manager's standing is measured by the size of the team, the bureaucrat William Niskanen modeled as maximizing a budget (Niskanen, 1971).
+
+When I told my wife about such episodes, she used to say: everybody is busy, everybody gets paid, the economy works.
+She is right, and it is the most important fact about them: the arrangement is stable.
+The runtime cannot take these costs away.
+What it can do is make answering a question cheap enough for one team to answer its own, for its own use, before anybody else has to agree to anything.
+
+ifdef::editor-notes[]
+[IMPORTANT,caption="Editor's note"]
+====
+Confirm with my wife that she is comfortable being quoted.
+Check the citations against the sources: Meehl (1954), _Noise_ (2021), Feldman and March (1981), Meyer and Rowan (1977), Golman, Hagmann and Loewenstein (2017), Niskanen (1971).
+====
+endif::[]
+
+=== Failing conventionally
+
+A traditional enterprise will most likely reject an approach like this one, and not because it does not work.
+It goes against the grain of how the enterprise is organized in the middle, where survival pressure is low and everybody does the same thing.
+The mainstream filter of <<built-with-ai>> is one form of it.
+Keynes saw it in investors in 1936: "Worldly wisdom teaches that it is better for reputation to fail conventionally than to succeed unconventionally."
+Information technology has its own version: nobody ever got fired for buying IBM, a saying in print since at least 1978.
+Sociologists call the result institutional isomorphism: organizations in a field come to resemble each other, and under uncertainty they copy whoever looks successful (DiMaggio and Powell, 1983).
+Biologists would call it an evolutionarily stable strategy: once most of a population follows it, a rare alternative cannot displace it, because the alternative does worse while it is rare, even if a population that followed it would do better.
+
+I cannot change the payoffs of an organization, so the runtime was designed to pay off while it is rare.
+Its foundation is the JDK, EMF and the OpenTelemetry API, which a platform team can approve in a meeting (<<principles>>).
+It needs no server and no platform, and one team can take one module without anybody else adopting anything (<<more-structure>>).
+A strategy that pays off only when everybody adopts it cannot invade; one that pays off for a single team can.
+
+The next chapter puts the runtime on one page: its modules, how they depend on each other, and what happens when a unit of work runs.

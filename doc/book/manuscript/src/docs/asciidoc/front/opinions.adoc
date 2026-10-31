@@ -42,6 +42,29 @@ On receiving a combat mission, a platoon commander must:
 It works well beyond a platoon: I have explained it to my children, and they know my version of it by heart.
 I later recognized it in project management and in the TOGAF Architecture Development Method, and the loop of <<built-with-ai>> has the same shape.
 
+The training met its first real test in a computer game.
+In the late 1990s I played a lot of Command & Conquer, a real-time strategy game; I never cared for Doom.
+At first I lost badly, and it stung: I had been trained for this.
+A short while later I could not understand how I had ever lost so badly.
+Doom puts you in one body and asks for reflexes.
+A real-time strategy game gives you a map and units that act on their own: you set them a task, watch, correct and decide again.
+That is the work of directing an assistant, decades before there were assistants to direct.
+Against the usual advice, I later had my children play it, for the strategic and spatial thinking it trains.
+
+Looking back, it is one path.
+As a child I spent hours with Lego, long before Mindstorms; a cousin of mine holds that it trains spatial thinking, and I agree.
+Then came schematics and circuit boards, maps and Command & Conquer.
+Now I play Go, which is older than chess and has far more possible games.
+At 2 dan the app on my phone beats me more often than I beat it; at 3 kyu it hardly ever does.
+At home we play Harmonies, a board game in which a landscape is built tile by tile.
+The Japanese have a word for a lifelong practice like this: _dō_, the way, as in judo, kendo and bushido.
+Mine is a way of seeing structure: things, the connections between them, and how they will change; modeling is where it led.
+
+In _Outliers_, Malcolm Gladwell tells how Bill Gates got time on a computer as a schoolboy, when almost nobody could, and spent every hour on it that he could find.
+Opportunity and hours, at the moment a technology is new.
+The PC was such a moment, and <<built-with-ai>> tells what my mother made of it.
+Assistants are another, and this book is what my hours with one have produced so far.
+
 I taught myself from books, and in Khabarovsk, in the Far East of the Soviet Union and then of Russia, books about computers were scarce.
 A few bookstores had a few of them; on business trips to Moscow I found more.
 The first computer store I visited in the United States was a Micro Center, and I went straight to its books section, which held more computer books than I had ever seen in one place.
@@ -51,6 +74,18 @@ He had read his computer books in college and did not expect to need more.
 Scarcity leaves habits behind.
 Mine is to assume that I do not know enough yet and that somebody has done this before, and to find out who, and what they learned.
 That is the first step of every design in this runtime.
+
+Physics taught the same habit, with a story that I was told when I was in the university.
+A student wrote his diploma thesis on computing an integral by numerical methods.
+An old academician who happened to attend the defense opened a table of integrals and asked why the student had computed numerically an integral that has a closed form.
+The student got a C, the lowest passing grade, out of pity.
+The computation was correct; the work was not needed, and an hour in the library would have shown it.
+
+Later I learned the name lawyers give to what that student skipped.
+I prepared two patent applications myself, for the automated build and deployment system my team had built, and a patent application is judged against the prior art: everything published before it that already does what it claims.
+The examiner searches for it, so you search first, and you learn to read what others have done as the measure of what you have.
+The applications were abandoned when the team left the company; the habit stayed.
+It is the reason for the next section, which is the prior art of this runtime in my own work, and for the table in <<principles>> of what the runtime borrows from the work of others.
 
 Plenty of books did not mean plenty of fluency, though.
 When I came to the United States I assumed that every developer knew UML, and I was wrong.

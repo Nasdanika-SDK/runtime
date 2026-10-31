@@ -6,11 +6,14 @@
 # in the bundled Noto Sans for now: a sans body sets the Zephyr Books apart from the SDK book, which
 # is set in Noto Serif. Code is in M+ 1mn. All three are licensed under the SIL Open Font License.
 #
-# The trim size is the SDK book's, 7.5 x 9.25 inches, because the Zephyr Books are code-heavy and
-# a 96-character listing line fits it at 8.5 points.
+# The trim size is the SDK book's, 189 x 246 mm (7.44 x 9.69 inches), and so is the 6-inch text
+# block, because the Zephyr Books are code-heavy and a 96-character listing line fits it at 8.5 points.
 #
-# Every Zephyr Book has the same title page: a band of Zephyr blue, the module's name as the title,
-# "A Nasdanika Zephyr Book" as the subtitle, and the version from the module's pom.
+# Every Zephyr Book has the same title page: a band of Zephyr blue with the Nasdanika logo at its top
+# left, as on the web site, the module's name as the title, "A Nasdanika Zephyr Book" as the
+# subtitle, and the version from the module's pom. The logo is on the title page only: in a book the
+# title page is the web site's top left corner, and the running headers carry the chapter titles.
+# At 0.6in the 205 pixel logo prints at about 340 dpi.
 extends: default
 font:
   catalog:
@@ -31,10 +34,10 @@ zephyr:
   muted: 6C757D
   subtle: EBEFFC
 page:
-  size: [7.5in, 9.25in]
-  margin: [0.7in, 0.75in, 0.7in, 0.75in]
-  margin_inner: 0.875in
-  margin_outer: 0.625in
+  size: [189mm, 246mm]
+  margin: [0.7in, 0.72in, 0.7in, 0.72in]
+  margin_inner: 0.845in
+  margin_outer: 0.595in
 base:
   font_family: Noto Sans
   font_color: $zephyr_text
@@ -79,6 +82,10 @@ part:
 title_page:
   background_image: image:title-band.svg[fit=fill]
   text_align: left
+  logo:
+    image: image:../images/nasdanika-logo.png[pdfwidth=0.6in]
+    top: 4%
+    align: left
   title:
     top: 14%
     font_family: Noto Sans

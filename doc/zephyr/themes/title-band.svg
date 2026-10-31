@@ -1,6 +1,6 @@
-<svg xmlns="http://www.w3.org/2000/svg" width="7.5in" height="9.25in" viewBox="0 0 750 925">
+<svg xmlns="http://www.w3.org/2000/svg" width="189mm" height="246mm" viewBox="0 0 744 969">
   <!-- The title page of a Nasdanika Zephyr Book: a band of Zephyr blue across the top third -->
-  <rect x="0" y="0" width="750" height="925" fill="#FFFFFF"/>
-  <rect x="0" y="0" width="750" height="380" fill="#3459E6"/>
-  <rect x="0" y="380" width="750" height="6" fill="#2A47B8"/>
+  <rect x="0" y="0" width="744" height="969" fill="#FFFFFF"/>
+  <rect x="0" y="0" width="744" height="398" fill="#3459E6"/>
+  <rect x="0" y="398" width="744" height="6" fill="#2A47B8"/>
 </svg>

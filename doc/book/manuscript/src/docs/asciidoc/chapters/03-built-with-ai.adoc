@@ -2,13 +2,29 @@
 == Built with an AI assistant
 
 The runtime's repository was created on 29 September 2026.
-This edition describes it eighteen days and 43 commits later.
-By then it held about 28,000 lines of Java and 16,000 lines of tests in 235 test cases, 7,500 lines of Xcore from which EMF generates about 385,000 lines of Java, and 2,400 lines of Groovy.
+This edition describes it twenty-six days and 59 commits later.
+By then it held about 40,000 lines of Java and 24,000 lines of tests in 395 test cases, 8,800 lines of Xcore from which EMF generates about 449,000 lines of Java, and 2,600 lines of Groovy.
 Part of it was migrated from earlier Nasdanika repositories rather than written from scratch, and the migration was work too: new packages, new identities, new conventions.
 
 One person did this work, with an AI coding assistant.
 This chapter is about how, because the how is part of the argument of the book.
 The runtime is built on technologies that most organizations have kept at arm's length for twenty years, for a reason that no longer holds.
+
+=== Binding decisions
+
+My favorite definition of software development comes from a talk by Ivar Jacobson that I heard around 2006.
+This is how I remember what he said: software development is the process of binding decisions to make them executable.
+A design starts as a space of open questions, and development binds them one by one, at design time, at build time, at deployment and at run time, until what is left can run.
+
+The definition does not say who binds.
+For most of the history of software, people bound every decision, and compilers and builds checked that the bindings were consistent.
+An assistant now binds some of them: a name, a data structure, a library, a way of handling errors, the shape of an interface, and now and then one that matters a great deal.
+That is the real change, more than the speed, and it makes the traceability of binding paramount: which decision was bound, by whom or by what, in the course of what work, and on what evidence.
+
+The runtime makes binding traceable at both times.
+During development, a decision is written down before the code that binds it, in the loop described later in this chapter; changes to models are recorded in the spans that made them (<<telemetry-model>>), and markers record where an element came from (<<core-model>>).
+During execution, the runtime binds late and says how: a capability loader can explain which factories it asked about a requirement, which declined and what each produced (<<capabilities>>), command wiring that fails names the types a command needed and what its parent offered (<<wiring>>), and a JVM snapshot records how modules and services were bound when an assembly started (<<jvm>>).
+Late binding without a record is magic; with a record, it is a decision that can be reviewed.
 
 === Who does what
 
@@ -18,11 +34,9 @@ The division of labor settled quickly, and it is worth stating plainly, because 
 I decide what the runtime is for, which problems are worth solving, and in what order.
 That judgment comes from decades of building software and of watching what works and what does not, in projects of every size.
 The principles of <<principles>> are such lessons, written down.
-"Say what is stuck" is there because I have lost too many hours to builds that hung without a word.
 Documentation is part of the model because I have watched documentation drift away from what it describes wherever the two were kept apart.
 The JVM model snapshots what runs because I have seen dependency trees that bore little relation to it.
 Telemetry is a model kept with the work because telemetry kept for a week cannot answer the question asked a year later.
-An assistant can argue for or against any of these lessons; it did not learn them the hard way.
 
 *Research comes from the assistant.*
 Every design starts with a question: who has done this before, and what did they learn?
@@ -42,7 +56,31 @@ I review designs, read diffs and decide.
 The build checks the rest: every module is tested, every listing in this book is compiled and tested, and a warning in the manuscript fails the build.
 Writing this book was also a review of the runtime: describing what the code does exposed where it did not do what it should.
 A command tree was assembled only in part, two families of dependencies were out of step, and names had drifted.
-Each became an editor's note in the first draft, and each was fixed in the next session, the first with a test that fails on the old code.
+Each became an editor's note in the first draft, and each was fixed in the next session.
+
+The division is older than assistants: when I designed scientific devices, I drew them, my boss reviewed the drawings and a workshop built the devices as drawn; an assistant does the workshop's part, from intent and models instead of drawings.
+
+The routing of work is older than software, too.
+When I bought my first PC, in 1996, my mother thought I was crazy.
+Then she saw an opportunity in it and built a writing business that fed our extended family for several years.
+Each writer in the family specialized in a field; my mother took the orders and routed each one to the writer whose field it was.
+She never called it orchestration, but that is what it was: one who understands the request and knows who is good at what, and specialists who do the work.
+Multi-agent systems are built the same way today, and the part my mother played is the part that stays with people.
+
+=== One level up
+
+Development with an assistant, as this chapter describes it, is the same activity as development without one, a level of abstraction higher: further to the left on the line from intent to operation (<<principles>>), closer to the why and the what than to the how.
+
+Without an assistant I write code, and the compiler tells me where I got it wrong: a typo, a reference to a type that does not exist, a generic type that does not fit.
+In my {cpp} years I loved templates, and they were one of my nightmares: a small flaw in a design, and I spent hours sifting through pages of compiler errors to find it.
+
+With an assistant I write intent, and the feedback is about the intent.
+The assistant tells me the prior art of an idea, how my idea differs from it, what the difference is worth, and what to watch for and improve.
+Like the compiler's, the feedback comes in minutes and costs little, so I can afford to be wrong early, at the level where being wrong is cheapest.
+
+The feedback is not a proof, though.
+A compiler that accepts a program has checked it; an assistant that agrees with an idea has only not found a reason to disagree.
+So the decision stays with me, and the compiler and the tests still check everything below it.
 
 === The mainstream filter
 
@@ -56,13 +94,18 @@ The filter was rational.
 The cost of a technology includes the cost of everyone who has to understand it, and people fluent in EMF were few.
 The price of the mainstream choice was paid elsewhere, and quietly: in the effort of explaining what needed to be done, in reviewing whether it had been done right, and often in doing it yourself.
 It also produced judgments that sound odd side by side.
-Two hundred lines of Xcore were too complex; fifty thousand lines of generated TypeScript were a great achievement.
-Both were said in good faith.
+Two hundred lines of Xcore were too complex; fifty thousand lines of AI-generated TypeScript were a great achievement.
 The first measured the cost of understanding; the second measured output.
 
 This is not a criticism of developers.
 Fluency follows exposure, and organizations exposed their people to what the market used most.
 It is a description of an economy in which fluency was scarce.
+
+I paid that price myself.
+The specifications of a code generator I built for a cloud migration (<<prior-art>>) were EMF models saved as XMI.
+My teammates did not know EMF, so they edited the XMI in a text editor, and the generator worked anyway.
+The obstacle was not the model but the format it asked people to read.
+If the mountain will not come to Mohammed, Mohammed must go to the mountain: since then I keep models in formats people already read and write, YAML, JSON and Groovy scripts (<<groovy-dsl>>), with EMF behind them.
 
 === When fluency is not scarce
 
@@ -76,15 +119,40 @@ Two questions take its place.
 Mendeleev is said to have compared burning petroleum as fuel to heating a stove with banknotes: a valuable resource spent on low-value work.
 An assistant writing the boilerplate of a framework is the same trade.
 Its leverage compounds when it works a level or two higher: on models that generate the routine code, on languages that remove the need for it, on user interfaces that render themselves from the model.
-In this runtime, 7,500 lines of Xcore generate about 385,000 lines of Java, and people review the 7,500.
+In this runtime, 8,800 lines of Xcore generate about 449,000 lines of Java, and people review the 8,800.
+Xcore is the concise, high-level representation; the generated Java is the verbose, low-level implementation.
+Xcore is declarative with occasional operations - much smaller human review surface and "attack surface" for errors.
 
 *Can the result be checked?*
 What an assistant produces must be checkable, cheaply, by people and by machines.
-That is a design constraint, and it explains much of this book: typed models instead of maps of strings, generic types that the compiler checks (<<generic-types>>), declarations instead of registration code, tests for every module, listings that compile, telemetry kept as models (<<telemetry-model>>), and changes recorded in the spans that made them, so that what an agent did can be reviewed and reverted.
+That is a design constraint, and it explains much of this book: typed models instead of maps of strings, generic types that the compiler checks (<<generic-types>>),
+declarations instead of registration code, tests for every module, listings that compile, telemetry kept as models (<<telemetry-model>>),
+and changes recorded in the spans that made them, so that what an agent did can be reviewed and reverted.
 
 Understanding still matters; it moves.
 It moves from the mechanics of a framework, which the assistant carries, to the meaning of the model, which only the people who own the domain can judge.
 That is where the experienced engineer, the architect and the domain expert spend their time, and it is a better use of it.
+
+=== Fall back to the keep
+
+In _The Two Towers_, when the outer wall of Helm's Deep is breached, the defenders fall back to the keep of the Hornburg, the innermost and strongest part of the fortress; in the film the order is shouted along the wall: "Fall back to the keep!"
+
+The analogy is not literal.
+Assistants are not the enemy; they are allies, and very capable ones.
+But the shape of the situation is similar.
+Assistants now hold most of the outer wall: they write code, tests and documentation faster than people can read them.
+What people keep is the place from which they can still check what was built, and the stronger that place, the more of the work can safely be given to the assistants.
+
+I think the JVM is a better keep for people than Node.js.
+Its declarations are checked by a compiler and kept in the class files, so a person or a program can read what a part claims to provide and rely on the claim, and the runtime matches parts on those declarations with the compiler's rules (<<generic-types>>).
+And with JavaScript as a generation target (<<web>>), falling back to the keep gives up nothing in the browser.
+
+There is also the matter of where the systems already are.
+In my experience, in the enterprises I have worked in and with, Java has been at least twice as common as Node.js for systems in production, and about an order of magnitude as common as Python.
+I measured it once.
+Scanning the tens of thousands of source repositories of one bank (<<prior-art>>), I counted about twice as many Java files as JavaScript files, with all of JavaScript's extensions counted, and about ten times as many as Python files.
+That is one organization, and it counts files rather than systems in production, so it is evidence, not research: I know of no public study that measures it, and developer surveys measure something else, the languages developers use, by which JavaScript and Python are ahead of Java.
+Both can be true at once, since many developers write some JavaScript and some Python, while the business logic (e.g. microservices) of large organizations, in my experience, run disproportionately on the JVM - comparing to JavaScript and Python and excluding mainframes.
 
 === How the work flows
 
@@ -92,7 +160,7 @@ The work runs as a loop, and every turn of it leaves something written down.
 
 . *Intent.* A few paragraphs of what I want and why, often ending with a request for an assessment.
 . *Assessment.* The assistant agrees or pushes back, finds prior art, and names risks and alternatives. I decide.
-. *Design.* The decision is recorded: a design document, or a section of the roadmap saying where the work lands.
+. *Design.* The decision is recorded: a design document, or a section of the roadmap saying where the work lands (<<gradient-ascent>>).
 . *Increment.* Code, tests and documentation change together, and the build is green from a clean clone.
 . *Observation.* Using the result, and reading its telemetry, produces the next intent.
 
@@ -104,6 +172,50 @@ A few rules keep the loop honest, and they serve people and assistants alike:
 * *Small models.* A micro-model, one concern in one module (<<principles>>), fits in an assistant's context as well as in a person's head.
 * *Documentation anchored to the model.* A micro-wiki (<<core-model>>) gives every model element a documentation file of its own, so people and assistants know which file to edit when they learn something about an element.
 * *Status labels.* What is available, sketched or planned is marked, so that neither people nor assistants mistake a design for a feature.
+
+[#gradient-ascent]
+=== Gradient ascent
+
+The loop turns on a roadmap, and keeping the roadmap is one of the most valuable things the assistant does.
+
+I have used Jira, and it is good at what it was made for: a unit of work with an owner, a status and a history.
+It is not good at what a project like this one needs most, which is ideas that depend on each other.
+A new idea rarely stands alone: it revises two earlier decisions, makes a third unnecessary and changes the order of the next five steps.
+A tracker records such links as "relates to", keeps the reasoning in comments, and orders the work by a rank field.
+What I need to know is not the rank of an item but the best next action: the step that brings the most value for the time and effort it costs, given everything already decided.
+
+The runtime's roadmap is a single Markdown document, started on 19 September 2026.
+A month later it held about 72,000 words, more than this book, in 32 dated sections, each written in answer to an intent of mine.
+A section has a regular shape: the decision, the assistant's assessment of it, the prior art, what it revises in earlier sections, and where it lands in the order of the work.
+Nothing is rewritten silently.
+When a decision supersedes an earlier one, the earlier section stays and the later one says which of them wins, so the roadmap is also the history of how the plan changed and why.
+
+In that sense the roadmap is a log, as a database keeps one: entries are only appended, a later entry overrides an earlier one, and what is true now is what the log says once all of it has been read.
+And like a log, it has to be compacted from time to time, for the same reason an assistant compacts a long conversation: the reader has a limited context, and the more the log grows, the more of that context goes to finding out what still holds.
+The first compaction came on 25 October, when the roadmap had reached about 89,000 words.
+A new document became the plan of record: the decisions still standing, one line each with a link to the section that argued it, the ranked list of next steps, and new dated sections after them.
+Unlike a conversation's summary, this one lost nothing: the old document stays as it was, as the record of why each decision was made, and the new one starts where it ends.
+
+The assistant maintains it.
+When I bring an idea, it reads the roadmap, places the idea among the decisions already made, says what the idea revises and what it makes unnecessary, and proposes where it lands and what to do next.
+I decide, and the decision becomes a section.
+Kept by hand, a document like this would be a job of its own, and it would drift within weeks.
+Kept by an assistant, it costs minutes per idea and stays consistent, because the assistant reads all of it each time it is asked.
+
+The order that comes out of it is a gradient ascent, the mirror image of the gradient descent that trains neural networks: from where the work stands, take the step that climbs steepest, the most value per unit of effort, then measure the slope again.
+Value includes what a step makes cheaper later, not only what it delivers now, and the slope changes after every step, because every step changes what the next one costs and what it is worth.
+
+For its first nine days, the plan of record was a migration in one piece: move the models of the older Nasdanika code base into a new core, then build on it.
+On 28 September it became a seed crystal instead: start from one small working core and grow it one increment at a time, each adding a capability that a demonstration shows.
+An epic that would have delivered nothing until it ended, a slope of zero for weeks, became a climb that delivers something at every step, and code that no increment needed was never migrated, which settled the size of the migration better than any analysis would have.
+Four days later the route turned again: the North Star stayed, and the capabilities useful without language models, such as telemetry, volumes and the JVM model, moved ahead of the ones that need them, because they gave developers something to use now for a fraction of the effort.
+
+Gradient methods have a known weakness: they climb the nearest hill, which need not be the highest.
+The North Star is the guard against it (<<vision>>): a step that climbs steeply in another direction is not admitted, and the rule for an increment is that test, written down.
+
+The roadmap is the least formal artifact of the project, and deliberately so.
+It is where decisions are bound first, in prose, while binding them is still cheap to undo; designs, models and code bind them further and become formal as they do.
+What keeps the prose useful is not a schema but a reader that reads all of it every time.
 
 === What the assistant does not do
 
@@ -118,6 +230,14 @@ This book was written the same way.
 I described what it should be and for whom; the assistant read the runtime's code, my stories and the roadmap, wrote the examples first and the prose around them, built the PDF and looked at its pages.
 I review, correct and decide.
 The examples are modules of the runtime's build, so the book cannot claim what the code does not do without the build saying so.
+In that sense the book is code: if an example does not build, neither does the book.
+
+It is also small, measured the way an assistant measures text.
+This edition is about 56,000 words, listings included, or roughly 100,000 tokens: about a tenth of a context window of a million tokens.
+An assistant will rarely load all of it, and does not need to.
+It looks things up the way an engineer does: a term in the glossary, a convention in the rules of thumb, the chapter about the module it is changing, and the example module a listing comes from, which the manuscript names in each include.
+A book grounds an assistant well when it is small enough to hold whole and structured enough not to have to.
+The same holds for the books around it: this book is one of the Nasdanika Body of Knowledge, whose layout and reading order are the subject of <<nbok>>.
 
 Writing the book reviewed the runtime, and reading it reviewed my thinking.
 Graham Wallas recorded a child's question in 1926, and E. M. Forster attributed it to an old lady a year later: "How can I tell what I think till I see what I say?"
@@ -128,11 +248,4 @@ For years I had written about what makes structure last, a story at a time, and 
 Recognition is a check, but a weak one, because a fluent summary can feel right without being right.
 A distillation earns its place when it can be tested, and this one can: take away any one of the three words and you get a failure I have seen many times.
 
-ifdef::editor-notes[]
-[IMPORTANT,caption="Editor's note"]
-====
-The chapter speaks of "an AI coding assistant" without naming it. Name it, for example Anthropic's Claude in Claude Code, if you want the account to be specific. The figures in the first paragraph were taken from the repository on 16 October 2026; refresh them for each edition.
-====
-endif::[]
-
-The next chapter puts the runtime on one page: its modules, how they depend on each other, and what happens when a unit of work runs.
+The next chapter is about the organizations the runtime is built for: what an assistant amplifies in them, and why many of them will resist an approach like this one.

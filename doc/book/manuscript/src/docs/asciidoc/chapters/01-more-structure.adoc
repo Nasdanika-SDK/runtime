@@ -12,7 +12,22 @@ Step back and there is no structure that connects them.
 The definition of a customer lives in a database schema, a JSON Schema, a partner's XML Schema, a Java class, a Confluence table and three spreadsheets, and nothing relates them.
 Each is a projection of a model that nobody ever wrote down.
 
-This chapter is about why that happens, what changed recently that makes it fixable, what kind of structure lasts, and what the Nasdanika SDK Runtime is in that picture.
+This chapter is about what structure is for, why there has been so little of it, what changed recently that makes it fixable, what kind of structure lasts, and what the Nasdanika SDK Runtime is in that picture.
+
+=== What structure is for
+
+"Life, at its core, is a self-sustaining, autocatalytic process," writes the biologist Alexander Markov in _Birth of Complexity_ (_Рождение сложности_, 2010; my translation).
+An autocatalytic process makes the things that speed it up, so the more it has grown, the faster it grows.
+Business works the same way.
+A company does some things better, faster or cheaper than others, sells the difference as a margin, and puts the margin into doing them better still.
+An enterprise is a group of stakeholders and resources devoted to a mission, and structure is worth exactly what it adds to the effectiveness and efficiency with which the mission is pursued.
+
+Life also shows what happens without structure.
+About three and a half billion years ago, microbial mats divided labor between layers of bacteria and archaea, which exchanged the products of their work and signaled to each other with chemicals.
+They did well for billions of years, then lost the lead to organisms with nervous systems, which carry a signal across a whole body in a fraction of a second.
+Enterprise IT is still a mat: each group works from its own playbook, often a tribal one, nobody has the whole picture, and improvement stops at the edge of a group.
+Glass and the mat are one observation, made by physics and by biology: order that is only local.
+Structure that connects the groups is the nervous system.
 
 === Structure has been expensive
 
@@ -42,6 +57,12 @@ The price of that choice is paid later, and by somebody else.
 Ask three people what the third measure on a list in some system prompt means and you get three answers.
 Ask who owns the definition and you get silence, then a suggestion that some other team may know.
 The knowledge exists. It lives in people's heads, and it leaves when they do.
+An assistant cannot be fed it either.
+
+Volume is not what makes structure expensive; complexity is.
+When I joined a bank's people directory, application inventory and source repositories into one model (<<prior-art>>), a conventional web application already reported on much of the same data, from about fifty relational tables.
+It handled the volume well.
+It could not keep up with the questions, because every new question needed a new join, a new table or a new screen, and the reports it could not produce were produced from the model instead.
 
 === What changed
 
