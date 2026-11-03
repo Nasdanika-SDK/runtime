@@ -14,6 +14,7 @@ import io.opentelemetry.api.OpenTelemetry;
 import io.opentelemetry.api.common.Attributes;
 import io.opentelemetry.api.common.AttributesBuilder;
 import io.opentelemetry.api.logs.Logger;
+import io.opentelemetry.api.metrics.Meter;
 import io.opentelemetry.api.trace.Span;
 import io.opentelemetry.api.trace.Tracer;
 
@@ -70,7 +71,8 @@ public interface CapabilityFactory<R, C> {
 		OpenTelemetry otel = Telemetry.current();
 		Tracer tracer = Telemetry.tracer(otel);
 		Logger logger = Telemetry.logger(otel);
-				
+		Meter meter = Telemetry.meter(otel);
+
 		AttributesBuilder attrBuidler = Attributes.builder();
 		attrBuidler.put("contributorClass", getClass().getName());
 		attrBuidler.put("contributorModule", getClass().getModule().getName());
@@ -82,10 +84,17 @@ public interface CapabilityFactory<R, C> {
 				tracer, 
 				"Create Capability", 
 				attrBuidler.build(),
-				span -> create(requirement, loader, span, logger));
+				span -> create(requirement, loader, span, logger, meter));
 	}
-	
-	Flow.Publisher<CapabilityProvider<C>> create(R requirement, Loader loader, Span span, Logger logger);	
+
+	/**
+	 * Creates providers in the factory's span.
+	 *
+	 * @param span The factory's span in the resolution
+	 * @param meter For measurements of the work done to provide capabilities, such as embeddings
+	 * generated or tokens spent
+	 */
+	Flow.Publisher<CapabilityProvider<C>> create(R requirement, Loader loader, Span span, Logger logger, Meter meter);
 
 	/**
 	 * A capability factory backed by a transformer factory: a requirement is a source and its

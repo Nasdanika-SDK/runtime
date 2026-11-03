@@ -15,6 +15,7 @@ import org.nasdanika.sdk.runtime.common.capability.Requirement;
 import org.nasdanika.sdk.runtime.common.flow.Flows;
 
 import io.opentelemetry.api.logs.Logger;
+import io.opentelemetry.api.metrics.Meter;
 import io.opentelemetry.api.trace.Span;
 
 // tag::lookup[]
@@ -34,7 +35,8 @@ public class IsbnLookup implements CapabilityFactory<Isbn, Book> {
 			Isbn isbn,
 			Loader loader,
 			Span span,
-			Logger logger) {                                               // <2>
+			Logger logger,
+			Meter meter) {                                                 // <2>
 		span.setAttribute("isbn", isbn.value());
 		CompletableFuture<List<Supplier<Library>>> libraries =
 				loader.loadAll(Requirement.of(LIBRARY_SUPPLIER));           // <3>

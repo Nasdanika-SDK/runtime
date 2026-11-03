@@ -13,6 +13,7 @@ import org.nasdanika.sdk.runtime.models.html.Text;
 import org.nasdanika.sdk.runtime.models.html.bootstrap.components.content.ContentFactory;
 
 import io.opentelemetry.api.logs.Logger;
+import io.opentelemetry.api.metrics.Meter;
 import io.opentelemetry.api.trace.Span;
 
 // tag::view[]
@@ -48,7 +49,8 @@ public abstract class View<T extends EObject> implements CapabilityFactory<ViewO
 			ViewOf requirement,
 			Loader loader,
 			Span span,
-			Logger logger) {
+			Logger logger,
+			Meter meter) {
 		return Flows.of(CapabilityProvider.<View<?>>of(this));                    // <2>
 	}
 	// end::view[]

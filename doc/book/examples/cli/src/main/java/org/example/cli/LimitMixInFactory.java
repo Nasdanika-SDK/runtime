@@ -7,6 +7,7 @@ import org.nasdanika.sdk.runtime.cli.MixInCapabilityFactory;
 import org.nasdanika.sdk.runtime.common.flow.Flows;
 
 import io.opentelemetry.api.logs.Logger;
+import io.opentelemetry.api.metrics.Meter;
 import io.opentelemetry.api.trace.Span;
 import picocli.CommandLine;
 
@@ -28,7 +29,8 @@ public class LimitMixInFactory extends MixInCapabilityFactory<LimitMixIn> {
 			List<CommandLine> commandPath,
 			Loader loader,
 			Span span,
-			Logger logger) {
+			Logger logger,
+			Meter meter) {
 		return Flows.of(new LimitMixIn());
 	}
 

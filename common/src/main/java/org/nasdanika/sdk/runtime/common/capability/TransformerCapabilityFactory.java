@@ -9,6 +9,7 @@ import org.nasdanika.sdk.runtime.common.flow.Pump;
 import org.nasdanika.sdk.runtime.common.flow.Transformer;
 
 import io.opentelemetry.api.logs.Logger;
+import io.opentelemetry.api.metrics.Meter;
 import io.opentelemetry.api.trace.Span;
 
 /**
@@ -66,7 +67,7 @@ public class TransformerCapabilityFactory implements CapabilityFactory<Object, O
 	}
 
 	@Override
-	public Publisher<CapabilityProvider<Object>> create(Object requirement, Loader loader, Span span, Logger logger) {
+	public Publisher<CapabilityProvider<Object>> create(Object requirement, Loader loader, Span span, Logger logger, Meter meter) {
 		throw new UnsupportedOperationException("Should not be called directly. Use create(requirement, loader) instead.");
 	}
 

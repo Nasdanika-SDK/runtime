@@ -6,6 +6,7 @@ import java.util.concurrent.Flow.Publisher;
 import org.nasdanika.sdk.runtime.common.flow.Flows;
 
 import io.opentelemetry.api.logs.Logger;
+import io.opentelemetry.api.metrics.Meter;
 import io.opentelemetry.api.trace.Span;
 import picocli.CommandLine;
 
@@ -21,7 +22,8 @@ public class SaveModelCommandFactory extends SubCommandCapabilityFactory<SaveMod
 			List<CommandLine> parentPath, 
 			Loader loader, 
 			Span span,
-			Logger logger) {
+			Logger logger,
+			Meter meter) {
 		return Flows.of(new SaveModelCommand());
 	}
 

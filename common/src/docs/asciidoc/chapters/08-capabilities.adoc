@@ -26,7 +26,8 @@ include::{booktests}/CapabilityTests.java[tag=factory,indent=0]
 <1> A requirement can be any object. This factory handles one: the class `Credentials`.
 <2> Providers are published, so a factory can provide many capabilities, later, or none.
 
-The `Span` is the factory's own span in the resolution, and the `Logger` reports to the same OpenTelemetry instance (<<telemetry>>).
+The `Span` is the factory's own span in the resolution, and the `Logger` and the `Meter` report to the same OpenTelemetry instance (<<telemetry>>).
+The meter is for measuring what providing capabilities costs, such as embeddings generated or tokens spent.
 
 .Loading
 [source,java]

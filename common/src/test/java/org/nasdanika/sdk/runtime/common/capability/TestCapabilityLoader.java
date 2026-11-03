@@ -18,6 +18,7 @@ import org.nasdanika.sdk.runtime.common.flow.ReflectiveFactory.Mapping;
 import org.nasdanika.sdk.runtime.common.flow.StallException;
 
 import io.opentelemetry.api.logs.Logger;
+import io.opentelemetry.api.metrics.Meter;
 import io.opentelemetry.api.trace.Span;
 
 class TestCapabilityLoader {
@@ -38,7 +39,7 @@ class TestCapabilityLoader {
 			}
 
 			@Override
-			public Flow.Publisher<CapabilityProvider<C>> create(Object requirement, Loader loader, Span span, Logger logger) {
+			public Flow.Publisher<CapabilityProvider<C>> create(Object requirement, Loader loader, Span span, Logger logger, Meter meter) {
 				return Flows.of(CapabilityProvider.of(capability));
 			}
 
@@ -61,7 +62,7 @@ class TestCapabilityLoader {
 		}
 
 		@Override
-		public Flow.Publisher<CapabilityProvider<String>> create(Greeting requirement, Loader loader, Span span, Logger logger) {
+		public Flow.Publisher<CapabilityProvider<String>> create(Greeting requirement, Loader loader, Span span, Logger logger, Meter meter) {
 			CompletableFuture<List<Credentials>> credentials = loader.loadAll(Credentials.class);
 			return Flows.fromFuture(credentials.thenApply(c -> CapabilityProvider.of(requirement.language() + " greeting using " + c.get(0).vault())));
 		}
@@ -118,7 +119,7 @@ class TestCapabilityLoader {
 			}
 
 			@Override
-			public Flow.Publisher<CapabilityProvider<String>> create(Object requirement, Loader loader, Span span, Logger logger) {
+			public Flow.Publisher<CapabilityProvider<String>> create(Object requirement, Loader loader, Span span, Logger logger, Meter meter) {
 				created.incrementAndGet();
 				return Flows.of(CapabilityProvider.of("shared"));
 			}
@@ -132,7 +133,7 @@ class TestCapabilityLoader {
 			}
 
 			@Override
-			public Flow.Publisher<CapabilityProvider<String>> create(Object requirement, Loader loader, Span span, Logger logger) {
+			public Flow.Publisher<CapabilityProvider<String>> create(Object requirement, Loader loader, Span span, Logger logger, Meter meter) {
 				return Flows.concat(loader.load(Credentials.class), loader.load(Credentials.class));
 			}
 
@@ -151,7 +152,7 @@ class TestCapabilityLoader {
 			}
 
 			@Override
-			public Flow.Publisher<CapabilityProvider<String>> create(Object requirement, Loader loader, Span span, Logger logger) {
+			public Flow.Publisher<CapabilityProvider<String>> create(Object requirement, Loader loader, Span span, Logger logger, Meter meter) {
 				Object other = "chicken".equals(requirement) ? "egg" : "chicken";
 				return Flows.fromFuture(loader.<String>loadAll(other).thenApply(o -> CapabilityProvider.of(requirement + " from " + o)));
 			}
@@ -215,7 +216,7 @@ class TestCapabilityLoader {
 			}
 
 			@Override
-			public Flow.Publisher<CapabilityProvider<String>> create(Object requirement, Loader loader, Span span, Logger logger) {
+			public Flow.Publisher<CapabilityProvider<String>> create(Object requirement, Loader loader, Span span, Logger logger, Meter meter) {
 				return Flows.of(CapabilityProvider.of("call " + created.incrementAndGet()));
 			}
 

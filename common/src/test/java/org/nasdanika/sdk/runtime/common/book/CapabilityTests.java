@@ -24,6 +24,7 @@ import org.nasdanika.sdk.runtime.common.flow.Flows;
 import org.nasdanika.sdk.runtime.common.flow.StallException;
 
 import io.opentelemetry.api.logs.Logger;
+import io.opentelemetry.api.metrics.Meter;
 import io.opentelemetry.api.trace.Span;
 
 /**
@@ -55,7 +56,8 @@ class CapabilityTests {
 				Object requirement,
 				Loader loader,
 				Span span,
-				Logger logger) {
+				Logger logger,
+				Meter meter) {
 			return Flows.of(CapabilityProvider.of(new Credentials("vault"))); // <2>
 		}
 
@@ -163,7 +165,8 @@ class CapabilityTests {
 					Object requirement,
 					Loader loader,
 					Span span,
-					Logger logger) {
+					Logger logger,
+					Meter meter) {
 				Object other = "chicken".equals(requirement) ? "egg" : "chicken";
 				return Flows.fromFuture(loader
 					.<String>loadAll(other) // Waits for the other, which waits for this one

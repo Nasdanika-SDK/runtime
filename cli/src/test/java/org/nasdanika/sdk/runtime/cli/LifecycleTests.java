@@ -84,7 +84,7 @@ class LifecycleTests {
 		}
 
 		@Override
-		protected Publisher<EchoCommand> doCreateCommand(List<CommandLine> parentPath, Loader loader, Span span, Logger logger) {
+		protected Publisher<EchoCommand> doCreateCommand(List<CommandLine> parentPath, Loader loader, Span span, Logger logger, Meter meter) {
 			return Flows.of(new EchoCommand());
 		}
 
@@ -103,7 +103,7 @@ class LifecycleTests {
 		}
 
 		@Override
-		protected Publisher<UpperFormatter> doCreateMixIn(List<CommandLine> commandPath, Loader loader, Span span, Logger logger) {
+		protected Publisher<UpperFormatter> doCreateMixIn(List<CommandLine> commandPath, Loader loader, Span span, Logger logger, Meter meter) {
 			return Flows.of(new UpperFormatter());
 		}
 
@@ -122,7 +122,7 @@ class LifecycleTests {
 		}
 
 		@Override
-		protected Publisher<NameFormatter> doCreateMixIn(List<CommandLine> commandPath, Loader loader, Span span, Logger logger) {
+		protected Publisher<NameFormatter> doCreateMixIn(List<CommandLine> commandPath, Loader loader, Span span, Logger logger, Meter meter) {
 			return Flows.of(new NameFormatter());
 		}
 
@@ -180,7 +180,7 @@ class LifecycleTests {
 		}
 
 		@Override
-		protected Publisher<ConnectCommand> doCreateCommand(List<CommandLine> parentPath, Loader loader, Span span, Logger logger) {
+		protected Publisher<ConnectCommand> doCreateCommand(List<CommandLine> parentPath, Loader loader, Span span, Logger logger, Meter meter) {
 			return Flows.of(new ConnectCommand());
 		}
 

@@ -16,6 +16,7 @@ import org.nasdanika.sdk.runtime.common.capability.Requirement;
 import org.nasdanika.sdk.runtime.common.flow.Flows;
 
 import io.opentelemetry.api.logs.Logger;
+import io.opentelemetry.api.metrics.Meter;
 import io.opentelemetry.api.logs.Severity;
 import io.opentelemetry.api.trace.Span;
 import picocli.CommandLine;
@@ -93,7 +94,8 @@ public abstract class SubCommandCapabilityFactory<T> extends ReflectiveCapabilit
 			SubCommandRequirement serviceRequirement,
 			Loader loader, 
 			Span span, 
-			Logger logger) {
+			Logger logger,
+			Meter meter) {
 		
 		int maxCommands = getMaxCommands(logger);
 		if (serviceRequirement.commandCounter().get() > maxCommands) {						
@@ -118,9 +120,9 @@ public abstract class SubCommandCapabilityFactory<T> extends ReflectiveCapabilit
 					.setAttribute("maxPath", maxPath)
 					.emit();
 			} else {
-				Publisher<T> commandPublisher = createCommand(parentPath, loader, span, logger);
+				Publisher<T> commandPublisher = createCommand(parentPath, loader, span, logger, meter);
 				if (commandPublisher != null) {
-					Publisher<CommandLineAndPath> commandLineAndPathPublisher = Flows.map(commandPublisher, command -> createCommandLine(command, serviceRequirement, span, logger));
+					Publisher<CommandLineAndPath> commandLineAndPathPublisher = Flows.map(commandPublisher, command -> createCommandLine(command, serviceRequirement, span, logger, meter));
 					// A command line is emitted once its sub-commands and mix-ins are in place, so that whoever
 					// receives it, CapabilityLoader.loadAll included, gets the whole tree rather than a root whose
 					// branches are still being resolved on the pump
@@ -128,7 +130,7 @@ public abstract class SubCommandCapabilityFactory<T> extends ReflectiveCapabilit
 							commandLineAndPathPublisher,
 							commandLineAndPath -> commandLineAndPath == null
 								? Flows.<CommandLine>empty()
-								: Flows.fromFuture(complete(commandLineAndPath, serviceRequirement, loader, span, logger)));
+								: Flows.fromFuture(complete(commandLineAndPath, serviceRequirement, loader, span, logger, meter)));
 					return Flows.of(CapabilityProvider.of(commandLinePublisher));
 				}
 			}
@@ -146,12 +148,13 @@ public abstract class SubCommandCapabilityFactory<T> extends ReflectiveCapabilit
 			SubCommandRequirement serviceRequirement,
 			Loader loader,
 			Span span,
-			Logger logger) {
+			Logger logger,
+			Meter meter) {
 
 		CommandLine commandLine = commandLineAndPath.commandLine();
 		int totalCommands = serviceRequirement.commandCounter().incrementAndGet(); // Incrementing command counter for the parent path to prevent creating too many commands
 
-		CompletableFuture<Void> subCommandsCF = createSubCommands(commandLineAndPath.path(), serviceRequirement.commandCounter(), loader, span, logger)
+		CompletableFuture<Void> subCommandsCF = createSubCommands(commandLineAndPath.path(), serviceRequirement.commandCounter(), loader, span, logger, meter)
 			.thenAccept(subCommands -> combineSubCommands(commandLineAndPath, subCommands))
 			.exceptionally(ex -> {
 				logger
@@ -164,7 +167,7 @@ public abstract class SubCommandCapabilityFactory<T> extends ReflectiveCapabilit
 				return null;
 			});
 
-		CompletableFuture<Void> mixInsCF = createMixIns(commandLineAndPath.path(), loader, span, logger)
+		CompletableFuture<Void> mixInsCF = createMixIns(commandLineAndPath.path(), loader, span, logger, meter)
 			.thenAccept(mixIns -> combineMixIns(commandLine, mixIns))
 			.exceptionally(ex -> {
 				logger
@@ -211,7 +214,8 @@ public abstract class SubCommandCapabilityFactory<T> extends ReflectiveCapabilit
 			T command, 
 			SubCommandRequirement serviceRequirement,
 			Span span, 
-			Logger logger) {
+			Logger logger,
+			Meter meter) {
 		if (command == null) {
 			return null;
 		}
@@ -235,7 +239,8 @@ public abstract class SubCommandCapabilityFactory<T> extends ReflectiveCapabilit
 				AtomicInteger commandCounter,
 				Loader loader, 
 				Span span, 
-				Logger logger) {		
+				Logger logger,
+				Meter meter) {		
 
 		if (path == null) {
 			return CompletableFuture.completedFuture(Collections.emptyList());
@@ -306,7 +311,8 @@ public abstract class SubCommandCapabilityFactory<T> extends ReflectiveCapabilit
 			List<CommandLine> path,
 			Loader loader, 
 			Span span, 
-			Logger logger) {
+			Logger logger,
+			Meter meter) {
 	
 		if (path == null) {
 			return CompletableFuture.completedFuture(Collections.emptyList());
@@ -376,8 +382,9 @@ public abstract class SubCommandCapabilityFactory<T> extends ReflectiveCapabilit
 			List<CommandLine> parentPath, 
 			Loader loader, 
 			Span span, 
-			Logger logger) {
-		return match(parentPath) ? doCreateCommand(parentPath, loader, span, logger) : Flows.empty();
+			Logger logger,
+			Meter meter) {
+		return match(parentPath) ? doCreateCommand(parentPath, loader, span, logger, meter) : Flows.empty();
 	};
 	
 	/**
@@ -389,7 +396,8 @@ public abstract class SubCommandCapabilityFactory<T> extends ReflectiveCapabilit
 			List<CommandLine> parentPath, 
 			Loader loader, 
 			Span span, 
-			Logger logger) {
+			Logger logger,
+			Meter meter) {
 		return Flows.empty();
 	}
 

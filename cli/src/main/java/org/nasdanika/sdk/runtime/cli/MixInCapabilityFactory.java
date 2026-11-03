@@ -10,6 +10,7 @@ import org.nasdanika.sdk.runtime.common.capability.ReflectiveCapabilityFactory;
 import org.nasdanika.sdk.runtime.common.flow.Flows;
 
 import io.opentelemetry.api.logs.Logger;
+import io.opentelemetry.api.metrics.Meter;
 import io.opentelemetry.api.trace.Span;
 import picocli.CommandLine;
 
@@ -30,9 +31,10 @@ public abstract class MixInCapabilityFactory<T> extends ReflectiveCapabilityFact
 			MixInRequirement requirement,
 			Loader loader,
 			Span span,
-			Logger logger) {
+			Logger logger,
+			Meter meter) {
 
-		Publisher<T> mixInPublisher = createMixIn(requirement.commandPath(), loader, span, logger);
+		Publisher<T> mixInPublisher = createMixIn(requirement.commandPath(), loader, span, logger, meter);
 		return mixInPublisher == null ? null : Flows.map(mixInPublisher, mixIn -> new MixInRecord(getName(), mixIn));
 	}
 	
@@ -72,14 +74,16 @@ public abstract class MixInCapabilityFactory<T> extends ReflectiveCapabilityFact
 			List<CommandLine> commandPath, 
 			Loader loader, 
 			Span span, 
-			Logger logger) {		
-		return match(commandPath) ? doCreateMixIn(commandPath, loader, span, logger) : null;
+			Logger logger,
+			Meter meter) {		
+		return match(commandPath) ? doCreateMixIn(commandPath, loader, span, logger, meter) : null;
 	}
 
 	protected abstract Publisher<T> doCreateMixIn(
 			List<CommandLine> commandPath, 
 			Loader loader, 
 			Span span, 
-			Logger logger);
+			Logger logger,
+			Meter meter);
 	
 }

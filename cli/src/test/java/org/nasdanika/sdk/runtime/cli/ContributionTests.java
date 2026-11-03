@@ -69,7 +69,8 @@ class ContributionTests {
 				List<CommandLine> commandPath,
 				Loader loader,
 				Span span,
-				Logger logger) {
+				Logger logger,
+				Meter meter) {
 			return Flows.of(new ShoutMixIn());
 		}
 
@@ -118,7 +119,7 @@ class ContributionTests {
 		}
 
 		@Override
-		protected Publisher<FramedPrintCommand> doCreateCommand(List<CommandLine> parentPath, Loader loader, Span span, Logger logger) {
+		protected Publisher<FramedPrintCommand> doCreateCommand(List<CommandLine> parentPath, Loader loader, Span span, Logger logger, Meter meter) {
 			return Flows.of(new FramedPrintCommand());
 		}
 
@@ -148,7 +149,7 @@ class ContributionTests {
 		}
 
 		@Override
-		protected Publisher<SilentPrintCommand> doCreateCommand(List<CommandLine> parentPath, Loader loader, Span span, Logger logger) {
+		protected Publisher<SilentPrintCommand> doCreateCommand(List<CommandLine> parentPath, Loader loader, Span span, Logger logger, Meter meter) {
 			return Flows.of(new SilentPrintCommand());
 		}
 

@@ -123,7 +123,8 @@ class PipelineTests {
 				List<CommandLine> parentPath,
 				Loader loader,
 				Span span,
-				Logger logger) {
+				Logger logger,
+				Meter meter) {
 			return Flows.of(new PrintCommand()); // <2>
 		}
 
@@ -138,7 +139,7 @@ class PipelineTests {
 		}
 
 		@Override
-		protected Publisher<TextCommand> doCreateCommand(List<CommandLine> parentPath, Loader loader, Span span, Logger logger) {
+		protected Publisher<TextCommand> doCreateCommand(List<CommandLine> parentPath, Loader loader, Span span, Logger logger, Meter meter) {
 			return Flows.of(new TextCommand());
 		}
 
@@ -152,7 +153,7 @@ class PipelineTests {
 		}
 
 		@Override
-		protected Publisher<ModelCommand> doCreateCommand(List<CommandLine> parentPath, Loader loader, Span span, Logger logger) {
+		protected Publisher<ModelCommand> doCreateCommand(List<CommandLine> parentPath, Loader loader, Span span, Logger logger, Meter meter) {
 			return Flows.of(new ModelCommand());
 		}
 
@@ -166,7 +167,7 @@ class PipelineTests {
 		}
 
 		@Override
-		protected Publisher<DescribeCommand> doCreateCommand(List<CommandLine> parentPath, Loader loader, Span span, Logger logger) {
+		protected Publisher<DescribeCommand> doCreateCommand(List<CommandLine> parentPath, Loader loader, Span span, Logger logger, Meter meter) {
 			return Flows.of(new DescribeCommand());
 		}
 

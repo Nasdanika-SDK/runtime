@@ -62,7 +62,7 @@ class TestCommandTree {
 		}
 
 		@Override
-		protected Publisher<GroupCommand> doCreateCommand(List<CommandLine> parentPath, Loader loader, Span span, Logger logger) {
+		protected Publisher<GroupCommand> doCreateCommand(List<CommandLine> parentPath, Loader loader, Span span, Logger logger, Meter meter) {
 			return Flows.of(new GroupCommand());
 		}
 
@@ -76,7 +76,7 @@ class TestCommandTree {
 		}
 
 		@Override
-		protected Publisher<LeafCommand> doCreateCommand(List<CommandLine> parentPath, Loader loader, Span span, Logger logger) {
+		protected Publisher<LeafCommand> doCreateCommand(List<CommandLine> parentPath, Loader loader, Span span, Logger logger, Meter meter) {
 			return Flows.of(new LeafCommand());
 		}
 
@@ -95,7 +95,7 @@ class TestCommandTree {
 		}
 
 		@Override
-		protected Publisher<LimitMixIn> doCreateMixIn(List<CommandLine> commandPath, Loader loader, Span span, Logger logger) {
+		protected Publisher<LimitMixIn> doCreateMixIn(List<CommandLine> commandPath, Loader loader, Span span, Logger logger, Meter meter) {
 			return Flows.of(new LimitMixIn());
 		}
 

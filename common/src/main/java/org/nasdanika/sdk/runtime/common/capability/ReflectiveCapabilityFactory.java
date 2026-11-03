@@ -172,7 +172,7 @@ public class ReflectiveCapabilityFactory implements CapabilityFactory<Object, Ob
 	}
 
 	@Override
-	public Flow.Publisher<CapabilityProvider<Object>> create(Object requirement, Loader loader, Span span, Logger logger) {
+	public Flow.Publisher<CapabilityProvider<Object>> create(Object requirement, Loader loader, Span span, Logger logger, Meter meter) {
 		Requirement theRequirement = requirement(requirement);
 		if (theRequirement == null) {
 			return Flows.empty();
@@ -181,7 +181,7 @@ public class ReflectiveCapabilityFactory implements CapabilityFactory<Object, Ob
 		for (Candidate candidate: candidates) {
 			Match match = match(candidate, theRequirement);
 			if (match != null) {
-				providers.add(invoke(candidate, match, theRequirement, loader, logger));
+				providers.add(invoke(candidate, match, theRequirement, loader, logger, meter));
 			}
 		}
 		return Flows.concat(providers);
@@ -225,7 +225,7 @@ public class ReflectiveCapabilityFactory implements CapabilityFactory<Object, Ob
 		return null;
 	}
 
-	private Flow.Publisher<CapabilityProvider<Object>> invoke(Candidate candidate, Match match, Requirement requirement, Loader loader, Logger logger) {
+	private Flow.Publisher<CapabilityProvider<Object>> invoke(Candidate candidate, Match match, Requirement requirement, Loader loader, Logger logger, Meter meter) {
 		OpenTelemetry openTelemetry = Telemetry.current();
 		Method method = candidate.method();
 		Span span = Telemetry.tracer(openTelemetry)
@@ -242,7 +242,7 @@ public class ReflectiveCapabilityFactory implements CapabilityFactory<Object, Ob
 				case LOADER -> loader;
 				case SPAN -> span;
 				case LOGGER -> logger;
-				case METER -> Telemetry.meter(openTelemetry);
+				case METER -> meter;
 				case OPEN_TELEMETRY -> openTelemetry;
 				case TYPE -> requirement.type();
 				case PAYLOAD -> requirement.payload().get(payloadIndex++);
