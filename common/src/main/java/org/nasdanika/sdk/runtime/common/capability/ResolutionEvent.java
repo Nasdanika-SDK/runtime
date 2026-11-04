@@ -4,8 +4,9 @@ import java.util.List;
 
 /**
  * What happened during a resolution. A sealed hierarchy of records rather than a wide listener
- * interface, so that adding an event does not break implementations and consumers can pattern
- * match.
+ * interface, so that adding an event adds no method to implement and consumers can pattern match.
+ * With a {@code default} case a consumer ignores events added later; covering every event without
+ * one, it breaks when one is added.
  *
  * <p>
  * {@link DependencyRequested} plus {@link Resolved} carry enough to rebuild the dependency graph

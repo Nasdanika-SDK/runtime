@@ -14,8 +14,8 @@ import io.opentelemetry.api.trace.StatusCode;
  * progress reporting of long-running operations.
  *
  * <p>
- * A sealed hierarchy of records, so that consumers pattern match and adding an event does not
- * break them.
+ * A sealed hierarchy of records, for pattern matching. With a {@code default} case a consumer
+ * ignores events added later; covering every event without one, it breaks when one is added.
  */
 public sealed interface SpanEvent {
 

@@ -14,7 +14,7 @@ import org.nasdanika.sdk.runtime.common.capability.ResolutionEvent.Resolved;
 
 /**
  * Receives {@link ResolutionEvent}s, on the resolution's pump. One method, so that adding an
- * event does not break implementations. Attached with {@link CapabilityLoader#withListener},
+ * event adds no method to implement. Attached with {@link CapabilityLoader#withListener},
  * which returns a new loader rather than mutating one.
  */
 @FunctionalInterface

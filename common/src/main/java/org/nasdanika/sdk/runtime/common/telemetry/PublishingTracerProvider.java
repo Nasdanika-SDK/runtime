@@ -46,14 +46,14 @@ public class PublishingTracerProvider implements TracerProvider, Flow.Publisher<
 
 	@Override
 	public PublishingTracer get(String instrumentationScopeName) {
-		return tracers.computeIfAbsent(new Key(instrumentationScopeName, null, null), k -> wrap(delegate.get(instrumentationScopeName), instrumentationScopeName));
+		return tracers.computeIfAbsent(new Key(instrumentationScopeName, null, null), _ -> wrap(delegate.get(instrumentationScopeName), instrumentationScopeName));
 	}
 
 	@Override
 	public PublishingTracer get(String instrumentationScopeName, String instrumentationScopeVersion) {
 		return tracers.computeIfAbsent(
 				new Key(instrumentationScopeName, instrumentationScopeVersion, null),
-				k -> wrap(delegate.get(instrumentationScopeName, instrumentationScopeVersion), instrumentationScopeName));
+				_ -> wrap(delegate.get(instrumentationScopeName, instrumentationScopeVersion), instrumentationScopeName));
 	}
 
 	@Override
@@ -80,7 +80,7 @@ public class PublishingTracerProvider implements TracerProvider, Flow.Publisher<
 
 			@Override
 			public Tracer build() {
-				return tracers.computeIfAbsent(new Key(instrumentationScopeName, version, schemaUrl), k -> wrap(builder.build(), instrumentationScopeName));
+				return tracers.computeIfAbsent(new Key(instrumentationScopeName, version, schemaUrl), _ -> wrap(builder.build(), instrumentationScopeName));
 			}
 
 		};
