@@ -68,7 +68,7 @@ The runtime is one Maven reactor in one Git repository, released as one unit wit
 | none
 
 | `models/meta`
-| A language-neutral type system: packages, classes, features, operations
+| A language-neutral type system: packages, classes, features, operations, with a text syntax
 | `models/core`
 
 | `models/jvm`
@@ -474,5 +474,5 @@ The capabilities in this book are at three stages, and every chapter labels them
 In short, as of {runtime-version}:
 
 [.available]#AVAILABLE#:: Resource sets configured from services, all resource formats, generic type matching and adaptation, the flow utilities, the pump and the transformer, the capability framework, runtime telemetry with live publishing, telemetry and change recording as models, volumes over directories with HTTP and WebDAV serving, commands as capabilities with generic wiring, the launcher and the bootstrap, the Groovy DSL, the core, Meta, JVM, telemetry, HTML, Bootstrap, TypeScript and React models with their generators, the harness and browser walk-throughs with video, the Draw.io API and rendering with Draw.io's viewer, the diagram, Draw.io and SVG models, and layout with ELK.
-[.sketch]#SKETCH#:: The file model; the presentation model; the reflective operations of Meta's `Object`; the JVM model's loaders (the book shows a minimal one).
+[.sketch]#SKETCH#:: The file model; the presentation model; the reflective operations of Meta's `Object`; Meta's facets, recorded as annotations until the core model has them; the JVM model's loaders (the book shows a minimal one).
 [.planned]#PLANNED#:: Everything in <<vision>>: the polymorphic UI in React, representations and views over mounted volumes, the inference and tool models, MCP, query languages, executable graphs with state in Git.

@@ -1,0 +1,57 @@
+// tag::package[]
+/** What the circulation desk lends, to whom and for how long. */
+package lending namespace "https://example.org/vocabulary/lending" version "2026.10.0"
+
+import "https://example.org/vocabulary/library" as library
+import "https://runtime.sdk.nasdanika.org/models/occupancy" as occupancy
+annotation "urn:org.nasdanika" as Nasdanika
+// end::package[]
+
+// tag::types[]
+/** An amount of money, a decimal string so that no cent is lost. */
+type Amount as string wraps java.math.BigDecimal
+
+/** Where a loan stands. */
+enum LoanStatus {
+    ACTIVE,
+    RETURNED,
+    WRITTEN_OFF as "written-off"
+}
+// end::types[]
+
+// tag::classes[]
+/** Someone entitled to borrow, with a card to show for it. */
+@Nasdanika(icon = "bi-person")
+class Member {
+    /** Identifies the member, and is printed on the card. */
+    id string[1] cardNumber
+
+    /** The loans made to the member, addressed by their identifiers. */
+    contains Loan[*] loans opposite member keys loanId
+}
+
+/** A book in a member's hands, until it comes back. */
+class Loan {
+    /** Identifies the loan among the member's loans. */
+    id string[1] loanId
+
+    /** The member who borrowed the book. */
+    refers Member[1] member opposite loans
+
+    /** The book on loan. Defined by the library's vocabulary, not here. */
+    refers library.Book[1] book
+
+    /** The day the book is due back. */
+    date[1] due
+
+    /** Where the loan stands. */
+    LoanStatus[1] status = "ACTIVE"
+
+    /** The fine so far, computed rather than stored. Not every jurisdiction allows one. */
+    @occupancy.Presence { jurisdiction: "CA-ON" }
+    derived readonly Amount fine
+
+    /** The fine as it would stand at the end of a day. */
+    op Amount fineOn(date day)
+}
+// end::classes[]

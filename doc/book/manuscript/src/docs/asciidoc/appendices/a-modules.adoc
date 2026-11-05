@@ -101,7 +101,7 @@ Package `models/file`. Files and directories as a model over volumes [.sketch]#S
 `models/meta/model`::
 Maven `org.nasdanika.sdk.runtime.models.meta:model` +
 Module `org.nasdanika.sdk.runtime.models.meta` +
-Package `models/meta`. The language-neutral type system (<<meta>>). Its Zephyr Book is _Meta Model_.
+Package `models/meta`. The language-neutral type system and its text syntax (<<meta>>). Its Zephyr Book is _Meta Model_.
 
 `models/jvm/model`::
 Maven `org.nasdanika.sdk.runtime.models.jvm:model` +

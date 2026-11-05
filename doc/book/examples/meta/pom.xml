@@ -9,7 +9,7 @@
 	</parent>
 	<artifactId>meta</artifactId>
 	<name>Meta</name>
-	<description>Chapter "Meta": a vocabulary in the language-neutral type system, projected to a glossary and to Ecore</description>
+	<description>Chapter "Meta": a vocabulary in the language-neutral type system, in Java and in the text syntax, projected to a glossary and to Ecore</description>
 	<dependencies>
 		<dependency>
 			<groupId>org.nasdanika.sdk.runtime.models.meta</groupId>

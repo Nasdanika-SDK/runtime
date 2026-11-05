@@ -68,6 +68,9 @@ A record of where an element, or one of its features, came from: a location, a p
 Meta::
 The language-neutral type system of the runtime: packages, classes, features, operations and type references, to write a vocabulary once and project it to many languages (<<meta>>).
 
+Meta text syntax::
+Meta's own notation, in `.nmeta` files: metamodels written the way Xcore writes Ecore models (<<meta-text-syntax>>).
+
 Micro-model::
 A small model with a single concern, explicit dependencies on other models and no knowledge of its consumers, in a module of its own (<<principles>>).
 
