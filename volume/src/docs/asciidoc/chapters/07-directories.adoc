@@ -11,6 +11,7 @@ ifndef::booktests[:booktests: ../../../test/java/org/nasdanika/sdk/runtime/volum
 * It validates paths, so that they cannot escape the root.
 * It probes the file system for case sensitivity, instead of guessing it from the operating system.
 * It keeps the semantics of a file system: writing into a missing directory fails, and so does deleting a directory that is not empty.
+* A write that fails leaves the target as it was: content goes to a temporary file beside the target, and is moved over it when complete.
 
 .A volume over a directory (`VolumeBookTests.java`)
 [source,java]

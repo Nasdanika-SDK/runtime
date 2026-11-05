@@ -29,6 +29,9 @@ import io.opentelemetry.context.Scope;
 /**
  * Content at a URI, read on every {@link #openStream()}. HTTP(S) through the JDK HTTP client, any
  * {@code file} through NIO, any other scheme through {@link java.net.URL#openStream()} ({@code jar}).
+ * Content at a {@link Path} is read through its own file system, whatever its URI, because a URL
+ * would not see an open zip file system's unflushed entries, and there may be no URL handler at all
+ * for a file system's scheme.
  *
  * <p>
  * Each opened stream is a span from the request to the close of the body, with progress log records
@@ -60,6 +63,7 @@ final class UriContent implements Content {
 
 	private final URI uri;
 	private final HttpClient client;
+	private final Path path;
 
 	/**
 	 * @param client Null for a shared client following redirects
@@ -67,12 +71,22 @@ final class UriContent implements Content {
 	UriContent(URI uri, HttpClient client) {
 		this.uri = Objects.requireNonNull(uri, "uri");
 		this.client = client;
+		this.path = null;
+	}
+
+	/**
+	 * Content at a path of any file system.
+	 */
+	UriContent(Path path) {
+		this.path = Objects.requireNonNull(path, "path");
+		this.uri = path.toUri();
+		this.client = null;
 	}
 
 	@Override
 	public InputStream openStream() throws IOException {
 		String scheme = uri.getScheme();
-		return "http".equalsIgnoreCase(scheme) || "https".equalsIgnoreCase(scheme) ? openHttp() : openUrl();
+		return path == null && ("http".equalsIgnoreCase(scheme) || "https".equalsIgnoreCase(scheme)) ? openHttp() : openUrl();
 	}
 
 	private InputStream openHttp() throws IOException {
@@ -122,7 +136,14 @@ final class UriContent implements Content {
 				.setAttribute(URL_FULL, url)
 				.startSpan();
 		try (Scope scope = span.makeCurrent()) {
-			InputStream in = "file".equalsIgnoreCase(uri.getScheme()) ? Files.newInputStream(Path.of(uri)) : uri.toURL().openStream();
+			InputStream in;
+			if (path != null) {
+				in = Files.newInputStream(path);
+			} else if ("file".equalsIgnoreCase(uri.getScheme())) {
+				in = Files.newInputStream(Path.of(uri));
+			} else {
+				in = uri.toURL().openStream();
+			}
 			return metered(openTelemetry, span, in, url);
 		} catch (IOException | RuntimeException e) {
 			Telemetry.recordFailure(span, e);

@@ -39,8 +39,10 @@ public abstract class CommandBase implements Callable<Integer>, Closeable {
 		attrBuidler.put("qualifiedName", spec.qualifiedName());
 		attrBuidler.put("commandClass", getClass().getName());
 		attrBuidler.put("commandModule", getClass().getModule().getName());
-		getClass().getModule().getDescriptor().version().ifPresent(v ->	attrBuidler.put("commandModuleVersion", v.toString()));
-		
+		if (getClass().getModule().isNamed()) { // Unnamed modules, such as the class path, have no descriptor
+			getClass().getModule().getDescriptor().version().ifPresent(v ->	attrBuidler.put("commandModuleVersion", v.toString()));
+		}
+
 		return Telemetry.inSpan(tracer, spec.name(), attrBuidler.build(), span -> execute(span, logger, meter));
 	}
 	

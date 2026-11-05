@@ -2,6 +2,8 @@ package org.nasdanika.sdk.runtime.cli;
 
 import static org.assertj.core.api.Assertions.assertThat;
 
+import java.io.IOException;
+import java.io.InputStream;
 import java.util.List;
 import java.util.concurrent.Flow.Publisher;
 import java.util.function.Supplier;
@@ -201,6 +203,42 @@ class LifecycleTests {
 		CommandBase.close(root); // <2>
 		assertThat(connect.closed).isTrue();
 		// end::closing[]
+	}
+
+	public static class PlainCommand extends CommandBase {
+
+		@Override
+		protected Integer execute(Span span, Logger logger, Meter meter) {
+			return 0;
+		}
+
+	}
+
+	/**
+	 * A class defined by this loader is in the loader's unnamed module, as a class on the class path is.
+	 */
+	@Test
+	void commandInAnUnnamedModule() throws Exception {
+		String name = PlainCommand.class.getName();
+		ClassLoader loader = new ClassLoader(getClass().getClassLoader()) {
+
+			@Override
+			protected Class<?> loadClass(String className, boolean resolve) throws ClassNotFoundException {
+				if (!className.equals(name)) {
+					return super.loadClass(className, resolve);
+				}
+				try (InputStream in = getParent().getResourceAsStream(className.replace('.', '/') + ".class")) {
+					byte[] bytes = in.readAllBytes();
+					return defineClass(className, bytes, 0, bytes.length);
+				} catch (IOException e) {
+					throw new ClassNotFoundException(className, e);
+				}
+			}
+
+		};
+		Object command = loader.loadClass(name).getConstructor().newInstance();
+		assertThat(command.getClass().getModule().isNamed()).isFalse();
+		assertThat(new CommandLine(command).execute()).isZero();
 	}
 
 }

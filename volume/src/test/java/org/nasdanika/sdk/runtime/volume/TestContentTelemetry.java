@@ -5,12 +5,16 @@ import static org.assertj.core.api.Assertions.assertThat;
 import java.io.ByteArrayOutputStream;
 import java.io.IOException;
 import java.io.InputStream;
+import java.net.URI;
 import java.nio.charset.StandardCharsets;
+import java.nio.file.FileSystem;
+import java.nio.file.FileSystems;
 import java.nio.file.Files;
 import java.nio.file.Path;
 import java.util.ArrayList;
 import java.util.Collections;
 import java.util.List;
+import java.util.Map;
 import java.util.concurrent.Flow;
 
 import org.junit.jupiter.api.Test;
@@ -147,6 +151,25 @@ class TestContentTelemetry {
 			otel.subscribe(collector);
 
 			try (InputStream in = Content.of(file.toUri()).openStream()) {
+				in.transferTo(OutputStreamSink.INSTANCE);
+			}
+
+			PublishingSpan read = collector.started("Content.read").getFirst();
+			assertThat(read.isEnded()).isTrue();
+			assertThat(collector.attribute(read, Telemetry.IO_BYTES)).isEqualTo(4096L);
+		}
+	}
+
+	@Test
+	void volumeReadOnAnotherFileSystemIsASpan(@TempDir Path dir) throws IOException {
+		try (FileSystem zip = FileSystems.newFileSystem(URI.create("jar:" + dir.resolve("volume.zip").toUri()), Map.of("create", "true"));
+				PublishingOpenTelemetry otel = publishing();
+				Scope scope = Telemetry.makeCurrent(otel)) {
+			Files.write(zip.getPath("/data.bin"), new byte[4096]); // Not on disk until the file system is closed
+			Collector collector = new Collector();
+			otel.subscribe(collector);
+
+			try (InputStream in = Volume.of(zip.getPath("/")).content("data.bin").openStream()) {
 				in.transferTo(OutputStreamSink.INSTANCE);
 			}
 
