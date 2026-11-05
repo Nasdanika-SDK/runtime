@@ -69,26 +69,10 @@ public final class MetaValidator {
 		List<Path> files = files(directory);
 		List<Problem> problems = new ArrayList<>();
 
-		// Pass 1: the namespace of each file
-		Map<String, Path> namespaces = new HashMap<>();
-		for (Path file: files) {
-			Resource resource = resourceSet().createResource(uri(file));
-			try {
-				resource.load(null);
-			} catch (IOException e) {
-				// Reported by pass 2
-			}
-			if (!resource.getContents().isEmpty() && resource.getContents().getFirst() instanceof Package pkg && pkg.getNamespace() != null) {
-				Path previous = namespaces.putIfAbsent(pkg.getNamespace(), file);
-				if (previous != null) {
-					problems.add(new Problem(Severity.ERROR, name(file, base), 0, 0, "Namespace " + pkg.getNamespace() + " is also the namespace of " + name(previous, base)));
-				}
-			}
-		}
+		ResourceSet resourceSet = readTogether(files, (file, previous, namespace) -> problems.add(
+				new Problem(Severity.ERROR, name(file, base), 0, 0, "Namespace " + namespace + " is also the namespace of " + name(previous, base))));
 
-		// Pass 2: all files in one resource set, namespaces mapped to files
-		ResourceSet resourceSet = resourceSet();
-		namespaces.forEach((namespace, file) -> resourceSet.getURIConverter().getURIMap().put(URI.createURI(namespace), uri(file)));
+		// Pass 2: all files in one resource set
 		for (Path file: files) {
 			Resource resource;
 			try {
@@ -128,7 +112,43 @@ public final class MetaValidator {
 		return problems.stream().anyMatch(problem -> problem.severity() == Severity.ERROR);
 	}
 
-	private static List<Path> files(Path directory) {
+	/**
+	 * Called for a file whose namespace an earlier file already has.
+	 */
+	@FunctionalInterface
+	interface DuplicateNamespace {
+
+		void report(Path file, Path previous, String namespace);
+
+	}
+
+	/**
+	 * Pass 1: learns the namespace of each file.
+	 *
+	 * @return A resource set whose URI map points each namespace to its file, to load the files in
+	 */
+	static ResourceSet readTogether(List<Path> files, DuplicateNamespace duplicateNamespace) {
+		Map<String, Path> namespaces = new HashMap<>();
+		for (Path file: files) {
+			Resource resource = resourceSet().createResource(uri(file));
+			try {
+				resource.load(null);
+			} catch (IOException e) {
+				// Reported when the file is loaded in the returned resource set
+			}
+			if (!resource.getContents().isEmpty() && resource.getContents().getFirst() instanceof Package pkg && pkg.getNamespace() != null) {
+				Path previous = namespaces.putIfAbsent(pkg.getNamespace(), file);
+				if (previous != null) {
+					duplicateNamespace.report(file, previous, pkg.getNamespace());
+				}
+			}
+		}
+		ResourceSet resourceSet = resourceSet();
+		namespaces.forEach((namespace, file) -> resourceSet.getURIConverter().getURIMap().put(URI.createURI(namespace), uri(file)));
+		return resourceSet;
+	}
+
+	static List<Path> files(Path directory) {
 		if (!Files.isDirectory(directory)) {
 			return List.of();
 		}
@@ -148,7 +168,7 @@ public final class MetaValidator {
 		return resourceSet;
 	}
 
-	private static URI uri(Path file) {
+	static URI uri(Path file) {
 		return URI.createFileURI(file.toAbsolutePath().normalize().toString());
 	}
 

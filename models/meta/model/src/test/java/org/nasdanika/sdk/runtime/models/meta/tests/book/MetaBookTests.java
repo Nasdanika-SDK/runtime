@@ -5,6 +5,7 @@ import static org.assertj.core.api.Assertions.assertThat;
 import java.io.IOException;
 import java.nio.file.Files;
 import java.nio.file.Path;
+import java.util.List;
 
 import org.eclipse.emf.common.util.URI;
 import org.eclipse.emf.ecore.EClass;
@@ -19,6 +20,7 @@ import org.junit.jupiter.api.Test;
 import org.junit.jupiter.api.io.TempDir;
 import org.nasdanika.sdk.runtime.models.meta.MetaPackage;
 import org.nasdanika.sdk.runtime.models.meta.Package;
+import org.nasdanika.sdk.runtime.models.meta.resource.MetaGlossary;
 
 /**
  * The listings of the Meta Model book.
@@ -38,8 +40,15 @@ public class MetaBookTests {
 	 * The glossary is compared with the reviewed file the book includes.
 	 */
 	@Test
-	public void glossary() throws IOException {
-		String glossary = Projections.glossary(Vocabulary.library());
+	public void glossary(@TempDir Path directory) throws IOException {
+		// tag::glossary[]
+		String glossary = MetaGlossary.write(Vocabulary.library());              // <1>
+
+		List<Path> written = MetaGlossary.generate(                              // <2>
+				Path.of("src/main/skill/nasdanika-meta/examples"),
+				directory.resolve("glossary"));
+		// end::glossary[]
+		assertThat(written).hasSize(3);
 		Path expected = Path.of(
 				"src/test/resources/org/nasdanika/sdk/runtime/models/meta/tests/book/library.md");
 		assertThat(glossary).isEqualToNormalizingNewlines(Files.readString(expected));

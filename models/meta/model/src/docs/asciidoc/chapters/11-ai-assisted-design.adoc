@@ -1,0 +1,192 @@
+// Defaults for previewing this file on its own; index.adoc and the Maven build set these
+ifndef::runtime-root[:runtime-root: ../../../../../../..]
+ifndef::bookresources[:bookresources: ../../../test/resources/org/nasdanika/sdk/runtime/models/meta/tests/book]
+
+[#ai-assisted-design]
+== AI-assisted domain design
+
+The people who know what the words of a domain mean are rarely the people who write them in a precise notation.
+A product manager at a bank can spot a wrong definition of a joint account in a second, and has no reason to learn a grammar.
+The formats of <<formats>> will meet such people in the spreadsheets and diagrams they already use [.planned]#PLANNED#.
+An AI assistant can meet them today: they talk, or hand over what they have, the assistant writes the text syntax, the build checks it, and they correct what it says about their business.
+
+This chapter is written first for those subject-matter experts, and needs no code as far as <<nasdanika-meta-skill>>.
+From there on, it is for the person who sets the project up.
+
+=== Who checks what
+
+An assistant is good at the mechanical part of modeling: turning a description, a glossary, a spreadsheet extract or meeting notes into structure.
+Correcting a draft is much cheaper than writing one from nothing.
+But an assistant writes a plausible definition of a term it has never heard with the same ease as a correct one, and a plausible definition can get past a reader who does not know the domain.
+So review only works where the reviewer can judge what is reviewed, and this way of working gives each check to whoever can:
+
+[cols="2,3,3",options="header"]
+|===
+| Who | Judges | Cannot judge
+
+| The assistant
+| Nothing final. It drafts, and it fixes what the validator reports
+| What the words mean here, unless someone told it
+
+| The validator, in the build
+| Whether the file is well formed: the syntax, that every type exists, that opposites and keys exist, that imports within the project resolve
+| Whether a definition is right, or a rule is true
+
+| The subject-matter expert
+| Whether the definitions and the rules are true of the business
+| Whether the file is well formed, and does not have to
+
+| A developer or an architect
+| How the vocabulary fits with others: its namespace, what other teams already own, whether a change is safe to publish
+| What the business means by its words
+|===
+
+The structure and the meaning are the two things a vocabulary can get wrong, and they fail in different hands.
+A vocabulary the validator accepts can still be wrong about the business, and it is the expert who decides that it is not.
+
+=== How it goes
+
+. *Bring what exists.* A glossary, a spreadsheet extract, a policy document, meeting notes, or your own words. An assistant works from what it is given, so the more of your organization's own language it sees, the less it invents.
+. *Answer what it cannot infer.* It asks what the vocabulary's namespace is, a name that identifies it and belongs to your organization, and which terms other teams already own.
+. *It drafts.* One file per package, with a definition for every term, written for a business reader.
+. *The build checks the draft.* The assistant runs the validator, reads what it reports, and fixes every error at its line and column. You do not have to look at any of this. It tells you about warnings rather than hiding them.
+. *It tells you what it did*, in terms of the business: the terms added, renamed or redefined, and anything it was unsure of.
+. *It reads the rules back*, as plain statements without the notation, the ones it guessed first, and points you to a glossary the build has written.
+. *You correct it, in your own words.* "An account can't be without a holder." "We don't say client, we say customer." It changes the file, and the build checks it again.
+. *The change is reviewed like any other.* The vocabulary is a file in Git, so the change is a pull request: a developer or an architect looks after the structure, and you approve the meaning.
+
+=== Reading a vocabulary without learning the notation
+
+The definitions are prose, and you can read them as they are.
+The rules are in the structure, where they are easy to miss, and they are often the part an assistant guessed, because notes and glossaries rarely say whether an account can have no holder.
+You get them in two ways, and neither asks you to read the notation.
+
+The first is the conversation.
+The skill has the assistant read the rules back after every draft or change, and each statement is a question only you can answer.
+From the bank's vocabulary (<<text-syntax>>):
+
+[cols="3,5",options="header"]
+|===
+| In the file | What to ask yourself
+
+| `refers Customer[+] holders`
+| The file says an account has at least one holder. Can an account ever have none, say after its only holder dies?
+
+| `contains Statement[*] statements`
+| The file says a statement is part of its account, and does not exist without it. Do you have to keep statements after an account is closed?
+
+| `refers Product[1] product`
+| The file says an account has exactly one product, which has a life of its own. Can an account move to another product?
+
+| `CurrencyCode[1] currency`
+| The file says an account is in exactly one currency. Is there a multi-currency account?
+
+| `id string[1] accountNumber`
+| The file says the number identifies the account. Is a number ever reused?
+|===
+
+A wrong answer here is a correction to one line, made today.
+The same wrong answer found in a generated schema, a year from now, is a migration.
+
+An assistant without the skill can be asked for the same thing:
+
+[source,text]
+----
+Read this vocabulary back to me as plain statements of business rules, one for
+each relationship and each required attribute. Mark the ones you guessed, and
+ask me about those first.
+----
+
+The second is the glossary, which is how to check a whole vocabulary rather than the part that just changed.
+Each build without errors writes one, and since a program writes it from the file, it does not depend on what an assistant remembered to say.
+The Rule column states the structure in plain words:
+
+.The customers of the bank's glossary (`bank.md`)
+[source,markdown]
+----
+include::{bookresources}/bank.md[lines=51..61]
+----
+
+Read the Rule column against the Meaning column, and against what you know.
+Here they disagree: a customer is defined as having a relationship "through at least one account", while the rule for `accounts` says any number.
+The validator accepts this, and I left it in the bank's vocabulary because it is the kind of thing only you can settle.
+Either a customer can exist before their first account, and the definition is wrong, or they cannot, and the rule is.
+
+=== What to watch for
+
+The validator accepts every one of these, which is why they are yours to catch:
+
+* *A definition that could be about anyone's business.* "The account of the customer" says nothing. Ask whether someone in your organization could disagree with it. If not, it is not yet a definition.
+* *A rule stated more firmly than your sources do.* The notes said "usually one"; the file says exactly one.
+* *One word for two things, or two words for one.* The sources say client and customer. An assistant may keep both, or merge them, without asking, and either could be wrong. Whichever you decide, it belongs in the definitions.
+* *A term another team owns, copied instead of imported.* Copies drift. A developer or an architect usually spots this one in review.
+
+What you give an assistant goes wherever that assistant sends it, so check what your organization allows before you paste anything in.
+A vocabulary needs definitions, not records: it describes what a customer is, and no customer's data has to be part of the conversation.
+
+[#nasdanika-meta-skill]
+=== The agent skill
+
+An agent skill is a directory of instructions that an assistant loads when a task calls for them: a `SKILL.md` with a name and a description of when to use it, and whatever files it refers to.
+The skill `nasdanika-meta` teaches an assistant the workflow above, including reading the rules back, the text syntax and the conventions of a vocabulary.
+It is in the runtime's repository, not in the model's jar, at `models/meta/model/src/main/skill/nasdanika-meta`:
+
+[cols="2,5",options="header"]
+|===
+| File | What it is
+| `SKILL.md` | The workflow, how to read the rules back, the conventions, the syntax at a glance, and the pitfalls
+| `references/syntax.md` | The full syntax, read when it is needed
+| `examples/` | `bank.nmeta`, `party.nmeta` and `library.nmeta`, the files of this book
+| `assets/vocabulary-project/` | The starter project below
+|===
+
+To install it, copy the directory to where your assistant finds skills.
+For Claude Code, that is `.claude/skills/nasdanika-meta` in a project, or `~/.claude/skills/nasdanika-meta` for all of them.
+Everything in it is plain text, so an assistant that does not have skills can be pointed at the files.
+
+The conventions are the part a language reference would not give an assistant:
+
+* Every class, data type, enumeration and feature has a definition for a business reader, starting with one sentence that could stand alone in a glossary. Not how it is stored, and not "the X of the Y".
+* The multiplicity says the business rule, `contains` means the target does not exist without its owner, and two-way relationships are paired.
+* Money and identifiers are data types, not numbers, so that no projection turns money into a floating-point number.
+* A term another team owns is imported by namespace, not copied, and a namespace is never invented under someone else's domain.
+
+The model's tests, `SkillTests`, check what an assistant learns from the skill: its examples are the files of this book, they validate, every `nmeta` block in its Markdown loads without errors, its read-back examples are lines of `bank.nmeta`, and the glossary is where it says.
+They do not test an assistant.
+What it writes is checked by the validator and by the people who own the words.
+
+=== A vocabulary project
+
+The skill's starter project is what an assistant copies when there is no project yet, and it asks you where.
+Someone technical sets it up once: it needs a JDK for Java 25, Maven and the runtime's artifacts, and its `pom.xml` needs the vocabulary's own coordinates.
+
+[source,text]
+----
+vocabulary/
+  pom.xml                                   the runtime's BOM, and Meta and JUnit for tests
+  AGENTS.md, CLAUDE.md                      what an assistant must know about the project
+  .gitignore                                leaves out target
+  .vscode/tasks.json                        a "Validate vocabulary" task
+  src/main/meta/                            the vocabulary, one package per .nmeta file
+  src/test/java/vocabulary/VocabularyTest.java
+  target/glossary/                          written by the build, one .md per .nmeta file
+----
+
+The whole build is one test, which runs the validator of <<validator>> and, when there are no errors, the glossary of <<projections>>:
+
+.The starter project's test (`VocabularyTest.java`)
+[source,java]
+----
+include::{runtime-root}/models/meta/model/src/main/skill/nasdanika-meta/assets/vocabulary-project/src/test/java/vocabulary/VocabularyTest.java[]
+----
+
+`mvn -q test` prints the problems one per line and fails on an error, which is all an assistant needs to correct its own drafts.
+Run in the build of the repository, the same command stops a broken vocabulary from being merged.
+In VS Code, the task's problem matcher puts the same problems in the editor, and the Markdown preview shows the glossary.
+
+The glossary is in `target`, so it is not committed, and a pull request shows the change to the `.nmeta` file and not to the glossary.
+To give an expert the glossary of a pull request, publish `target/glossary` from the build of the repository, in whatever way the team publishes such files.
+
+Not everyone will have a build on their laptop.
+With no Maven, the skill has an assistant follow the examples, say that the file has not been validated and that there is no glossary, and read the rules back all the same.
+An expert can then work in a conversation with an assistant and hand the file over, and the build of the pull request does the checking.

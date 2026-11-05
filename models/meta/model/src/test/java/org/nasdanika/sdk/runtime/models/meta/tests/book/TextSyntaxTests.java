@@ -7,6 +7,7 @@ import java.io.IOException;
 import java.nio.charset.StandardCharsets;
 import java.nio.file.Files;
 import java.nio.file.Path;
+import java.util.List;
 import java.util.Map;
 
 import org.eclipse.emf.common.util.URI;
@@ -24,7 +25,10 @@ import org.nasdanika.sdk.runtime.models.meta.Feature;
 import org.nasdanika.sdk.runtime.models.meta.MetaPackage;
 import org.nasdanika.sdk.runtime.models.meta.Package;          // Shadows java.lang.Package in this file
 import org.nasdanika.sdk.runtime.models.meta.Reference;
+import org.nasdanika.sdk.runtime.models.meta.resource.MetaGlossary;
 import org.nasdanika.sdk.runtime.models.meta.resource.MetaResourceFactory;
+import org.nasdanika.sdk.runtime.models.meta.resource.MetaValidator;
+import org.nasdanika.sdk.runtime.models.meta.resource.MetaValidator.Problem;
 import org.nasdanika.sdk.runtime.models.meta.resource.MetaWriter;
 
 /**
@@ -115,7 +119,7 @@ public class TextSyntaxTests {
 	@Test
 	public void glossary() throws IOException {
 		Package bank = (Package) resourceSet().getResource(BANK, true).getContents().getFirst();
-		String glossary = Projections.glossary(bank);
+		String glossary = MetaGlossary.write(bank);
 		assertThat(glossary).isEqualToNormalizingNewlines(Files.readString(BOOK.resolve("bank.md")));
 	}
 
@@ -156,6 +160,37 @@ public class TextSyntaxTests {
 
 		Package loaded = (Package) resourceSet().getResource(uri, true).getContents().getFirst();
 		assertThat(MetaWriter.write(loaded)).isEqualTo(text);
+	}
+
+	@Test
+	public void validateADirectory() {
+		// tag::validate[]
+		List<Problem> problems = MetaValidator.validate(BOOK, BOOK);                // <1>
+		assertThat(problems).extracting(Problem::toString).containsExactly(         // <2>
+				"bank.nmeta:70:6: warning: Facet type occupancy.Presence is not available, "
+				+ "its properties are not checked");
+		assertThat(MetaValidator.hasErrors(problems)).isFalse();                    // <3>
+		// end::validate[]
+	}
+
+	@Test
+	public void validatorReportsATypo(@TempDir Path directory) throws IOException {
+		Path meta = Files.createDirectories(directory.resolve("src/main/meta"));
+		Files.copy(BOOK.resolve("party.nmeta"), meta.resolve("party.nmeta"));
+		// tag::validate-typo[]
+		String typo = Files.readString(BOOK.resolve("bank.nmeta"))
+			.replace("refers Account[*] accounts", "refers Acount[*] accounts");
+		Files.writeString(meta.resolve("bank.nmeta"), typo);
+
+		List<Problem> problems = MetaValidator.validate(meta, directory);
+		assertThat(problems).extracting(Problem::toString).containsExactly(
+				"src/main/meta/bank.nmeta:67:12: error: Unknown type Acount",       // <1>
+				"src/main/meta/bank.nmeta:67:40: error: The opposite of accounts "
+				+ "is in a class that is not available: holders",                   // <2>
+				"src/main/meta/bank.nmeta:70:6: warning: Facet type occupancy.Presence "
+				+ "is not available, its properties are not checked");
+		// end::validate-typo[]
+		assertThat(MetaValidator.hasErrors(problems)).isTrue();
 	}
 
 	@Test

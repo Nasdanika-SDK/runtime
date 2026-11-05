@@ -1,28 +1,34 @@
 # library
 
+Version 2026.10.0.
+
 The words a library uses, and what they mean here.
 
 ## Person
 
 Someone who wrote, edited or translated a book.
 
-| Term | Type | Meaning |
-|---|---|---|
-| name (identifies) | string | The name as printed on the title page. |
+| Term | Type | Rule | Meaning |
+|---|---|---|---|
+| name | text | required, identifies it | The name as printed on the title page. |
 
 ## Format
 
 How a book is published.
 
-One of: HARDCOVER, PAPERBACK, EBOOK.
+One of:
+
+- **HARDCOVER**
+- **PAPERBACK**
+- **EBOOK**
 
 ## Book
 
 A published work, identified by its ISBN.
 
-| Term | Type | Meaning |
-|---|---|---|
-| isbn (identifies) | string | International Standard Book Number, 13 digits. |
-| title | string | The title as printed, subtitle excluded. |
-| published | date | The date of the first edition. |
-| authors | Person, many | The people credited as authors, in the order printed. |
+| Term | Type | Rule | Meaning |
+|---|---|---|---|
+| isbn | text | required, identifies it | International Standard Book Number, 13 digits. |
+| title | text | optional | The title as printed, subtitle excluded. |
+| published | date | optional | The date of the first edition. |
+| authors | Person | any number | The people credited as authors, in the order printed. |

@@ -47,4 +47,4 @@ The generated API is in three packages: the interfaces in `org.nasdanika.sdk.run
 
 The grammar of the text syntax is in `src/main/grammar/Meta.g4`.
 The ANTLR Maven plugin generates its lexer and parser into `src-gen` as well, in the package `parser`, which is not exported: nothing outside the module sees a parse tree.
-The reader, the writer, the resource and its factory are hand-written, in `resource`, and so are the package provider and the resource set contributor, in `services`.
+The reader, the writer, the validator, the glossary, the resource and its factory are hand-written, in `resource`, and so are the package provider and the resource set contributor, in `services`.

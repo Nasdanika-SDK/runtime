@@ -11,14 +11,16 @@
 	<artifactId>parent</artifactId>
 	<packaging>pom</packaging>
 	<name>Documentation</name>
-	<description>Documentation built with the runtime and not deployed: the book and its examples</description>
+	<description>Documentation built with the runtime: the book and its examples, which are not deployed, and the Zephyr look and the NBOK appendix, which books in other repositories use</description>
 	<properties>
 	    <maven.deploy.skip>true</maven.deploy.skip>
-	    <!-- Nothing here is published, so there is nothing to attach -->
+	    <!-- Nothing here has code, so there is nothing to attach; zephyr and nbok deploy their jars -->
 	    <maven.javadoc.skip>true</maven.javadoc.skip>
 	    <maven.source.skip>true</maven.source.skip>
 	</properties>
 	<modules>
+		<module>zephyr</module>
+		<module>nbok</module>
 		<module>book</module>
 	</modules>
 </project>

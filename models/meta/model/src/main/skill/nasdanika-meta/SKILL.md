@@ -7,9 +7,8 @@ description: Write, review and change business vocabularies and domain models in
 
 Meta is a language-neutral type system. A `.nmeta` file is one package of terms: classes,
 their attributes and references, enumerations and data types, each with a Markdown definition.
-The same file is read by developers in a pull request, projected to glossaries, documentation
-and schemas, and read by business owners as a generated document. Write it for both audiences:
-precise structure, plain-language definitions.
+The same file is read by developers in a pull request, and by business owners as a generated
+glossary. Write it for both audiences: precise structure, plain-language definitions.
 
 ## Workflow
 
@@ -35,12 +34,37 @@ precise structure, plain-language definitions.
 
    Fix every error at its line and column, then run again. Report warnings to the user rather
    than silencing them: a warning about a facet type that is not available is expected until
-   that model is on the build path.
-6. **Review** against the checklist below, and summarize what changed in terms of the business:
+   that model is on the build path. A run without errors also writes a glossary for each file,
+   `target/glossary/<file>.md`. It is generated: change the `.nmeta` file, not the glossary.
+6. **Review** against the conventions below, and summarize what changed in terms of the business:
    terms added, renamed or redefined, and anything you were unsure of.
+7. **Read the rules back.** The people who own the words can judge the definitions as prose, but
+   the rules are in the structure, and you often guessed them, because sources rarely say whether
+   an account can have no holder. After every draft or change, say them without the notation, as
+   in "Read the rules back" below, the guessed ones first, and ask about those. The validator
+   cannot check any of this. Point the user to the glossary, whose Rule column states the same
+   rules, so that they can check the whole vocabulary. Change the file for what they correct, and
+   validate again.
 
-If there is no build and no Maven, still write valid syntax by following the examples, and say
-that the file has not been validated.
+If there is no build and no Maven, still write valid syntax by following the examples, say that
+the file has not been validated and that there is no glossary, and read the rules back all the
+same.
+
+## Read the rules back
+
+One plain statement for each relationship and each required or identifying attribute, in the
+words of the business, with the question it raises when you guessed it. Do not show the notation
+unless the user asks for it.
+
+| In the file | Read back as |
+|---|---|
+| `refers Customer[+] holders` in `Account` | An account has at least one holder. I guessed this: can an account ever have none? |
+| `contains Statement[*] statements` in `Account` | A statement is part of its account, and does not exist without it. Do you keep statements after an account is closed? |
+| `refers Product[1] product` in `Account` | An account has exactly one product, and products exist without accounts. Can an account move to another product? |
+| `CurrencyCode[1] currency` in `Account` | An account is in exactly one currency. Is there a multi-currency account? |
+| `id string[1] accountNumber` in `Account` | The account number identifies the account. Is a number ever reused? |
+
+Say so when your sources use two words for one thing, or one word for two, and which you chose.
 
 ## Conventions
 

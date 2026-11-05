@@ -15,9 +15,11 @@
         Meta, a language-neutral type system: packages, classes, features, operations and the type
         references between them, on the runtime's core model, written down once and projected to
         whatever consumers need. Vocabularies are loaded from and saved to a text syntax, .nmeta
-        files, parsed with the ANTLR runtime. Its Nasdanika Zephyr Book, "Meta Model", is built
-        from src/docs/asciidoc with listings from the tests, among them a bank's vocabulary written
-        in the text syntax and a library's projected to a glossary and to Ecore.
+        files, parsed with the ANTLR runtime, and checked by a validator a build can run. An agent
+        skill in src/main/skill lets an AI assistant draft them for the people who own the words.
+        Its Nasdanika Zephyr Book, "Meta Model", is built from src/docs/asciidoc with listings from
+        the tests, among them a bank's vocabulary written in the text syntax and a library's
+        projected to a glossary and to Ecore.
     </description>
 
     <properties>

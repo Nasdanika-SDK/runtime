@@ -152,6 +152,42 @@ The reader collects what is wrong in the resource's `getErrors()` and `getWarnin
 Every package, classifier, feature, operation, parameter and enum literal read from a file gets a core model marker with the file's URI and the `line:column` where its declaration starts.
 When a generated page or a projected schema says something surprising, the marker says which line of which file it came from.
 
+[#validator]
+=== Validating a directory
+
+A resource reports the problems of one file, and a vocabulary is usually several.
+`MetaValidator` reads every `.nmeta` file under a directory, as a build does:
+
+.Validating the vocabularies of a directory (`TextSyntaxTests.java`)
+[source,java]
+----
+include::{booktests}/TextSyntaxTests.java[tag=validate,indent=0]
+----
+<1> The directory to search, recursively, and the directory the reported file names are relative to.
+<2> `bank.nmeta` imports `party.nmeta`, and no URI map is needed: the files are read together.
+<3> Warnings do not fail a build. What does is up to the caller, and this is what it asks.
+
+The files are read twice.
+The first pass learns the namespace of each package, and the second loads them all in one resource set whose URI map points each namespace to its file, so an import resolves whichever file is read first.
+That decides what the validator can know:
+
+* A type the imported package does not have is an error, when that package is in the directory: `party.Partyy` is `Unknown type Partyy in https://example.org/party`.
+* An import of a namespace no file in the directory has is not checked, which is what lets a team validate its vocabulary without the vocabularies of other teams.
+* Two files with one namespace are an error, since a namespace identifies one package.
+
+Problems come errors first, then by file and position, one per line in the format of compilers:
+
+.What a typo reports (`TextSyntaxTests.java`)
+[source,java]
+----
+include::{booktests}/TextSyntaxTests.java[tag=validate-typo,indent=0]
+----
+<1> The file, the line and the column of the problem.
+<2> A problem can have consequences, reported with it. Fixing the first error fixes this one too.
+
+That format is the point.
+A person can read it, VS Code's problem matchers parse it, and an assistant can read it and go to the line, which is what lets an assistant correct its own drafts (<<ai-assisted-design>>).
+
 === Saving
 
 A vocabulary read from text is a model, so it is saved in any format a resource set supports.
@@ -194,7 +230,7 @@ The bank's accounts, as the business reads them:
 .The accounts of the bank's glossary (`bank.md`)
 [source,markdown]
 ----
-include::{bookresources}/bank.md[lines=50..62]
+include::{bookresources}/bank.md[lines=63..79]
 ----
 
 The file is generated from `bank.nmeta`, and the tests compare it with a reviewed copy.

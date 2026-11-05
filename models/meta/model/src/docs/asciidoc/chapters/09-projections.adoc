@@ -6,17 +6,38 @@ ifndef::bookresources[:bookresources: ../../../test/resources/org/nasdanika/sdk/
 == Projections
 
 A vocabulary is worth writing down once because of what is projected from it.
-The runtime's projections are [.planned]#PLANNED#; the tests of this book sketch two of them, to show the idea.
+The runtime has the first projection below, a glossary.
+Its other projections are [.planned]#PLANNED#, and the tests of this book sketch one of them, to Ecore, to show the idea.
 
 === A glossary, for people
 
 The first projection is for people: a glossary that cannot drift from the types, because both come from one source.
 
-.A glossary projection (`Projections.java`)
+.A glossary (`MetaBookTests.java`)
 [source,java]
 ----
-include::{booktests}/Projections.java[tag=glossary,indent=0]
+include::{booktests}/MetaBookTests.java[tag=glossary,indent=0]
 ----
+<1> One package, as Markdown.
+<2> A glossary for each `.nmeta` file under a directory, read together as the validator reads them (<<validator>>), and returned as the list of files written. Validate first: a file with an error fails here.
+
+A glossary is for people who do not read the notation, so `MetaGlossary` does not use it.
+The Rule column states what the structure says, and the types are in plain words: a `string` is text, a `boolean` is yes or no, and a class from another package says so.
+
+[cols="3,3",options="header"]
+|===
+| In the file | In the Rule column
+| No multiplicity, `[1]`, `[*]`, `[+]` | optional, required, any number, at least one
+| `[3]`, `[2..5]`, `[0..5]`, `[2..*]` | exactly 3, 2 to 5, up to 5, at least 2
+| `id` | identifies it
+| `contains` | part of it
+| `opposite holders` on `Customer.accounts` | the other side of Account.holders
+| `derived` | computed
+| `readonly` | read-only
+| `+= "fr"+` | fr by default
+|===
+
+Annotations and facets are left out.
 
 For the library's vocabulary, it writes this Markdown, which the test compares with a reviewed file:
 

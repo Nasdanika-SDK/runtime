@@ -14,6 +14,7 @@ import java.util.stream.Stream;
 
 import org.junit.jupiter.api.Test;
 import org.junit.jupiter.api.io.TempDir;
+import org.nasdanika.sdk.runtime.models.meta.resource.MetaGlossary;
 import org.nasdanika.sdk.runtime.models.meta.resource.MetaValidator;
 import org.nasdanika.sdk.runtime.models.meta.resource.MetaValidator.Problem;
 
@@ -93,6 +94,39 @@ public class SkillTests {
 			.contains("MetaValidator.validate(Path.of(\"src/main/meta\"), Path.of(\"\"))");
 		assertThat(Files.readString(project.resolve(".vscode/tasks.json")))
 			.contains("\"command\": \"mvn -q test\"");
+	}
+
+	/**
+	 * Where the skill says the glossary is, the starter project writes it, for the skill's examples
+	 * as for any vocabulary.
+	 */
+	@Test
+	public void theStarterProjectWritesTheGlossaryTheSkillPointsTo(@TempDir Path directory) throws IOException {
+		Path project = SKILL.resolve("assets/vocabulary-project");
+		assertThat(Files.readString(project.resolve("src/test/java/vocabulary/VocabularyTest.java")))
+			.contains("MetaGlossary.generate(Path.of(\"src/main/meta\"), Path.of(\"target/glossary\"))");
+		assertThat(Files.readString(SKILL.resolve("SKILL.md"))).contains("`target/glossary/<file>.md`");
+		assertThat(Files.readString(project.resolve("AGENTS.md"))).contains("`target/glossary/<file>.md`");
+
+		assertThat(MetaGlossary.generate(SKILL.resolve("examples"), directory))
+			.containsExactlyInAnyOrder(directory.resolve("bank.md"), directory.resolve("library.md"), directory.resolve("party.md"));
+	}
+
+	/**
+	 * The read-back's examples are lines of the vocabulary the skill sets as the reference for style.
+	 */
+	@Test
+	public void theRulesReadBackAreInTheExample() throws IOException {
+		String skill = Files.readString(SKILL.resolve("SKILL.md"));
+		String section = skill.substring(skill.indexOf("## Read the rules back"), skill.indexOf("## Conventions"));
+		Matcher line = Pattern.compile("(?m)^\\| `([^`]+)` in `").matcher(section);
+		String bank = Files.readString(SKILL.resolve("examples/bank.nmeta"));
+		int lines = 0;
+		while (line.find()) {
+			assertThat(bank).contains(line.group(1));
+			++lines;
+		}
+		assertThat(lines).isEqualTo(5);
 	}
 
 }

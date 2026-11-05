@@ -89,6 +89,7 @@ Each rule names the chapter that explains it.
 . Ask whether a task should exist before asking an assistant to do it faster (<<against-the-grain>>).
 . Keep ownership with the people who will live with the result: they choose the language and the stack, and they review what an assistant binds (<<against-the-grain>>).
 . Measure a system by what it does, not by its lines of code, services or boxes on a diagram (<<against-the-grain>>).
+. Give each check to whoever can judge it. When an assistant drafts a vocabulary, the validator checks the structure and the people who own the words check the meaning; a draft that validates has not been reviewed (<<ai-assisted-domain-design>>).
 
 === For assistants
 
@@ -102,3 +103,4 @@ Each rule names the chapter that explains it.
 . Prefer the surfaces the runtime gives you, commands and files, to new integrations.
 . When you learn something about a model element, write it into the element's documentation page, its micro-wiki stub, so the next person or assistant finds it there (<<core-model>>).
 . Spend effort at the right altitude: change the model or the generator rather than the code it generates (<<built-with-ai>>).
+. When you draft a vocabulary, read its rules back to the people who own the words as plain statements, and say which you guessed (<<ai-assisted-domain-design>>).

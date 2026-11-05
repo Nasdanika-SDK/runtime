@@ -8,6 +8,9 @@ An object that can be asked for a view of itself as another type, through `adapt
 Adapter method::
 A method annotated with `@Adapter` whose return type declares a type the object can be adapted to. Command groups offer their sub-commands values this way (<<wiring>>).
 
+Agent skill::
+A directory of instructions that an AI assistant loads when a task calls for them. Meta's, `nasdanika-meta`, teaches an assistant to write and validate vocabularies (<<ai-assisted-domain-design>>).
+
 Assembly::
 A set of modules on a module path, run together: a test, a command line distribution, an application. What an assembly became at run time is what the JVM model snapshots (<<jvm>>).
 

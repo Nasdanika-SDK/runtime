@@ -130,3 +130,6 @@ Diagrams are outputs too: a class and its neighbors, laid out and rendered with 
 The columns differ for a reason.
 The people who know what the words mean are rarely the people who write them in a precise notation, and the people who need the vocabulary most, outside the organization, should never have to open an authoring tool at all.
 One model in the middle is what lets each of them use the format that suits them.
+
+Until the spreadsheets, diagrams and Markdown are here, business owners take part through an assistant (<<ai-assisted-design>>).
+The weakness of the text syntax, a language to learn, then falls on the assistant, and its strengths, a precise file that diffs well and that a build can check, remain.

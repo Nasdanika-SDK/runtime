@@ -1,8 +1,8 @@
 = Meta Model: A Nasdanika Zephyr Book
 Pavel Vlasov
 :doctype: book
-:description: Meta, a language-neutral type system: a vocabulary written down once, in a text syntax or in the formats people already use, with documentation as structure, and projected to glossaries, PDF, Ecore, TypeScript and the tool schemas of agents.
-:keywords: Meta, type system, vocabulary, business glossary, published language, Domain-Driven Design, EMF, Ecore, Xcore, ANTLR, text syntax, projections, variability, Nasdanika
+:description: Meta, a language-neutral type system: a vocabulary written down once, in a text syntax, with an AI assistant, or in the formats people already use, with documentation as structure, and projected to glossaries, PDF, Ecore, TypeScript and the tool schemas of agents.
+:keywords: Meta, type system, vocabulary, business glossary, published language, Domain-Driven Design, AI-assisted domain design, agent skill, EMF, Ecore, Xcore, ANTLR, text syntax, projections, variability, Nasdanika
 :lang: en
 :sectnums:
 :sectnumlevels: 2
@@ -56,7 +56,7 @@ include::chapters/04-federated.adoc[]
 = The How
 
 [partintro]
-Meta in Java: adding it to a project, its classes, a vocabulary built in Java, a bank's vocabulary written in the text syntax, two projections, and instances whose type is a reference.
+Meta in Java: adding it to a project, its classes, a vocabulary built in Java, a bank's vocabulary written in the text syntax and validated, two projections, and instances whose type is a reference. The last chapter is also for subject-matter experts: domain design with an AI assistant, an agent skill and the build.
 
 include::chapters/05-getting-started.adoc[]
 
@@ -70,15 +70,17 @@ include::chapters/09-projections.adoc[]
 
 include::chapters/10-instances.adoc[]
 
+include::chapters/11-ai-assisted-design.adoc[]
+
 [#ahead]
 = Looking Ahead
 
 [partintro]
 The formats vocabularies are authored and published in, who each is for, flattening, variability and occupancy.
 
-include::chapters/11-formats.adoc[]
+include::chapters/12-formats.adoc[]
 
-include::chapters/12-looking-ahead.adoc[]
+include::chapters/13-looking-ahead.adoc[]
 
 include::appendices/a-reference.adoc[]
 

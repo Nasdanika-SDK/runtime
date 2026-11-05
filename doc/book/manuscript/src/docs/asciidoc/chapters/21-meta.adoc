@@ -1,0 +1,337 @@
+// Default for previewing this file on its own; the Maven build sets examplesdir
+ifndef::examplesdir[:examplesdir: ../../../../../examples]
+
+[#meta]
+== Meta: a language-neutral type system
+
+A class with named, typed, possibly multi-valued features is one of the most stable ideas in computing, and every ecosystem spells it its own way: Ecore, Java, XML Schema, JSON Schema, a database schema, TypeScript, a table on a wiki page, a spreadsheet.
+The differences are real and small, and most are about the host language, not about the domain.
+
+The cost is not the spelling.
+It is that one definition, of a customer, of a book, of a service, lives in many formats at once and nothing relates them.
+Each is a projection of a domain model that was never written down.
+
+Meta, in `models/meta`, is a place to write it down once and project.
+It is a micro-model of typed domain models, about twenty classifiers, positioned directly on the core model (<<core-model>>).
+In the terms of Domain-Driven Design it is a Published Language: a documented, shared vocabulary that bounded contexts translate into and out of, with the part that was out of reach when the term was coined: the vocabulary is machine-checkable, because the types and the documentation are generated from it.
+
+=== What it models
+
+[cols="1,3",options="header"]
+|===
+| Area | Classifiers
+| Base | `ModelElement`, on the core model's `NamedElement`, and `Annotation`
+| Structure | `Package`, `Classifier`, `Class`, `DataType`, `Enum`, `EnumLiteral`
+| Members | `TypedElement`, `Feature`, `Attribute`, `Reference`, `Operation`, `Parameter`
+| Types | `TypeParameter`, `TypeReference`, `ClassifierReference`, `TypeParameterReference`, `PrimitiveTypeReference`, `UnionTypeReference`, `IntersectionTypeReference`, `WildcardTypeReference`, `OpaqueTypeReference`, `PrimitiveKind`
+| Instances | `Object`, `IncomingReference`
+|===
+
+`Attribute.identifying` marks the attributes that identify an instance, which is how a reference cites a target, and how a Domain-Driven Design entity is told from a value object.
+`Reference.containment` separates tree edges from graph edges; `opposite` and `keys` carry bidirectionality and identity within a list.
+A `Package` is the unit of publication: one package becomes one Maven artifact or one npm package.
+
+The model is metacircular: a package containing classes describes `Package` and `Class`, so a runtime can bootstrap from it alone.
+
+=== What it leaves out
+
+The rule is that what a class-based type system cannot express is not a class in Meta.
+That keeps it at about twenty classifiers, against Ecore's fifty-three:
+
+* No `volatile`, `transient`, `unsettable` or `resolveProxies`: implementation concerns of EMF with no meaning in a browser.
+* No feature maps, no factories, no generic type algebra. Unions, intersections and wildcards are carried, so that a Java or TypeScript signature can be written down without loss, but nothing computes subtyping or substitution with them.
+* No subpackages, which neither TypeScript modules nor npm packages need. A loader flattens and records the original path.
+* No interface flag. Whether a class becomes an interface, a type alias or a class is the projection's decision.
+
+What a source expresses and Meta does not goes into an `Annotation`, keyed by a source URI, the bargain Ecore's `EAnnotation` makes.
+Loaders record what they cannot map instead of dropping it, so a round trip to the source stays possible.
+
+=== Documentation as structure
+
+Most formats carry documentation as one string: an Ecore annotation detail, a JSON Schema `description`, a database column remark.
+XML Schema, OpenAPI and OWL do better.
+None of them treats documentation as structure: a string cannot be divided into sections, point to a resource elsewhere, declare its format, or say who owns it.
+
+Meta elements are core model elements, so they have all of that, and markers that say where each element came from: this class from that sheet of that spreadsheet, at that commit; this feature from that schema element.
+When two sources disagree about what a term means, the model shows both, and where each came from.
+
+=== A vocabulary
+
+Here is the library's vocabulary in Meta, written with small builders:
+
+.Builders (`meta/.../Vocabulary.java`)
+[source,java]
+----
+include::{examplesdir}/meta/src/main/java/org/example/meta/Vocabulary.java[tag=builders,indent=0]
+----
+<1> Documentation is the core model's structure, not a string attribute of Meta.
+<2> Identity of instances, as for entities in Domain-Driven Design.
+
+.The vocabulary (`meta/.../Vocabulary.java`)
+[source,java]
+----
+include::{examplesdir}/meta/src/main/java/org/example/meta/Vocabulary.java[tag=vocabulary,indent=0]
+----
+
+A vocabulary is a model, so it is saved, versioned, diffed and reviewed like any other:
+
+.Saving a vocabulary
+[source,java]
+----
+include::{examplesdir}/meta/src/test/java/org/example/meta/TestMeta.java[tag=save,indent=0]
+----
+<1> A YAML file in a repository. A change to what a term means is a pull request whose diff shows which features moved.
+
+[#meta-text-syntax]
+=== The text syntax
+
+A vocabulary built in Java is a program that builds a vocabulary, which is how a harvester or a projection makes one, and not how a person should write one.
+A vocabulary written in Meta's text syntax is the vocabulary itself: a file a developer reads top to bottom, diffs in a pull request, and edits in any editor.
+
+The syntax writes metamodels the way Xcore writes Ecore models (<<models>>).
+Files have the extension `.nmeta`, one file is one package, and they are parsed by the ANTLR runtime alone, with no Xtext and no Eclipse.
+The grammar, `models/meta/model/src/main/grammar/Meta.g4`, documents every construct and how it maps to the model.
+
+Here is the library again:
+
+.The library's vocabulary as text (`meta/src/main/meta/library.nmeta`)
+[source,text]
+----
+include::{examplesdir}/meta/src/main/meta/library.nmeta[]
+----
+
+A documentation comment, `+/** ... */+`, is the Markdown documentation of the element that follows it, and other comments are ignored.
+
+A second file shows the rest of the notation.
+Lending is a vocabulary of its own, kept by the circulation desk, which refers to the library's books without owning them:
+
+.A package and its imports (`meta/src/main/meta/lending.nmeta`)
+[source,text]
+----
+include::{examplesdir}/meta/src/main/meta/lending.nmeta[tag=package]
+----
+
+* The namespace URI is the package's identity: what other packages import, and what a reference to one of its classes resolves against. The prefix and the version are optional.
+* `import` names another package by its namespace, under an alias. `library.Book` is then the class `Book` of that package. A namespace is a name, not an address: nothing is fetched from it.
+* `annotation` declares an alias for an annotation source, so that `+@Nasdanika(icon = "bi-person")+` is an annotation with the source `urn:org.nasdanika` and a detail `icon`.
+
+.Data types and enumerations (`meta/src/main/meta/lending.nmeta`)
+[source,text]
+----
+include::{examplesdir}/meta/src/main/meta/lending.nmeta[tag=types]
+----
+
+A data type has a name of its own and says how it crosses the wire: an `Amount` is a string, so that no projection turns money into a floating-point number.
+`wraps` records the type it stands for in a source language, as provenance.
+An enumeration's literals may have a serialized form, `+as "written-off"+`, and an ordinal, `= 3`; without one, a literal's ordinal is one more than the previous literal's.
+
+.Classes (`meta/src/main/meta/lending.nmeta`)
+[source,text]
+----
+include::{examplesdir}/meta/src/main/meta/lending.nmeta[tag=classes]
+----
+
+A feature is a type followed by a name, as in Xcore:
+
+* With `refers` or `contains` it is a reference, and `contains` makes the target part of this object: a loan belongs to its member, a book does not.
+* Otherwise it is an attribute, of a primitive kind, such as `string` and `date`, or of a data type or enumeration.
+* `id` marks an attribute that identifies its instance.
+* `opposite` pairs two references, `keys` names the attributes that identify a contained object within its list, and `+= "ACTIVE"+` is a default value.
+* `derived` and `readonly` say that a feature is computed rather than stored, and `op` declares the signature of an operation. Meta carries no bodies.
+
+The multiplicity follows the type:
+
+[cols="1,1,3",options="header"]
+|===
+| Written | Bounds | Meaning
+| `string name` | 0..1 | Optional, single-valued
+| `string[1] name` | 1..1 | Required
+| `string[?] name` | 0..1 | Optional, said explicitly
+| `Loan[*] loans`, `Loan[] loans` | 0..* | Any number
+| `Author[+] authors` | 1..* | At least one
+| `string[2..5] names`, `string[2..*] names` | 2..5, 2..* | A range
+|===
+
+Types also combine.
+`string | number` is a union, `A & B` an intersection, `Repository<Loan, string>` a class with type arguments, `? extends T` a wildcard, and text in backticks an opaque type, for what nothing else covers, such as TypeScript's `Record<string, unknown>`.
+They are rarely needed in a business vocabulary, and they are what lets a Java or TypeScript signature be written down without loss.
+
+An annotation is a bag of strings keyed by its source.
+A facet is typed: `+@occupancy.Presence { jurisdiction: "CA-ON" }+` says where the fine applies, with a class of an occupancy model as the type of what it says.
+A facet is checked against its type when the type is available, and a property the class has no feature for is a warning.
+The occupancy model is [.planned]#PLANNED#, so here the facet is read without checking, and the warning says so.
+Until the core model has facets, a facet is recorded as an annotation whose source is the URI of its type [.sketch]#SKETCH#.
+
+=== Reading and writing text
+
+A vocabulary in text loads like any other model:
+
+.A resource set for vocabularies (`meta/.../TestMeta.java`)
+[source,java]
+----
+include::{examplesdir}/meta/src/test/java/org/example/meta/TestMeta.java[tag=text-resource-set,indent=0]
+----
+<1> The module's resource set contributor registers the text syntax for `.nmeta` files.
+<2> The library is another team's vocabulary. The URI map says where its namespace is found here: a file next to this one.
+
+.Loading the lending vocabulary (`meta/.../TestMeta.java`)
+[source,java]
+----
+include::{examplesdir}/meta/src/test/java/org/example/meta/TestMeta.java[tag=text-load,indent=0]
+----
+<1> `library.Book` resolves to a class of another resource, loaded on demand from where the URI map says.
+<2> The target is part of this object, its opposite is the member, and `loanId` identifies it within the list.
+<3> The occupancy facet's type is not available. That is a warning, not an error.
+
+A name qualified with an alias becomes a classifier reference with the imported namespace and the class name.
+Its target is set when the package of that namespace is available: loaded in the resource set already, or loadable because the URI converter maps the namespace to a location.
+Otherwise the reference keeps the namespace and the name, and the package is read on its own, which is what lets a team publish its vocabulary without the vocabularies it refers to.
+
+The reader collects what is wrong in the resource's `getErrors()` and `getWarnings()`, each with its file, line and column, and loading fails with the first error, as EMF's XML resources do.
+Every package, classifier, feature, operation, parameter and enum literal it reads gets a core model marker with the file's URI and the `line:column` where its declaration starts.
+When a generated page or a projected schema says something surprising, the marker says which line of which file it came from.
+
+A vocabulary read from text is the same model as one built in code, so it is saved in any format a resource set supports, and the projections below work on it unchanged.
+The other direction is `MetaWriter`, which writes a package as text, and which the resource uses to save a `.nmeta` file:
+
+.Writing a vocabulary as text (`meta/.../TestMeta.java`)
+[source,java]
+----
+include::{examplesdir}/meta/src/test/java/org/example/meta/TestMeta.java[tag=text-write,indent=0]
+----
+<1> The vocabulary built with the builders above. The text is `library.nmeta`, which the test checks.
+<2> The same text, as a file.
+
+The text is canonical, not a copy of a source: comments other than documentation and the layout of the source are not kept, and the imports and annotation aliases are derived from the namespaces and sources the package uses.
+Reading what was written and writing it again gives the same text.
+That makes the text syntax a target as well as a source: a vocabulary harvested from a database or authored in a spreadsheet can be written as text, reviewed as text, and compared with last month's as text.
+
+The Zephyr Book _Meta Model_ (<<zephyr-books>>) writes a bank's whole vocabulary in the text syntax, from the first line of a file to the glossary the business reads.
+
+=== Projections
+
+A vocabulary is worth writing down once because of what is projected from it.
+The runtime has the first projection below, a glossary; the others are planned, and the example sketches the second to show the idea.
+
+The first is for people: a glossary that cannot drift from the types, because both come from one source.
+
+.A glossary (`meta/.../TestMeta.java`)
+[source,java]
+----
+include::{examplesdir}/meta/src/test/java/org/example/meta/TestMeta.java[tag=glossary,indent=0]
+----
+<1> One package, as Markdown.
+<2> A glossary for each `.nmeta` file under a directory.
+
+It is for people who do not read the notation, so its Rule column states what the structure says, and the types are in plain words.
+For the library vocabulary, the section on books reads:
+
+.The books of the library's glossary (`meta/src/test/resources/library.md`)
+[source,markdown]
+----
+include::{examplesdir}/meta/src/test/resources/library.md[lines=13..22]
+----
+
+The second is for tools: a dynamic Ecore package, so that every EMF tool works on a vocabulary without generated Java.
+
+.An Ecore projection (`meta/.../Projections.java`)
+[source,java]
+----
+include::{examplesdir}/meta/src/main/java/org/example/meta/Projections.java[tag=ecore,indent=0]
+----
+
+.Instances of a projected vocabulary
+[source,java]
+----
+include::{examplesdir}/meta/src/test/java/org/example/meta/TestMeta.java[tag=instances,indent=0]
+----
+<1> An instance of a class that has no Java class.
+<2> The package is registered with the resource set, so its instances can be saved and loaded in any format.
+
+The Ecore projection is the quiet one, and possibly the most useful: a vocabulary captured in a spreadsheet can be validated, compared, diagrammed and serialized by tools that already exist.
+
+=== Sources and targets
+
+The text syntax works today, in both directions, and so do YAML and JSON.
+The design names the other surfaces through which a vocabulary comes in and goes out [.planned]#PLANNED#:
+
+[cols="1,3",options="header"]
+|===
+| Direction | Formats
+| Authored in | Excel, for the people who already keep the vocabulary there; Draw.io diagrams, where the diagram is the source; Markdown, where the prose matters most; the Groovy DSL (<<groovy-dsl>>)
+| Harvested from | Ecore, Java, XML Schema, JSON Schema, database metadata: most of a domain model is already written down somewhere, and asking people to retype it is how modeling efforts die
+| Projected to | TypeScript packages with runtime type information (<<web>>), JSON Schema, for validation and for the tool schemas of agents, Ecore, documentation sites with diagrams, and on demand SQL, Java or Python
+|===
+
+The rule that makes many formats affordable is that every format reads into Meta and every output is projected from Meta.
+Nothing converts from one format to another directly, so a new input format works with every output there is, and a new output with every input.
+
+The incumbent for a shared vocabulary is a spreadsheet and a wiki table, which win because they are free and ask nobody to adopt anything.
+Meta treats them as inputs, not as competitors.
+
+[#ai-assisted-domain-design]
+=== AI-assisted domain design
+
+Until those inputs are here, there is another way in for the people who know what the words mean.
+A librarian knows what makes a loan overdue, can spot a wrong definition of it in a second, and has no reason to learn a grammar.
+An assistant can write the notation for them: they describe the domain in their own words, or hand over a glossary, a spreadsheet extract or meeting notes, the assistant drafts a `.nmeta` file, and they correct what it says about their business.
+
+An assistant also writes a plausible definition of a term it has never heard as easily as a correct one, and that gets past a reader who does not know the domain.
+So review only works where the reviewer can judge what is reviewed, and this way of working gives each check to whoever can:
+
+* *The validator judges the structure*, which the subject-matter expert cannot and does not have to: the syntax, that every type exists, that opposites and keys exist, that imports within the project resolve. It says nothing about whether a definition is right.
+* *The subject-matter expert judges the meaning*, which neither the assistant nor the validator can. The definitions are prose. The rules are in the structure, often guessed, so the assistant reads them back as questions, the guessed ones first: `refers Member[1] member` asks whether a loan can exist without a member, and `contains Loan[*] loans` whether a loan exists apart from its member. The generated glossary states the same rules for the whole vocabulary, in its Rule column.
+* *A developer or an architect* sets the project up once, and reviews the pull request for how the vocabulary fits with others.
+
+The validator is what lets an assistant correct its own drafts before anyone reads them.
+`MetaValidator` reads the `.nmeta` files of a directory together, and reports problems in the format of compilers:
+
+.Validating a directory (`meta/.../TestMeta.java`)
+[source,java]
+----
+include::{examplesdir}/meta/src/test/java/org/example/meta/TestMeta.java[tag=text-validate,indent=0]
+----
+<1> The directory to search, and the directory the reported file names are relative to. `lending.nmeta` imports `library.nmeta`, and no URI map is needed.
+<2> `file:line:column: severity: message`, which a person can read, an assistant can act on, and an editor can show.
+
+What teaches an assistant all this is an agent skill: a directory of instructions it loads when a task calls for them.
+The skill `nasdanika-meta` is in the runtime's repository, at `models/meta/model/src/main/skill/nasdanika-meta`, and holds the workflow, with the read-back as a step of it, the syntax, tested examples, and the conventions a language reference would not give: a definition for a business reader for every term, a multiplicity that says the business rule, and terms other teams own imported rather than copied.
+It comes with a starter project, whose whole build is one test that runs the validator and writes the glossary to `target/glossary`, so `mvn -q test` is what the assistant runs on a laptop and what stops a broken vocabulary from being merged.
+The runtime's tests check what an assistant learns from the skill, and do not test an assistant: what it writes is checked by the validator and by the people who own the words.
+
+The first half of the corresponding chapter of the Zephyr Book _Meta Model_ (<<zephyr-books>>) needs no code, and can be handed to a subject-matter expert: how a session goes, how to read a vocabulary without learning the notation, and what to watch for.
+
+=== Instances whose type is a reference
+
+`Object` is the reflective instance of a Meta class: no generated interface, no implementation class, no factory.
+It knows its type by reference, and answers about itself through a dozen operations: `get`, whole or by range, `set`, `add`, `remove`, `unset`, `size`, `invoke`, its container and containment feature, and its incoming references, filtered, paged and counted.
+An agent gets an interaction surface that can be taught in a paragraph.
+
+Because the type is a reference, an object can exist before it is classified, and be classified later.
+That is the shape elicitation has: a thing is named before anyone knows what kind of thing it is, an agent proposes a classification, and a person corrects it.
+Values without a typed home wait in annotations, and classification promotes what fits into features:
+
+[cols="3,3,5",options="header"]
+|===
+| Change | Example | Safety
+| Specialization | `Person` to `Author` | Safe: every feature stays in scope
+| Generalization | `Author` to `Person` | Loses a distinction
+| Reclassification | `Person` to `Publisher` | Arbitrary: names may coincide while meanings do not
+|===
+
+Values are never silently dropped: a value whose feature falls out of scope moves to an annotation, with its feature name and the type that declared it.
+Identity is intrinsic, not derived from an identifying attribute, so it survives retyping, and a marker records who classified an object and when, which separates confirmed facts from unreviewed machine guesses.
+
+The obvious implementation is dynamic EMF behind this interface, through the Ecore projection.
+In the runtime as of this edition, the operations of `Object` are declared and have no implementation [.sketch]#SKETCH#.
+
+=== Federated by design
+
+There is no server and no central repository.
+A vocabulary is files in Git, or an artifact published to Maven Central or npm, and packages reference each other by namespace URI, as `lending.nmeta` refers to the library.
+A team owns its vocabulary and refers to another team's without coordinating a release, and gets what a catalog cannot give:
+
+* *Branching.* A proposed change to a term, reviewed as a pull request.
+* *History.* The same history the code has, with the same tools.
+* *Ownership at the edges.* Nobody administers the whole graph.
+* *Immutable snapshots.* What a term meant last year is an install, not an investigation.

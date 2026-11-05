@@ -31,6 +31,7 @@ import org.nasdanika.sdk.runtime.common.telemetry.SpanEvent;
 import org.nasdanika.sdk.runtime.common.telemetry.Telemetry;
 
 import io.opentelemetry.api.logs.Logger;
+import io.opentelemetry.api.metrics.Meter;
 import io.opentelemetry.api.logs.Severity;
 import io.opentelemetry.api.trace.Span;
 import io.opentelemetry.api.trace.SpanContext;
@@ -233,7 +234,8 @@ class TestInstrumentationTelemetry {
 					Object requirement, 
 					Loader loader, 
 					Span span,
-					Logger logger) {
+					Logger logger,
+					Meter meter) {
 				return Flows.of(CapabilityProvider.of("capability for " + requirement));
 			}
 

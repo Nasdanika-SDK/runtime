@@ -153,6 +153,8 @@ Because models are files in Git and artifacts in Maven repositories, teams own t
 *Developers* get a foundation that is small, observable from the first line, and tested.
 The examples in this book depend on the runtime and on JUnit; the runtime depends on the JDK, EMF, the OpenTelemetry API and a handful of libraries that do something the JDK does not.
 
+*Subject-matter experts* get their words written down precisely without learning a notation: an assistant drafts a vocabulary from what they say and hand over, the build checks its structure, and they correct its meaning (<<ai-assisted-domain-design>>).
+
 *Agents* get typed models instead of prose, operations that are tools by construction, and file systems they already know how to use.
 
 === A short tour

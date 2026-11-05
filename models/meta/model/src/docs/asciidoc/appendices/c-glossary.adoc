@@ -2,6 +2,9 @@
 [#glossary]
 == Glossary
 
+Agent skill::
+A directory of instructions that an AI assistant loads when a task calls for them. Meta's, `nasdanika-meta`, teaches an assistant to write and validate vocabularies.
+
 Annotation::
 Details keyed by the URI of their owner, carrying what a source expressed and Meta does not.
 
@@ -32,11 +35,20 @@ Where and when an element applies: a region of a space of dimensions, such as ju
 Projection::
 A transformation of a vocabulary into a form a consumer needs: a glossary, an Ecore package, TypeScript, a JSON Schema.
 
+Read-back::
+Plain statements of the rules a vocabulary's structure holds, which an assistant gives the people who own the words, the guessed ones first, so that they can correct them.
+
 Published language::
 In Domain-Driven Design, a documented, shared vocabulary that bounded contexts translate into and out of.
 
+Subject-matter expert::
+Someone who knows what the words of a domain mean, and need not know any notation: the person who judges a vocabulary's definitions and rules.
+
 Text syntax::
 Meta's own notation, in `.nmeta` files: metamodels written the way Xcore writes Ecore models.
+
+Validator::
+`MetaValidator`, which checks the `.nmeta` files of a directory together, and reports problems as a compiler does. It checks structure, not meaning.
 
 Variability::
 How a vocabulary differs by jurisdiction, language, time or audience, carried in one vocabulary rather than in forks.

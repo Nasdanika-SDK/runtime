@@ -21,5 +21,10 @@ The glossary in <<projections>> is `library.md` in `src/test/resources/org/nasda
 Likewise, `TextSyntaxTests` compares the bank's glossary with `bank.md` and the library written as text with `library.nmeta`, in the same directory as `bank.nmeta` and `party.nmeta`.
 A change to a vocabulary, the projection or the writer changes them; run the tests, review the difference, and update the files.
 
+The agent skill of <<ai-assisted-design>> is in `src/main/skill/nasdanika-meta`.
+`SkillTests` compares its examples with the files above, leaving out the include tags, so a change to one of those files is copied to the skill too.
+It also checks that the lines of the skill's read-back examples are in `bank.nmeta`, and that the starter project writes the glossary where the skill says it is.
+It does not run the starter project, which needs the model installed; to try it, run `mvn install` on the model, copy the project somewhere, add a vocabulary, and run `mvn -q test`.
+
 The parser of the text syntax is generated from `src/main/grammar/Meta.g4` into `src-gen` when the model is built, and committed with the Xcore-generated sources.
 A grammar warning fails the build.

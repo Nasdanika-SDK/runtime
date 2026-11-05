@@ -23,6 +23,9 @@ import org.nasdanika.sdk.runtime.models.meta.ClassifierReference;
 import org.nasdanika.sdk.runtime.models.meta.Feature;
 import org.nasdanika.sdk.runtime.models.meta.Package;
 import org.nasdanika.sdk.runtime.models.meta.Reference;
+import org.nasdanika.sdk.runtime.models.meta.resource.MetaGlossary;
+import org.nasdanika.sdk.runtime.models.meta.resource.MetaValidator;
+import org.nasdanika.sdk.runtime.models.meta.resource.MetaValidator.Problem;
 import org.nasdanika.sdk.runtime.models.meta.resource.MetaWriter;
 
 class TestMeta {
@@ -76,9 +79,21 @@ class TestMeta {
 		assertThat(loan.getOperations().getFirst().getName()).isEqualTo("fineOn");
 		assertThat(feature(loan, "fine").getAnnotations().getFirst().getSource())
 			.isEqualTo("https://runtime.sdk.nasdanika.org/models/occupancy#Presence");
-		assertThat(Projections.glossary(lending))
+		assertThat(MetaGlossary.write(lending))
 			.contains("## Loan")
-			.contains("| book | Book | The book on loan. Defined by the library's vocabulary, not here. |");
+			.contains("| book | Book (from library) | required | The book on loan. Defined by the library's vocabulary, not here. |")
+			.contains("| loans | Loan | any number, part of it, the other side of Loan.member |");
+	}
+
+	@Test
+	void validator() {
+		// tag::text-validate[]
+		List<Problem> problems = MetaValidator.validate(TEXT, TEXT);            // <1>
+		assertThat(problems).extracting(Problem::toString).containsExactly(     // <2>
+				"lending.nmeta:51:6: warning: Facet type occupancy.Presence "
+				+ "is not available, its properties are not checked");
+		assertThat(MetaValidator.hasErrors(problems)).isFalse();
+		// end::text-validate[]
 	}
 
 	@Test
@@ -97,23 +112,28 @@ class TestMeta {
 
 		Package loaded = (Package) vocabularies().getResource(uri, true).getContents().getFirst();
 		assertThat(MetaWriter.write(loaded)).isEqualTo(text);
-		assertThat(Projections.glossary(loaded)).isEqualTo(Projections.glossary(Vocabulary.library()));
+		assertThat(MetaGlossary.write(loaded)).isEqualTo(MetaGlossary.write(Vocabulary.library()));
 		EPackage projected = Projections.ecore(loaded);
 		EClass book = (EClass) projected.getEClassifier("Book");
 		assertThat(book.getEStructuralFeature("authors").getEType())
 			.isSameAs(projected.getEClassifier("Person"));
 	}
 
+	/**
+	 * The glossary is compared with the reviewed file the book includes.
+	 */
 	@Test
-	void glossary() {
-		// tag::glossary-test[]
-		String glossary = Projections.glossary(Vocabulary.library());
-		System.out.println(glossary);
-		assertThat(glossary)
-			.contains("## Book")
-			.contains("| isbn (identifies) | string | International Standard Book Number, 13 digits. |")
-			.contains("| authors | Person, many |");
-		// end::glossary-test[]
+	void glossary(@TempDir Path directory) throws IOException {
+		// tag::glossary[]
+		String glossary = MetaGlossary.write(Vocabulary.library());             // <1>
+
+		List<Path> written = MetaGlossary.generate(                             // <2>
+				Path.of("src/main/meta"),
+				directory.resolve("glossary"));
+		// end::glossary[]
+		assertThat(glossary).isEqualToNormalizingNewlines(
+				Files.readString(Path.of("src/test/resources/library.md")));
+		assertThat(written).hasSize(2);
 	}
 
 	@Test

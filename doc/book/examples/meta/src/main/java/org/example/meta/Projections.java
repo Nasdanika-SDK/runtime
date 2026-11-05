@@ -23,47 +23,12 @@ import org.nasdanika.sdk.runtime.models.meta.PrimitiveTypeReference;
 import org.nasdanika.sdk.runtime.models.meta.Reference;
 
 /**
- * Two projections of one vocabulary: a glossary for people, and a dynamic Ecore package so that
- * every EMF tool works on it. The runtime's own projections are planned; these show the idea.
+ * A projection of a vocabulary to a dynamic Ecore package, so that every EMF tool works on it. The
+ * runtime's own projection to Ecore is planned; this shows the idea.
  */
 public final class Projections {
 
 	private Projections() {
-	}
-
-	// tag::glossary[]
-	/**
-	 * A glossary that cannot drift from the types, because both come from one source.
-	 */
-	public static String glossary(Package vocabulary) {
-		StringBuilder md = new StringBuilder("# ").append(vocabulary.getName()).append("\n\n")
-				.append(vocabulary.getDocumentation()).append("\n");
-		for (Classifier classifier: vocabulary.getClassifiers()) {
-			md.append("\n## ").append(classifier.getName()).append("\n\n")
-				.append(classifier.getDocumentation()).append("\n");
-			if (classifier instanceof Class type) {
-				md.append("\n| Term | Type | Meaning |\n|---|---|---|\n");
-				for (Feature feature: type.getFeatures()) {
-					boolean identifies = feature instanceof Attribute attribute
-							&& attribute.isIdentifying();
-					md.append("| ").append(feature.getName())
-						.append(identifies ? " (identifies)" : "")
-						.append(" | ").append(typeName(feature))
-						.append(feature.getUpperBound() == -1 ? ", many" : "")
-						.append(" | ").append(feature.getDocumentation()).append(" |\n");
-				}
-			}
-		}
-		return md.toString();
-	}
-	// end::glossary[]
-
-	private static String typeName(Feature feature) {
-		return switch (feature.getType()) {
-			case PrimitiveTypeReference primitive -> primitive.getKind().getLiteral().toLowerCase();
-			case ClassifierReference classifier -> classifier.getTarget().getName();
-			default -> "?";
-		};
 	}
 
 	// tag::ecore[]
