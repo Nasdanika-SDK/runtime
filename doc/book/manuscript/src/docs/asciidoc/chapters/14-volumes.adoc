@@ -1,0 +1,209 @@
+// Default for previewing this file on its own; the Maven build sets examplesdir
+ifndef::examplesdir[:examplesdir: ../../../../../examples]
+
+[#volumes]
+== Volumes and content
+
+Models live in files, and files live in more places than a disk: a zip, a Git repository reached over a REST API, an in-memory sandbox, a remote system with a file-shaped API.
+The opposite direction is just as useful: a model, a running JVM or an issue tracker presented as files, so that a browser, a mounted drive or an agent with file tools can read it.
+
+The runtime has one small abstraction for both directions, the volume, and one for the bytes of a file, the content.
+This chapter covers both, and how models are loaded from volumes and saved to them.
+<<serving>> serves volumes over HTTP and WebDAV.
+
+=== Why not NIO
+
+The JDK has a file system abstraction, `java.nio.file`, and it is a pleasure to consume.
+It is expensive to implement.
+A `FileSystemProvider` needs a `Path` class with `resolve`, `relativize`, `normalize` and `toUri`, channels, attribute views, a provider registry keyed by URI scheme, and care wherever paths of two file systems meet.
+
+The runtime implements file systems often: over models, over Git, over REST APIs, as overlays.
+So it owns a small interface for implementing them, and uses NIO for consuming: any NIO file system, the default one, a zip or an in-memory one, becomes a volume through one adapter.
+
+This is where prior art converged.
+Go's `io/fs` is almost the same design, Python's fsspec has string paths and dozens of backends, and Hadoop's `FileSystem`, Apache Commons VFS and Eclipse EFS made the same decision in Java.
+Commons VFS is also the reminder to keep the core small.
+
+=== The volume SPI
+
+A volume has five methods:
+
+[cols="2,5",options="header"]
+|===
+| Method | Contract
+| `stat(path)` | The entry at a path, or empty when nothing is there
+| `list(directory)` | The children of a directory, in a stable order. Blocking, which is fine on virtual threads
+| `content(path)` | The content at a path, lazily: no I/O happens until it is opened
+| `caseSensitive()` | Declared, because some clients ignore case: Windows Explorer over WebDAV, macOS by default
+| `capability(type)` | An optional capability, or empty
+|===
+
+Paths follow Go's rules and are validated once, at the boundary: slash-separated, relative to the root, with no leading or trailing slash and no empty, `.` or `..` segments.
+The root is `.`.
+There is no `Path` class: a path is a string, and URIs appear only at the edges.
+
+An entry is a record of a path, a kind (`FILE`, `DIRECTORY` or `LINK`), a size, a hash and a modification time.
+The hash matters most.
+A content hash, or a Git blob id, gives HTTP ETags and conditional requests, suppression of writes that change nothing, incremental copies and blob caching.
+A volume that knows its hashes cheaply should report them.
+
+Here is a complete read-only volume: a library presented as Markdown files, with an index, a page per book and a page per author, linked to each other.
+
+.A library as files (`volume/.../CatalogVolume.java`)
+[source,java]
+----
+include::{examplesdir}/volume/src/main/java/org/example/volume/CatalogVolume.java[tag=catalog,indent=0]
+----
+
+Reading it is reading files:
+
+.Reading a volume
+[source,java]
+----
+include::{examplesdir}/volume/src/test/java/org/example/volume/TestVolumes.java[tag=read,indent=0]
+----
+<1> The hash is known without reading the file. The HTTP handler turns it into an ETag.
+
+Book pages link to their authors and to the books that cite them.
+A Markdown viewer renders the catalog as a small site, and an agent with file tools navigates the model by following links without knowing that EMF exists.
+That is the point of presenting a model as files: every tool that understands files understands the model, at the level of detail the presentation chooses.
+
+=== Capabilities
+
+Everything beyond reading is optional, and discovered by asking for it:
+
+[cols="2,5,2",options="header"]
+|===
+| Capability | Adds | Status
+| `Writable` | `write(path, content)`, `delete`, `move` (atomic where the backend supports it) and `createDirectory` | [.available]#AVAILABLE#
+| `Watchable` | `changes()`, a `Flow.Publisher` of change batches: how a backend reports changes underneath it | [.sketch]#SKETCH#
+| `Transactional` | `begin()`, then `commit(message)` or `rollback()` | [.sketch]#SKETCH#
+| `Searchable` | `glob(pattern)` and `grep(regex, glob)`, pushed down to a backend that can do better than a walk | [.sketch]#SKETCH#
+| `Linked` | `readLink(path)`: in a model presented as files, non-containment references are links | [.sketch]#SKETCH#
+|===
+
+The interfaces of all five are in the runtime.
+"Available" means that a volume in the runtime implements the capability; the others are declared so that the volumes to come, and the code that will use them, agree on the shape.
+
+A read-only volume implements the core and answers empty to every capability.
+A volume over a Git repository will implement the core, `Writable`, `Transactional` and `Watchable`, and nothing forces it to implement the rest.
+
+=== Volumes over directories
+
+`Volume.of(path)` is a writable volume over a directory of any NIO file system: the default one, a zip file system, an in-memory one.
+It validates paths so that they cannot escape the root, and probes the file system for case sensitivity instead of guessing it from the operating system.
+It keeps file system semantics: writing into a missing directory fails, and so does deleting a non-empty one.
+
+`GenericVolume<C>` is the same SPI with the type of content as a parameter, and `Volume` is the flavor whose content is bytes.
+`adapt` turns a volume of one content type into a volume of another, which is how the TypeScript generator of the runtime writes text without converting it to bytes itself:
+
+.A text volume over a directory
+[source,java]
+----
+include::{examplesdir}/volume/src/test/java/org/example/volume/TestVolumes.java[tag=text-volume,indent=0]
+----
+<1> Reading maps bytes to text. The mapping runs when content is asked for, so a text volume reads eagerly.
+<2> Writing maps text to bytes, encoded when the target volume reads the content.
+
+=== Content
+
+A file's state is a `Content`: a re-readable source of bytes, in the spirit of Guava's `ByteSource` and of the JDK HTTP client's `BodyPublishers.ofInputStream(Supplier)`.
+An `InputStream` is one-shot and has unclear ownership.
+A content can be read more than once, for a hash, then for a write, then by each subscriber, and owns nothing until it is opened.
+
+* *Getting content does no I/O.* Opening it does.
+* *Assigning content does not move bytes.* Bytes move when a consumer reads the content: a commit, an HTTP response, a hash. An I/O failure surfaces when the bytes move, not at assignment.
+* *Consumers push when they can.* They call `writeTo(out)` for a response, a file, a digest or an upload; `openStream()` only when an input stream is required; and `publisher()` for the JDK HTTP client's `BodyPublishers.fromPublisher`.
+
+[cols="2,5",options="header"]
+|===
+| Factory | Content
+| `Content.of(bytes)` | In memory, with a known length
+| `Content.of(text, charset)` | Text, encoded when read
+| `Content.of(supplier)` | From a stream supplier, called on every open
+| `Content.of(uri)` | At a URI, requested on every open: HTTP and HTTPS through the JDK HTTP client, `file` through NIO, other schemes through `URL`. A 404 is a `NoSuchFileException`
+| `Content.once(stream)` | A stream someone handed over. Not repeatable
+| `Content.ofWriter(writer)` | Produced by a closure that writes to an output stream, when the content is read
+|===
+
+A content may also know its length and its hash without reading, and says whether it is repeatable.
+A consumer that needs to read a one-shot content twice buffers it first.
+
+==== Content produced by a writer
+
+Much content in the runtime is produced by code that writes to an output stream: saving a resource, generating a page, encoding text.
+`Content.ofWriter` turns such a closure into content without running it:
+
+* `writeTo(out)` runs the writer on the consumer's stream, with no pipe and no thread. This is the arrangement of JAX-RS's `StreamingOutput`.
+* `openStream()` returns a lazy pipe. The writer starts on a virtual thread at the first read and writes bounded chunks into a queue that the reader drains. A failure of the writer is rethrown to the reader, and a reader that closes early cancels the writer.
+* Each read runs the writer again, so the content is repeatable as long as the writer is.
+
+The pipe is deliberately not `PipedInputStream`, which detects a dead writer or reader from thread liveness and has a 1 KB buffer.
+
+Copying a model to another volume takes three lines, and the model is serialized straight into the target's stream:
+
+.A model as content (`volume/.../Shelves.java`)
+[source,java]
+----
+include::{examplesdir}/volume/src/main/java/org/example/volume/Shelves.java[tag=content,indent=0]
+----
+<1> Nothing is serialized here. The content is a promise to save the resource when it is read.
+<2> Writing is a capability: a read-only volume refuses it by not having it.
+<3> The volume reads the content, which runs the save on the volume's own stream.
+
+=== Models in volumes
+
+A path is where the bytes of a model are; a URI is what the model is.
+`VolumeURIHandler` bridges the two for EMF: URIs below a base URI are paths in a volume, so a resource set loads and saves resources through the volume.
+
+.A resource set over a volume (`volume/.../Shelves.java`)
+[source,java]
+----
+include::{examplesdir}/volume/src/main/java/org/example/volume/Shelves.java[tag=uri-handler,indent=0]
+----
+<1> URIs below `library://shelves/` are paths in the volume. The handler goes first, before EMF's default handlers.
+<2> A configured resource set has every handler instrumented, but this one was added later, so it is wrapped too. Reads and writes become `URIHandler.read` and `URIHandler.write` spans.
+<3> `library://shelves/2026/shelf.library` is the path `2026/shelf.library`. Segments are decoded, and a query and a fragment are ignored, so the URI of an object maps to the path of its resource.
+<4> The bytes are buffered and written as one content when the stream is closed, so a failed save writes nothing. Missing parent directories are created first.
+
+.Saving and loading through a volume
+[source,java]
+----
+include::{examplesdir}/volume/src/test/java/org/example/volume/TestVolumes.java[tag=models-in-volume,indent=0]
+----
+<1> A writable volume over a temporary directory.
+<2> The resource's URI is `library://shelves/2026/shelf.library`, whatever the directory is.
+<3> The handler created the missing directory `2026` before writing.
+
+The model never mentions where it is stored.
+Moving models from a working tree to an in-memory volume, a Git overlay or a volume over a remote system changes one handler, not the models and not the references between them.
+
+The handler answers EMF's attribute queries from `stat`: the time stamp, the length, whether a path is a directory, whether it is read-only (no `Writable` capability), and the hash.
+
+=== Telemetry of transfers
+
+Moving bytes is work, and it is reported to the unit of work's OpenTelemetry instance:
+
+[cols="2,5",options="header"]
+|===
+| Span | When
+| `Content.writeTo` | Content pushed to a stream, with the byte count, unless the content is in memory
+| `Content.pipe` | Content produced by a writer and read as a stream: from the first read to the end of the writer. The writer runs in it, so the spans the writer starts are its children
+| `GET` (client) | Content at an HTTP URI, from the request to the close of the body, with the HTTP semantic convention attributes and the trace context in the request headers
+| `Content.read` | Content at another URI, from opening to closing
+| `URIHandler.read`, `URIHandler.write` | A stream opened through an instrumented URI handler, from opening to closing
+|===
+
+All of them emit progress log records at most once a second while bytes move, so a long download shows in a live tree (<<watching>>) while it happens.
+Crossing to the writer's virtual thread carries the OpenTelemetry instance and the parent span along, as the rules of <<telemetry>> require.
+The URL recorded on a client span has no user info and no query string, which may carry credentials.
+
+=== What comes next
+
+The volume is the bottom layer of a larger design [.sketch]#SKETCH#:
+
+* *The file model.* Files and directories as an Xcore model over volumes: `File`, `Directory`, `TextFile` and types specialized by content type, with operations such as `view`, `replace` and `insert` that are also an agent's file tools. Views decode content on get and encode it lazily on set, so two views of one file cannot diverge. The model and its generated code are in the runtime, in `models/file`; its behavior is being attached.
+* *More volumes.* An in-memory volume for tests and sandboxes. An overlay that keeps writes in memory over a read-only base until commit. A Git volume whose commit is a Git commit, locally or over the GitHub and GitLab APIs without a clone. A model volume that presents a resource set as folders, files and links.
+* *A reactive file system.* Processors, deterministic or agentic, react to file changes and change files in turn until nothing changes, and then one commit records the run. The hash in every entry is what lets such loops converge.
+
+<<vision>> places these in the roadmap.
