@@ -1,0 +1,60 @@
+﻿<project xmlns="http://maven.apache.org/POM/4.0.0"
+    xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
+    xsi:schemaLocation="http://maven.apache.org/POM/4.0.0 http://maven.apache.org/xsd/maven-4.0.0.xsd">
+    <modelVersion>4.0.0</modelVersion>
+    <parent>
+        <groupId>org.nasdanika.sdk.runtime.models.react</groupId>
+        <version>2026.10.0</version>
+        <artifactId>parent</artifactId>
+        <relativePath>..</relativePath>
+    </parent>
+    <artifactId>flow</artifactId>
+    <packaging>jar</packaging>
+    <name>Nasdanika SDK Runtime React Flow Model</name>
+
+    <!--
+        Tests are patched into org.nasdanika.sdk.runtime.models.react.flow on the module path.
+        The demos use React Bootstrap and HTML Bootstrap, test scoped modules the flow module
+        does not require. Test compilation sees them on the class path, the test run on the
+        module path, where the test module has to add and read them.
+    -->
+    <properties>
+        <test.modules>org.nasdanika.sdk.runtime.models.react.bootstrap,org.nasdanika.sdk.runtime.models.html.bootstrap</test.modules>
+    </properties>
+
+    <build>
+        <plugins>
+            <plugin>
+                <groupId>org.apache.maven.plugins</groupId>
+                <artifactId>maven-surefire-plugin</artifactId>
+                <configuration>
+                    <argLine>--add-modules ${test.modules} --add-reads org.nasdanika.sdk.runtime.models.react.flow=${test.modules}</argLine>
+                </configuration>
+            </plugin>
+        </plugins>
+    </build>
+
+    <dependencies>
+        <dependency>
+            <groupId>${project.groupId}</groupId>
+            <artifactId>model</artifactId>
+        </dependency>
+        <dependency>
+            <groupId>org.eclipse.xtext</groupId>
+            <artifactId>org.eclipse.xtext.xbase.lib</artifactId>
+        </dependency>
+        <dependency>
+            <groupId>org.eclipse.emf</groupId>
+            <artifactId>org.eclipse.emf.ecore.xcore.lib</artifactId>
+        </dependency>
+        <!--
+            Demos: pages are Bootstrap documents with a theme, toolbars are React Bootstrap
+            components. Test scope - the flow model does not depend on Bootstrap.
+        -->
+        <dependency>
+            <groupId>${project.groupId}</groupId>
+            <artifactId>bootstrap</artifactId>
+            <scope>test</scope>
+        </dependency>
+    </dependencies>
+</project>

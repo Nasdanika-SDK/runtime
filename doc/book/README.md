@@ -20,23 +20,26 @@ or logo.
 doc/                     Documentation parent: deploy, javadoc and sources are skipped
   book/
     examples/            One Maven module per topic, compiled and tested with the runtime
-      start/             Chapter 5: a first model, saving and loading, watching telemetry
-      library/           Chapters 6 and 19: the library model in Xcore, used by most examples
-      generics/          Chapter 7: types, type tokens, adapters
-      flow/              Chapter 8: flows, the pump, transformations
-      capability/        Chapter 9: requirements, factories, loaders, the CSV case study
-      telemetry/         Chapters 10 and 11: spans, units of work, live span trees
-      recording/         Chapter 12: telemetry and recorded changes saved as models
-      volume/            Chapters 13 and 14: volumes, content, HTTP, WebDAV
-      cli/               Chapters 15 and 16: commands, groups, mix-ins, wiring
-      dsl/               Chapters 18 and 19: the Groovy DSL, evaluators
-      meta/              Chapter 20: a vocabulary in Meta and two projections
-      jvm/               Chapter 21: a JVM snapshot
-      web/               Chapter 22: a Bootstrap site generated from a model
-      ui/                Chapters 22 and 23: React from Java without npm, polymorphic UI
+      start/             Chapter 6: a first model, saving and loading, watching telemetry
+      library/           Chapters 7 and 20: the library model in Xcore, used by most examples
+      generics/          Chapter 8: types, type tokens, adapters
+      flow/              Chapter 9: flows, the pump, transformations
+      capability/        Chapter 10: requirements, factories, loaders, the CSV case study
+      telemetry/         Chapters 11 and 12: spans, units of work, live span trees
+      recording/         Chapter 13: telemetry and recorded changes saved as models
+      volume/            Chapters 14 and 15: volumes, content, HTTP, WebDAV
+      cli/               Chapters 16 and 17: commands, groups, mix-ins, wiring
+      dsl/               Chapters 19 and 20: the Groovy DSL, evaluators
+      meta/              Chapter 21: a vocabulary in Meta, in Java and in the text syntax, and two
+                         projections
+      jvm/               Chapter 22: a JVM snapshot
+      web/               Chapter 23: a Bootstrap site generated from a model
+      ui/                Chapters 23 and 24: React from Java without npm, polymorphic UI
+      diagram/           Chapter 25: a diagram generated, laid out with ELK, saved as Draw.io,
+                         checked against the library, and drawn as SVG
     manuscript/
-      src/docs/asciidoc/ book.adoc, front/, chapters/, appendices/, images/, diagrams/
-      src/docs/themes/   nasdanika-theme.yml, the PDF theme (7 x 9.25 in)
+      src/docs/asciidoc/ book.adoc, front/, chapters/, appendices/, back/, images/, diagrams/
+      src/docs/themes/   nasdanika-theme.yml, the PDF theme (189 x 246 mm, 7.44 x 9.69 in)
       src/cover/         Cover.java, the cover generator
 ```
 
@@ -104,16 +107,59 @@ java src/cover/Cover.java \
 
 ## Publishing on Leanpub
 
-The book is a Leanpub "Bring Your Own Book" title: Leanpub hosts and sells the files, and does
-not build them.
+The book is a Leanpub "Bring Your Own Book" (Upload) title: Leanpub hosts and sells the files, and
+does not build them. So are the Nasdanika Zephyr Books with readers beyond the runtime, today
+Groovy DSL and Draw.io, and a Leanpub bundle offers the book together with them. Leanpub's API
+cannot upload files to an Upload title, so each release is uploaded by hand. The runtime is
+released quarterly; patch releases are uploaded only when they change a book.
 
-1. Build with `mvn verify -Dbook.editor-notes=false` from `doc/book/manuscript`.
-2. Upload `target/book/nasdanika-sdk-runtime-<version>.pdf` and `.epub` as a new release, and a
-   sample if wanted.
-3. Keep the minimum price at zero with a suggested price, so the book is free and readers can pay.
+For each quarterly release:
+
+1. Build the book with `mvn verify -Dbook.editor-notes=false` from `doc/book/manuscript`. The
+   release build renders the Zephyr Books without editor's notes, in each module's `target/book`;
+   they are also on Maven Central with the `book` classifier.
+2. Upload the book's `target/book/nasdanika-sdk-runtime-<version>.pdf` and `.epub` on its Upload
+   page as a new version, and a sample if wanted.
+3. Do the same for each Zephyr Book on Leanpub, with its PDF and EPUB.
+4. Email each title's readers from its page, with the release notes. In Upload mode this is a
+   separate step from the upload.
+5. Check that the bundle lists every Zephyr Book on Leanpub, and add a book in the release that
+   first publishes it there.
+6. Keep the minimum price of every title and of the bundle at zero with a suggested price, so the
+   books are free and readers can pay: $19 for the book, $9 for each Zephyr Book, $29 for the
+   bundle. After the first quarter, compare what payers paid with the suggestions.
+7. Attach the books to the release's GitHub release: the book's PDF, EPUB and single-page HTML,
+   and each Zephyr Book's PDF and HTML.
+8. Once the Zenodo script exists: reserve the version's DOI before the release build, pass it to
+   the build so the books print it, then upload the books and the source archive and publish the
+   record.
 
 A release of the book follows a release of the runtime and carries its version (`revnumber`).
-The single-page HTML is the edition to give a coding assistant.
+The single-page HTML is the whole book in one file. Its markup makes it nearly three times the
+size of its text (about 100,000 tokens), so a coding assistant working in the repository should
+read the AsciiDoc sources and the examples instead, in the parts it needs.
+
+## Keeping the book in step with the runtime
+
+Releases are tagged, so what a new edition has to catch up with is the diff since the previous
+release's tag: `git diff --stat <previous tag> -- . ':!doc'` for the code, then the book against it.
+Before each release, check:
+
+- **The modules.** Every module in the reactor (`pom.xml`, `models/pom.xml` and their children) is
+  in the module reference (`appendices/a-modules.adoc`), with its Maven coordinates and Java module
+  name, and in the module map, dependency graph, repository layout and status lists of the
+  at-a-glance chapter.
+- **The Zephyr Books.** Every module with `src/docs/asciidoc/index.adoc` is in the preface's list of
+  Zephyr Books and named in its module reference entry.
+- **The numbers.** The opening of "Built with an AI assistant" gives days and commits since the
+  repository was created (29 September 2026, `git rev-list --count HEAD`) and these counts, over
+  the files Git tracks:
+  - lines of Java: `*.java` outside `src-gen`, `src/test`, `picocli/` (bundled) and `doc/`;
+  - lines of tests: `*.java` under `src/test`, outside `doc/`, and test cases: `@Test` in them;
+  - lines of Xcore: `*.xcore`, and the Java it generates: `*.java` under `src-gen`;
+  - lines of Groovy: `*.groovy`.
+
+  The Xcore and generated Java counts are repeated later in the same chapter.
 
 ## Open decisions
 

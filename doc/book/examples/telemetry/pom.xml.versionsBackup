@@ -1,0 +1,23 @@
+<project xmlns="http://maven.apache.org/POM/4.0.0" xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
+	xsi:schemaLocation="http://maven.apache.org/POM/4.0.0 http://maven.apache.org/xsd/maven-4.0.0.xsd">
+	<modelVersion>4.0.0</modelVersion>
+	<parent>
+		<groupId>org.nasdanika.sdk.runtime.doc.book.examples</groupId>
+		<artifactId>parent</artifactId>
+		<version>2026.10.0</version>
+		<relativePath>..</relativePath>
+	</parent>
+	<artifactId>telemetry</artifactId>
+	<name>Telemetry</name>
+	<description>
+		Chapters "Telemetry in the runtime" and "Watching work live": spans, log records, progress and
+		metrics through the OpenTelemetry API, watched live without an SDK
+	</description>
+	<dependencies>
+		<!-- The OpenTelemetry API comes with common: nothing else is needed to instrument -->
+		<dependency>
+			<groupId>org.nasdanika.sdk.runtime</groupId>
+			<artifactId>common</artifactId>
+		</dependency>
+	</dependencies>
+</project>

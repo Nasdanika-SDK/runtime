@@ -1,0 +1,67 @@
+﻿<project xmlns="http://maven.apache.org/POM/4.0.0"
+    xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
+    xsi:schemaLocation="http://maven.apache.org/POM/4.0.0 http://maven.apache.org/xsd/maven-4.0.0.xsd">
+    <modelVersion>4.0.0</modelVersion>
+    <parent>
+        <groupId>org.nasdanika.sdk.runtime.models.react</groupId>
+        <version>2026.10.0</version>
+        <artifactId>parent</artifactId>
+        <relativePath>..</relativePath>
+    </parent>
+    <artifactId>bootstrap</artifactId>
+    <packaging>jar</packaging>
+    <name>Nasdanika SDK Runtime React Bootstrap Model</name>
+
+    <build>
+        <plugins>
+            <!--
+                Tests are patched into org.nasdanika.sdk.runtime.models.react.bootstrap on the
+                module path. The demos write static sites only, but the test module reads
+                jdk.httpserver and java.net.http like the React model tests, so demos can be
+                served from the tests later. Test scope only.
+            -->
+            <plugin>
+                <groupId>org.apache.maven.plugins</groupId>
+                <artifactId>maven-compiler-plugin</artifactId>
+                <executions>
+                    <execution>
+                        <id>default-testCompile</id>
+                        <configuration>
+                            <compilerArgs>
+                                <arg>--add-modules</arg>
+                                <arg>jdk.httpserver,java.net.http</arg>
+                                <arg>--add-reads</arg>
+                                <arg>org.nasdanika.sdk.runtime.models.react.bootstrap=jdk.httpserver,java.net.http</arg>
+                            </compilerArgs>
+                        </configuration>
+                    </execution>
+                </executions>
+            </plugin>
+            <plugin>
+                <groupId>org.apache.maven.plugins</groupId>
+                <artifactId>maven-surefire-plugin</artifactId>
+                <configuration>
+                    <argLine>--add-modules jdk.httpserver,java.net.http --add-reads org.nasdanika.sdk.runtime.models.react.bootstrap=jdk.httpserver,java.net.http</argLine>
+                </configuration>
+            </plugin>
+       </plugins>
+    </build>
+    <dependencies>
+		<dependency>
+		    <groupId>${project.groupId}</groupId>
+		    <artifactId>model</artifactId>
+		</dependency> 		
+        <dependency>
+            <groupId>org.eclipse.xtext</groupId>
+            <artifactId>org.eclipse.xtext.xbase.lib</artifactId>
+        </dependency>
+        <dependency>
+            <groupId>org.eclipse.emf</groupId>
+            <artifactId>org.eclipse.emf.ecore.xcore.lib</artifactId>
+        </dependency>
+        <dependency>
+            <groupId>org.nasdanika.sdk.runtime.models.html</groupId>
+            <artifactId>bootstrap</artifactId>
+        </dependency>
+    </dependencies>
+</project>

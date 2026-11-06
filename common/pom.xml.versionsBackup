@@ -1,0 +1,45 @@
+<project xmlns="http://maven.apache.org/POM/4.0.0" xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
+	xsi:schemaLocation="http://maven.apache.org/POM/4.0.0 http://maven.apache.org/xsd/maven-4.0.0.xsd">
+	<modelVersion>4.0.0</modelVersion>
+	  <parent>
+	    <artifactId>parent</artifactId>
+	    <groupId>org.nasdanika.sdk.runtime</groupId>
+	    <version>2026.10.0</version>
+	    <relativePath>..</relativePath>
+	  </parent>
+	<artifactId>common</artifactId>
+	<packaging>jar</packaging>
+	<name>Nasdanika SDK Runtime Common</name>
+
+	<dependencyManagement>
+		<dependencies>
+			<dependency>
+				<groupId>${project.groupId}</groupId>
+				<artifactId>bom</artifactId>
+				<version>${project.version}</version>
+				<type>pom</type>
+				<scope>import</scope>
+			</dependency>
+		</dependencies>
+	</dependencyManagement>	
+
+	<dependencies>
+		<dependency>
+			<groupId>io.opentelemetry</groupId>
+			<artifactId>opentelemetry-api</artifactId>
+			<scope>compile</scope>
+		</dependency>		
+		<dependency>
+		    <groupId>org.eclipse.emf</groupId>
+		    <artifactId>org.eclipse.emf.ecore</artifactId>
+		</dependency> 		
+			<dependency>
+				<groupId>org.eclipse.emf</groupId>
+				<artifactId>org.eclipse.emf.ecore.xmi</artifactId>
+			</dependency>
+		<dependency>
+			<groupId>io.leangen.geantyref</groupId>
+			<artifactId>geantyref</artifactId>
+		</dependency>
+	</dependencies>
+</project>

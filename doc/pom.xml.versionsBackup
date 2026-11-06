@@ -1,0 +1,20 @@
+<project xmlns="http://maven.apache.org/POM/4.0.0" xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
+	xsi:schemaLocation="http://maven.apache.org/POM/4.0.0 http://maven.apache.org/xsd/maven-4.0.0.xsd">
+	<modelVersion>4.0.0</modelVersion>
+	  <parent>
+	    <artifactId>parent</artifactId>
+	    <groupId>org.nasdanika.sdk.runtime</groupId>
+	    <version>2026.10.0</version>
+	    <relativePath>..</relativePath>
+	  </parent>
+	<groupId>org.nasdanika.sdk.runtime.doc</groupId>
+	<artifactId>parent</artifactId>
+	<packaging>pom</packaging>
+	<name>Documentation</name>
+	<description>Documentation built with the runtime: the book and its examples, which are not deployed, and the Zephyr look and the NBOK appendix, which books in other repositories use</description>
+	<modules>
+		<module>zephyr</module>
+		<module>nbok</module>
+		<module>book</module>
+	</modules>
+</project>

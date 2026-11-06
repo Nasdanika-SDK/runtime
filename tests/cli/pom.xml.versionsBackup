@@ -1,0 +1,119 @@
+﻿<project xmlns="http://maven.apache.org/POM/4.0.0" xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
+	xsi:schemaLocation="http://maven.apache.org/POM/4.0.0 http://maven.apache.org/xsd/maven-4.0.0.xsd">
+	<modelVersion>4.0.0</modelVersion>
+	  <parent>
+	    <artifactId>parent</artifactId>
+	    <groupId>org.nasdanika.sdk.runtime.tests</groupId>
+	    <version>2026.10.0</version>
+	    <relativePath>..</relativePath>
+	  </parent>
+	<artifactId>cli</artifactId>
+	<packaging>jar</packaging>
+	<name>Test CLI</name>
+	<description>CLI assembly for demos and tests</description>
+
+	<dependencyManagement>
+		<dependencies>
+			<dependency>
+				<groupId>org.nasdanika.sdk.runtime</groupId>
+				<artifactId>bom</artifactId>
+				<version>${project.version}</version>
+				<type>pom</type>
+				<scope>import</scope>
+			</dependency>
+		</dependencies>
+	</dependencyManagement>	
+
+	<dependencies>
+		<dependency>
+			<groupId>org.nasdanika.sdk.runtime</groupId>
+			<artifactId>cli-launcher</artifactId>
+			<version>${project.version}</version>
+		</dependency>
+		
+	</dependencies>
+
+	<build>
+		<plugins>
+			<plugin>
+				<groupId>org.apache.maven.plugins</groupId>
+				<artifactId>maven-enforcer-plugin</artifactId>
+			</plugin>
+			<!-- For building a minimal distribution -->
+			<plugin>
+				<groupId>org.apache.maven.plugins</groupId>
+				<artifactId>maven-dependency-plugin</artifactId>
+				<executions>
+					<execution>
+						<id>copy-dependencies</id>
+						<phase>prepare-package</phase>
+						<goals>
+							<goal>copy-dependencies</goal>
+						</goals>
+						<configuration>
+							<outputDirectory>
+								${project.build.directory}/dist/lib
+							</outputDirectory>
+							<useRepositoryLayout>true</useRepositoryLayout>
+							<includeScope>runtime</includeScope>
+						</configuration>
+					</execution>
+                    <execution>
+                        <id>copy-dependencies-win</id>
+                        <phase>prepare-package</phase>
+                        <goals>
+                            <goal>copy-dependencies</goal>
+                        </goals>
+                        <configuration>
+                            <outputDirectory>
+                                ${project.build.directory}/dist-win/lib
+                            </outputDirectory>
+                            <useRepositoryLayout>true</useRepositoryLayout>
+                            <includeScope>runtime</includeScope>
+                        </configuration>
+                    </execution>
+				</executions>
+			</plugin>
+		        <plugin>
+		            <groupId>org.apache.maven.plugins</groupId>
+		            <artifactId>maven-surefire-plugin</artifactId>
+		        </plugin>
+
+		        <plugin>
+		            <groupId>org.apache.maven.plugins</groupId>
+	        	    <artifactId>maven-failsafe-plugin</artifactId>
+				    <executions>
+				        <execution>
+				            <goals>
+				                <goal>integration-test</goal>
+				                <goal>verify</goal>
+			        	    </goals>
+				        </execution>
+				    </executions>
+		        </plugin>
+			<plugin>
+				<artifactId>maven-assembly-plugin</artifactId>
+				<configuration>
+					<outputDirectory>${project.build.directory}</outputDirectory>
+					<formats>zip</formats>
+					<appendAssemblyId>false</appendAssemblyId>
+					<finalName>nsd-cli</finalName>
+					<attach>false</attach>
+					<descriptors>
+						<descriptor>src/assembly/dist.xml</descriptor>
+					</descriptors>
+				</configuration>
+			        <executions>
+			          <execution>
+			            <id>create-archive</id>
+			            <phase>verify</phase>
+			            <goals>
+			              <goal>single</goal>
+			            </goals>
+			          </execution>
+			        </executions>
+			</plugin>		        			
+		</plugins>
+	</build>
+
+</project>

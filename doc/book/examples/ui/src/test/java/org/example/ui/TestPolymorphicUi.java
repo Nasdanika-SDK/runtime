@@ -20,6 +20,7 @@ import org.example.library.LibraryPackage;
 import org.example.library.services.Samples;
 import org.junit.jupiter.api.Test;
 import org.nasdanika.sdk.runtime.common.capability.CapabilityLoader;
+import org.nasdanika.sdk.runtime.common.Util;
 import org.nasdanika.sdk.runtime.models.core.CoreFactory;
 import org.nasdanika.sdk.runtime.models.core.CorePackage;
 import org.nasdanika.sdk.runtime.models.core.Marker;
@@ -37,14 +38,14 @@ class TestPolymorphicUi {
 	@Test
 	void lineage() {
 		// tag::lineage[]
-		assertThat(Views.lineage(LibraryPackage.Literals.BOOK)).containsExactly(
+		assertThat(Util.lineage(LibraryPackage.Literals.BOOK)).containsExactly(
 				LibraryPackage.Literals.BOOK,
 				CorePackage.Literals.NAMED_ELEMENT,
 				CorePackage.Literals.MODEL_ELEMENT,
 				CorePackage.Literals.STRING_IDENTITY,
+				CorePackage.Literals.REFERRABLE, 
 				CorePackage.Literals.DOCUMENTED,
-				CorePackage.Literals.MARKED,
-				CorePackage.Literals.REFERRABLE);
+				CorePackage.Literals.MARKED);
 		// end::lineage[]
 	}
 

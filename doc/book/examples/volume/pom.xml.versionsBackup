@@ -1,0 +1,29 @@
+<project xmlns="http://maven.apache.org/POM/4.0.0" xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
+	xsi:schemaLocation="http://maven.apache.org/POM/4.0.0 http://maven.apache.org/xsd/maven-4.0.0.xsd">
+	<modelVersion>4.0.0</modelVersion>
+	<parent>
+		<groupId>org.nasdanika.sdk.runtime.doc.book.examples</groupId>
+		<artifactId>parent</artifactId>
+		<version>2026.10.0</version>
+		<relativePath>..</relativePath>
+	</parent>
+	<artifactId>volume</artifactId>
+	<name>Volumes and serving</name>
+	<description>Chapters "Volumes and content" and "Serving over HTTP and WebDAV"</description>
+	<dependencies>
+		<dependency>
+			<groupId>${project.groupId}</groupId>
+			<artifactId>library</artifactId>
+			<version>${project.version}</version>
+		</dependency>
+		<dependency>
+			<groupId>org.nasdanika.sdk.runtime</groupId>
+			<artifactId>volume</artifactId>
+		</dependency>
+		<dependency>
+			<groupId>io.opentelemetry</groupId>
+			<artifactId>opentelemetry-sdk-testing</artifactId>
+			<scope>test</scope>
+		</dependency>
+	</dependencies>
+</project>

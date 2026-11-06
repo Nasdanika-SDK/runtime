@@ -1,0 +1,65 @@
+﻿<project xmlns="http://maven.apache.org/POM/4.0.0"
+	xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
+	xsi:schemaLocation="http://maven.apache.org/POM/4.0.0 http://maven.apache.org/xsd/maven-4.0.0.xsd">
+	<modelVersion>4.0.0</modelVersion>
+	<parent>
+		<groupId>org.nasdanika.sdk.runtime.models.telemetry</groupId>
+		<version>2026.10.0</version>
+		<artifactId>parent</artifactId>
+		<relativePath>..</relativePath>
+	</parent>
+	<artifactId>model</artifactId>
+	<packaging>jar</packaging>
+	<name>Nasdanika SDK Runtime Telemetry Model</name>
+
+	<build>
+		<plugins>
+			<plugin>
+				<groupId>org.eclipse.xtext</groupId>
+				<artifactId>xtext-maven-plugin</artifactId>
+				<!--
+					src/main/xcore-deps holds a copy of Change.ecore/Change.genmodel from
+					org.eclipse.emf.ecore.change with "../../org.eclipse.emf.ecore/model/..."
+					references replaced by the Ecore nsURI / platform:/resource URIs.
+					The standalone builder loads models from jars with archive:file:...!/ URIs,
+					so the original relative references stay unresolved proxies and generation
+					of classes extending FeatureChange / ResourceChange fails with NPEs.
+					Keep the copy in sync with the org.eclipse.emf.ecore.change version.
+				-->
+				<configuration>
+					<sourceRoots>
+						<root>${project.basedir}/src/main/resources</root>
+						<root>${project.basedir}/src/main/xcore-deps</root>
+					</sourceRoots>
+				</configuration>
+			</plugin>
+			<plugin>
+				<groupId>org.codehaus.mojo</groupId>
+				<artifactId>build-helper-maven-plugin</artifactId>
+			</plugin>
+		</plugins>
+	</build>
+	<dependencies>
+		<dependency>
+			<groupId>io.opentelemetry</groupId>
+			<artifactId>opentelemetry-api</artifactId>
+			<scope>compile</scope>
+		</dependency>			
+		<dependency>
+			<groupId>org.eclipse.emf</groupId>
+			<artifactId>org.eclipse.emf.ecore</artifactId>
+		</dependency>
+		<dependency>
+			<groupId>org.eclipse.emf</groupId>
+			<artifactId>org.eclipse.emf.ecore.change</artifactId>
+		</dependency>
+		<dependency>
+			<groupId>org.eclipse.xtext</groupId>
+			<artifactId>org.eclipse.xtext.xbase.lib</artifactId>
+		</dependency>
+		<dependency>
+			<groupId>org.eclipse.emf</groupId>
+			<artifactId>org.eclipse.emf.ecore.xcore.lib</artifactId>
+		</dependency>
+	</dependencies>
+</project>

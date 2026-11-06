@@ -4,7 +4,7 @@
 	<parent>
 		<groupId>org.nasdanika.sdk.runtime.doc.book.examples</groupId>
 		<artifactId>parent</artifactId>
-		<version>2026.10.0</version>
+		<version>2026.11.0</version>
 		<relativePath>..</relativePath>
 	</parent>
 	<artifactId>recording</artifactId>

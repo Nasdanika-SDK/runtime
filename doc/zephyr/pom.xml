@@ -4,7 +4,7 @@
 	<parent>
 		<artifactId>parent</artifactId>
 		<groupId>org.nasdanika.sdk.runtime.doc</groupId>
-		<version>2026.10.0</version>
+		<version>2026.11.0</version>
 		<relativePath>..</relativePath>
 	</parent>
 	<artifactId>zephyr</artifactId>
@@ -15,10 +15,6 @@
 		repositories, such as the field notes and the stories, unpack the jar of the runtime release
 		they are built with.
 	</description>
-	<properties>
-		<!-- Unlike the rest of doc, this is consumed outside the runtime -->
-		<maven.deploy.skip>false</maven.deploy.skip>
-	</properties>
 	<build>
 		<resources>
 			<!-- The files stay where the runtime's books find them, at doc/zephyr; tools/ is not shipped -->
@@ -33,5 +29,26 @@
 				</includes>
 			</resource>
 		</resources>
+		<plugins>
+			<!-- Central requires a Javadoc jar, and there is no code to generate one from -->
+			<plugin>
+				<groupId>org.apache.maven.plugins</groupId>
+				<artifactId>maven-jar-plugin</artifactId>
+				<executions>
+					<execution>
+						<id>placeholder-javadoc</id>
+						<goals>
+							<goal>jar</goal>
+						</goals>
+						<configuration>
+							<classifier>javadoc</classifier>
+							<includes>
+								<include>zephyr/README.md</include>
+							</includes>
+						</configuration>
+					</execution>
+				</executions>
+			</plugin>
+		</plugins>
 	</build>
 </project>

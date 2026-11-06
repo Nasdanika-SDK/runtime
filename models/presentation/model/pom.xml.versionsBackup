@@ -1,0 +1,60 @@
+﻿<project xmlns="http://maven.apache.org/POM/4.0.0"
+    xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
+    xsi:schemaLocation="http://maven.apache.org/POM/4.0.0 http://maven.apache.org/xsd/maven-4.0.0.xsd">
+    <modelVersion>4.0.0</modelVersion>
+    <parent>
+        <groupId>org.nasdanika.sdk.runtime.models.presentation</groupId>
+        <version>2026.10.0</version>
+        <artifactId>parent</artifactId>
+        <relativePath>..</relativePath>
+    </parent>
+    <artifactId>model</artifactId>
+    <packaging>jar</packaging>
+    <name>Nasdanika SDK Runtime Presentation Model</name>
+    <description>
+        Presentations as data, on the diagram model: a deck, its slides and masters, the shapes on
+        them, the text in the shapes, the connectors between them, tables, and speaker notes. A
+        slide is a diagram. Its Nasdanika Zephyr Book, "Presentation Model", is built from
+        src/docs/asciidoc with listings from the tests.
+    </description>
+
+    <properties>
+        <!-- The Zephyr Book's file name: the artifactId, model, says too little -->
+        <zephyr.book.name>presentation-model-${project.version}-book</zephyr.book.name>
+    </properties>
+
+    <build>
+        <plugins>
+            <plugin>
+                <groupId>org.eclipse.xtext</groupId>
+                <artifactId>xtext-maven-plugin</artifactId>
+            </plugin>
+            <plugin>
+                <groupId>org.codehaus.mojo</groupId>
+                <artifactId>build-helper-maven-plugin</artifactId>
+            </plugin>
+        </plugins>
+    </build>
+    <dependencies>
+		<dependency>
+		    <groupId>org.nasdanika.sdk.runtime</groupId>
+		    <artifactId>common</artifactId>
+		</dependency> 		
+		<dependency>
+		    <groupId>org.nasdanika.sdk.runtime.models.diagram</groupId>
+		    <artifactId>model</artifactId>
+		</dependency> 		
+		<dependency>
+		    <groupId>org.eclipse.emf</groupId>
+		    <artifactId>org.eclipse.emf.ecore</artifactId>
+		</dependency> 		
+        <dependency>
+            <groupId>org.eclipse.xtext</groupId>
+            <artifactId>org.eclipse.xtext.xbase.lib</artifactId>
+        </dependency>
+        <dependency>
+            <groupId>org.eclipse.emf</groupId>
+            <artifactId>org.eclipse.emf.ecore.xcore.lib</artifactId>
+        </dependency>
+    </dependencies>
+</project>

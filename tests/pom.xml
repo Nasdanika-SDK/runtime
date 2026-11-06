@@ -4,7 +4,7 @@
 	  <parent>
 	    <artifactId>parent</artifactId>
 	    <groupId>org.nasdanika.sdk.runtime</groupId>
-	    <version>2026.10.0</version>
+	    <version>2026.11.0</version>
 	    <relativePath>..</relativePath>
 	  </parent>
 	<groupId>org.nasdanika.sdk.runtime.tests</groupId>
@@ -13,7 +13,9 @@
 	<name>Tests</name>
 	<description>Tests which require service registration and code in main</description>
 	<properties>
+	    <!-- The Central publishing plugin ignores maven.deploy.skip and honors skipPublishing -->
 	    <maven.deploy.skip>true</maven.deploy.skip>
+	    <skipPublishing>true</skipPublishing>
 	</properties>
 	<modules>
 		<module>general</module>

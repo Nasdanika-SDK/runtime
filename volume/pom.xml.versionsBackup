@@ -1,0 +1,50 @@
+<project xmlns="http://maven.apache.org/POM/4.0.0" xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
+	xsi:schemaLocation="http://maven.apache.org/POM/4.0.0 http://maven.apache.org/xsd/maven-4.0.0.xsd">
+	<modelVersion>4.0.0</modelVersion>
+	  <parent>
+	    <artifactId>parent</artifactId>
+	    <groupId>org.nasdanika.sdk.runtime</groupId>
+	    <version>2026.10.0</version>
+	    <relativePath>..</relativePath>
+	  </parent>
+	<artifactId>volume</artifactId>
+	<packaging>jar</packaging>
+	<name>Nasdanika SDK Runtime Volume SPI</name>
+	<description>
+		Volumes and content: a small SPI for trees of files wherever they live, a re-readable
+		abstraction of bytes, an EMF URI handler that stores models in volumes, and handlers that
+		serve volumes over HTTP and WebDAV with telemetry. Its Nasdanika Zephyr Book, "Volumes and
+		Content", is built from src/docs/asciidoc with listings from the tests.
+	</description>
+
+	<dependencyManagement>
+		<dependencies>
+			<dependency>
+				<groupId>${project.groupId}</groupId>
+				<artifactId>bom</artifactId>
+				<version>${project.version}</version>
+				<type>pom</type>
+				<scope>import</scope>
+			</dependency>
+		</dependencies>
+	</dependencyManagement>	
+
+	<dependencies>
+		<dependency>
+			<groupId>${project.groupId}</groupId>
+			<artifactId>common</artifactId>
+			<version>${project.version}</version>
+		</dependency>
+		<!-- The Zephyr Book's trace across client and server, exported in memory -->
+		<dependency>
+			<groupId>io.opentelemetry</groupId>
+			<artifactId>opentelemetry-sdk</artifactId>
+			<scope>test</scope>
+		</dependency>
+		<dependency>
+			<groupId>io.opentelemetry</groupId>
+			<artifactId>opentelemetry-sdk-testing</artifactId>
+			<scope>test</scope>
+		</dependency>
+	</dependencies>
+</project>
