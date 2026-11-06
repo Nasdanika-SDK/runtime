@@ -1,13 +1,12 @@
 package org.example.ui;
 
-import java.util.ArrayList;
 import java.util.HashMap;
-import java.util.List;
 import java.util.Map;
 import java.util.Optional;
 
 import org.eclipse.emf.ecore.EClass;
 import org.eclipse.emf.ecore.EObject;
+import org.nasdanika.sdk.runtime.common.Util;
 import org.nasdanika.sdk.runtime.common.capability.CapabilityLoader;
 import org.nasdanika.sdk.runtime.models.html.Node;
 
@@ -26,7 +25,7 @@ public class Views {
 	}
 
 	public Node render(EObject element) {
-		for (EClass eClass: lineage(element.eClass())) {                        // <1>
+		for (EClass eClass: Util.lineage(element.eClass())) {                   // <1>
 			Optional<View<?>> view = resolved.computeIfAbsent(                  // <2>
 					eClass,
 					key -> Optional.ofNullable(loader.<View<?>>loadOne(new ViewOf(key))));
@@ -35,21 +34,6 @@ public class Views {
 			}
 		}
 		return Properties.render(element, this);                               // <4>
-	}
-
-	/**
-	 * The class and its superclasses, nearest first: breadth-first, in declaration order.
-	 */
-	static List<EClass> lineage(EClass eClass) {
-		List<EClass> lineage = new ArrayList<>(List.of(eClass));
-		for (int i = 0; i < lineage.size(); ++i) {
-			for (EClass superType: lineage.get(i).getESuperTypes()) {
-				if (!lineage.contains(superType)) {
-					lineage.add(superType);
-				}
-			}
-		}
-		return lineage;
 	}
 
 }

@@ -50,6 +50,12 @@ Fixing an open question of a design so that it can be executed, at design time, 
 Distribution::
 A directory, or an archive of one, with the jars of a command line, its options file, the bootstrap and wrapper scripts (<<distributions>>).
 
+Ecore::
+The metamodel of EMF: the language of packages, classes, attributes and references in which EMF models are defined (<<models>>).
+
+EMF::
+The Eclipse Modeling Framework: a Java framework that generates code from a model and provides reflection, serialization, notifications and references across files. It does not need the Eclipse IDE (<<models>>).
+
 EPackage provider::
 A service that contributes a generated EMF package, so that a configured resource set knows it (<<models>>).
 
@@ -65,6 +71,9 @@ Ordering the work by taking, at each point, the step with the most value per uni
 Import map::
 A script in a web page that maps bare module specifiers, such as `react`, to URLs, so that a browser loads libraries as ES modules from a CDN with no build step (<<web>>).
 
+JPMS::
+The Java Platform Module System, part of Java since version 9. A module declares in `module-info.java` what it requires, what it exports and which services it provides (<<getting-started>>).
+
 Marker::
 A record of where an element, or one of its features, came from: a location, a position, a date, a digest, or a commit (<<core-model>>).
 
@@ -73,6 +82,9 @@ The language-neutral type system of the runtime: packages, classes, features, op
 
 Meta text syntax::
 Meta's own notation, in `.nmeta` files: metamodels written the way Xcore writes Ecore models (<<meta-text-syntax>>).
+
+Metamodel::
+A model of models: what a model may contain, such as a package of classes with typed features. A library of books is a model; the classes `Library` and `Book` are its metamodel (<<models>>).
 
 Micro-model::
 A small model with a single concern, explicit dependencies on other models and no knowledge of its consumers, in a module of its own (<<principles>>).
@@ -97,6 +109,9 @@ An in-depth technical manual for one module of the runtime, or a small group of 
 
 nsURI::
 The namespace URI of an EMF package: its identity, under `https://runtime.sdk.nasdanika.org/` for the runtime's models (<<principles>>).
+
+OpenTelemetry::
+A vendor-neutral standard and API for traces, log records and metrics. Code is instrumented once, and whoever runs it decides where the signals go (<<telemetry>>).
 
 Planes::
 The data plane where data sits, the semantic plane of models with resolved references, and the presentation plane of what people and agents read, separated by volumes, with commands writing down (<<vision>>).
@@ -157,6 +172,9 @@ The runtime's file abstraction: string paths, `stat`, `list`, `content`, declare
 
 Wiring::
 Matching commands to parents and sub-commands by declared generic types, and injecting adapted values before execution (<<wiring>>).
+
+XMI::
+XML Metadata Interchange, a standard XML format for models and the one every EMF tool understands (<<models>>).
 
 Xcore::
 A textual syntax for Ecore models with operation bodies, from which EMF generates Java (<<models>>).

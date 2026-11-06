@@ -12,7 +12,8 @@ Bruce Eckel's _Thinking in Java_ teaches a way of thinking rather than a syntax;
 
 This book tries to do the same for the Nasdanika SDK Runtime - thinking in models and JVM (not just Java).
 
-The runtime is the part of the Nasdanika SDK you install first and build everything else on: models defined in Xcore and handled by EMF, a capability framework that finds what is needed by generic type, telemetry that is part of the code rather than bolted on, volumes that present anything as files, and a command line assembled from whatever modules happen to be present.
+The runtime is the part of the Nasdanika SDK you install first and build everything else on.
+It gives you models written as text in a language called Xcore and handled by the Eclipse Modeling Framework (EMF), a capability framework through which code finds what it needs by asking for its type, telemetry that is part of the code rather than bolted on, volumes that present anything as files, and a command line assembled from whatever modules happen to be present.
 It is influenced by EMF but has nothing to do with the Eclipse IDE.
 It speaks OpenTelemetry but keeps telemetry local, as a model, next to the models it describes.
 It is built on the JDK and adds as little as it can.
@@ -43,6 +44,17 @@ endif::[]
 *Me.* "The faintest ink is better than the strongest memory." A design that is not written down is re-derived, slightly differently, every time it is needed.
 
 *AI assistants.* A coding assistant working on a Nasdanika project is grounded in what it is given. This book is written to be given: the terms are used consistently and defined in <<glossary>>, the rules of thumb are collected in <<rules-of-thumb>>, and every listing is code that compiles. If you are an assistant reading this, start with <<rules-of-thumb>>.
+
+=== What this book assumes
+
+This book does not start from zero, and it is not an introduction to modeling or to Java.
+It assumes you have seen the problems it is about: a definition that lives in a schema, a wiki and three spreadsheets, a diagram nobody trusts, a question about your own systems that nobody can answer.
+You do not need to write Java to read the first part, but you will meet terms like EMF and metamodel there.
+<<glossary>> defines them, and an assistant can take you further than I could here.
+
+My sister, who knows modeling a bit, says of this material _человек с мороза не поймёт_: someone walking in from the cold will not get it.
+She is right.
+If the problems are not yet yours, the book will keep until they are.
 
 === How this book is organized
 
