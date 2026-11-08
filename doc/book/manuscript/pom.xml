@@ -16,7 +16,8 @@
 
 		Render:            mvn -pl doc/book/manuscript -am verify   (from the runtime root)
 		Skip rendering:    -Dasciidoctor.skip=true
-		Print layout:      -Dbook.media=prepress   (mirrored margins, chapters start on recto pages)
+		Print layout:      -Dbook.media=prepress   (no cover, mirrored margins, chapters start on recto pages,
+		                   and the cover of the coil-bound Lulu edition in target/book/cover-lulu-coil.pdf)
 		Without notes:     -Dbook.editor-notes=false   (hides the editor's notes for publishing)
 
 		Output: target/book/nasdanika-sdk-runtime-VERSION.{pdf,epub,html}
@@ -35,6 +36,9 @@
 		<asciidoctorj.diagram.version>3.2.1</asciidoctorj.diagram.version>
 		<asciidoctorj.diagram.plantuml.version>1.2026.2</asciidoctorj.diagram.plantuml.version>
 		<asciidoctorj.diagram.batik.version>1.19</asciidoctorj.diagram.batik.version>
+		<exec.maven.plugin.version>3.6.4</exec.maven.plugin.version>
+		<!-- The ISBN barcode of the coil-bound Lulu edition; it must encode the isbn attribute of book.adoc -->
+		<book.lulu.barcode>src/docs/asciidoc/images/979-8-9911202-1-0.png</book.lulu.barcode>
 	</properties>
 
 	<build>
@@ -160,4 +164,50 @@
 			</plugin>
 		</plugins>
 	</build>
+
+	<profiles>
+		<profile>
+			<!--
+				The print build also writes the cover of the coil-bound Lulu edition: a one-page PDF of the back
+				and the front with bleed and no spine, 15.13 by 9.93 inches, drawn by src/cover/Cover.java with
+				the JDK that runs Maven.
+			-->
+			<id>lulu-coil-cover</id>
+			<activation>
+				<property>
+					<name>book.media</name>
+					<value>prepress</value>
+				</property>
+			</activation>
+			<build>
+				<plugins>
+					<plugin>
+						<groupId>org.codehaus.mojo</groupId>
+						<artifactId>exec-maven-plugin</artifactId>
+						<version>${exec.maven.plugin.version}</version>
+						<executions>
+							<execution>
+								<id>lulu-coil-cover</id>
+								<phase>generate-resources</phase>
+								<goals>
+									<goal>exec</goal>
+								</goals>
+								<configuration>
+									<executable>${java.home}/bin/java</executable>
+									<workingDirectory>${project.basedir}</workingDirectory>
+									<arguments>
+										<argument>src/cover/Cover.java</argument>
+										<argument>${settings.localRepository}/org/asciidoctor/asciidoctorj-pdf/${asciidoctorj.pdf.version}/asciidoctorj-pdf-${asciidoctorj.pdf.version}.jar</argument>
+										<argument>src/docs/asciidoc/images/nasdanika-sdk-logo.jpg</argument>
+										<argument>${book.lulu.barcode}</argument>
+										<argument>${project.build.directory}/book/cover-lulu-coil.pdf</argument>
+									</arguments>
+								</configuration>
+							</execution>
+						</executions>
+					</plugin>
+				</plugins>
+			</build>
+		</profile>
+	</profiles>
 </project>

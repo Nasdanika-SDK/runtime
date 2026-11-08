@@ -57,8 +57,13 @@ From `doc/book/manuscript`, the book alone (the examples are read as files, not 
 ```
 mvn verify                                   # target/book: PDF, EPUB and single-page HTML
 mvn verify -Dbook.editor-notes=false         # without editor's notes, for publication
-mvn verify -Dbook.media=prepress             # print layout: mirrored margins, recto chapters
+mvn verify -Dbook.media=prepress             # print layout: no cover, ISBN, mirrored margins, recto chapters,
+                                             # and the Lulu coil cover, target/book/cover-lulu-coil.pdf
 ```
+
+The `doi` and `isbn` attributes are in the header of `book.adoc`. Every format prints the DOI, and only
+the print layout prints the ISBN. Check both before a release: a printed edition whose content has
+changed needs a new ISBN.
 
 From `doc/book/examples`, the examples alone, in the reactor so that modules resolve each other:
 
@@ -104,6 +109,24 @@ java src/cover/Cover.java \
     src/docs/asciidoc/images/nasdanika-sdk-logo.jpg \
     src/docs/asciidoc/images/cover.png
 ```
+
+The cover of the coil-bound Lulu edition is a one-page PDF of the back and the front with bleed and no
+spine, 15.13 by 9.93 inches, with the ISBN barcode on the back. The print build writes it to
+`target/book/cover-lulu-coil.pdf`: `-Dbook.media=prepress` activates the `lulu-coil-cover` profile of
+the manuscript's POM, which runs `Cover.java` with the barcode PNG in place of the output image. To
+run it by hand:
+
+```
+java src/cover/Cover.java \
+    ~/.m2/repository/org/asciidoctor/asciidoctorj-pdf/2.3.27/asciidoctorj-pdf-2.3.27.jar \
+    src/docs/asciidoc/images/nasdanika-sdk-logo.jpg \
+    src/docs/asciidoc/images/979-8-9911202-1-0.png \
+    target/book/cover-lulu-coil.pdf
+```
+
+The barcode, the `book.lulu.barcode` property of the POM, must encode the `isbn` attribute of
+`book.adoc`. The size has no spine, so it does not depend on the page count. If the trim size or the
+binding changes, compare it with the Requirements section of Lulu's Upload Your Cover step.
 
 ## Publishing on Leanpub
 

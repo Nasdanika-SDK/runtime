@@ -40,7 +40,7 @@ Or on its own, from `doc/book/manuscript`:
 ----
 mvn verify                             # PDF, EPUB and HTML in target/book
 mvn verify -Dbook.editor-notes=false   # without editor's notes, for publication
-mvn verify -Dbook.media=prepress       # PDF for print: URLs after links, recto chapters
+mvn verify -Dbook.media=prepress       # print: no cover, URLs after links, recto chapters
 ----
 
 The build produces three editions, named after the runtime version:

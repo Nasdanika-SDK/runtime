@@ -14,7 +14,9 @@ Pavel Vlasov
 :toclevels: 2
 :title-page:
 :title-logo-image: image:nasdanika-sdk-logo.jpg[pdfwidth=1.75in,align=left]
+ifeval::["{media}" != "prepress"]
 :front-cover-image: image:cover.png[Front cover,1500,1850]
+endif::[]
 :listing-caption: Listing
 :figure-caption: Figure
 :table-caption: Table
@@ -26,6 +28,8 @@ Pavel Vlasov
 :copyright: Copyright (C) 2026 Pavel Vlasov. Text and figures licensed under CC BY 4.0; code examples under EPL-2.0.
 :github: https://github.com/pvlasov
 :linkedin: https://www.linkedin.com/in/pavelvlasov/
+:doi: 10.5281/zenodo.23740338
+:isbn: 979-8-9911202-1-0
 
 // Defaults for previews in an editor; the Maven build sets these
 ifndef::examplesdir[:examplesdir: ../../../../examples]

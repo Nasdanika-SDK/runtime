@@ -315,7 +315,9 @@ package "Semantic plane: a resource set" {
   class "Semantic domain" as Domain <<an Ecore model>>
 }
 
-Stakeholder "*" -right- "*" Concern : has >
+' The no-break space keeps prawn-svg from writing this label's character spacing as 3.3e-05,
+' which is not valid PDF syntax and which print services can refuse.
+Stakeholder "*" -right- "*" Concern : has<U+00A0> >
 Stakeholder "*" -- "*" View : exchanges >
 View "*" -up- "*" Concern : addresses >
 Channel "*" -right- "*" View : delivers >

@@ -3,7 +3,11 @@
 
 *Nasdanika SDK Runtime: More Structure with Less Effort*
 
-Edition {revnumber}, built on {revdate}. DOI: {doi}.
+Edition {revnumber}, built on {revdate}. DOI: https://doi.org/{doi}.
+
+ifeval::["{media}" == "prepress"]
+ISBN: {isbn}.
+endif::[]
 
 This edition describes Nasdanika SDK Runtime {runtime-version}. Every code listing in it is included from an example module that is compiled and tested against that version of the runtime when the book is built.
 

@@ -1,7 +1,7 @@
 [#about-the-author]
 == About the author
 
-image::headshot.jpg[Pavel Vlasov,width=178,pdfwidth=35%,align=center]
+image::headshot.jpg[Pavel Vlasov,width=178,pdfwidth=1.18in,align=center]
 
 I am Pavel Vlasov, the creator of Nasdanika and of the runtime this book describes.
 I have worked in information technology for more than thirty years, thirty of them in financial services, as a developer, an architect and an enterprise architect.
