@@ -82,6 +82,6 @@ The runtime's `cli-launcher` module builds the distribution of `nsdk`, and the s
 ifdef::editor-notes[]
 [IMPORTANT,caption="Editor's note"]
 ====
-The long name of `-C` is spelled `--claspath-modules`, with one "s". Correct it to `--classpath-modules`, keeping the misspelling as an alias for a release.
+The long name of `-C` is spelled `--classpath-modules`, with one "s". Correct it to `--classpath-modules`, keeping the misspelling as an alias for a release.
 ====
 endif::[]

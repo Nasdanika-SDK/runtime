@@ -151,7 +151,7 @@ public abstract class AbstractModuleResolverCommand extends CommandBase {
 	}
 		
 	@Option(
-			names = {"-C", "--claspath-modules"}, 
+			names = {"-C", "--classpath-modules"}, 
 			description = "Comma-separated list of classpath modules")
 	private String classPathModules;		
 
